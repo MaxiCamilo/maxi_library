@@ -1,15 +1,16 @@
 import 'package:maxi_library/maxi_library.dart';
-import 'package:maxi_library/src/threads/ithread_process.dart';
+import 'package:maxi_library/src/threads/operators/ithread_process.dart';
+import 'package:maxi_library/src/threads/operators/ithread_process_client.dart';
 
-mixin IThreadEntity<T> on IThreadProcess {
+mixin IThreadProcessEntity<T> on IThreadInvoker, IThreadProcess, IThreadProcessClient {
   T get entity;
   Type get typeManager;
 
   set entity(T newItem);
 
   static T getItemFromProcess<T>(IThreadProcess process) {
-    if (process is IThreadEntity) {
-      if (process is IThreadEntity<T>) {
+    if (process is IThreadProcessEntity) {
+      if (process is IThreadProcessEntity<T>) {
         return process.entity;
       } else {
         throw NegativeResult(

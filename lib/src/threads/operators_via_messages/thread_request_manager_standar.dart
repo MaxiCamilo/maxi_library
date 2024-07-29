@@ -3,9 +3,9 @@ import 'dart:developer';
 
 import 'package:maxi_library/maxi_library.dart';
 import 'package:maxi_library/src/threads/abilitys/iability_send_thread_messages.dart';
-import 'package:maxi_library/src/threads/ithread_message.dart';
-import 'package:maxi_library/src/threads/ithread_process.dart';
-import 'package:maxi_library/src/threads/ithread_request_manager.dart';
+import 'package:maxi_library/src/threads/operators/ithread_message.dart';
+import 'package:maxi_library/src/threads/operators/ithread_process.dart';
+import 'package:maxi_library/src/threads/operators/ithread_request_manager.dart';
 import 'package:maxi_library/src/threads/messages/functions/message_function_request_anonymus.dart';
 import 'package:maxi_library/src/threads/messages/functions/message_function_request_entity.dart';
 
@@ -17,6 +17,7 @@ class ThreadRequestManagerStandar with IThreadRequestManager {
   final _synchronizerRequests = Semaphore();
 
   int _lastId = 0;
+  bool _isActive = true;
 
   Completer<int>? _identifierWaiter;
 
@@ -24,6 +25,7 @@ class ThreadRequestManagerStandar with IThreadRequestManager {
 
   @override
   Future<R> callEntityFunction<T, R>({InvocationParameters parameters = InvocationParameters.emptry, required Future<R> Function(T, InvocationParameters) function}) async {
+    _checkIfThreadActive();
     return await _synchronizerRequests.execute(
       function: () async => await _sendSolicitud<R>(
         MessageFunctionRequestEntity<T, R>(
@@ -36,6 +38,7 @@ class ThreadRequestManagerStandar with IThreadRequestManager {
 
   @override
   Future<R> callFunctionAsAnonymous<R>({InvocationParameters parameters = InvocationParameters.emptry, required Future<R> Function(InvocationParameters) function}) async {
+    _checkIfThreadActive();
     return await _synchronizerRequests.execute(
       function: () async => await _sendSolicitud<R>(
         MessageFunctionRequestAnonymus<R>(
@@ -89,6 +92,15 @@ class ThreadRequestManagerStandar with IThreadRequestManager {
     pending.completeError(failure);
   }
 
+  void _checkIfThreadActive() {
+    if (_isActive) {
+      throw NegativeResult(
+        identifier: NegativeResultCodes.functionalityCancelled,
+        message: 'The thread/subthread finished its execution',
+      );
+    }
+  }
+
   Completer? _getResultWaiter(int idTask) {
     final pending = _pendingTask[idTask];
     if (pending == null) {
@@ -99,6 +111,7 @@ class ThreadRequestManagerStandar with IThreadRequestManager {
       return null;
     }
 
+    _pendingTask.remove(idTask);
     return pending;
   }
 
@@ -110,5 +123,18 @@ class ThreadRequestManagerStandar with IThreadRequestManager {
     }
 
     _identifierWaiter!.complete(idTask);
+  }
+
+  @override
+  void reactClosingThread() {
+    _isActive = false;
+
+    final error = NegativeResult(
+      identifier: NegativeResultCodes.functionalityCancelled,
+      message: 'The function was canceled because the thread/subthread finished its execution',
+    );
+
+    _pendingTask.entries.map((x) => x.value.completeError(error));
+    _pendingTask.clear();
   }
 }

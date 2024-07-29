@@ -26,24 +26,24 @@ T? containError<T>({
 }
 
 T? containErrorLog<T>({
-  required String Function() detail,
+  required String detail,
   required T Function() function,
-  void Function(NegativeResult)? ifFails,
-  void Function(dynamic)? ifUnknownFails,
+  void Function(String, NegativeResult)? ifFails,
+  void Function(String, dynamic)? ifUnknownFails,
 }) {
   return containError(
     function: function,
     ifFails: (x) {
-      log('[X] ${tr('Negative response was contained in ')} "${detail()}": ${x.toString()}');
+      log('[X] ${tr('Negative response was contained in ')} "$detail": ${x.toString()}');
       if (ifFails != null) {
-        ifFails(x);
+        ifFails(detail, x);
       }
     },
     ifUnknownFails: (x) {
-      log('[¡X!] ${tr('failure contained in')} "${detail()}": $x');
+      log('[¡X!] ${tr('Failure contained in')} "$detail": $x');
 
       if (ifUnknownFails != null) {
-        ifUnknownFails(x);
+        ifUnknownFails(detail, x);
       }
     },
   );

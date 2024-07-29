@@ -10,4 +10,6 @@ mixin IThreadRequestManager {
   void confirmTaskCompletion(int idTask, dynamic result);
 
   void confirmTaskFailure(int idTask, dynamic failure);
+
+  void reactClosingThread();
 }

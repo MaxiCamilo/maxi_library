@@ -10,4 +10,6 @@ mixin IExecutorRequestedThreadFunctions {
     required InvocationParameters parameters,
     required dynamic Function(T, InvocationParameters) function,
   });
+
+  void reactClosingThread();
 }
