@@ -1,8 +1,8 @@
 import 'dart:developer';
 
 import 'package:maxi_library/src/threads/context_process_thread_messages.dart';
-import 'package:maxi_library/src/threads/operators/ithread_message.dart';
-import 'package:maxi_library/src/threads/operators/ithread_process_isolate.dart';
+import 'package:maxi_library/src/threads/interfaces/ithread_message.dart';
+import 'package:maxi_library/src/threads/interfaces/ithread_process_isolate.dart';
 
 class MessageNotificationRequestTermination with IThreadMessage {
   @override

@@ -3,9 +3,9 @@ import 'dart:developer';
 
 import 'package:maxi_library/maxi_library.dart';
 import 'package:maxi_library/src/threads/abilitys/iability_send_thread_messages.dart';
-import 'package:maxi_library/src/threads/operators/ithread_message.dart';
-import 'package:maxi_library/src/threads/operators/ithread_process.dart';
-import 'package:maxi_library/src/threads/operators/ithread_stream_manager.dart';
+import 'package:maxi_library/src/threads/interfaces/ithread_message.dart';
+import 'package:maxi_library/src/threads/interfaces/ithread_process.dart';
+import 'package:maxi_library/src/threads/interfaces/ithread_stream_manager.dart';
 import 'package:maxi_library/src/threads/messages/streams/message_stream_request_anonymous.dart';
 import 'package:maxi_library/src/threads/messages/streams/message_stream_request_entity.dart';
 

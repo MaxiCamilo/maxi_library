@@ -1,5 +1,5 @@
-import 'package:maxi_library/src/threads/operators/ithread_communication.dart';
-import 'package:maxi_library/src/threads/operators/ithread_process.dart';
+import 'package:maxi_library/src/threads/interfaces/ithread_communication.dart';
+import 'package:maxi_library/src/threads/interfaces/ithread_process.dart';
 
 class ContextProcessThreadMessages {
   final IThreadCommunication communicator;

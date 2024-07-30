@@ -1,5 +1,5 @@
 import 'package:maxi_library/maxi_library.dart';
-import 'package:maxi_library/src/threads/operators/ithread_magares_factory.dart';
+import 'package:maxi_library/src/threads/interfaces/ithread_magares_factory.dart';
 
 mixin ThreadManager {
   static IThreadInvoker? _instance;

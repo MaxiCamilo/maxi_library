@@ -1,5 +1,5 @@
 import 'package:maxi_library/src/threads/context_process_thread_messages.dart';
-import 'package:maxi_library/src/threads/operators/ithread_message.dart';
+import 'package:maxi_library/src/threads/interfaces/ithread_message.dart';
 
 class MessageStreamCancel with IThreadMessage {
   final int idStream;

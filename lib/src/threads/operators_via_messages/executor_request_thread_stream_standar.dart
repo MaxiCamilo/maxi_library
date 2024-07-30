@@ -3,10 +3,10 @@ import 'dart:developer';
 
 import 'package:maxi_library/maxi_library.dart';
 import 'package:maxi_library/src/threads/abilitys/iability_send_thread_messages.dart';
-import 'package:maxi_library/src/threads/operators/iexecutor_requested_thread_stream.dart';
-import 'package:maxi_library/src/threads/operators/ithread_process_entity.dart';
-import 'package:maxi_library/src/threads/operators/ithread_message.dart';
-import 'package:maxi_library/src/threads/operators/ithread_process.dart';
+import 'package:maxi_library/src/threads/interfaces/iexecutor_requested_thread_stream.dart';
+import 'package:maxi_library/src/threads/interfaces/ithread_process_entity.dart';
+import 'package:maxi_library/src/threads/interfaces/ithread_message.dart';
+import 'package:maxi_library/src/threads/interfaces/ithread_process.dart';
 import 'package:maxi_library/src/threads/messages/streams/message_stream_error.dart';
 import 'package:maxi_library/src/threads/messages/streams/message_stream_execute.dart';
 import 'package:maxi_library/src/threads/messages/streams/message_stream_finalize.dart';

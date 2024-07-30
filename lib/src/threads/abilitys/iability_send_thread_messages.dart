@@ -1,4 +1,4 @@
-import 'package:maxi_library/src/threads/operators/ithread_message.dart';
+import 'package:maxi_library/src/threads/interfaces/ithread_message.dart';
 
 mixin IAbilitySendThreadMessages {
   bool get isActive;
