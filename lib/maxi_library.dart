@@ -12,3 +12,5 @@ export 'src/tools.dart';
 export 'src/prefixes.dart';
 export 'src/threads.dart';
 export 'src/singletons.dart';
+
+export 'package:rxdart/rxdart.dart';

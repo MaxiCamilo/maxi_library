@@ -8,6 +8,7 @@ import 'package:maxi_library/src/threads/interfaces/ithread_process.dart';
 import 'package:maxi_library/src/threads/interfaces/ithread_request_manager.dart';
 import 'package:maxi_library/src/threads/messages/functions/message_function_request_anonymus.dart';
 import 'package:maxi_library/src/threads/messages/functions/message_function_request_entity.dart';
+import 'package:maxi_library/src/threads/messages/functions/message_function_request_thread.dart';
 
 class ThreadRequestManagerStandar with IThreadRequestManager {
   final IAbilitySendThreadMessages sender;
@@ -42,6 +43,19 @@ class ThreadRequestManagerStandar with IThreadRequestManager {
     return await _synchronizerRequests.execute(
       function: () async => await _sendSolicitud<R>(
         MessageFunctionRequestAnonymus<R>(
+          parameters: parameters,
+          function: function,
+        ),
+      ),
+    );
+  }
+
+  @override
+  Future<R> callFunctionInThread<R>({InvocationParameters parameters = InvocationParameters.emptry, required Future<R> Function(InvocationParameters p1) function}) async {
+    _checkIfThreadActive();
+    return await _synchronizerRequests.execute(
+      function: () async => await _sendSolicitud<R>(
+        MessageFunctionRequestThread<R>(
           parameters: parameters,
           function: function,
         ),

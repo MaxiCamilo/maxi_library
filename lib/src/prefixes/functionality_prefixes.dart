@@ -84,6 +84,7 @@ T volatile<T>({
   required T Function() function,
   void Function(NegativeResult)? ifFails,
   void Function(dynamic)? ifUnknownFails,
+  void Function(dynamic)? ifFailsAnyway,
   NegativeResult Function(dynamic)? errorFactory,
 }) {
   try {
@@ -91,6 +92,9 @@ T volatile<T>({
   } on NegativeResult catch (rn) {
     if (ifFails != null) {
       containError(function: () => ifFails(rn));
+    }
+    if (ifFailsAnyway != null) {
+      containError(function: () => ifFailsAnyway(rn));
     }
     rethrow;
   } catch (ex) {
@@ -111,6 +115,10 @@ T volatile<T>({
 
     if (ifUnknownFails != null) {
       containError(function: () => ifUnknownFails(ex));
+    }
+
+    if (ifFailsAnyway != null) {
+      containError(function: () => ifFailsAnyway(rn));
     }
 
     throw rn;
@@ -135,6 +143,7 @@ Future<T> volatileAsync<T>({
   required Future<T> Function() function,
   void Function(NegativeResult)? ifFails,
   void Function(dynamic)? ifUnknownFails,
+  void Function(dynamic)? ifFailsAnyway,
   NegativeResult Function(dynamic)? errorFactory,
 }) async {
   try {
@@ -142,6 +151,10 @@ Future<T> volatileAsync<T>({
   } on NegativeResult catch (rn) {
     if (ifFails != null) {
       containError(function: () => ifFails(rn));
+    }
+
+    if (ifFailsAnyway != null) {
+      containError(function: () => ifFailsAnyway(rn));
     }
     rethrow;
   } catch (ex) {
@@ -161,6 +174,10 @@ Future<T> volatileAsync<T>({
 
     if (ifUnknownFails != null) {
       containError(function: () => ifUnknownFails(ex));
+    }
+
+    if (ifFailsAnyway != null) {
+      containError(function: () => ifFailsAnyway(rn));
     }
 
     throw rn;

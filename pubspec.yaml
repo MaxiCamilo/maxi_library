@@ -8,6 +8,7 @@ environment:
 
 # Add regular dependencies here.
 dependencies:
+  rxdart: ^0.28.0
   # path: ^1.8.0
 
 dev_dependencies:
