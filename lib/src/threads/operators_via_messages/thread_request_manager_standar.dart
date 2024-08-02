@@ -107,7 +107,7 @@ class ThreadRequestManagerStandar with IThreadRequestManager {
   }
 
   void _checkIfThreadActive() {
-    if (_isActive) {
+    if (!_isActive) {
       throw NegativeResult(
         identifier: NegativeResultCodes.functionalityCancelled,
         message: 'The thread/subthread finished its execution',

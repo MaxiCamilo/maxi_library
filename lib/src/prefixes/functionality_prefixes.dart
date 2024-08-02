@@ -69,8 +69,8 @@ Future<T?> containErrorAsync<T>({
 }
 
 Future<T?> containErrorLogAsync<T>({
-  required Future<T> Function() function,
   required String Function() detail,
+  required Future<T> Function() function,
 }) {
   return containErrorAsync(
     function: function,

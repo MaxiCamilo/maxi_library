@@ -12,10 +12,13 @@ class MessageStreamRequestAnonymous<R> with IThreadMessage {
   @override
   Future<void> openMessage({required ContextProcessThreadMessages context}) {
     if (context.managerThisThread is IThreadProcessServer) {
-      //THIS MUST RETURN the new ID of the stream
-      throw UnimplementedError('[MAXI] ¡Hey, this is beguin used!');
+      return context.communicator.executorRequestStream.executeRequestedStream(parameters: parameters, function: _executeWithServer);
     } else {
       return context.communicator.executorRequestStream.executeRequestedStream(parameters: parameters, function: function);
     }
+  }
+
+  Future<Stream<R>> _executeWithServer(InvocationParameters parameters) {
+    return ThreadManager.callStreamAsAnonymous<R>(function: function, parameters: parameters);
   }
 }

@@ -22,7 +22,7 @@ class Semaphore {
     while (_waitingList.isNotEmpty) {
       final item = _waitingList.removeAt(0);
       try {
-        final result = item.$2();
+        final result = await item.$2();
         item.$1.complete(result);
       } catch (ex) {
         item.$1.completeError(ex);

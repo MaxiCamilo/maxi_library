@@ -32,7 +32,7 @@ class IsolateInitializer {
 
     Isolate.spawn(_prepareThread, _IsolateInitializerContext(initializers: initializers, sender: channel.serder), debugName: name, errorsAreFatal: false);
 
-    final subscription = channel.receiver.whereType<_IsolateInitializerFinalized>().listen((x) => completer.complete(x));
+    final subscription = channel.dataReceivedNotifier.whereType<_IsolateInitializerFinalized>().listen((x) => completer.complete(x));
     final result = await completer.future;
     subscription.cancel();
 

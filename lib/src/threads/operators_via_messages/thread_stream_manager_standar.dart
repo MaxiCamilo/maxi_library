@@ -6,6 +6,7 @@ import 'package:maxi_library/src/threads/abilitys/iability_send_thread_messages.
 import 'package:maxi_library/src/threads/interfaces/ithread_message.dart';
 import 'package:maxi_library/src/threads/interfaces/ithread_process.dart';
 import 'package:maxi_library/src/threads/interfaces/ithread_stream_manager.dart';
+import 'package:maxi_library/src/threads/messages/streams/message_stream_cancel.dart';
 import 'package:maxi_library/src/threads/messages/streams/message_stream_request_anonymous.dart';
 import 'package:maxi_library/src/threads/messages/streams/message_stream_request_entity.dart';
 
@@ -26,40 +27,41 @@ class ThreadStreamManagerStandar with IThreadStreamManager {
   Future<Stream<R>> callEntityStream<T, R>({
     InvocationParameters parameters = InvocationParameters.emptry,
     required Future<Stream<R>> Function(T p1, InvocationParameters p2) function,
-    bool isBroadcast = false,
   }) async {
     _checkIfThreadActive();
-    final controller = await _synchronizerRequests.execute(
+    final controllerResult = await _synchronizerRequests.execute(
       function: () async => await _sendSolicitud<R>(
         message: MessageStreamRequestEntity<T, R>(
           parameters: parameters,
           function: function,
         ),
-        isBroadcast: isBroadcast,
       ),
     );
 
-    return controller.stream;
+    final stream = controllerResult.$2.stream;
+    return stream;
   }
 
   @override
   Future<Stream<R>> callStreamAsAnonymous<R>({
     InvocationParameters parameters = InvocationParameters.emptry,
     required Future<Stream<R>> Function(InvocationParameters p1) function,
-    bool isBroadcast = false,
   }) async {
     _checkIfThreadActive();
-    final controller = await _synchronizerRequests.execute(
+    final controllerResult = await _synchronizerRequests.execute(
       function: () async => await _sendSolicitud<R>(
         message: MessageStreamRequestAnonymous<R>(
           parameters: parameters,
           function: function,
         ),
-        isBroadcast: isBroadcast,
       ),
     );
 
-    return controller.stream;
+    final stream = controllerResult.$2.stream;
+
+    controllerResult.$2.onCancel = () => _reactCancelController(controllerResult.$1);
+
+    return stream;
   }
 
   @override
@@ -77,6 +79,7 @@ class ThreadStreamManagerStandar with IThreadStreamManager {
   void confirmStreamEnd(int idStream) {
     final item = _searchController(idStream);
     if (item != null) {
+      _activeStreams.remove(idStream);
       containErrorLog(
         detail: '[ThreadStreamManagerStandar] FAILED!: Controller number $idStream failed to close due to finalized',
         function: () => item.close(),
@@ -86,11 +89,11 @@ class ThreadStreamManagerStandar with IThreadStreamManager {
 
   @override
   void confirmStreamError(int idStream, failure) {
-    final item = _searchController(idStream);
-    if (item != null) {
+    final stream = _searchController(idStream);
+    if (stream != null) {
       containErrorLog(
         detail: '[ThreadStreamManagerStandar] FAILED!: Controller number $idStream failed to send error',
-        function: () => item.addError(failure),
+        function: () => stream.addError(failure),
       );
     }
   }
@@ -107,12 +110,14 @@ class ThreadStreamManagerStandar with IThreadStreamManager {
 
   @override
   void confirmStreamItem(int idStream, item) {
-    final item = _searchController(idStream);
-    if (item != null) {
-      containErrorLog(
-        detail: '[ThreadStreamManagerStandar] FAILED!:a Controlled number $idStream did not accept the value received',
-        function: () => item.add(item),
-      );
+    final stream = _searchController(idStream);
+    if (stream != null) {
+      if (!stream.isClosed) {
+        containErrorLog(
+          detail: '[ThreadStreamManagerStandar] FAILED!:a Controlled number $idStream did not accept the value received (${item.runtimeType})',
+          function: () => stream.add(item),
+        );
+      }
     }
   }
 
@@ -127,7 +132,7 @@ class ThreadStreamManagerStandar with IThreadStreamManager {
   }
 
   void _checkIfThreadActive() {
-    if (_isActive) {
+    if (!_isActive) {
       throw NegativeResult(
         identifier: NegativeResultCodes.functionalityCancelled,
         message: 'The thread/subthread finished its execution',
@@ -144,7 +149,7 @@ class ThreadStreamManagerStandar with IThreadStreamManager {
     return item;
   }
 
-  Future<StreamController<R>> _sendSolicitud<R>({required IThreadMessage message, required bool isBroadcast}) async {
+  Future<(int, StreamController<R>)> _sendSolicitud<R>({required IThreadMessage message}) async {
     _identifierWaiter = Completer<int>();
     await sender.sendMessage(message);
 
@@ -154,21 +159,26 @@ class ThreadStreamManagerStandar with IThreadStreamManager {
     }
 
     _lastId = receivedId + 1;
-    late final StreamController<R> contoller;
-    if (isBroadcast) {
-      contoller = StreamController<R>.broadcast();
-    } else {
-      contoller = StreamController<R>();
-    }
+    final contoller = StreamController<R>.broadcast();
 
-    contoller.onCancel = () => _reactCancelController(receivedId, contoller);
+    contoller.onCancel = () => _reactCancelController(receivedId);
 
     _activeStreams[receivedId] = contoller;
 
-    return contoller;
+    return (receivedId, contoller);
   }
 
-  _reactCancelController(int receivedId, StreamController contoller) {}
+  _reactCancelController(int receivedId) {
+    final controller = _activeStreams[receivedId];
+    if (controller != null) {
+      sender.sendMessage(
+        MessageStreamCancel(idStream: receivedId),
+      );
+      controller.close();
+
+      _activeStreams.remove(receivedId);
+    }
+  }
 
   @override
   void reactClosingThread() {

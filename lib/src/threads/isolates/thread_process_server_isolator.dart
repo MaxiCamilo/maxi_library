@@ -2,7 +2,6 @@ import 'package:maxi_library/maxi_library.dart';
 import 'package:maxi_library/src/framework/thread_service.dart';
 import 'package:maxi_library/src/threads/initializer/thread_initializer_entity.dart';
 import 'package:maxi_library/src/threads/interfaces/ithread_communication.dart';
-import 'package:maxi_library/src/threads/interfaces/ithread_initializer.dart';
 import 'package:maxi_library/src/threads/interfaces/ithread_process.dart';
 import 'package:maxi_library/src/threads/interfaces/ithread_process_server.dart';
 import 'package:maxi_library/src/threads/isolates/abilitys/abylitys_thread_linked_sender.dart';
@@ -15,15 +14,16 @@ import 'package:maxi_library/src/threads/templates/template_thread_process_serve
 
 class ThreadProcessServerIsolator with IThreadInvoker, IThreadProcess, IThreadProcessServer, TemplateThreadProcessServer, AbylitysThreadLinkedSender {
   @override
-  final List<IThreadInitializer> backgroundThreadInitializer;
+  final List<IThreadInitializer> threadInitializer;
 
-  ThreadProcessServerIsolator({this.backgroundThreadInitializer = const []});
+
+  ThreadProcessServerIsolator({this.threadInitializer = const []});
 
   @override
   Future<IThreadCommunication> createAnonymousManagerAccordingImplementation({required String name, required List<IThreadInitializer> initializers}) async {
     final initializersPrepared = [
       ThreadInicializerDefineAnonymousIsolator(),
-      ...backgroundThreadInitializer,
+      ...threadInitializer,
       ...initializers,
     ];
 
@@ -35,7 +35,7 @@ class ThreadProcessServerIsolator with IThreadInvoker, IThreadProcess, IThreadPr
   Future<IThreadCommunication> createEntitysManagerAccordingImplementation<T>({required T item, required List<IThreadInitializer> initializers}) async {
     final initializersPrepared = [
       ThreadInicializerDefineEntity<T>(entity: item),
-      ...backgroundThreadInitializer,
+      ...threadInitializer,
       ...initializers,
       ThreadInitializerEntity(),
     ];

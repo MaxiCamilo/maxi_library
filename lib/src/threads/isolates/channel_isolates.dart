@@ -1,11 +1,12 @@
 import 'dart:async';
+import 'dart:developer';
 import 'dart:isolate';
 
 import 'package:maxi_library/maxi_library.dart';
 
 class ChannelIsolates {
   final bool isDetination;
-  final ReceivePort receiver;
+  final ReceivePort _receiver;
 
   SendPort? _serder;
 
@@ -20,12 +21,12 @@ class ChannelIsolates {
 
   bool get isActive => !_isFinalized;
 
-  SendPort get serder => receiver.sendPort;
+  SendPort get serder => _receiver.sendPort;
 
-  ChannelIsolates._({required this.isDetination, required this.receiver, SendPort? serder}) {
+  ChannelIsolates._({required this.isDetination, required ReceivePort receiver, SendPort? serder}) : _receiver = receiver {
     _serder = serder;
 
-    receiver.listen(
+    _receiver.listen(
       _processDataReceived,
       onDone: closeConnection,
     );
@@ -137,10 +138,19 @@ class ChannelIsolates {
 
   void closeConnection() {
     _isFinalized = true;
-    receiver.close();
+    _receiver.close();
   }
 
   void _processDataReceived(message) {
+    if (_serder == null) {
+      if (message is SendPort) {
+        _serder = message;
+        return;
+      } else {
+        log('[ChannelIsolates] DANGER!: The sender was not sent! The channel is not working yet');
+      }
+    }
+
     _dataReceivedNotifier.add(message);
   }
 }

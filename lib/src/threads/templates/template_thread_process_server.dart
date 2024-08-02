@@ -1,13 +1,13 @@
 import 'dart:async';
+import 'dart:developer';
 
 import 'package:maxi_library/maxi_library.dart';
 import 'package:maxi_library/src/threads/interfaces/ithread_communication.dart';
-import 'package:maxi_library/src/threads/interfaces/ithread_initializer.dart';
 import 'package:maxi_library/src/threads/interfaces/ithread_process.dart';
 import 'package:maxi_library/src/threads/interfaces/ithread_process_server.dart';
 
 mixin TemplateThreadProcessServer on IThreadInvoker, IThreadProcess, IThreadProcessServer {
-  List<IThreadInitializer> get backgroundThreadInitializer;
+  List<IThreadInitializer> get threadInitializer;
 
   final mapConnectionsEntity = <Type, IThreadCommunication>{};
 
@@ -19,6 +19,7 @@ mixin TemplateThreadProcessServer on IThreadInvoker, IThreadProcess, IThreadProc
   final List<IThreadCommunication> _listFreeAnonymousCommunicators = [];
 
   final _newThreadsSynchronizer = Semaphore();
+  final _newBackgroudThreadsSynchronizer = Semaphore();
 
   Future<IThreadCommunication> createEntitysManagerAccordingImplementation<T>({required T item, required List<IThreadInitializer> initializers});
 
@@ -59,6 +60,15 @@ mixin TemplateThreadProcessServer on IThreadInvoker, IThreadProcess, IThreadProc
       },
     );
 
+    /**
+     * 
+     * ESTÁ IMPLEMENTACION TIENE FALLAS SI EL STREAM SE CANCELA
+     * MANEJAR MEJOR LOS SISTEMAS DE CANCELACIONS
+     * QUE LOS DOS HILOS SE NOTIFIQUEN MUTUAMENTE
+     * USAR STREAMCONTROLLER EN VEZ DE STREAM
+     * 
+     */
+
     return stream.doOnDone(() {
       _listOccupiedAnonymousCommunicators.remove(thread);
       _listFreeAnonymousCommunicators.add(thread);
@@ -75,6 +85,7 @@ mixin TemplateThreadProcessServer on IThreadInvoker, IThreadProcess, IThreadProc
 
   @override
   Future<void> mountEntity<T>({required T entity, bool ifExistsOmit = true}) async {
+    checkProgrammingFailure(thatChecks: () => 'The entity type is not dynamic (T != dynamic)', result: () => T != dynamic);
     final existing = mapConnectionsEntity[T];
 
     if (existing != null) {
@@ -88,7 +99,7 @@ mixin TemplateThreadProcessServer on IThreadInvoker, IThreadProcess, IThreadProc
       }
     }
 
-    await createEntitysManager<T>(item: entity, initializers: [], checkIfExists: false);
+    await createEntitysManager<T>(item: entity, initializers: threadInitializer, checkIfExists: false);
   }
 
   @override
@@ -142,14 +153,17 @@ mixin TemplateThreadProcessServer on IThreadInvoker, IThreadProcess, IThreadProc
     return function(parameters);
   }
 
-  Future<IThreadCommunication> _reserveBackgroundThread() async {
+  Future<IThreadCommunication> _reserveBackgroundThread() => _newBackgroudThreadsSynchronizer.execute(function: _reserveBackgroundThreadSecured);
+
+  Future<IThreadCommunication> _reserveBackgroundThreadSecured() async {
     if (_listFreeAnonymousCommunicators.isNotEmpty) {
       final free = _listFreeAnonymousCommunicators.removeAt(0);
       _listOccupiedAnonymousCommunicators.add(free);
       return free;
     }
 
-    final newThread = await createAnonymousThread(name: 'Background Thread #${listAnonymousCommunicatios.length + 1}', initializers: backgroundThreadInitializer);
+    final newThread = await createAnonymousThread(name: 'Background Thread #${listAnonymousBackgroundCommunicatios.length + 1}', initializers: threadInitializer);
+    listAnonymousCommunicatios.add(newThread);
     listAnonymousBackgroundCommunicatios.add(newThread);
     _listOccupiedAnonymousCommunicators.add(newThread);
     return newThread;

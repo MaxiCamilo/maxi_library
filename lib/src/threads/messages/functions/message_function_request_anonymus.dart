@@ -12,11 +12,13 @@ class MessageFunctionRequestAnonymus<R> with IThreadMessage {
   @override
   Future<void> openMessage({required ContextProcessThreadMessages context}) {
     if (context.managerThisThread is IThreadProcessServer) {
-      throw UnimplementedError('[MAXI] ¡Hey, this is beguin used!');
-      //THIS MUST RETURN the new ID of the task
-      //return context.managerThisThread.callFunctionAsAnonymous(function: function, parameters: parameters);
+      return context.communicator.executorRequestFunction.executeRequestedFunction(parameters: parameters, function: _executeWithServer);
     } else {
       return context.communicator.executorRequestFunction.executeRequestedFunction(parameters: parameters, function: function);
     }
+  }
+
+  Future<R> _executeWithServer(InvocationParameters parameters) {
+    return ThreadManager.callFunctionAsAnonymous(function: function, parameters: parameters);
   }
 }

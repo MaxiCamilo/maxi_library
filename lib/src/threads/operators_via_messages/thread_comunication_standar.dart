@@ -40,6 +40,8 @@ class ThreadComunicationStandar with IThreadCommunication, IAbilityProcessMessag
     executorRequestStream = ExecutorRequestThreadStreamStandar(manager: managerThisTread, sender: port.sender);
     requestManager = ThreadRequestManagerStandar(manager: managerThisTread, sender: port.sender);
     streamManager = ThreadStreamManagerStandar(manager: managerThisTread, sender: port.sender);
+
+    port.receiver.receivedMessage.listen(processMessage);
   }
 
   @override

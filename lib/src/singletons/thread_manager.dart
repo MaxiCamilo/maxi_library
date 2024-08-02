@@ -5,14 +5,16 @@ import 'package:maxi_library/src/threads/interfaces/ithread_process.dart';
 
 mixin ThreadManager {
   static IThreadInvoker? _instance;
-  static IThreadManagersFactory generalFactory = ThreadManagersFactoryIsolator();
+  static IThreadManagersFactory generalFactory = const ThreadManagersFactoryIsolator();
+
+  static List<IThreadInitializer> threadInitializers = const [];
 
   static IThreadInvoker get instance {
     if (_instance != null) {
       return _instance!;
     }
 
-    _instance = generalFactory.createServer();
+    _instance = generalFactory.createServer(threadInitializer: threadInitializers);
 
     return _instance!;
   }
