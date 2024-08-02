@@ -27,7 +27,7 @@ Future<String> _greetUser(InvocationParameters parameters) async {
 
 Stream<String> _makeTexts() async* {
   int i = 1;
-  while (i <= 10) {
+  while (i <= 5) {
     await Future.delayed(Duration(seconds: 1));
     log('In thread, send $i');
 

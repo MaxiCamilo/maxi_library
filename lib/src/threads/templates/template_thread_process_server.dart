@@ -60,18 +60,16 @@ mixin TemplateThreadProcessServer on IThreadInvoker, IThreadProcess, IThreadProc
       },
     );
 
-    /**
-     * 
-     * ESTÁ IMPLEMENTACION TIENE FALLAS SI EL STREAM SE CANCELA
-     * MANEJAR MEJOR LOS SISTEMAS DE CANCELACIONS
-     * QUE LOS DOS HILOS SE NOTIFIQUEN MUTUAMENTE
-     * USAR STREAMCONTROLLER EN VEZ DE STREAM
-     * 
-     */
-
     return stream.doOnDone(() {
       _listOccupiedAnonymousCommunicators.remove(thread);
-      _listFreeAnonymousCommunicators.add(thread);
+      if (!_listFreeAnonymousCommunicators.contains(thread)) {
+        _listFreeAnonymousCommunicators.add(thread);
+      }
+    }).doOnCancel(() {
+      _listOccupiedAnonymousCommunicators.remove(thread);
+      if (!_listFreeAnonymousCommunicators.contains(thread)) {
+        _listFreeAnonymousCommunicators.add(thread);
+      }
     });
   }
 
