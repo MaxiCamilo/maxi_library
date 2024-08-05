@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:developer';
 
 import 'package:maxi_library/maxi_library.dart';
 import 'package:maxi_library/src/threads/interfaces/ithread_communication.dart';

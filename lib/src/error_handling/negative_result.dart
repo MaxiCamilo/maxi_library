@@ -3,10 +3,10 @@ import 'dart:developer';
 import 'error_codes.dart';
 
 class NegativeResult implements Exception {
-  final NegativeResultCodes identifier;
-  final String message;
-  final DateTime whenWas;
-  final dynamic cause;
+  NegativeResultCodes identifier;
+  String message;
+  DateTime whenWas;
+  dynamic cause;
 
   NegativeResult({
     required this.identifier,

@@ -13,6 +13,16 @@ extension IteratorExtension<T> on Iterable<T> {
     return va;
   }
 
+  T? selectItem(bool Function(T x) funcion) {
+    for (final item in this) {
+      if (funcion(item)) {
+        return item;
+      }
+    }
+
+    return null;
+  }
+
   T maximumOf(num Function(T x) funcion) {
     return reduce((curr, next) => funcion(curr) > funcion(next) ? curr : next);
   }
@@ -123,6 +133,4 @@ extension IteratorExtension<T> on Iterable<T> {
       i += 1;
     }
   }
-
-  
 }

@@ -118,13 +118,35 @@ void main() {
     });
 
     test('Mounth Service', () async {
+      try {
+        await ThreadManager.mountEntity(entity: FirstService(isMustFail: true));
+      } catch (ex) {
+        log(ex.toString());
+      }
+
       await ThreadManager.mountEntity(entity: FirstService(isMustFail: false));
+
       final text = await ThreadManager.callEntityFunction<FirstService, String>(function: (x, _) => x.passSomeText());
 
       log('The service sent "$text"');
 
       final number = await ThreadManager.callEntityFunction<FirstService, int>(function: (x, _) => x.passSomeNumber());
       log('The service sent a number "$number"');
+    });
+
+    test('Using Stream in the entities', () async {
+      await ThreadManager.mountEntity(entity: FirstService(isMustFail: false));
+
+      final stream = await ThreadManager.callEntityStream<FirstService, String>(function: (x, p) async => x.generateSomeText(amount: 15, waitingSeconds: 3));
+
+      stream.listen(
+        (x) => log('The stream of the entity sent "$x"'),
+        onDone: () => log('The stream closed'),
+      );
+
+      await stream.waitFinish();
+
+      log('I am done');
     });
   });
 }

@@ -31,4 +31,15 @@ class FirstService with StartableFunctionality, ThreadService {
     await Future.delayed(Duration(seconds: 5));
     return math.Random().nextInt(99999) + 1;
   }
+
+  Stream<String> generateSomeText({required int amount, required int waitingSeconds}) async* {
+    for (int i = 1; i < amount; i++) {
+      final text = 'Going by number $i';
+      log('Going to send N° $i = "$text"');
+      yield text;
+      await Future.delayed(Duration(seconds: waitingSeconds));
+    }
+
+    log('Ended the stream');
+  }
 }

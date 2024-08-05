@@ -79,6 +79,26 @@ Future<T?> containErrorLogAsync<T>({
   );
 }
 
+T addToErrorDescription<T>({
+  required String Function() additionalDetails,
+  required T Function() function,
+  bool before = true,
+  NegativeResultCodes ifIsUnknownError = NegativeResultCodes.implementationFailure,
+}) {
+  try {
+    return function();
+  } on NegativeResult catch (nr) {
+    nr.message = before ? '${additionalDetails()}${nr.message}' : '${nr.message}${additionalDetails()}';
+    rethrow;
+  } catch (ex) {
+    throw NegativeResult(
+      identifier: ifIsUnknownError,
+      message: '${additionalDetails()}: "$ex"',
+      cause: ex,
+    );
+  }
+}
+
 T volatile<T>({
   required String Function() detail,
   required T Function() function,
@@ -231,5 +251,52 @@ void checkProgrammingFailure<T>({
       identifier: NegativeResultCodes.implementationFailure,
       message: '${tr('The checker ')} "$thatChecks" ${tr(' tested negative')}',
     );
+  }
+}
+
+T volatileProperty<T>({
+  required String Function() propertyName,
+  required T Function() function,
+  void Function(NegativeResultProperty)? ifFails,
+  void Function(dynamic)? ifUnknownFails,
+  void Function(dynamic)? ifFailsAnyway,
+  NegativeResultProperty Function(String, dynamic)? errorFactory,
+}) {
+  try {
+    return function();
+  } on NegativeResult catch (nr) {
+    final rnp = NegativeResultProperty.fromNegativeResult(propertyName: propertyName(), nr: nr);
+    if (ifFails != null) {
+      containError(function: () => ifFails(rnp));
+    }
+    if (ifFailsAnyway != null) {
+      containError(function: () => ifFailsAnyway(rnp));
+    }
+    throw rnp;
+  } catch (ex) {
+    late final NegativeResultProperty rnp;
+    if (errorFactory == null) {
+      rnp = NegativeResultProperty(
+        propertyName: propertyName(),
+        message: '${tr('An error occurred while executing the functionality in the property ')} "${propertyName()}", the error was: $ex',
+        cause: ex,
+      );
+    } else {
+      rnp = errorFactory(propertyName(), ex);
+    }
+
+    if (ifFails != null) {
+      containError(function: () => ifFails(rnp));
+    }
+
+    if (ifUnknownFails != null) {
+      containError(function: () => ifUnknownFails(ex));
+    }
+
+    if (ifFailsAnyway != null) {
+      containError(function: () => ifFailsAnyway(rnp));
+    }
+
+    throw rnp;
   }
 }
