@@ -15,7 +15,7 @@ mixin IThreadProcessEntity<T> on IThreadInvoker, IThreadProcess, IThreadProcessC
       } else {
         throw NegativeResult(
           identifier: NegativeResultCodes.implementationFailure,
-          message: '${tr('the thread handles the type ')} ${process.typeManager} ${tr(', but the type ')} $T ${tr(' is requested')}',
+          message: trc('the thread handles the type %1, but the type %2 is requested', [process.typeManager, T]),
         );
       }
     }

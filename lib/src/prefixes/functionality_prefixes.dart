@@ -34,13 +34,13 @@ T? containErrorLog<T>({
   return containError(
     function: function,
     ifFails: (x) {
-      log('[X] ${tr('Negative response was contained in ')} "$detail": ${x.toString()}');
+      log(trc('[X] Negative response was contained in "%1": %2', [detail, x]));
       if (ifFails != null) {
         ifFails(detail, x);
       }
     },
     ifUnknownFails: (x) {
-      log('[¡X!] ${tr('Failure contained in')} "$detail": $x');
+      log(trc('[¡X!] Failure contained in: "%1": %2', [detail, x]));
 
       if (ifUnknownFails != null) {
         ifUnknownFails(detail, x);
@@ -74,8 +74,8 @@ Future<T?> containErrorLogAsync<T>({
 }) {
   return containErrorAsync(
     function: function,
-    ifFails: (x) => log('[X] ${tr('Negative response contained in')} "${detail()}": ${x.toString()}'),
-    ifUnknownFails: (x) => log('[¡X!] ${tr('failure contained in')} "${detail()}": $x'),
+    ifFails: (x) => log(trc('[X] Negative response contained in "%1": "%2"', [detail(), x])),
+    ifUnknownFails: (x) => log(trc('[¡X!] Failure contained in "%1": "%2"', [detail(), x])),
   );
 }
 
@@ -122,7 +122,7 @@ T volatile<T>({
     if (errorFactory == null) {
       rn = NegativeResult(
         identifier: NegativeResultCodes.nonStandardError,
-        message: '${tr('An error occurred while executing the functionality')} "${detail()}", the error was: $ex',
+        message: trc('An error occurred while executing the functionality "%1", the error was: %2', [detail(), ex]),
         cause: ex,
       );
     } else {
@@ -182,7 +182,7 @@ Future<T> volatileAsync<T>({
     if (errorFactory == null) {
       rn = NegativeResult(
         identifier: NegativeResultCodes.nonStandardError,
-        message: '${tr('An error occurred while executing the functionality')} "${detail()}", the error was: $ex',
+        message: trc('An error occurred while executing the functionality "%1", the error was: %2', [detail(), ex]),
       );
     } else {
       rn = errorFactory(ex);
@@ -242,14 +242,14 @@ void checkProgrammingFailure<T>({
   required bool Function() result,
 }) {
   final resultFunction = programmingFailure(
-    reasonFailure: () => '$thatChecks ${tr('fired an error')}',
+    reasonFailure: () => trc('%1 fired an error', [thatChecks]),
     function: result,
   );
 
   if (!resultFunction) {
     throw NegativeResult(
       identifier: NegativeResultCodes.implementationFailure,
-      message: '${tr('The checker ')} "$thatChecks" ${tr(' tested negative')}',
+      message: trc('The checker "%1" tested negative', [thatChecks]),
     );
   }
 }
@@ -278,7 +278,7 @@ T volatileProperty<T>({
     if (errorFactory == null) {
       rnp = NegativeResultProperty(
         propertyName: propertyName(),
-        message: '${tr('An error occurred while executing the functionality in the property ')} "${propertyName()}", the error was: $ex',
+        message: trc('An error occurred while executing the functionality in the property %1, the error was: %2', [propertyName(), ex]),
         cause: ex,
       );
     } else {

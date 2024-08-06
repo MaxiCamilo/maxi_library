@@ -18,9 +18,10 @@ mixin ConverterUtilities {
         return 0;
       }
       return volatile(
-        detail: ()=>'',
+        detail: () => '',
         function: () => int.parse(value),
-        errorFactory: (x) => NegativeResult(identifier: NegativeResultCodes.incorrectFormat, message: '${tr('The property')} $propertyName ${tr('must be an integer number, but non-numeric values ​​were found in the text')}', cause: x),
+        errorFactory: (x) =>
+            NegativeResult(identifier: NegativeResultCodes.incorrectFormat, message: '${tr('The property')} $propertyName ${tr('must be an integer number, but non-numeric values ​​were found in the text')}', cause: x),
       );
     } else if (value is bool) {
       return value ? 1 : 0;
@@ -31,7 +32,7 @@ mixin ConverterUtilities {
     } else {
       throw NegativeResult(
         identifier: NegativeResultCodes.incorrectFormat,
-        message: propertyName.isNotEmpty ? '${tr('The property')} $propertyName ${tr('has an unknown value, an integer number is expected')}' : tr('Cannot transform value to integer number'),
+        message: propertyName.isNotEmpty ? trc('The property %1 has an unknown value, an integer number is expected', [propertyName]) : tr('Cannot transform value to integer number'),
       );
     }
   }
@@ -51,11 +52,11 @@ mixin ConverterUtilities {
         return 0;
       }
       return volatile(
-        detail: ()=>'',
+        detail: () => '',
         function: () => double.parse(value),
         errorFactory: (x) => NegativeResult(
           identifier: NegativeResultCodes.incorrectFormat,
-          message: '${tr('The property')} $propertyName ${tr('must be an decimal number, but non-numeric values ​​were found in the text')}',
+          message: trc('The property %1 must be an decimal number, but non-numeric values ​​were found in the text', [propertyName]),
           cause: x,
         ),
       );
@@ -68,7 +69,7 @@ mixin ConverterUtilities {
     } else {
       throw NegativeResult(
         identifier: NegativeResultCodes.incorrectFormat,
-        message: propertyName.isNotEmpty ? '${tr('The property')} $propertyName ${tr('has an unknown value, an double number is expected')}' : tr('Cannot transform value to integer number'),
+        message: propertyName.isNotEmpty ? trc('The property %1 has an unknown value, an double number is expected', [propertyName]) : tr('Cannot transform value to integer number'),
       );
     }
   }
@@ -77,7 +78,7 @@ mixin ConverterUtilities {
     if (value == null) {
       throw NegativeResult(
         identifier: NegativeResultCodes.nullValue,
-        message: '${tr('A null value cannot be interpreted as a boolean in the property ')} $propertyName',
+        message: trc('A null value cannot be interpreted as a boolean in the property ', [propertyName]),
       );
     } else if (value is bool) {
       return value;
@@ -98,11 +99,11 @@ mixin ConverterUtilities {
         'n' => false,
         _ => throw NegativeResult(
             identifier: NegativeResultCodes.incorrectFormat,
-            message: '${tr('The property ')} $propertyName ${tr(' does not have a valid text to be transformed into a boolean option')}',
+            message: trc('The property %1 does not have a valid text to be transformed into a boolean option', [propertyName]),
           )
       };
     } else {
-      throw NegativeResult(identifier: NegativeResultCodes.wrongType, message: '${tr('The property ')} $propertyName ${tr(' only accepts boolean values ​​or equivalent')}');
+      throw NegativeResult(identifier: NegativeResultCodes.wrongType, message: trc('The property %1 only accepts boolean values ​​or equivalent', [propertyName]));
     }
   }
 
@@ -128,7 +129,7 @@ mixin ConverterUtilities {
       }
       throw NegativeResult(
         identifier: NegativeResultCodes.invalidValue,
-        message: propertyName.isNotEmpty ? '${tr('The property ')} $propertyName ${tr(' does not have the ')} "$value" ${tr('option')}' : '${tr('Value does not have the ')} "$value" ${tr('option')}',
+        message: propertyName.isNotEmpty ? trc('The property %1 does not have the "%2" option', [propertyName, value]) : trc('Value does not have the "%1" option', [value]),
       );
     } else if (value is num) {
       for (final item in optionsList) {
@@ -138,7 +139,7 @@ mixin ConverterUtilities {
       }
       throw NegativeResult(
         identifier: NegativeResultCodes.invalidValue,
-        message: propertyName.isNotEmpty ? '${tr('The property ')} $propertyName ${tr(' does not have the N° ')} "$value" ${tr('option')}' : '${tr('Value does not have the N° ')} "$value" ${tr('option')}',
+        message: propertyName.isNotEmpty ? trc('The property %1 does not have the N° %2 option', [propertyName, value]) : '${tr('Value does not have the N° ')} "$value" ${tr('option')}',
       );
     } else if (value is Enum) {
       if (optionsList.any((element) => value == element)) {
@@ -146,13 +147,14 @@ mixin ConverterUtilities {
       } else {
         throw NegativeResult(
           identifier: NegativeResultCodes.wrongType,
-          message: propertyName.isNotEmpty ? '${tr('The property ')} $propertyName ${tr(' only accepts the type "thing", not thing"')} "$value" ${tr('option')}' : '${tr('Value does not have the N° ')} "$value" ${tr('option')}',
+          message: propertyName.isNotEmpty ? trc('The property %1 only accepts the type "Enum", not thing "%2" option', [propertyName, value]) : trc('Value does not have the N° "%1" option', [value]),
         );
       }
     } else {
       throw NegativeResult(
         identifier: NegativeResultCodes.wrongType,
-        message: propertyName.isNotEmpty ? '${tr('The property ')} $propertyName ${tr(' only accepts the type enumerator, not ')} "${value.runtimeType}"' : '${tr('The value only accepts the type enumerator, not')} "${value.runtimeType}"',
+        message:
+            propertyName.isNotEmpty ? trc('The property %1 only accepts the type enumerator, not %2', [propertyName, value.runtimeType]) : trc('The value only accepts the type enumerator, not "%1"', [value.runtimeType]),
       );
     }
   }
@@ -165,7 +167,7 @@ mixin ConverterUtilities {
     if (value == null) {
       throw NegativeResult(
         identifier: NegativeResultCodes.nullValue,
-        message: '${tr('A null value cannot be interpreted as a boolean in the property ')} $propertyName',
+        message: trc('A null value cannot be interpreted as a boolean in the property %1', [propertyName]),
       );
     } else if (value is DateTime) {
       if (value.isUtc && isLocal) {
@@ -176,7 +178,7 @@ mixin ConverterUtilities {
       return value;
     } else if (value is num) {
       return volatile(
-        detail: ()=>'${tr('The property ')} $propertyName ${tr(' does not have a valid number to be adapted to date')}',
+        detail: () => trc('The property %1 does not have a valid number to be adapted to date', [propertyName]),
         function: () => DateTime.fromMillisecondsSinceEpoch(value.toInt(), isUtc: !isLocal),
       );
     } else if (value is String) {
@@ -185,14 +187,15 @@ mixin ConverterUtilities {
       } catch (ex) {
         throw NegativeResult(
           identifier: NegativeResultCodes.invalidValue,
-          message: propertyName.isNotEmpty ? '${tr('The property ')} $propertyName ${tr(' does not have a valid textuan format to be adapted to date')}' : tr('The value does not have a valid textan format to be adapted to date'),
+          message: propertyName.isNotEmpty ? trc('The property %1 does not have a valid textuan format to be adapted to date', [propertyName]) : tr('The value does not have a valid textan format to be adapted to date'),
         );
       }
     } else {
       throw NegativeResult(
         identifier: NegativeResultCodes.wrongType,
-        message:
-            propertyName.isNotEmpty ? '${tr('The property ')} $propertyName ${tr(' only accepts the type date or equivalent, not ')} "${value.runtimeType}"' : '${tr('The value only accepts the type date or equivalent, not')} "${value.runtimeType}"',
+        message: propertyName.isNotEmpty
+            ? trc('The property %1 only accepts the type date or equivalent, not %2', [propertyName, value.runtimeType])
+            : trc('The value only accepts the type date or equivalent, not %1', [value.runtimeType]),
       );
     }
   }

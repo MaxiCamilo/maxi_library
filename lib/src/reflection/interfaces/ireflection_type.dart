@@ -3,6 +3,8 @@ mixin IReflectionType {
 
   Type get type;
 
+  String get name;
+
   bool isCompatible(dynamic item);
 
   bool isTypeCompatible(Type type);

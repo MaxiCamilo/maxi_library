@@ -114,7 +114,7 @@ class ChannelIsolates {
       } else {
         throw NegativeResult(
           identifier: NegativeResultCodes.implementationFailure,
-          message: '${tr('It was expected that the isolator would return a "Sendport", but it returned a ')} ${sender.runtimeType}',
+          message: trc('It was expected that the isolator would return a "Sendport", but it returned a %1', [sender.runtimeType]),
         );
       }
     } catch (_) {

@@ -91,7 +91,7 @@ mixin TemplateThreadProcessServer on IThreadInvoker, IThreadProcess, IThreadProc
       } else {
         throw NegativeResult(
           identifier: NegativeResultCodes.invalidFunctionality,
-          message: '${tr('The entity ')} $T ${tr(' was mounted previously')}',
+          message: trc('The entity %1 was mounted previously', [T]),
         );
       }
     }
@@ -106,7 +106,7 @@ mixin TemplateThreadProcessServer on IThreadInvoker, IThreadProcess, IThreadProc
       if (existing != null) {
         throw NegativeResult(
           identifier: NegativeResultCodes.invalidFunctionality,
-          message: '${tr('The entity ')} $T ${tr(' was created previously. There cannot be two entities of the same type mounted.')}',
+          message: trc('The entity %1 was created previously. There cannot be two entities of the same type mounted.', [T]),
         );
       }
     }
@@ -141,7 +141,7 @@ mixin TemplateThreadProcessServer on IThreadInvoker, IThreadProcess, IThreadProc
 
     throw NegativeResult(
       identifier: NegativeResultCodes.contextInvalidFunctionality,
-      message: '${tr('The entity ')} $T ${tr(' was not mounted previously.')}',
+      message: trc('The entity %1 was not mounted previously.', [T]),
     );
   }
 

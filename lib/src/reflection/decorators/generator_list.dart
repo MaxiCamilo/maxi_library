@@ -11,6 +11,9 @@ class GeneratorList<T> with IReflectionType {
   Type get type => List<T>;
 
   @override
+  String get name => 'List<$T>';
+
+  @override
   bool isCompatible(item) {
     return item is Iterable;
   }

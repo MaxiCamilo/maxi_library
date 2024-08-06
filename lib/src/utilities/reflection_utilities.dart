@@ -1,5 +1,4 @@
 import 'package:maxi_library/maxi_library.dart';
-import 'package:maxi_library/src/utilities.dart';
 
 enum PrimitiesType { isInt, isDouble, isNum, isString, isBoolean, isDateTime }
 

@@ -1,7 +1,7 @@
 import 'package:maxi_library/maxi_library.dart';
 import 'package:maxi_library/src/reflection/interfaces/ireflection_type.dart';
 
-class EnumeratorReflector with IReflectionType {
+class TypeEnumeratorReflector with IReflectionType {
   final List<Enum> optionsList;
 
   @override
@@ -10,7 +10,10 @@ class EnumeratorReflector with IReflectionType {
   @override
   final Type type;
 
-  const EnumeratorReflector({required this.optionsList, required this.annotations, required this.type});
+  @override
+  final String name;
+
+  const TypeEnumeratorReflector({required this.optionsList, required this.annotations, required this.type, required this.name});
 
   @override
   cloneObject(originalItem) {
@@ -60,7 +63,7 @@ class EnumeratorReflector with IReflectionType {
 
     throw NegativeResult(
       identifier: NegativeResultCodes.invalidValue,
-      message: '${tr('The value of type  "')}${item.runtimeType}${tr('" is not a valid option for the enumerator "')}$type"',
+      message: trc('The value of type  "%1" is not a valid option for the enumerator "%2"', [item.runtimeType, type]),
     );
   }
 
@@ -70,7 +73,7 @@ class EnumeratorReflector with IReflectionType {
     if (number >= optionsList.length) {
       throw NegativeResult(
         identifier: NegativeResultCodes.invalidValue,
-        message: '${tr('The numeric value exceeds the available options ("Only')} ${optionsList.length} ${tr('options are available, starting from 0)')}',
+        message: trc('The numeric value exceeds the available options ("Only %1 options are available, starting from 0)', [optionsList.length]),
       );
     }
 
@@ -88,10 +91,7 @@ class EnumeratorReflector with IReflectionType {
     if (selectedItem != null) {
       return selectedItem;
     } else {
-      throw NegativeResult(
-        identifier: NegativeResultCodes.invalidValue,
-        message: '${tr('The option named "')}$text${tr('" cannot be found')}',
-      );
+      throw NegativeResult(identifier: NegativeResultCodes.invalidValue, message: trc('The option named "%1" cannot be found', [text]));
     }
   }
 }
