@@ -1,29 +1,51 @@
 import 'package:maxi_library/maxi_library.dart';
-import 'package:maxi_library/src/reflection/types/type_enumerator_reflector.dart';
+import 'package:maxi_library/src/reflection/standard/type_entity_reflector.dart';
+import 'package:maxi_library/src/threads/interfaces/ithread_communication_method.dart';
 import 'package:reflectable/reflectable.dart';
 
-mixin InitializeClassReflector {
+abstract class InstancesReflection with IThreadInitializer {
   List<void Function()> get initializeReflectableFunctions;
 
   List<Reflectable> get instances;
 
+  bool get includeInGeneratedThreads => true;
+
+  const InstancesReflection();
+
   void initializeReflectable() {
+    if (ReflectionManager.isInitialized) {
+      return;
+    }
+
     try {
       instances.first.annotatedClasses;
       return;
     } catch (_) {
-      initializeReflectableFunctions.map((x) => containErrorLog(detail: 'Reflector initialized failed', function: x));
+      for (final item in initializeReflectableFunctions) {
+        containErrorLog(detail: 'Reflector initialized failed', function: () => item());
+      }
     }
 
     for (final instance in instances) {
-      instance.annotatedClasses.map((x) => addMirror(instance, x));
+      for (var x in instance.annotatedClasses) {
+        addMirror(instance, x);
+      }
     }
+
+    if (includeInGeneratedThreads) {
+      ThreadManager.threadInitializers.add(this);
+    }
+
+    ReflectionManager.isInitialized = true;
   }
 
   void addMirror(Reflectable instance, ClassMirror mirror) {
     if (mirror.isEnum) {
       final enumAdapter = generateEnum(mirror);
       ReflectionManager.instance.enumerators.add(enumAdapter);
+    } else {
+      final classAdapter = TypeEntityReflector(reflectable: instance, classMirror: mirror);
+      ReflectionManager.instance.entities.add(classAdapter);
     }
   }
 
@@ -43,5 +65,10 @@ mixin InitializeClassReflector {
       optionsList: optionsList,
       type: mirror.dynamicReflectedType,
     );
+  }
+
+  @override
+  Future<void> performInitialization(IThreadCommunicationMethod channel) async {
+    initializeReflectable();
   }
 }

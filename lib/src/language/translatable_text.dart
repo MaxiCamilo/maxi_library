@@ -2,7 +2,7 @@ class TranslatableText {
   final String text;
   final int pointerPosition;
 
-  const TranslatableText(this.text, {this.pointerPosition = 0});
+  const TranslatableText(this.text, {this.pointerPosition = 1});
 
   TranslatableText replace({required int position, required String newText}) {
     final generatedText = text.replaceAll('%$position', newText);

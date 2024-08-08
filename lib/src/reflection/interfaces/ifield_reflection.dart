@@ -1,16 +1,14 @@
-import 'package:maxi_library/src/reflection/interfaces/ireflection_type.dart';
+import 'package:maxi_library/maxi_library.dart';
+import 'package:maxi_library/src/reflection/interfaces/igetter_reflector.dart';
+import 'package:maxi_library/src/reflection/interfaces/isetter_reflector.dart';
 
-mixin IFieldReflection {
-  List get annotations;
-
-  String get name;
-  IReflectionType get fieldType;
-  bool get isStatic;
+mixin IFieldReflection on IDeclarationReflector, IGetterReflector, ISetterReflector {
   bool get onlyRead;
 
-  dynamic getValue({required dynamic instance});
+  bool get isRequired;
 
-  void setValue({required dynamic instance, required dynamic newValue});
-
-
+  NegativeResult? checkValueIsCorrect({required instance}) {
+    final value = getValue(instance: instance);
+    return verifyValue(value: value);
+  }
 }

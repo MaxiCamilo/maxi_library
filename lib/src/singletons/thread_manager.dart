@@ -7,7 +7,7 @@ mixin ThreadManager {
   static IThreadInvoker? _instance;
   static IThreadManagersFactory generalFactory = const ThreadManagersFactoryIsolator();
 
-  static List<IThreadInitializer> threadInitializers = const [];
+  static List<IThreadInitializer> threadInitializers = [];
 
   static IThreadInvoker get instance {
     if (_instance != null) {

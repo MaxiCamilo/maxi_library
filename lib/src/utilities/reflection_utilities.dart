@@ -26,16 +26,7 @@ mixin ReflectionUtilities {
       const (double) => (item as double) * 1,
       const (bool) => (item as bool) ? true : false,
       const (num) => (item as num) * 1,
-      const (DateTime) => DateTime(
-          (item as DateTime).year,
-          item.month,
-          item.day,
-          item.hour,
-          item.minute,
-          item.second,
-          item.millisecond,
-          item.microsecond,
-        ),
+      const (DateTime) => (item as DateTime).add(Duration(milliseconds: 0)),
       _ => throw NegativeResult(identifier: NegativeResultCodes.wrongType, message: 'The value is not a primitive value type ("${item.runtimeType}")')
     };
   }
@@ -52,7 +43,7 @@ mixin ReflectionUtilities {
   }
 
   static dynamic convertSpecificPrimitive({required PrimitiesType type, required dynamic value}) {
-    cautious(reasonFailure: () => tr('Null values are not accepted'), function: value!);
+    cautious(reasonFailure: () => tr('Null values are not accepted'), function: () => value!);
     return switch (type) {
       PrimitiesType.isInt => ConverterUtilities.toInt(value: value),
       PrimitiesType.isDouble => ConverterUtilities.toDouble(value: value),

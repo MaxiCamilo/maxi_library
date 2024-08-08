@@ -1,13 +1,8 @@
 import 'package:maxi_library/src/reflection/implementatios/fixed_parameter.dart';
 import 'package:maxi_library/src/reflection/implementatios/named_parameter.dart';
-import 'package:maxi_library/src/reflection/interfaces/ireflection_type.dart';
+import 'package:maxi_library/src/reflection/interfaces/ideclaration_reflector.dart';
 
-mixin IMethodReflection {
-  List get annotations;
-
-  String get name;
-  IReflectionType get returnType;
-  bool get isStatic;
+mixin IMethodReflection on IDeclarationReflector {
   bool get isConstructor;
 
   List<FixedParameter> get fixedParametes;

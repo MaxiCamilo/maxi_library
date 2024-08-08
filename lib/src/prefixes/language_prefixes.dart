@@ -7,7 +7,7 @@ String tr(String part) {
 String trc(String text, List parts) {
   TranslatableText translatedText = TranslatableText(text);
   for (final part in parts) {
-    translatedText = translatedText.append(part);
+    translatedText = translatedText.append(part.toString());
   }
 
   return translatedText.text;

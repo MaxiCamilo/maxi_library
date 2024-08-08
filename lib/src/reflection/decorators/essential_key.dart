@@ -1,0 +1,3 @@
+class EssentialKey {
+  const EssentialKey();
+}

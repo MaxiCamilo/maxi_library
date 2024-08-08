@@ -1,5 +1,5 @@
 import 'package:maxi_library/maxi_library.dart';
-import 'package:maxi_library/src/reflection/interfaces/ireflection_type.dart';
+
 
 class TypeUnknownReflection with IReflectionType {
   @override
@@ -42,4 +42,7 @@ class TypeUnknownReflection with IReflectionType {
   serializeToMap(item) {
     throw NegativeResult(identifier: NegativeResultCodes.implementationFailure, message: trc('It is not safe to assign an object of type %1, as it is an unknown and unreflected type', [type]));
   }
+
+  @override
+  String toString() => 'Unknown type';
 }

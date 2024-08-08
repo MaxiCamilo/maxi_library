@@ -1,5 +1,4 @@
 import 'package:maxi_library/maxi_library.dart';
-import 'package:maxi_library/src/reflection/interfaces/ireflection_type.dart';
 
 class TypePrimitiveReflection with IReflectionType {
   @override
@@ -7,7 +6,7 @@ class TypePrimitiveReflection with IReflectionType {
 
   @override
   final Type type;
-  
+
   late final PrimitiesType primitiveType;
 
   @override
@@ -24,7 +23,11 @@ class TypePrimitiveReflection with IReflectionType {
 
   @override
   convertObject(originalItem) {
-    return ReflectionUtilities.primitiveClone(originalItem);
+    if (originalItem.runtimeType == type) {
+      return cloneObject(originalItem);
+    } else {
+      return ReflectionUtilities.convertSpecificPrimitive(type: primitiveType, value: originalItem);
+    }
   }
 
   @override
@@ -34,7 +37,7 @@ class TypePrimitiveReflection with IReflectionType {
 
   @override
   bool isCompatible(item) {
-    return ReflectionUtilities.isPrimitive(item.runtimeType) != null;
+    return item.runtimeType == type;
   }
 
   @override
@@ -46,4 +49,7 @@ class TypePrimitiveReflection with IReflectionType {
   serializeToMap(item) {
     return ReflectionUtilities.primitiveClone(item);
   }
+
+  @override
+  String toString() => 'Primitive type ($primitiveType)';
 }

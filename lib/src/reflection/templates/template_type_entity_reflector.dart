@@ -1,10 +1,14 @@
 import 'package:maxi_library/maxi_library.dart';
+import 'package:maxi_library/src/reflection/abilitys/abylity_entity_framework.dart';
+import 'package:maxi_library/src/reflection/interfaces/ientity_framework.dart';
 import 'package:maxi_library/src/reflection/interfaces/ifield_reflection.dart';
-import 'package:maxi_library/src/reflection/interfaces/ireflection_type.dart';
-import 'package:maxi_library/src/reflection/interfaces/itype_entity_reflection.dart';
-import 'package:maxi_library/src/reflection/types/type_unknown_reflection.dart';
+import 'package:maxi_library/src/reflection/interfaces/igetter_reflector.dart';
+import 'package:maxi_library/src/reflection/interfaces/isetter_reflector.dart';
+import 'package:maxi_library/src/reflection/interfaces/itype_class_reflection.dart';
 
-abstract class TemplateTypeEntityReflector with IReflectionType, ITypeEntityReflection {
+import 'package:meta/meta.dart';
+
+abstract class TemplateTypeEntityReflector with IReflectionType, IDeclarationReflector, ITypeClassReflection, IEntityFramework, AbylityEntityFramework, ITypeEntityReflection {
   @override
   final List annotations;
 
@@ -14,35 +18,78 @@ abstract class TemplateTypeEntityReflector with IReflectionType, ITypeEntityRefl
   @override
   final String name;
 
+  @override
+  late final String formalName;
+
+  @override
+  late final List<ValueValidator> validatos;
+
+  late final ClassBuilderReflection? customBuilder;
+  late final CustomSerialization? custorSerialization;
+
   bool _initialized = false;
 
-  TemplateTypeEntityReflector({required this.annotations, required this.type, required this.name});
+  TemplateTypeEntityReflector({required this.annotations, required this.type, required this.name}) {
+    validatos = annotations.whereType<ValueValidator>().toList();
+
+    customBuilder = annotations.selectByType<ClassBuilderReflection>();
+    custorSerialization = annotations.selectByType<CustomSerialization>();
+
+    formalName = FormalName.searchFormalName(realName: name, annotations: annotations);
+  }
 
   late final List<IFieldReflection> modificableFields;
 
+  late final List<IGetterReflector> propertys;
+  late final List<ISetterReflector> modificablePropertys;
+
+  @override
+  IReflectionType get reflectedType {
+    initialized();
+    return this;
+  }
+
+  @protected
   void initializeReflector();
 
+  @protected
   dynamic buildEntityWithoutParameters();
 
+  @override
   void initialized() {
     if (!_initialized) {
-      addToErrorDescription(additionalDetails: () => trc('Initialized reflector of %1', [name]), function: initializeReflector);
-
-      modificableFields = fields.where((x) => !x.isStatic && !x.onlyRead).where((x) => x.fieldType is! TypeUnknownReflection).toList();
+      addToErrorDescription(additionalDetails: () => trc('Initialized reflector of %1', [formalName]), function: initializeReflector);
       _initialized = true;
+
+      modificableFields = fields.where((x) => !x.isStatic && !x.onlyRead).where((x) => x.reflectedType is! TypeUnknownReflection).toList();
+
+      propertys = [...getters, ...fields];
+      modificablePropertys = [...setters, ...fields.where((x) => !x.onlyRead)];
+
+      initializeEntityFramework();
     }
   }
 
   @override
-  buildEntity({String selectedBuild = '', List fixedParametersValues = const [], Map<String, dynamic> namedParametersValues = const {}, bool tryAccommodateParameters = true}) {
+  buildEntity({
+    String selectedBuild = '',
+    List fixedParametersValues = const [],
+    Map<String, dynamic> namedParametersValues = const {},
+    bool tryAccommodateParameters = true,
+    bool useCustomConstructor = true,
+  }) {
     initialized();
+
+    if (useCustomConstructor && customBuilder != null) {
+      return customBuilder!.generateByMethod(fixedParametersValues: fixedParametersValues, namedParametesValues: namedParametersValues);
+    }
 
     if (isAbstract) {
       throw NegativeResult(identifier: NegativeResultCodes.invalidFunctionality, message: 'The entity %1 is abstract, cannot create an object');
     }
 
     if (selectedBuild == '' && !hasDefaultConstructor) {
-      throw NegativeResult(identifier: NegativeResultCodes.invalidFunctionality, message: trc('The entity %1 does not have a default constructor', [name]));
+      throw NegativeResult(identifier: NegativeResultCodes.invalidFunctionality, message: trc('The entity %1 does not have a default constructor', [formalName]));
     }
 
     if (selectedBuild.isEmpty && fixedParametersValues.isEmpty && namedParametersValues.isEmpty) {
@@ -66,14 +113,14 @@ abstract class TemplateTypeEntityReflector with IReflectionType, ITypeEntityRefl
   }
 
   @override
-  callMethod({required String name, required instance, required List fixedParametersValues, required Map<String, dynamic> namedParametesValues, bool tryAccommodateParameters = true}) {
+  callMethod({required String name, required instance, List fixedParametersValues = const [], Map<String, dynamic> namedParametesValues = const {}, bool tryAccommodateParameters = true}) {
     initialized();
 
     final method = methods.selectItem((x) => x.name == name);
     if (method == null) {
       throw NegativeResult(
         identifier: NegativeResultCodes.nonExistent,
-        message: trc('The entity %1 does not have the method "%2"', [this.name, name]),
+        message: trc('The entity %1 does not have the method "%2"', [formalName, name]),
       );
     }
 
@@ -88,18 +135,18 @@ abstract class TemplateTypeEntityReflector with IReflectionType, ITypeEntityRefl
       if (fields.any((x) => x.name == name)) {
         throw NegativeResult(
           identifier: NegativeResultCodes.nonExistent,
-          message: trc('The field %1 of class %2 is read-only, it cannot be modified', [name, this.name]),
+          message: trc('The field %1 of class %2 is read-only, it cannot be modified', [name, formalName]),
         );
       } else {
         throw NegativeResult(
           identifier: NegativeResultCodes.nonExistent,
-          message: trc('The entity %1 does not have the field %2', [this.name, name]),
+          message: trc('The entity %1 does not have the field %2', [formalName, name]),
         );
       }
     }
 
     volatile(
-      detail: () => trc('The field %1 of class %2 did not accept the value change', [name, this.name]),
+      detail: () => trc('The field %1 of class %2 did not accept the value change', [name, formalName]),
       function: () => field.setValue(instance: instance, newValue: newValue),
     );
   }
@@ -132,7 +179,7 @@ abstract class TemplateTypeEntityReflector with IReflectionType, ITypeEntityRefl
     }
 
     final originalItemReflector = ReflectionManager.getReflectionEntity(type);
-    final compatiblePropertys = originalItemReflector.fields.where((x) => modificableFields.any((y) => y.name == x.name && y.fieldType.isTypeCompatible(x.fieldType.type))).toList();
+    final compatiblePropertys = originalItemReflector.fields.where((x) => modificableFields.any((y) => y.name == x.name && y.reflectedType.isTypeCompatible(x.reflectedType.type))).toList();
 
     final newItem = generateEmptryObject();
     for (final field in compatiblePropertys) {
@@ -155,9 +202,11 @@ abstract class TemplateTypeEntityReflector with IReflectionType, ITypeEntityRefl
     if (field == null) {
       throw NegativeResult(
         identifier: NegativeResultCodes.nonExistent,
-        message: trc('The entity %1 does not have the field "%2"', [this.name, name]),
+        message: trc('The entity %1 does not have the field "%2"', [formalName, name]),
       );
     }
+
+    return field.getValue(instance: instance);
   }
 
   @override
@@ -174,22 +223,91 @@ abstract class TemplateTypeEntityReflector with IReflectionType, ITypeEntityRefl
   @override
   serializeToMap(item, {bool onlyModificable = true, bool allowStaticFields = false}) {
     initialized();
+
+    if (custorSerialization != null) {
+      return custorSerialization!.performSerialization(entity: item, declaration: this, allowStaticFields: allowStaticFields, onlyModificable: onlyModificable);
+    }
+
     late final List<IFieldReflection> fields;
 
     if (onlyModificable || !allowStaticFields) {
       fields = modificableFields;
     } else if (allowStaticFields) {
-      fields = this.fields.where((x) => x.fieldType is! TypeUnknownReflection).toList();
+      fields = this.fields.where((x) => x.reflectedType is! TypeUnknownReflection).toList();
     } else {
-      fields = this.fields.where((x) => !x.isStatic).where((x) => x.fieldType is! TypeUnknownReflection).toList();
+      fields = this.fields.where((x) => !x.isStatic).where((x) => x.reflectedType is! TypeUnknownReflection).toList();
     }
 
     final newMap = <String, dynamic>{};
     for (final field in fields) {
       final value = field.getValue(instance: item);
-      newMap[field.name] = field.fieldType.serializeToMap(value);
+      newMap[field.name] = field.reflectedType.serializeToMap(value);
     }
 
     return newMap;
   }
+
+  @override
+  dynamic getProperty({
+    required String name,
+    required dynamic instance,
+  }) {
+    initialized();
+    final property = propertys.selectItem((x) => x.name == name);
+    if (property == null) {
+      throw NegativeResult(
+        identifier: NegativeResultCodes.nonExistent,
+        message: trc('The entity %1 does not have the property "%2"', [formalName, name]),
+      );
+    }
+
+    return property.getValue(instance: instance);
+  }
+
+  @override
+  void changeProperty({
+    required String name,
+    required dynamic instance,
+    required dynamic newValue,
+  }) {
+    initialized();
+    final property = modificablePropertys.selectItem((x) => x.name == name);
+    if (property == null) {
+      throw NegativeResult(
+        identifier: NegativeResultCodes.nonExistent,
+        message: trc('The entity %1 does not have the modifiable property %2', [formalName, name]),
+      );
+    }
+
+    property.setValue(instance: instance, newValue: newValue);
+  }
+
+  @override
+  NegativeResult? verifyValue({required value}) {
+    final errorList = <NegativeResultValue>[];
+
+    for (final field in modificableFields) {
+      final error = field.checkValueIsCorrect(instance: value);
+      if (error != null) {
+        if (error is NegativeResultValue) {
+          errorList.add(error);
+        } else {
+          errorList.add(NegativeResultValue.fromNegativeResult(name: field.formalName, nr: error));
+        }
+      }
+    }
+
+    if (errorList.isNotEmpty) {
+      return NegativeResultEntity(
+        message: trc('Entity %1 contains %2 invalid property/es', [formalName, errorList.length]),
+        name: name,
+        invalidProperties: errorList,
+      );
+    }
+
+    return super.verifyValue(value: value);
+  }
+
+  @override
+  String toString() => 'Entity type $name';
 }

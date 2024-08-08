@@ -1,0 +1,3 @@
+mixin IPostVerification {
+  void postVerification();
+}

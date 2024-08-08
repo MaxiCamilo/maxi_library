@@ -1,19 +1,35 @@
 import 'package:maxi_library/maxi_library.dart';
+import 'package:maxi_library/src/reflection/decorators/essential_key.dart';
+import 'package:maxi_library/src/reflection/interfaces/ideclaration_reflector.dart';
 import 'package:maxi_library/src/reflection/interfaces/ifield_reflection.dart';
-import 'package:maxi_library/src/reflection/interfaces/ireflection_type.dart';
+import 'package:maxi_library/src/reflection/interfaces/igetter_reflector.dart';
+import 'package:maxi_library/src/reflection/interfaces/isetter_reflector.dart';
 import 'package:maxi_library/src/reflection/standard/reflector_standard_utilities.dart';
 import 'package:reflectable/reflectable.dart';
 
-class FieldReflectorStandard with IFieldReflection {
+class FieldReflectorStandard with IDeclarationReflector, IGetterReflector, ISetterReflector, IFieldReflection {
   final Reflectable reflectable;
   final ClassMirror classMirror;
   final VariableMirror variableMirror;
 
   @override
-  late final IReflectionType fieldType;
+  late final String formalName;
+
+  @override
+  late final IReflectionType reflectedType;
+
+  @override
+  late final List<ValueValidator> validatos;
+
+  @override
+  late final bool isRequired;
 
   FieldReflectorStandard({required this.reflectable, required this.classMirror, required this.variableMirror}) {
-    fieldType = ReflectionManager.getReflectionType(variableMirror.dynamicReflectedType);
+    reflectedType = ReflectionManager.getReflectionType(variableMirror.dynamicReflectedType, annotations: variableMirror.metadata);
+    formalName = FormalName.searchFormalName(realName: name, annotations: annotations);
+    isRequired = variableMirror.metadata.any((x) => x is EssentialKey);
+
+    validatos = variableMirror.metadata.whereType<ValueValidator>().toList();
   }
 
   @override
@@ -40,10 +56,15 @@ class FieldReflectorStandard with IFieldReflection {
   }
 
   @override
-  void setValue({required instance, required newValue}) {
+  void setValue({required instance, required newValue, bool beforeVerifying = true}) {
     _checkIsNullAndStatic(instance);
 
-    final formatedValue = fieldType.convertObject(newValue);
+    final formatedValue = reflectedType.convertObject(newValue);
+
+    if (beforeVerifying) {
+      verifyValueDirectly(value: newValue);
+    }
+
     if (isStatic) {
       ReflectorStandardUtilities.getStaticInstance(reflect: reflectable, type: classMirror.dynamicReflectedType).invokeSetter(name, formatedValue);
     } else {
@@ -55,8 +76,11 @@ class FieldReflectorStandard with IFieldReflection {
     if (instance == null && !isStatic) {
       throw NegativeResult(
         identifier: NegativeResultCodes.invalidFunctionality,
-        message: trc('The field %1 is not static, a variable is required to get or set its value', [name]),
+        message: trc('The field %1 is not static, a variable is required to get or set its value', [formalName]),
       );
     }
   }
+
+  @override
+  String toString() => 'Field $name ($reflectedType)';
 }

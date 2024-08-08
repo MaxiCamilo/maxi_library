@@ -4,12 +4,13 @@ version: 1.0.0
 # repository: https://github.com/my_org/my_repo
 
 environment:
-  sdk: ^3.4.4
+  sdk: ^3.5.0
 
 # Add regular dependencies here.
 dependencies:
   rxdart: ^0.28.0
   reflectable: ^4.0.9
+  meta: ^1.15.0
   # path: ^1.8.0
 
 dev_dependencies:

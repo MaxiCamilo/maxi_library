@@ -1,5 +1,4 @@
 import 'package:maxi_library/maxi_library.dart';
-import 'package:maxi_library/src/reflection/interfaces/ireflection_type.dart';
 
 class TypeEnumeratorReflector with IReflectionType {
   final List<Enum> optionsList;
@@ -94,4 +93,7 @@ class TypeEnumeratorReflector with IReflectionType {
       throw NegativeResult(identifier: NegativeResultCodes.invalidValue, message: trc('The option named "%1" cannot be found', [text]));
     }
   }
+
+  @override
+  String toString() => 'Enumerator $name';
 }

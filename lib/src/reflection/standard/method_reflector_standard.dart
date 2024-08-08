@@ -13,13 +13,21 @@ class MethodReflectorStandard extends TemplateMethodReflection {
   @override
   bool get isConstructor => methodMirror.isConstructor;
 
+  @override
+  bool get isGetter => methodMirror.isGetter;
+
+  @override
+  bool get isSetter => methodMirror.isSetter;
+
+  
+
   MethodReflectorStandard._(
       {required super.annotations,
       required super.fixedParametes,
       required super.isStatic,
       required super.name,
       required super.namedParametes,
-      required super.returnType,
+      required super.reflectedType,
       required this.classMirror,
       required this.methodMirror,
       required this.reflectable});
@@ -45,11 +53,13 @@ class MethodReflectorStandard extends TemplateMethodReflection {
           name: item.simpleName,
           optinalValue: item.isOptional ? item.defaultValue : null,
           type: item.dynamicReflectedType,
+          annotations: item.metadata,
         ));
       } else {
         fixedParametes.add(FixedParameter(
           isOptional: item.isOptional,
           name: item.simpleName,
+          annotations: item.metadata,
           position: i,
           optionalValue: item.isOptional ? item.defaultValue : null,
           type: item.dynamicReflectedType,
@@ -61,10 +71,10 @@ class MethodReflectorStandard extends TemplateMethodReflection {
     return MethodReflectorStandard._(
       annotations: methodMirror.metadata,
       fixedParametes: fixedParametes,
-      isStatic: methodMirror.isStatic,
+      isStatic: methodMirror.isStatic || methodMirror.isConstructor || methodMirror.isFactoryConstructor,
       name: name,
       namedParametes: namedParametes,
-      returnType: ReflectionManager.getReflectionType(methodMirror.reflectedReturnType),
+      reflectedType: ReflectionManager.getReflectionType(methodMirror.reflectedReturnType, annotations: methodMirror.metadata),
       classMirror: classMirror,
       methodMirror: methodMirror,
       reflectable: reflectable,
@@ -86,6 +96,38 @@ class MethodReflectorStandard extends TemplateMethodReflection {
         name,
         fixedParametersValues,
         namedParametesValues.map((key, value) => MapEntry(Symbol(key), value)),
+      );
+    }
+  }
+
+  @override
+  String toString() => 'Method $name ($reflectedType)';
+
+  callMethodImplementationWithGetter({required instance}) {
+    if (isStatic) {
+      return ReflectorStandardUtilities.getStaticInstance(reflect: reflectable, type: classMirror.dynamicReflectedType).invokeGetter(name);
+    } else {
+      return ReflectorStandardUtilities.getInstance(reflect: reflectable, object: instance).invokeGetter(name);
+    }
+  }
+
+  @override
+  callMethodImplementationWithoutParameters({required instance}) {
+    if (isGetter) {
+      return callMethodImplementationWithGetter(instance: instance);
+    }
+
+    if (isStatic) {
+      return ReflectorStandardUtilities.getStaticInstance(reflect: reflectable, type: classMirror.dynamicReflectedType).invoke(
+        name,
+        const [],
+        const {},
+      );
+    } else {
+      return ReflectorStandardUtilities.getInstance(reflect: reflectable, object: instance).invoke(
+        name,
+        const [],
+        const {},
       );
     }
   }

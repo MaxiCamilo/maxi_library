@@ -1,7 +1,6 @@
 import 'package:maxi_library/maxi_library.dart';
-import 'package:maxi_library/src/reflection/interfaces/ireflection_type.dart';
 
-class GeneratorList<T> with IReflectionType {
+class GeneratorList<T> with IValueGenerator, IReflectionType {
   @override
   final List annotations;
 
@@ -79,7 +78,7 @@ class GeneratorList<T> with IReflectionType {
   }
 
   List<T> _serializeListSameType(Iterable list) {
-    final typeOperator = ReflectionManager.getReflectionType(T);
+    final typeOperator = ReflectionManager.getReflectionType(T, annotations: []);
     int i = 1;
 
     final newList = <T>[];
@@ -107,7 +106,7 @@ class GeneratorList<T> with IReflectionType {
       if (typeOperator == null || typeOperator.type != item.runtimeType) {
         typeOperator = addToErrorDescription(
           additionalDetails: () => 'Item N° $i',
-          function: () => ReflectionManager.getReflectionType(item.runtimeType),
+          function: () => ReflectionManager.getReflectionType(item.runtimeType, annotations: []),
         );
       }
 
@@ -139,7 +138,7 @@ class GeneratorList<T> with IReflectionType {
       if (typeOperator == null || typeOperator.type != item.runtimeType) {
         typeOperator = addToErrorDescription(
           additionalDetails: () => 'Item N° $i',
-          function: () => ReflectionManager.getReflectionType(item.runtimeType),
+          function: () => ReflectionManager.getReflectionType(item.runtimeType, annotations: []),
         );
       }
 

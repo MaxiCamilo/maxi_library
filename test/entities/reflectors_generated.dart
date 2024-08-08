@@ -1,7 +1,10 @@
 import 'package:reflectable/reflectable.dart';
 
-class BaseDecoratorReflector extends Reflectable {
-  const BaseDecoratorReflector()
+export 'test_class.dart';
+export 'second_test_class.dart';
+
+class ReflectorTest extends Reflectable {
+  const ReflectorTest()
       : super(
           invokingCapability,
           declarationsCapability,
@@ -12,3 +15,6 @@ class BaseDecoratorReflector extends Reflectable {
           reflectedTypeCapability,
         );
 }
+
+const reflector = ReflectorTest();
+void main(List<String> args) {}

@@ -257,15 +257,15 @@ void checkProgrammingFailure<T>({
 T volatileProperty<T>({
   required String Function() propertyName,
   required T Function() function,
-  void Function(NegativeResultProperty)? ifFails,
+  void Function(NegativeResultValue)? ifFails,
   void Function(dynamic)? ifUnknownFails,
   void Function(dynamic)? ifFailsAnyway,
-  NegativeResultProperty Function(String, dynamic)? errorFactory,
+  NegativeResultValue Function(String, dynamic)? errorFactory,
 }) {
   try {
     return function();
   } on NegativeResult catch (nr) {
-    final rnp = NegativeResultProperty.fromNegativeResult(propertyName: propertyName(), nr: nr);
+    final rnp = NegativeResultValue.fromNegativeResult(name: propertyName(), nr: nr);
     if (ifFails != null) {
       containError(function: () => ifFails(rnp));
     }
@@ -274,10 +274,10 @@ T volatileProperty<T>({
     }
     throw rnp;
   } catch (ex) {
-    late final NegativeResultProperty rnp;
+    late final NegativeResultValue rnp;
     if (errorFactory == null) {
-      rnp = NegativeResultProperty(
-        propertyName: propertyName(),
+      rnp = NegativeResultValue(
+        name: propertyName(),
         message: trc('An error occurred while executing the functionality in the property %1, the error was: %2', [propertyName(), ex]),
         cause: ex,
       );

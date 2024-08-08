@@ -1,8 +1,8 @@
 import 'dart:developer';
 
-import 'error_codes.dart';
+import 'package:maxi_library/maxi_library.dart';
 
-class NegativeResult implements Exception {
+class NegativeResult implements Exception, CustomSerialization {
   NegativeResultCodes identifier;
   String message;
   DateTime whenWas;
@@ -22,7 +22,7 @@ class NegativeResult implements Exception {
     log('[X: ${identifier.name}] $message');
   }
 
-  NegativeResult searchNegativity({
+  static NegativeResult searchNegativity({
     required dynamic item,
     required String actionDescription,
     NegativeResultCodes codeDescription = NegativeResultCodes.externalFault,
@@ -30,7 +30,7 @@ class NegativeResult implements Exception {
     if (item is NegativeResult) {
       return item;
     } else {
-      return NegativeResult(identifier: codeDescription, message: '');
+      return NegativeResult(identifier: codeDescription, message: trc('The functionality %1 failed', [actionDescription]));
     }
   }
 
@@ -50,4 +50,7 @@ class NegativeResult implements Exception {
       };
     }
   }
+
+  @override
+  performSerialization({required entity, required IDeclarationReflector declaration, bool onlyModificable = true, bool allowStaticFields = false}) => serialize();
 }

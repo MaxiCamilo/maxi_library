@@ -103,6 +103,7 @@ void main() {
     test('check Streams', () async {
       final stream = await ThreadManager.callStreamAsAnonymous<String>(function: (_) async => _makeTexts());
       final waiter = Completer();
+      // ignore: unused_local_variable
       final subcription = stream.listen(
         (x) => log('The stream send item "$x"'),
         onDone: () => waiter.complete(),
