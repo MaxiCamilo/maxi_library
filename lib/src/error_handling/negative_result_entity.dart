@@ -12,4 +12,15 @@ class NegativeResultEntity extends NegativeResultValue {
 
     return map;
   }
+
+  @override
+  String toString() {
+    final buffer = StringBuffer();
+    buffer.writeln(message);
+    for (final error in invalidProperties) {
+      buffer.writeln('-> ${error.name} : ${error.message} [Value: ${error.value}]');
+    }
+
+    return buffer.toString();
+  }
 }

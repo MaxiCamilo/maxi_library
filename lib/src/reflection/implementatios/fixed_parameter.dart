@@ -22,7 +22,7 @@ class FixedParameter with IDeclarationReflector {
   late final String formalName;
 
   @override
-  late final List<ValueValidator> validatos;
+  late final List<ValueValidator> validators;
 
   FixedParameter({
     required this.position,
@@ -34,6 +34,6 @@ class FixedParameter with IDeclarationReflector {
   }) {
     reflectedType = ReflectionManager.getReflectionType(type, annotations: annotations);
     formalName = FormalName.searchFormalName(realName: name, annotations: annotations);
-    validatos = annotations.whereType<ValueValidator>().toList();
+    validators = annotations.whereType<ValueValidator>().toList();
   }
 }

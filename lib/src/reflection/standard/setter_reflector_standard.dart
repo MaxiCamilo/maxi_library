@@ -18,7 +18,7 @@ class SetterReflectorStandard with IDeclarationReflector, ISetterReflector {
   late final String formalName;
 
   @override
-  late final List<ValueValidator> validatos;
+  late final List<ValueValidator> validators;
 
   SetterReflectorStandard({required this.reflectable, required this.classMirror, required this.methodMirror}) {
     reflectedType = ReflectionManager.getReflectionType(methodMirror.parameters.first.dynamicReflectedType, annotations: methodMirror.metadata);
@@ -28,8 +28,8 @@ class SetterReflectorStandard with IDeclarationReflector, ISetterReflector {
       name = methodMirror.simpleName;
     }
 
-     formalName = FormalName.searchFormalName(realName: name, annotations: annotations);
-    validatos = methodMirror.metadata.whereType<ValueValidator>().toList();
+    formalName = FormalName.searchFormalName(realName: name, annotations: annotations);
+    validators = methodMirror.metadata.whereType<ValueValidator>().toList();
   }
 
   @override
@@ -50,7 +50,7 @@ class SetterReflectorStandard with IDeclarationReflector, ISetterReflector {
     final formatedValue = reflectedType.convertObject(newValue);
 
     if (beforeVerifying) {
-      verifyValueDirectly(value: newValue);
+      verifyValueDirectly(value: newValue, parentEntity: instance);
     }
 
     if (isStatic) {

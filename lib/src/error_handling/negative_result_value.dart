@@ -14,6 +14,10 @@ class NegativeResultValue extends NegativeResult {
   });
 
   factory NegativeResultValue.fromNegativeResult({required String name, required NegativeResult nr, dynamic value}) {
+    if (nr is NegativeResultValue) {
+      return nr;
+    }
+
     return NegativeResultValue(
       message: nr.message,
       name: name,
@@ -37,29 +41,28 @@ class NegativeResultValue extends NegativeResult {
   }
 
   static NegativeResultValue searchNegativity({
-    required dynamic item,
+    required dynamic error,
     required String propertyName,
-    required String actionDescription,
     dynamic value,
     NegativeResultCodes codeDescription = NegativeResultCodes.externalFault,
   }) {
-    if (item is NegativeResultValue) {
-      return item;
-    } else if (item is NegativeResult) {
+    if (error is NegativeResultValue) {
+      return error;
+    } else if (error is NegativeResult) {
       return NegativeResultValue(
-        identifier: item.identifier,
+        identifier: error.identifier,
         name: propertyName,
-        message: item.message,
-        cause: item.cause,
-        whenWas: item.whenWas,
+        message: error.message,
+        cause: error.cause,
+        whenWas: error.whenWas,
         value: value,
       );
     } else {
       return NegativeResultValue(
         identifier: codeDescription,
         name: propertyName,
-        message: trc('The functionality %1 in the property $propertyName failed', [actionDescription]),
-        cause: item,
+        message: tr('The validation for property $propertyName failed with the following error: "$error"'),
+        cause: error,
         value: value,
       );
     }

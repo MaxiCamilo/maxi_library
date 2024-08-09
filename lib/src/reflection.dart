@@ -21,4 +21,7 @@ export 'package:maxi_library/src/reflection/types/type_unknown_reflection.dart';
 
 export 'package:maxi_library/src/reflection/standard/instances_reflection.dart';
 
-export 'package:maxi_library/src/reflection/build_reflectors.dart';
+export 'package:maxi_library/src/reflection/build/build_reflectors.dart';
+
+export 'package:maxi_library/src/reflection/validators/numbers/check_number_range.dart';
+export 'package:maxi_library/src/reflection/validators/texts/check_text_length.dart';

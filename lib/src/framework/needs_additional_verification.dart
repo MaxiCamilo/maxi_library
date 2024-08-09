@@ -1,0 +1,3 @@
+mixin NeedsAdditionalVerification {
+  void performAdditionalVerification();
+}

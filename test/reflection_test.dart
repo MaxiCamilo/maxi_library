@@ -119,12 +119,31 @@ void main() {
       log(classTest.getProperty(name: 'superList', instance: newItem).toString());
     });
 
-    test('"Call a method with a parameter that has a value generator', () {
+    test('Call a method with a parameter that has a value generator', () {
       InstanceReflectionTest().initializeReflectable();
       final classTest = ReflectionManager.getReflectionEntity(SecondTestClass);
       final newItem = classTest.buildEntity();
 
       classTest.callMethod(name: 'getterPerson', instance: newItem, fixedParametersValues: [987]);
+    });
+
+    test('Testing the serialization and deserialization of entities', () {
+      InstanceReflectionTest().initializeReflectable();
+      final classTest = ReflectionManager.getReflectionEntity(ThirdTestClass);
+      final newItem = classTest.buildEntity();
+
+      classTest.changeFieldValue(name: 'identifier', instance: newItem, newValue: 21);
+      classTest.changeFieldValue(name: 'name', instance: newItem, newValue: 'Oreo');
+      classTest.changeFieldValue(name: 'isAdmin', instance: newItem, newValue: true);
+      classTest.changeFieldValue(name: 'age', instance: newItem, newValue: 55);
+
+      final mapa = classTest.serializeToJson(value: newItem);
+
+      log(mapa);
+
+      final jsonItem = classTest.interpretationFromJson(rawJson: '{"name":"Oreo","isAdmin":true,"age":55,"age":17}');
+      classTest.changeFieldValue(name: 'age', instance: jsonItem, newValue: 80);
+      log(classTest.serializeToJson(value: jsonItem));
     });
   });
 }

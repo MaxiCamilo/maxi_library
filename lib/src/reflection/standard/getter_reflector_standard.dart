@@ -15,8 +15,8 @@ class GetterReflectorStandard with IDeclarationReflector, IGetterReflector {
 
   GetterReflectorStandard({required this.reflectable, required this.classMirror, required this.methodMirror}) {
     reflectedType = ReflectionManager.getReflectionType(methodMirror.reflectedReturnType, annotations: methodMirror.metadata);
-    formalName =  FormalName.searchFormalName(realName: name, annotations: annotations);
-    validatos = methodMirror.metadata.whereType<ValueValidator>().toList();
+    formalName = FormalName.searchFormalName(realName: name, annotations: annotations);
+    validators = methodMirror.metadata.whereType<ValueValidator>().toList();
   }
 
   @override
@@ -31,8 +31,8 @@ class GetterReflectorStandard with IDeclarationReflector, IGetterReflector {
   @override
   late final String formalName;
 
-   @override
-  late final List<ValueValidator> validatos;
+  @override
+  late final List<ValueValidator> validators;
 
   @override
   getValue({required instance}) {

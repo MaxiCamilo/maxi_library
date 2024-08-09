@@ -14,4 +14,7 @@ mixin IEntityFramework {
     bool enableCustomInterpretation = true,
     bool verify = true,
   });
+
+
+  
 }

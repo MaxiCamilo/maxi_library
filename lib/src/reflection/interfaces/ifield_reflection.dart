@@ -9,6 +9,6 @@ mixin IFieldReflection on IDeclarationReflector, IGetterReflector, ISetterReflec
 
   NegativeResult? checkValueIsCorrect({required instance}) {
     final value = getValue(instance: instance);
-    return verifyValue(value: value);
+    return verifyValue(value: value, parentEntity: instance);
   }
 }

@@ -19,7 +19,7 @@ class FieldReflectorStandard with IDeclarationReflector, IGetterReflector, ISett
   late final IReflectionType reflectedType;
 
   @override
-  late final List<ValueValidator> validatos;
+  late final List<ValueValidator> validators;
 
   @override
   late final bool isRequired;
@@ -29,7 +29,7 @@ class FieldReflectorStandard with IDeclarationReflector, IGetterReflector, ISett
     formalName = FormalName.searchFormalName(realName: name, annotations: annotations);
     isRequired = variableMirror.metadata.any((x) => x is EssentialKey);
 
-    validatos = variableMirror.metadata.whereType<ValueValidator>().toList();
+    validators = variableMirror.metadata.whereType<ValueValidator>().toList();
   }
 
   @override
@@ -62,7 +62,7 @@ class FieldReflectorStandard with IDeclarationReflector, IGetterReflector, ISett
     final formatedValue = reflectedType.convertObject(newValue);
 
     if (beforeVerifying) {
-      verifyValueDirectly(value: newValue);
+      verifyValueDirectly(value: newValue, parentEntity: instance);
     }
 
     if (isStatic) {

@@ -10,6 +10,8 @@ mixin AbylityEntityFramework on ITypeClassReflection, IEntityFramework {
   late final IGetterReflector? _primaryKey;
   late final CustomInterpretation? _customInterpretation;
 
+  dynamic intepretationMap(Map<String, dynamic> mapValues);
+
   @override
   bool get hasPrimaryKey {
     initialized();
@@ -101,6 +103,4 @@ mixin AbylityEntityFramework on ITypeClassReflection, IEntityFramework {
       );
     }
   }
-
-  dynamic intepretationMap(Map<String, dynamic> mapValues);
 }

@@ -2,16 +2,16 @@ import 'package:maxi_library/maxi_library.dart';
 
 mixin IDeclarationReflector {
   List get annotations;
-  List<ValueValidator> get validatos;
+  List<ValueValidator> get validators;
 
   String get name;
   String get formalName;
   IReflectionType get reflectedType;
   bool get isStatic;
 
-  NegativeResult? verifyValue({required dynamic value}) {
-    for (final val in validatos) {
-      final negative = val.performValidation(name: name, item: value, entity: null);
+  NegativeResult? verifyValue({required dynamic value, required dynamic parentEntity}) {
+    for (final val in validators) {
+      final negative = val.performValidation(name: name, item: value, parentEntity: parentEntity);
       if (negative != null) {
         return NegativeResultValue.fromNegativeResult(name: formalName, nr: negative);
       }
@@ -22,8 +22,7 @@ mixin IDeclarationReflector {
         value.postVerification();
       } catch (ex) {
         final nr = NegativeResultValue.searchNegativity(
-          item: ex,
-          actionDescription: 'Post validation of "$formalName"',
+          error: ex,
           propertyName: formalName,
           value: value,
         );
@@ -34,8 +33,8 @@ mixin IDeclarationReflector {
     return null;
   }
 
-  void verifyValueDirectly({required dynamic value}) {
-    final error = verifyValue(value: value);
+  void verifyValueDirectly({required dynamic value, required dynamic parentEntity}) {
+    final error = verifyValue(value: value, parentEntity: parentEntity);
     if (error != null) {
       throw error;
     }

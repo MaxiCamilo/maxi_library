@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:maxi_library/maxi_library.dart';
 import 'package:maxi_library/src/reflection/abilitys/abylity_entity_framework.dart';
 import 'package:maxi_library/src/reflection/interfaces/ientity_framework.dart';
@@ -22,7 +24,7 @@ abstract class TemplateTypeEntityReflector with IReflectionType, IDeclarationRef
   late final String formalName;
 
   @override
-  late final List<ValueValidator> validatos;
+  late final List<ValueValidator> validators;
 
   late final ClassBuilderReflection? customBuilder;
   late final CustomSerialization? custorSerialization;
@@ -30,7 +32,7 @@ abstract class TemplateTypeEntityReflector with IReflectionType, IDeclarationRef
   bool _initialized = false;
 
   TemplateTypeEntityReflector({required this.annotations, required this.type, required this.name}) {
-    validatos = annotations.whereType<ValueValidator>().toList();
+    validators = annotations.whereType<ValueValidator>().toList();
 
     customBuilder = annotations.selectByType<ClassBuilderReflection>();
     custorSerialization = annotations.selectByType<CustomSerialization>();
@@ -283,7 +285,8 @@ abstract class TemplateTypeEntityReflector with IReflectionType, IDeclarationRef
   }
 
   @override
-  NegativeResult? verifyValue({required value}) {
+  NegativeResult? verifyValue({required dynamic value, required dynamic parentEntity}) {
+    initialized();
     final errorList = <NegativeResultValue>[];
 
     for (final field in modificableFields) {
@@ -299,13 +302,106 @@ abstract class TemplateTypeEntityReflector with IReflectionType, IDeclarationRef
 
     if (errorList.isNotEmpty) {
       return NegativeResultEntity(
-        message: trc('Entity %1 contains %2 invalid property/es', [formalName, errorList.length]),
+        message: trc('Entity %1 contains %2 invalid %3', [formalName, errorList.length, errorList.length == 1 ? tr('property') : tr('properties')]),
         name: name,
         invalidProperties: errorList,
       );
     }
 
-    return super.verifyValue(value: value);
+    return super.verifyValue(value: value, parentEntity: parentEntity);
+  }
+
+  @override
+  dynamic intepretationMap(Map<String, dynamic> mapValues) {
+    initialized();
+    final newItem = generateEmptryObject();
+
+    final errorList = <NegativeResultValue>[];
+
+    for (final prop in modificableFields) {
+      final value = mapValues[prop.name];
+      if (value == null) {
+        if (prop.isRequired) {
+          errorList.add(NegativeResultValue(
+            message: trc('Entity %1 needs the value of %2, but its value was not defined', [formalName, prop.formalName]),
+            name: name,
+          ));
+        }
+        continue;
+      }
+
+      try {
+        prop.setValue(instance: newItem, newValue: value);
+      } catch (ex) {
+        errorList.add(NegativeResultValue.searchNegativity(
+          error: ex,
+          value: value,
+          propertyName: formalName,
+        ));
+      }
+    }
+
+    _throwErrorIfThereErrorInList(errorList);
+
+    for (final val in validators) {
+      final error = val.performValidation(name: formalName, item: newItem, parentEntity: null);
+      if (error != null) {
+        throw NegativeResultEntity(
+          message: trc('The entity %1 is invalid', [name]),
+          name: name,
+          invalidProperties: [NegativeResultValue.searchNegativity(error: error, propertyName: val.formalName)],
+        );
+      }
+    }
+
+    if (newItem is NeedsAdditionalVerification) {
+      try {
+        newItem.performAdditionalVerification();
+      } catch (ex) {
+        throw NegativeResultEntity(
+          message: trc('The entity %1 is invalid', [name]),
+          name: name,
+          invalidProperties: [NegativeResultValue.searchNegativity(error: ex, propertyName: formalName)],
+        );
+      }
+    }
+
+    return newItem;
+  }
+
+  void _throwErrorIfThereErrorInList(List<NegativeResultValue> errorList) {
+    if (errorList.isNotEmpty) {
+      throw NegativeResultEntity(
+        message: trc('The entity  %1 contains %2 invalid %3', [name, errorList.length, errorList.length == 1 ? tr('property') : tr('properties')]),
+        name: name,
+        invalidProperties: errorList,
+      );
+    }
+  }
+
+  @override
+  dynamic interpretationFromJson({
+    required String rawJson,
+    bool enableCustomInterpretation = true,
+    bool verify = true,
+  }) {
+    initialized();
+    final mapJson = json.decode(rawJson);
+
+    if (mapJson is! Map<String, dynamic>) {
+      throw NegativeResult(
+        identifier: NegativeResultCodes.wrongType,
+        message: trc('To create a %1 entity from a JSON, the JSON data must be in object format, not an array or a simple value', [formalName]),
+      );
+    }
+
+    return interpretation(value: mapJson, enableCustomInterpretation: enableCustomInterpretation, verify: enableCustomInterpretation);
+  }
+
+  @override
+  String serializeToJson({required dynamic value}) {
+    final mapValue = serializeToMap(value);
+    return json.encode(mapValue);
   }
 
   @override

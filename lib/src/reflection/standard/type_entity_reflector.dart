@@ -167,41 +167,5 @@ class TypeEntityReflector extends TemplateTypeEntityReflector {
     }
   }
 
-  dynamic intepretationMap(Map<String, dynamic> mapValues) {
-    final newItem = generateEmptryObject();
-
-    final errorList = <NegativeResultValue>[];
-
-    for (final prop in modificableFields) {
-      final value = mapValues[prop.name];
-      if (value == null) {
-        if (prop.isRequired) {
-          errorList.add(NegativeResultValue(
-            message: trc('Entity %1 needs the value of %2, but its value was not defined', [formalName, prop.formalName]),
-            name: name,
-          ));
-        }
-        continue;
-      }
-
-      try {
-        prop.setValue(instance: newItem, newValue: value);
-      } on NegativeResultValue catch (nrv) {
-        errorList.add(nrv);
-      } on NegativeResult catch (rn) {
-        errorList.add(NegativeResultValue.fromNegativeResult(name: prop.formalName, nr: rn));
-      } catch (ex) {
-        errorList.add(NegativeResultValue(
-          message: ex.toString(),
-          name: prop.formalName,
-          cause: ex,
-          identifier: NegativeResultCodes.implementationFailure,
-          value: value,
-        ));
-      }
-    }
-
-    //Si la lista tiene error, disparar Negative result entity
-    //Invocar el super tambien
-  }
+ 
 }

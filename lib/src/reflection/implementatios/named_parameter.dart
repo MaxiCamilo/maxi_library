@@ -22,7 +22,7 @@ class NamedParameter with IDeclarationReflector {
   late final String formalName;
 
   @override
-  late final List<ValueValidator> validatos;
+  late final List<ValueValidator> validators;
 
   NamedParameter({
     required this.annotations,
@@ -33,6 +33,6 @@ class NamedParameter with IDeclarationReflector {
   }) {
     reflectedType = ReflectionManager.getReflectionType(type, annotations: annotations);
     formalName = FormalName.searchFormalName(realName: name, annotations: annotations);
-    validatos = annotations.whereType<ValueValidator>().toList();
+    validators = annotations.whereType<ValueValidator>().toList();
   }
 }

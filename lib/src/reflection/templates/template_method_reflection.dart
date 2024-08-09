@@ -27,7 +27,7 @@ abstract class TemplateMethodReflection with IDeclarationReflector, IMethodRefle
   final IReflectionType reflectedType;
 
   @override
-  late final List<ValueValidator> validatos;
+  late final List<ValueValidator> validators;
 
   bool get isGetter;
   bool get isSetter;
@@ -41,7 +41,7 @@ abstract class TemplateMethodReflection with IDeclarationReflector, IMethodRefle
   late final List<NamedParameter> namedParametesOptionals;
 
   TemplateMethodReflection({required this.annotations, required this.fixedParametes, required this.isStatic, required this.name, required this.namedParametes, required this.reflectedType}) {
-    validatos = annotations.whereType<ValueValidator>().toList();
+    validators = annotations.whereType<ValueValidator>().toList();
     formalName = FormalName.searchFormalName(realName: name, annotations: annotations);
 
     fixedParametesRequired = fixedParametes.where((x) => !x.isOptional).toList();
