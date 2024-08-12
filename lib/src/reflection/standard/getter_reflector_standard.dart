@@ -1,6 +1,4 @@
 import 'package:maxi_library/maxi_library.dart';
-import 'package:maxi_library/src/reflection/decorators/formal_name.dart';
-import 'package:maxi_library/src/reflection/interfaces/ideclaration_reflector.dart';
 import 'package:maxi_library/src/reflection/interfaces/igetter_reflector.dart';
 import 'package:maxi_library/src/reflection/standard/reflector_standard_utilities.dart';
 import 'package:reflectable/reflectable.dart';

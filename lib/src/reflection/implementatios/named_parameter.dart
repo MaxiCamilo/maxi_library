@@ -1,5 +1,4 @@
 import 'package:maxi_library/maxi_library.dart';
-import 'package:maxi_library/src/reflection/interfaces/ideclaration_reflector.dart';
 
 class NamedParameter with IDeclarationReflector {
   final bool isRequierd;

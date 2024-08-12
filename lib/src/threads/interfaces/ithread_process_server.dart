@@ -1,6 +1,5 @@
 import 'package:maxi_library/maxi_library.dart';
 import 'package:maxi_library/src/threads/interfaces/ithread_communication.dart';
-import 'package:maxi_library/src/threads/interfaces/ithread_initializer.dart';
 import 'package:maxi_library/src/threads/interfaces/ithread_process.dart';
 
 mixin IThreadProcessServer on IThreadInvoker, IThreadProcess {

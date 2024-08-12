@@ -1,6 +1,5 @@
 import 'package:maxi_library/maxi_library.dart';
 import 'package:maxi_library/src/reflection/decorators/essential_key.dart';
-import 'package:maxi_library/src/reflection/interfaces/ideclaration_reflector.dart';
 import 'package:maxi_library/src/reflection/interfaces/ifield_reflection.dart';
 import 'package:maxi_library/src/reflection/interfaces/igetter_reflector.dart';
 import 'package:maxi_library/src/reflection/interfaces/isetter_reflector.dart';

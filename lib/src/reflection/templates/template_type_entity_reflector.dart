@@ -372,7 +372,7 @@ abstract class TemplateTypeEntityReflector with IReflectionType, IDeclarationRef
   void _throwErrorIfThereErrorInList(List<NegativeResultValue> errorList) {
     if (errorList.isNotEmpty) {
       throw NegativeResultEntity(
-        message: trc('The entity  %1 contains %2 invalid %3', [name, errorList.length, errorList.length == 1 ? tr('property') : tr('properties')]),
+        message: trc('The entity %1 contains %2 invalid %3', [name, errorList.length, errorList.length == 1 ? tr('property') : tr('properties')]),
         name: name,
         invalidProperties: errorList,
       );

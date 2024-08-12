@@ -141,7 +141,7 @@ void main() {
 
       log(mapa);
 
-      final jsonItem = classTest.interpretationFromJson(rawJson: '{"name":"Oreo","isAdmin":true,"age":55,"age":17}');
+      final jsonItem = classTest.interpretationFromJson(rawJson: '{"isAdmin":true,"age":55,"age":17}');
       classTest.changeFieldValue(name: 'age', instance: jsonItem, newValue: 80);
       log(classTest.serializeToJson(value: jsonItem));
     });

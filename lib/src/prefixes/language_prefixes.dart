@@ -1,7 +1,7 @@
 import 'package:maxi_library/maxi_library.dart';
 
 String tr(String part) {
-  return part;
+  return LanguageManager.getTranslation(part);
 }
 
 String trc(String text, List parts) {
@@ -10,5 +10,5 @@ String trc(String text, List parts) {
     translatedText = translatedText.append(part.toString());
   }
 
-  return translatedText.text;
+  return LanguageManager.getTranslation(translatedText.text);
 }

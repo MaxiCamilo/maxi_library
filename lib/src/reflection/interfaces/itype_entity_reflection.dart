@@ -1,6 +1,3 @@
-import 'dart:convert';
-
-import 'package:maxi_library/maxi_library.dart';
 import 'package:maxi_library/src/reflection/interfaces/ientity_framework.dart';
 import 'package:maxi_library/src/reflection/interfaces/itype_class_reflection.dart';
 

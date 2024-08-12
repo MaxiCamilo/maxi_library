@@ -147,11 +147,11 @@ T volatile<T>({
 
 T volatileByFunctionality<T>({
   required String Function() errorMessage,
-  required T Function() funcion,
+  required T Function() function,
 }) =>
     volatile(
       detail: () => '',
-      function: funcion,
+      function: function,
       errorFactory: (p0) => NegativeResult(
         identifier: NegativeResultCodes.invalidFunctionality,
         message: errorMessage(),
@@ -182,7 +182,7 @@ Future<T> volatileAsync<T>({
     if (errorFactory == null) {
       rn = NegativeResult(
         identifier: NegativeResultCodes.nonStandardError,
-        message: trc('An error occurred while executing the functionality "%1", the error was: %2', [detail(), ex]),
+        message: trc('Something went wrong while the function was running "%1", the error was: %2', [detail(), ex]),
       );
     } else {
       rn = errorFactory(ex);

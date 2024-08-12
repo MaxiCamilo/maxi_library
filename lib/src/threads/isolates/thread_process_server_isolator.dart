@@ -1,5 +1,4 @@
 import 'package:maxi_library/maxi_library.dart';
-import 'package:maxi_library/src/framework/thread_service.dart';
 import 'package:maxi_library/src/threads/initializer/thread_initializer_entity.dart';
 import 'package:maxi_library/src/threads/interfaces/ithread_communication.dart';
 import 'package:maxi_library/src/threads/interfaces/ithread_process.dart';
