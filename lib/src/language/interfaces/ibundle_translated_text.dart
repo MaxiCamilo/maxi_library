@@ -4,5 +4,5 @@ mixin IBundleTranslatedText {
 
   String get prefixLanguage;
 
-  Future<SplayTreeMap<String, String>> readTRanslatedText();
+  Future<SplayTreeMap<String, String>> readTranslatedText();
 }

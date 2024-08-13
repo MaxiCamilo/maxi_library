@@ -133,4 +133,19 @@ extension IteratorExtension<T> on Iterable<T> {
       i += 1;
     }
   }
+
+  Iterable<List<T>> splitIntoParts(int amount) sync* {
+    final temporal = <T>[];
+    for (final item in this) {
+      temporal.add(item);
+      if (temporal.length == amount) {
+        yield temporal.toList();
+        temporal.clear();
+      }
+    }
+
+    if (temporal.isNotEmpty) {
+      yield temporal;
+    }
+  }
 }

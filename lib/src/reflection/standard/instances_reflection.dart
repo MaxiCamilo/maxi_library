@@ -68,7 +68,7 @@ abstract class InstancesReflection with IThreadInitializer {
   }
 
   @override
-  Future<void> performInitialization(IThreadCommunicationMethod channel) async {
+  Future<void> performInitializationInThread(IThreadCommunicationMethod channel) async {
     initializeReflectable();
   }
 }

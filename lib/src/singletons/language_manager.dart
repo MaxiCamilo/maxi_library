@@ -8,6 +8,8 @@ mixin LanguageManager {
 
   static String getTranslation(String reference) => _instance.getTranslation(reference);
 
+  static Stream get notifyLanguageChange => _instance.notifyLanguageChange;
+
   static Future<void> changeOperator(IOperatorLanguage newOperator) async {
     _instance = newOperator;
     return _instance.initialize();

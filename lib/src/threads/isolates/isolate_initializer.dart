@@ -56,8 +56,8 @@ class IsolateInitializer {
     final port = ThreadCommunicationMethodIsolator(channel: channel);
 
     try {
-      for (final init in context.initializers) {
-        await init.performInitialization(port);
+      for (final init in context.initializers.toList()) {
+        await init.performInitializationInThread(port);
       }
 
       channel.sendObject(

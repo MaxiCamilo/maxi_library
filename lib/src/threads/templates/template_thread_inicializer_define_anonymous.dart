@@ -7,7 +7,7 @@ mixin TemplateThreadInicializerDefinerAnonymous on IThreadInitializer {
   Future<IThreadProcessClient> generateAnonymousClient(IThreadCommunicationMethod channel);
 
   @override
-  Future<void> performInitialization(IThreadCommunicationMethod channel) async {
+  Future<void> performInitializationInThread(IThreadCommunicationMethod channel) async {
     ThreadManager.generalFactory = const ThreadManagersFactoryAvoid();
 
     final client = await generateAnonymousClient(channel);

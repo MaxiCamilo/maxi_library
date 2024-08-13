@@ -15,6 +15,7 @@ enum NegativeResultCodes {
   externalFault,
   timeout,
   discontinuedFunctionality,
+  abnormalOperation,
 
   statusFunctionalityInvalid,
   contextInvalidFunctionality,

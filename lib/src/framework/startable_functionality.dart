@@ -3,6 +3,8 @@ mixin StartableFunctionality {
 
   bool _isInitialized = false;
 
+  bool get isInitialized => _isInitialized;
+
   Future<void> initialize() async {
     if (_isInitialized) {
       return;

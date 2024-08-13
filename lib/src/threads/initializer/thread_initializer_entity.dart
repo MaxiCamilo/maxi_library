@@ -4,7 +4,7 @@ import 'package:maxi_library/src/threads/interfaces/ithread_process_entity.dart'
 
 class ThreadInitializerEntity with IThreadInitializer {
   @override
-  Future<void> performInitialization(IThreadCommunicationMethod channel) async {
+  Future<void> performInitializationInThread(IThreadCommunicationMethod channel) async {
     final process = ThreadManager.getProcess();
 
     if (process is IThreadProcessEntity) {

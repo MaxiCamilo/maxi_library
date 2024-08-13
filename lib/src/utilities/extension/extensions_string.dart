@@ -16,18 +16,20 @@ extension ExtensionsString on String {
   }
 
 
-  String extractOften({int since = 0, int? count}) {
+  String extractOften({int since = 0, int? amount}) {
     final buffer = StringBuffer();
-    if (count == null || count >= length) {
+    if (amount == null || amount >= length) {
       for (int i = since; i < length; i++) {
         buffer.write(this[i]);
       }
     } else {
-      for (int i = since; i < since + count && i < length; i++) {
+      for (int i = since; i < since + amount && i < length; i++) {
         buffer.write(this[i]);
       }
     }
 
     return buffer.toString();
   }
+
+  
 }

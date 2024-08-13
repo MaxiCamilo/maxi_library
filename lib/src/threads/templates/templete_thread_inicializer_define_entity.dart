@@ -9,7 +9,7 @@ mixin TempletaThreadInicializerDefineEntity<T> on IThreadInitializer {
   Future<IThreadProcessEntity<T>> generateEntityClient(IThreadCommunicationMethod channel);
 
   @override
-  Future<void> performInitialization(IThreadCommunicationMethod channel) async {
+  Future<void> performInitializationInThread(IThreadCommunicationMethod channel) async {
     ThreadManager.generalFactory = const ThreadManagersFactoryAvoid();
 
     final client = await generateEntityClient(channel);
