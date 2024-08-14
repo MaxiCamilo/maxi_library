@@ -12,7 +12,7 @@ class BundleTranslatedTextFileJson with IBundleTranslatedText {
   late final String prefixLanguage;
 
   BundleTranslatedTextFileJson({required this.direction}) {
-    prefixLanguage = DirectoryUtilities.extractFileName(direction);
+    prefixLanguage = DirectoryUtilities.extractFileName(route: direction, includeExtension: false);
   }
 
   @override

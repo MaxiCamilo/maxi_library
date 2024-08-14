@@ -5,10 +5,12 @@ String tr(String part) {
 }
 
 String trc(String text, List parts) {
+  text = LanguageManager.getTranslation(text);
+
   TranslatableText translatedText = TranslatableText(text);
   for (final part in parts) {
     translatedText = translatedText.append(part.toString());
   }
 
-  return LanguageManager.getTranslation(translatedText.text);
+  return translatedText.text;
 }

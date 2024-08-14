@@ -36,7 +36,7 @@ abstract class TemplateLanguageOperator with StartableFunctionality, IOperatorLa
 
   @override
   String getTranslation(String reference) {
-    if (isInitialized) {
+    if (!isInitialized) {
       return reference;
     }
 

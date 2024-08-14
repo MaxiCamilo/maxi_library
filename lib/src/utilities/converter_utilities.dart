@@ -21,7 +21,7 @@ mixin ConverterUtilities {
         detail: () => '',
         function: () => int.parse(value),
         errorFactory: (x) =>
-            NegativeResult(identifier: NegativeResultCodes.incorrectFormat, message: '${tr('The property')} $propertyName ${tr('must be an integer number, but non-numeric values ​​were found in the text')}', cause: x),
+            NegativeResult(identifier: NegativeResultCodes.incorrectFormat, message: trc('The property %1 must be an integer number, but non-numeric values ​​were found in the text', [propertyName]), cause: x),
       );
     } else if (value is bool) {
       return value ? 1 : 0;

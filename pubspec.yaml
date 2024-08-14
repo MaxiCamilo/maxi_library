@@ -12,6 +12,7 @@ dependencies:
   reflectable: ^4.0.9
   meta: ^1.15.0
   collection: ^1.19.0
+  http: ^1.2.2
   # path: ^1.8.0
 
 dev_dependencies:

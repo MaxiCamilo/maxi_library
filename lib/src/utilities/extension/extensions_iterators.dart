@@ -134,6 +134,12 @@ extension IteratorExtension<T> on Iterable<T> {
     }
   }
 
+  void iterar(Function(T) function) {
+    for (final item in this) {
+      function(item);
+    }
+  }
+
   Iterable<List<T>> splitIntoParts(int amount) sync* {
     final temporal = <T>[];
     for (final item in this) {

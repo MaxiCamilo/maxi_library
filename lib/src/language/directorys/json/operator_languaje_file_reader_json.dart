@@ -8,7 +8,7 @@ class OperatorLanguajeFileReaderJson with IOperatorLanguajeFileReader {
 
   @override
   Future<bool> isFileCompatible(String fileDirection) async {
-    return DirectoryUtilities.extractFileExtension(fileDirection) != 'json';
+    return DirectoryUtilities.extractFileExtension(fileDirection) == 'json';
   }
 
   @override

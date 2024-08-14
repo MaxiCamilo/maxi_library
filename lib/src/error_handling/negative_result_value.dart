@@ -61,7 +61,7 @@ class NegativeResultValue extends NegativeResult {
       return NegativeResultValue(
         identifier: codeDescription,
         name: propertyName,
-        message: tr('The validation for property $propertyName failed with the following error: "$error"'),
+        message: trc('The validation for property %1 failed with the following error: "%2"', [propertyName, error.toString()]),
         cause: error,
         value: value,
       );

@@ -202,15 +202,25 @@ mixin DirectoryUtilities {
     return await volatileAsync(detail: () => trc('Reading file located at %1', [fileDirection]), function: () => file.readAsBytes());
   }
 
-  static String extractFileName(String route) {
+  static String extractFileName({required String route, required bool includeExtension}) {
     route = interpretPrefix(route);
     final partido = route.replaceAll('\\', '/').split('/');
-    return partido.last;
+    final nameFile = partido.last;
+    final hasPoint = nameFile.contains('.');
+
+    if (includeExtension || !hasPoint) {
+      return nameFile;
+    }
+
+    final nameParted = nameFile.split('.');
+    nameParted.removeLast();
+
+    return nameParted.join();
   }
 
   static String extractFileExtension(String route) {
     route = interpretPrefix(route);
-    final nombre = extractFileName(route);
+    final nombre = extractFileName(route: route, includeExtension: true);
     if (!route.contains('.')) {
       return '';
     }
@@ -280,7 +290,7 @@ mixin DirectoryUtilities {
       await createFolder(destinationFolder);
     }
 
-    final newRoute = '$destinationFolder/${extractFileName(fileDirection)}';
+    final newRoute = '$destinationFolder/${extractFileName(route: fileDirection, includeExtension: true)}';
 
     await volatileAsync(detail: () => trc('Copying file located at %1 to folder %2', [fileDirection, destinationFolder]), function: () => file.copy(newRoute));
     return newRoute;
