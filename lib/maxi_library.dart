@@ -13,5 +13,6 @@ export 'src/prefixes.dart';
 export 'src/threads.dart';
 export 'src/singletons.dart';
 export 'src/reflection.dart';
+export 'src/task.dart';
 
 export 'package:rxdart/rxdart.dart';
