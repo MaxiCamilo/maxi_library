@@ -1,6 +1,8 @@
+import 'dart:typed_data';
+
 import 'package:maxi_library/maxi_library.dart';
 
-enum PrimitiesType { isInt, isDouble, isNum, isString, isBoolean, isDateTime }
+enum PrimitiesType { isInt, isDouble, isNum, isString, isBoolean, isDateTime, isBinary }
 
 mixin ReflectionUtilities {
   static PrimitiesType? isPrimitive(Type type) {
@@ -11,6 +13,7 @@ mixin ReflectionUtilities {
       const (bool) => PrimitiesType.isBoolean,
       const (DateTime) => PrimitiesType.isDateTime,
       const (num) => PrimitiesType.isNum,
+      const (Uint8List) || const (List<int>) => PrimitiesType.isBinary,
       _ => null,
     };
   }
@@ -27,6 +30,7 @@ mixin ReflectionUtilities {
       const (bool) => (item as bool) ? true : false,
       const (num) => (item as num) * 1,
       const (DateTime) => (item as DateTime).add(Duration(milliseconds: 0)),
+      const (Uint8List) || const (List<int>) => Uint8List.fromList((item as List<int>)),
       _ => throw NegativeResult(identifier: NegativeResultCodes.wrongType, message: 'The value is not a primitive value type ("${item.runtimeType}")')
     };
   }
@@ -39,6 +43,7 @@ mixin ReflectionUtilities {
       PrimitiesType.isString => '',
       PrimitiesType.isBoolean => false,
       PrimitiesType.isDateTime => DateTime.now(),
+      PrimitiesType.isBinary => Uint8List.fromList([]),
     };
   }
 
@@ -51,6 +56,7 @@ mixin ReflectionUtilities {
       PrimitiesType.isString => value.toString(),
       PrimitiesType.isBoolean => ConverterUtilities.toBoolean(value: value),
       PrimitiesType.isDateTime => ConverterUtilities.toDateTime(value: value),
+      PrimitiesType.isBinary => ConverterUtilities.toBinary(value: value),
     };
   }
 }

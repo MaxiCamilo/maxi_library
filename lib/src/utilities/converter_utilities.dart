@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:typed_data';
 
 import 'package:maxi_library/maxi_library.dart';
 
@@ -200,26 +201,46 @@ mixin ConverterUtilities {
     }
   }
 
-  static dynamic normalizePrimitive(dynamic valor) {
-    if (valor == null) {
+  static Uint8List toBinary({required dynamic value, String propertyName = '', Encoding encoder = utf8}) {
+    if (value is Uint8List) {
+      return value;
+    } else if (value is List<int>) {
+      return Uint8List.fromList(value);
+    } else if (value is String) {
+      return Uint8List.fromList(volatile(
+        detail: () => propertyName.isNotEmpty ? trc('Encoding property %1 with %2', [propertyName, encoder.name]) : trc('Encoding value with %1', [encoder.name]),
+        function: () => encoder.encode(value),
+      ));
+    } else {
+      throw NegativeResult(
+        identifier: NegativeResultCodes.wrongType,
+        message: propertyName.isNotEmpty
+            ? trc('The property %1 only accepts the type binary or equivalent, not %2', [propertyName, value.runtimeType])
+            : trc('The value only accepts the type binary or equivalent, not %1', [value.runtimeType]),
+      );
+    }
+  }
+
+  static dynamic normalizePrimitive({required dynamic value, Encoding binaryEncoder = utf8}) {
+    if (value == null) {
       throw NegativeResult(
         identifier: NegativeResultCodes.nullValue,
         message: tr('A null value cannot be interpreted as a primitive value'),
       );
     }
 
-    switch (valor) {
+    switch (value) {
       case int _:
       case double _:
       case bool _:
       case String _:
-        return valor;
+        return value;
       case DateTime dt:
         return dt.millisecondsSinceEpoch;
       case Enum e:
         return e.index;
       case List lista:
-        return json.encode(lista.map((e) => normalizePrimitive(e)));
+        return json.encode(lista.map((e) => normalizePrimitive(value: e, binaryEncoder: binaryEncoder)));
       case Map<String, dynamic> mapa:
         return json.encode(mapa);
       default:
