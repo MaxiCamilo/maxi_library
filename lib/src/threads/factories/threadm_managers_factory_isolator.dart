@@ -7,5 +7,5 @@ class ThreadManagersFactoryIsolator with IThreadManagersFactory {
   const ThreadManagersFactoryIsolator();
 
   @override
-  IThreadInvoker createServer({required List<IThreadInitializer> threadInitializer}) => ThreadProcessServerIsolator(threadInitializer: threadInitializer);
+  IThreadInvoker createServer({required List<IThreadInitializer> threadInitializer}) => ThreadProcessServerIsolator();
 }

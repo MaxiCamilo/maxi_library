@@ -2,9 +2,6 @@ import 'dart:async';
 
 import 'package:maxi_library/maxi_library.dart';
 import 'package:maxi_library/src/error_handling/cancel.dart';
-import 'package:maxi_library/src/tasks/interfaces/ifunctional_controller.dart';
-import 'package:maxi_library/src/tasks/interfaces/ifunctional_task.dart';
-import 'package:maxi_library/src/tasks/interfaces/ioperator_functional_task.dart';
 
 class OperatorFunctionalTask<T> with IOperatorFunctionalTask<T> {
   @override

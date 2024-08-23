@@ -4,7 +4,6 @@ import 'package:maxi_library/src/reflection/interfaces/ifield_reflection.dart';
 import 'package:maxi_library/src/reflection/interfaces/igetter_reflector.dart';
 import 'package:maxi_library/src/reflection/interfaces/isetter_reflector.dart';
 import 'package:maxi_library/src/reflection/standard/reflector_standard_utilities.dart';
-import 'package:reflectable/reflectable.dart';
 
 class FieldReflectorStandard with IDeclarationReflector, IGetterReflector, ISetterReflector, IFieldReflection {
   final Reflectable reflectable;

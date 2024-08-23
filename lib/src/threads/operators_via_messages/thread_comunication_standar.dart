@@ -4,7 +4,6 @@ import 'package:maxi_library/src/threads/context_process_thread_messages.dart';
 import 'package:maxi_library/src/threads/interfaces/iexecutor_requested_thread_functions.dart';
 import 'package:maxi_library/src/threads/interfaces/iexecutor_requested_thread_stream.dart';
 import 'package:maxi_library/src/threads/interfaces/ithread_communication.dart';
-import 'package:maxi_library/src/threads/interfaces/ithread_communication_method.dart';
 import 'package:maxi_library/src/threads/interfaces/ithread_message.dart';
 import 'package:maxi_library/src/threads/interfaces/ithread_process.dart';
 import 'package:maxi_library/src/threads/interfaces/ithread_request_manager.dart';

@@ -1,16 +1,12 @@
 import 'package:maxi_library/maxi_library.dart';
 import 'package:maxi_library/src/reflection/standard/type_entity_reflector.dart';
-import 'package:maxi_library/src/threads/interfaces/ithread_communication_method.dart';
-import 'package:reflectable/reflectable.dart';
 
-abstract class InstancesReflection with IThreadInitializer {
-  List<void Function()> get initializeReflectableFunctions;
-
-  List<Reflectable> get instances;
+abstract class ReflectorsCatalog with IThreadInitializer {
+  List<ReflectorInstance> get instances;
 
   bool get includeInGeneratedThreads => true;
 
-  const InstancesReflection();
+  const ReflectorsCatalog();
 
   void initializeReflectable() {
     if (ReflectionManager.isInitialized) {
@@ -18,22 +14,22 @@ abstract class InstancesReflection with IThreadInitializer {
     }
 
     try {
-      instances.first.annotatedClasses;
+      instances.first.instanceClass.annotatedClasses;
       return;
     } catch (_) {
-      for (final item in initializeReflectableFunctions) {
-        containErrorLog(detail: 'Reflector initialized failed', function: () => item());
+      for (final item in instances) {
+        containErrorLog(detail: 'Reflector initialized failed', function: () => item.initializeReflectableFunction());
       }
     }
 
     for (final instance in instances) {
-      for (var x in instance.annotatedClasses) {
-        addMirror(instance, x);
+      for (var x in instance.instanceClass.annotatedClasses) {
+        addMirror(instance.instanceClass, x);
       }
     }
 
     if (includeInGeneratedThreads) {
-      ThreadManager.threadInitializers.add(this);
+      ThreadManager.addThreadInitializer(initializer: this);
     }
 
     ReflectionManager.isInitialized = true;

@@ -3,7 +3,6 @@ import 'package:maxi_library/src/reflection/implementatios/fixed_parameter.dart'
 import 'package:maxi_library/src/reflection/implementatios/named_parameter.dart';
 import 'package:maxi_library/src/reflection/standard/reflector_standard_utilities.dart';
 import 'package:maxi_library/src/reflection/templates/template_method_reflection.dart';
-import 'package:reflectable/reflectable.dart';
 
 class MethodReflectorStandard extends TemplateMethodReflection {
   final Reflectable reflectable;

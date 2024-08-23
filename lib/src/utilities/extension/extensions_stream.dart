@@ -3,10 +3,24 @@ import 'dart:async';
 import 'package:maxi_library/maxi_library.dart';
 
 extension IteratorStream<T> on Stream<T> {
-  Future<void> waitFinish() {
+  Future<void> waitFinish({
+    void Function(T)? reactionItem,
+    void Function(dynamic)? reactionError,
+  }) {
     final waiter = Completer();
 
-    listen((_) {}).onDone(() => waiter.complete());
+    listen(
+        (x) {
+          if (reactionItem != null) {
+            reactionItem(x);
+          }
+        },
+        onDone: () => waiter.complete(),
+        onError: (x) {
+          if (reactionError != null) {
+            reactionError(x);
+          }
+        });
 
     return waiter.future;
   }
@@ -59,6 +73,4 @@ extension IteratorStream<T> on Stream<T> {
 
     return waiter.future;
   }
-
- 
 }

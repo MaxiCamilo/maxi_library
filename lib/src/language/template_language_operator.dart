@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:collection';
 
 import 'package:maxi_library/maxi_library.dart';
-import 'package:maxi_library/src/threads/interfaces/ithread_communication_method.dart';
 import 'package:meta/meta.dart';
 
 abstract class TemplateLanguageOperator with StartableFunctionality, IOperatorLanguage, IThreadInitializer {
@@ -56,7 +55,7 @@ abstract class TemplateLanguageOperator with StartableFunctionality, IOperatorLa
       _transateMap = result;
     }
 
-    ThreadManager.threadInitializers.add(this);
+    ThreadManager.addThreadInitializer(initializer: this);
   }
 
   @override

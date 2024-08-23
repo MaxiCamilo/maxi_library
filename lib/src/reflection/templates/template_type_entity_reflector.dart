@@ -386,7 +386,10 @@ abstract class TemplateTypeEntityReflector with IReflectionType, IDeclarationRef
     bool verify = true,
   }) {
     initialized();
-    final mapJson = json.decode(rawJson);
+    final mapJson = volatile(
+      detail: () => tr('The textual content was expected to be valid JSON'),
+      function: () => json.decode(rawJson),
+    );
 
     if (mapJson is! Map<String, dynamic>) {
       throw NegativeResult(

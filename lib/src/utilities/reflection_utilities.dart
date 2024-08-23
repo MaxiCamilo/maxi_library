@@ -24,7 +24,7 @@ mixin ReflectionUtilities {
     }
 
     return switch (item.runtimeType) {
-      const (String) => item.toString(),
+      const (String) => '$item',
       const (int) => (item as int) * 1,
       const (double) => (item as double) * 1,
       const (bool) => (item as bool) ? true : false,

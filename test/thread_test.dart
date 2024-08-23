@@ -7,6 +7,7 @@ import 'package:maxi_library/maxi_library.dart';
 import 'package:maxi_library/src/utilities/extension/extensions_stream.dart';
 import 'package:test/test.dart';
 
+import 'entities/thread_initialicer_test.dart';
 import 'services/first_service.dart';
 
 Future<String> _greetUserMaxi(InvocationParameters parameters) async {
@@ -45,6 +46,8 @@ void main() {
     });
 
     test('Mount thread', () async {
+      ThreadManager.addThreadInitializer(initializer: ThreadInitializerTest());
+
       final textReceive = await ThreadManager.callFunctionAsAnonymous(function: _greetUserMaxi);
       log('The Thread sent "$textReceive"');
 

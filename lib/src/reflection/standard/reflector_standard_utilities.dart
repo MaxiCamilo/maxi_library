@@ -1,5 +1,4 @@
 import 'package:maxi_library/maxi_library.dart';
-import 'package:reflectable/reflectable.dart';
 
 mixin ReflectorStandardUtilities {
   static ObjectMirror getStaticInstance({required Reflectable reflect, required Type type}) {

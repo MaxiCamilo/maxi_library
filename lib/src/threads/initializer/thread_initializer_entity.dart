@@ -1,5 +1,4 @@
 import 'package:maxi_library/maxi_library.dart';
-import 'package:maxi_library/src/threads/interfaces/ithread_communication_method.dart';
 import 'package:maxi_library/src/threads/interfaces/ithread_process_entity.dart';
 
 class ThreadInitializerEntity with IThreadInitializer {

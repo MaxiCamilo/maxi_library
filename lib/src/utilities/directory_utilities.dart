@@ -5,8 +5,21 @@ import 'dart:typed_data';
 
 import 'package:maxi_library/maxi_library.dart';
 
+class _DefineCurrentPathInThreads with IThreadInitializer {
+  final String direction;
+
+  const _DefineCurrentPathInThreads({required this.direction});
+
+  @override
+  Future<void> performInitializationInThread(IThreadCommunicationMethod channel) async {
+    DirectoryUtilities.changeFixedRoute(direction);
+  }
+}
+
 mixin DirectoryUtilities {
   static const String prefixRouteLocal = '%appdata%';
+  static bool useWorkingPath = false;
+  static bool useWorkingPathInDebug = true;
 
   static String? _fixedCurrentPath;
   static bool _initializeDefaultTemporaryPath = false;
@@ -16,7 +29,14 @@ mixin DirectoryUtilities {
       return _fixedCurrentPath!;
     }
 
-    _fixedCurrentPath = extractFileLocation(fileDirection: Platform.resolvedExecutable, checkPrefix: false);
+    if (useWorkingPath || (useWorkingPathInDebug && Platform.environment['PUB_ENVIRONMENT'] == 'vscode.dart-code')) {
+      _fixedCurrentPath = Directory.current.path;
+    } else {
+      _fixedCurrentPath = extractFileLocation(fileDirection: Platform.resolvedExecutable, checkPrefix: false);
+    }
+
+    ThreadManager.addThreadInitializer(initializer: _DefineCurrentPathInThreads(direction: _fixedCurrentPath!));
+
     return _fixedCurrentPath!;
   }
 

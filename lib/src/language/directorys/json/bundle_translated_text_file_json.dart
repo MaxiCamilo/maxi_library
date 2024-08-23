@@ -3,7 +3,6 @@ import 'dart:convert';
 
 import 'package:maxi_library/maxi_library.dart';
 import 'package:maxi_library/src/language/interfaces/ibundle_translated_text.dart';
-import 'package:maxi_library/src/utilities/directory_utilities.dart';
 
 class BundleTranslatedTextFileJson with IBundleTranslatedText {
   final String direction;

@@ -1,9 +1,27 @@
+import 'package:maxi_library/maxi_library.dart';
+import 'package:meta/meta.dart';
+
 mixin StartableFunctionality {
+  @protected
   Future<void> initializeFunctionality();
 
   bool _isInitialized = false;
 
   bool get isInitialized => _isInitialized;
+
+  void checkInitialize() {
+    if (!_isInitialized) {
+      throw NegativeResult(
+        identifier: NegativeResultCodes.uninitializedFunctionality,
+        message: tr('The functionality is uninitialized and cannot be used'),
+      );
+    }
+  }
+
+  T checkFirstIfInitialized<T>(T Function() function) {
+    checkInitialize();
+    return function();
+  }
 
   Future<void> initialize() async {
     if (_isInitialized) {

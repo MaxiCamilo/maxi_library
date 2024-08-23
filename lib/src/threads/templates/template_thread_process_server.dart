@@ -6,7 +6,9 @@ import 'package:maxi_library/src/threads/interfaces/ithread_process.dart';
 import 'package:maxi_library/src/threads/interfaces/ithread_process_server.dart';
 
 mixin TemplateThreadProcessServer on IThreadInvoker, IThreadProcess, IThreadProcessServer {
-  List<IThreadInitializer> get threadInitializer;
+  //List<IThreadInitializer> get threadInitializer;
+
+  final _threadInitializers = <IThreadInitializer>[];
 
   final mapConnectionsEntity = <Type, IThreadCommunication>{};
 
@@ -74,7 +76,7 @@ mixin TemplateThreadProcessServer on IThreadInvoker, IThreadProcess, IThreadProc
 
   @override
   Future<IThreadCommunication> createAnonymousThread({required String name, required List<IThreadInitializer> initializers}) async {
-    final thread = await _newThreadsSynchronizer.execute(function: () => createAnonymousManagerAccordingImplementation(name: name, initializers: initializers));
+    final thread = await _newThreadsSynchronizer.execute(function: () => createAnonymousManagerAccordingImplementation(name: name, initializers: [..._threadInitializers, ...initializers]));
     listAnonymousCommunicatios.add(thread);
 
     return thread;
@@ -96,7 +98,7 @@ mixin TemplateThreadProcessServer on IThreadInvoker, IThreadProcess, IThreadProc
       }
     }
 
-    await createEntitysManager<T>(item: entity, initializers: threadInitializer, checkIfExists: false);
+    await createEntitysManager<T>(item: entity, initializers: _threadInitializers, checkIfExists: false);
   }
 
   @override
@@ -111,7 +113,7 @@ mixin TemplateThreadProcessServer on IThreadInvoker, IThreadProcess, IThreadProc
       }
     }
 
-    final thread = await _newThreadsSynchronizer.execute(function: () => createEntitysManagerAccordingImplementation(item: item, initializers: initializers));
+    final thread = await _newThreadsSynchronizer.execute(function: () => createEntitysManagerAccordingImplementation(item: item, initializers: [..._threadInitializers, ...initializers]));
 
     mapConnectionsEntity[T] = thread;
     return thread;
@@ -159,10 +161,17 @@ mixin TemplateThreadProcessServer on IThreadInvoker, IThreadProcess, IThreadProc
       return free;
     }
 
-    final newThread = await createAnonymousThread(name: 'Background Thread #${listAnonymousBackgroundCommunicatios.length + 1}', initializers: threadInitializer);
+    final newThread = await createAnonymousThread(name: 'Background Thread #${listAnonymousBackgroundCommunicatios.length + 1}', initializers: []);
     listAnonymousCommunicatios.add(newThread);
     listAnonymousBackgroundCommunicatios.add(newThread);
     _listOccupiedAnonymousCommunicators.add(newThread);
     return newThread;
+  }
+
+  @override
+  void addThreadInitializer({required IThreadInitializer initializer}) {
+    if (!_threadInitializers.contains(initializer)) {
+      _threadInitializers.add(initializer);
+    }
   }
 }

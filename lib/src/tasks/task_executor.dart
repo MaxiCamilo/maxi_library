@@ -1,11 +1,7 @@
 import 'dart:async';
 
 import 'package:maxi_library/maxi_library.dart';
-import 'package:maxi_library/src/tasks/interfaces/ifunctional_task.dart';
-import 'package:maxi_library/src/tasks/interfaces/ifunctional_task_mixable.dart';
-import 'package:maxi_library/src/tasks/interfaces/ioperator_functional_task.dart';
 import 'package:maxi_library/src/tasks/interfaces/itask_executor.dart';
-import 'package:maxi_library/src/tasks/operator_functional_task.dart';
 
 class TaskExecutor with ITaskExecutor {
   @override

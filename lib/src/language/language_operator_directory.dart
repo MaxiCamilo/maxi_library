@@ -5,7 +5,6 @@ import 'package:maxi_library/maxi_library.dart';
 import 'package:maxi_library/src/language/interfaces/ibundle_translated_text.dart';
 import 'package:maxi_library/src/language/interfaces/ioperator_language_file_reader.dart';
 import 'package:maxi_library/src/language/template_language_operator.dart';
-import 'package:maxi_library/src/utilities/directory_utilities.dart';
 
 class LanguageOperatorDirectory extends TemplateLanguageOperator {
   final String translatedFileAddress;

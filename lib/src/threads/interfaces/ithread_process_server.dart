@@ -7,4 +7,6 @@ mixin IThreadProcessServer on IThreadInvoker, IThreadProcess {
 
   Future<IThreadCommunication> createAnonymousThread({required String name, required List<IThreadInitializer> initializers});
   Future<IThreadCommunication> createEntitysManager<T>({required T item, required List<IThreadInitializer> initializers});
+
+  void addThreadInitializer({required IThreadInitializer initializer});
 }

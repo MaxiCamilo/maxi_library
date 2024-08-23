@@ -12,17 +12,15 @@ import 'package:maxi_library/src/threads/operators_via_messages/thread_comunicat
 import 'package:maxi_library/src/threads/templates/template_thread_process_server.dart';
 
 class ThreadProcessServerIsolator with IThreadInvoker, IThreadProcess, IThreadProcessServer, TemplateThreadProcessServer, AbylitysThreadLinkedSender {
-  @override
-  final List<IThreadInitializer> threadInitializer;
+  
 
 
-  ThreadProcessServerIsolator({this.threadInitializer = const []});
+  ThreadProcessServerIsolator();
 
   @override
   Future<IThreadCommunication> createAnonymousManagerAccordingImplementation({required String name, required List<IThreadInitializer> initializers}) async {
     final initializersPrepared = [
       ThreadInicializerDefineAnonymousIsolator(),
-      ...threadInitializer,
       ...initializers,
     ];
 
@@ -34,7 +32,6 @@ class ThreadProcessServerIsolator with IThreadInvoker, IThreadProcess, IThreadPr
   Future<IThreadCommunication> createEntitysManagerAccordingImplementation<T>({required T item, required List<IThreadInitializer> initializers}) async {
     final initializersPrepared = [
       ThreadInicializerDefineEntity<T>(entity: item),
-      ...threadInitializer,
       ...initializers,
       ThreadInitializerEntity(),
     ];

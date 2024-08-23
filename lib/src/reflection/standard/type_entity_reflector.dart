@@ -8,7 +8,6 @@ import 'package:maxi_library/src/reflection/standard/getter_reflector_standard.d
 import 'package:maxi_library/src/reflection/standard/method_reflector_standard.dart';
 import 'package:maxi_library/src/reflection/standard/setter_reflector_standard.dart';
 import 'package:maxi_library/src/reflection/templates/template_type_entity_reflector.dart';
-import 'package:reflectable/reflectable.dart';
 
 class TypeEntityReflector extends TemplateTypeEntityReflector {
   final Reflectable reflectable;

@@ -98,6 +98,8 @@ mixin ConverterUtilities {
         's' => true,
         'y' => true,
         'n' => false,
+        '0' => false,
+        '1' => true,
         _ => throw NegativeResult(
             identifier: NegativeResultCodes.incorrectFormat,
             message: trc('The property %1 does not have a valid text to be transformed into a boolean option', [propertyName]),

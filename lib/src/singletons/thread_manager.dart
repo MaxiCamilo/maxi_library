@@ -2,19 +2,19 @@ import 'package:maxi_library/maxi_library.dart';
 import 'package:maxi_library/src/threads/factories/threadm_managers_factory_isolator.dart';
 import 'package:maxi_library/src/threads/interfaces/ithread_magares_factory.dart';
 import 'package:maxi_library/src/threads/interfaces/ithread_process.dart';
+import 'package:maxi_library/src/threads/interfaces/ithread_process_server.dart';
 
 mixin ThreadManager {
   static IThreadInvoker? _instance;
   static IThreadManagersFactory generalFactory = const ThreadManagersFactoryIsolator();
-
-  static List<IThreadInitializer> threadInitializers = [];
+  //static List<IThreadInitializer> initializerForNewIsolates = [];
 
   static IThreadInvoker get instance {
     if (_instance != null) {
       return _instance!;
     }
 
-    _instance = generalFactory.createServer(threadInitializer: threadInitializers);
+    _instance = generalFactory.createServer(threadInitializer: []);
 
     return _instance!;
   }
@@ -41,6 +41,12 @@ mixin ThreadManager {
       instance.callEntityStream<T, R>(function: function, parameters: parameters);
 
   static Future<void> mountEntity<T>({required T entity, bool ifExistsOmit = true}) => instance.mountEntity<T>(entity: entity, ifExistsOmit: ifExistsOmit);
+
+  static void addThreadInitializer({required IThreadInitializer initializer}) {
+    if (instance is IThreadProcessServer) {
+      (instance as IThreadProcessServer).addThreadInitializer(initializer: initializer);
+    }
+  }
 
   static IThreadProcess getProcess() {
     final item = instance;

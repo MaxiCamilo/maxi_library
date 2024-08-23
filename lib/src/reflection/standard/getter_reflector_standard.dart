@@ -1,7 +1,6 @@
 import 'package:maxi_library/maxi_library.dart';
 import 'package:maxi_library/src/reflection/interfaces/igetter_reflector.dart';
 import 'package:maxi_library/src/reflection/standard/reflector_standard_utilities.dart';
-import 'package:reflectable/reflectable.dart';
 
 class GetterReflectorStandard with IDeclarationReflector, IGetterReflector {
   final Reflectable reflectable;
