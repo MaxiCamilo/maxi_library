@@ -9,12 +9,15 @@ mixin IEntityFramework {
 
   void changePrimaryKey({required instance, required int newId});
 
-  dynamic interpretation({
+  dynamic interpret({
     required dynamic value,
     bool enableCustomInterpretation = true,
     bool verify = true,
   });
 
-
-  
+  List<T> interpretAslist<T>({
+    required dynamic value,
+    bool enableCustomInterpretation = true,
+    bool verify = true,
+  });
 }

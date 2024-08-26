@@ -219,7 +219,7 @@ abstract class TemplateTypeEntityReflector with IReflectionType, IDeclarationRef
   @override
   bool isTypeCompatible(Type type) {
     initialized();
-    return type == this.type || (baseClass != null && baseClass!.isTypeCompatible(type)) || inheritance.any((x) => x.isTypeCompatible(type));
+    return type == this.type || type == dynamic || (baseClass != null && baseClass!.isTypeCompatible(type)) || inheritance.any((x) => x.isTypeCompatible(type));
   }
 
   @override
@@ -312,7 +312,7 @@ abstract class TemplateTypeEntityReflector with IReflectionType, IDeclarationRef
   }
 
   @override
-  dynamic intepretationMap(Map<String, dynamic> mapValues) {
+  dynamic interpretAsMap(Map<String, dynamic> mapValues) {
     initialized();
     final newItem = generateEmptryObject();
 
@@ -398,13 +398,53 @@ abstract class TemplateTypeEntityReflector with IReflectionType, IDeclarationRef
       );
     }
 
-    return interpretation(value: mapJson, enableCustomInterpretation: enableCustomInterpretation, verify: enableCustomInterpretation);
+    return interpret(value: mapJson, enableCustomInterpretation: enableCustomInterpretation, verify: enableCustomInterpretation);
   }
 
   @override
   String serializeToJson({required dynamic value}) {
     final mapValue = serializeToMap(value);
     return json.encode(mapValue);
+  }
+
+  @override
+  List<T> interpretAslist<T>({
+    required dynamic value,
+    bool enableCustomInterpretation = true,
+    bool verify = true,
+  }) {
+    initialized();
+    checkProgrammingFailure(
+      thatChecks: () => trc('The type %1 is compatible with reflector %2', [T, name]),
+      result: () => isTypeCompatible(T),
+    );
+
+    final newList = <T>[];
+
+    if (value is Iterable) {
+      int i = 1;
+      for (final item in value) {
+        final digestedValue = volatileFactory(
+          errorFactory: (x) => NegativeResultValue.fromException(ex: x, value: item, name: trc('Validate item N° %1', [i])),
+          function: () => interpret(
+            value: item,
+            enableCustomInterpretation: enableCustomInterpretation,
+            verify: verify,
+          ),
+        );
+        i += 1;
+        checkProgrammingFailure(thatChecks: () => trc('The generated value N° %1 is type %2', [i, T]), result: () => digestedValue is T);
+        newList.add(digestedValue);
+      }
+    } else {
+      newList.add(interpret(
+        value: value,
+        enableCustomInterpretation: enableCustomInterpretation,
+        verify: verify,
+      ));
+    }
+
+    return newList;
   }
 
   @override

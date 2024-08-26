@@ -18,8 +18,7 @@ mixin ConverterUtilities {
       if (ifEmptyIsZero && value.isEmpty) {
         return 0;
       }
-      return volatile(
-        detail: () => '',
+      return volatileFactory(
         function: () => int.parse(value),
         errorFactory: (x) =>
             NegativeResult(identifier: NegativeResultCodes.incorrectFormat, message: trc('The property %1 must be an integer number, but non-numeric values ​​were found in the text', [propertyName]), cause: x),
@@ -52,8 +51,7 @@ mixin ConverterUtilities {
       if (ifEmptyIsZero && value.isEmpty) {
         return 0;
       }
-      return volatile(
-        detail: () => '',
+      return volatileFactory(
         function: () => double.parse(value),
         errorFactory: (x) => NegativeResult(
           identifier: NegativeResultCodes.incorrectFormat,

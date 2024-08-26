@@ -4,7 +4,6 @@ import 'dart:developer';
 import 'dart:math' as math;
 
 import 'package:maxi_library/maxi_library.dart';
-import 'package:maxi_library/src/utilities/extension/extensions_stream.dart';
 import 'package:test/test.dart';
 
 import 'entities/thread_initialicer_test.dart';

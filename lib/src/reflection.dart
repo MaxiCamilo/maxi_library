@@ -5,6 +5,7 @@ export 'package:maxi_library/src/reflection/decorators/custom_interpretation.dar
 export 'package:maxi_library/src/reflection/decorators/primary_key.dart';
 export 'package:maxi_library/src/reflection/decorators/value_validator.dart';
 export 'package:maxi_library/src/reflection/decorators/custom_serialization.dart';
+export 'package:maxi_library/src/reflection/decorators/unique_key.dart';
 
 export 'package:maxi_library/src/reflection/interfaces/ivalue_generator.dart';
 export 'package:maxi_library/src/reflection/interfaces/ireflection_type.dart';

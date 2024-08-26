@@ -19,6 +19,8 @@ class SetterReflectorStandard with IDeclarationReflector, ISetterReflector {
   @override
   late final List<ValueValidator> validators;
 
+  late final CustomInterpretation? customInterpretation;
+
   SetterReflectorStandard({required this.reflectable, required this.classMirror, required this.methodMirror}) {
     reflectedType = ReflectionManager.getReflectionType(methodMirror.parameters.first.dynamicReflectedType, annotations: methodMirror.metadata);
     if (methodMirror.simpleName.last == '=') {
@@ -29,6 +31,8 @@ class SetterReflectorStandard with IDeclarationReflector, ISetterReflector {
 
     formalName = FormalName.searchFormalName(realName: name, annotations: annotations);
     validators = methodMirror.metadata.whereType<ValueValidator>().toList();
+
+    customInterpretation = methodMirror.metadata.selectByType<CustomInterpretation>();
   }
 
   @override
@@ -46,16 +50,20 @@ class SetterReflectorStandard with IDeclarationReflector, ISetterReflector {
       );
     }
 
-    final formatedValue = reflectedType.convertObject(newValue);
+    if (customInterpretation != null) {
+      newValue = customInterpretation!.performInterpretation(value: newValue, declaration: this);
+    } else {
+      newValue = reflectedType.convertObject(newValue);
+    }
 
     if (beforeVerifying) {
       verifyValueDirectly(value: newValue, parentEntity: instance);
     }
 
     if (isStatic) {
-      ReflectorStandardUtilities.getStaticInstance(reflect: reflectable, type: classMirror.dynamicReflectedType).invokeSetter(name, formatedValue);
+      ReflectorStandardUtilities.getStaticInstance(reflect: reflectable, type: classMirror.dynamicReflectedType).invokeSetter(name, newValue);
     } else {
-      ReflectorStandardUtilities.getInstance(reflect: reflectable, object: instance).invokeSetter(name, formatedValue);
+      ReflectorStandardUtilities.getInstance(reflect: reflectable, object: instance).invokeSetter(name, newValue);
     }
   }
 }

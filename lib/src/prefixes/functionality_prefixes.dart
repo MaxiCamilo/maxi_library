@@ -99,13 +99,30 @@ T addToErrorDescription<T>({
   }
 }
 
+T volatileFactory<T>({
+  required T Function() function,
+  NegativeResult Function(NegativeResult)? negativeFactory,
+  NegativeResult Function(dynamic)? errorFactory,
+}) {
+  try {
+    return function();
+  } catch (ex) {
+    if (negativeFactory != null && ex is NegativeResult) {
+      throw negativeFactory(ex);
+    } else if (errorFactory != null) {
+      throw errorFactory(ex);
+    } else {
+      rethrow;
+    }
+  }
+}
+
 T volatile<T>({
   required String Function() detail,
   required T Function() function,
   void Function(NegativeResult)? ifFails,
   void Function(dynamic)? ifUnknownFails,
   void Function(dynamic)? ifFailsAnyway,
-  NegativeResult Function(dynamic)? errorFactory,
 }) {
   try {
     return function();
@@ -118,16 +135,11 @@ T volatile<T>({
     }
     rethrow;
   } catch (ex) {
-    late final NegativeResult rn;
-    if (errorFactory == null) {
-      rn = NegativeResult(
-        identifier: NegativeResultCodes.nonStandardError,
-        message: trc('An error occurred while executing the functionality "%1", the error was: %2', [detail(), ex]),
-        cause: ex,
-      );
-    } else {
-      rn = errorFactory(ex);
-    }
+    final NegativeResult rn = NegativeResult(
+      identifier: NegativeResultCodes.nonStandardError,
+      message: trc('An error occurred while executing the functionality "%1", the error was: %2', [detail(), ex]),
+      cause: ex,
+    );
 
     if (ifFails != null) {
       containError(function: () => ifFails(rn));
@@ -149,8 +161,7 @@ T volatileByFunctionality<T>({
   required String Function() errorMessage,
   required T Function() function,
 }) =>
-    volatile(
-      detail: () => '',
+    volatileFactory(
       function: function,
       errorFactory: (p0) => NegativeResult(
         identifier: NegativeResultCodes.invalidFunctionality,
@@ -208,27 +219,21 @@ T cautious<T>({
   required String Function() reasonFailure,
   required T Function() function,
   NegativeResultCodes codeReasonFailure = NegativeResultCodes.invalidFunctionality,
-  void Function(NegativeResult)? ifFails,
-  void Function(dynamic)? ifUnknownFails,
 }) =>
-    volatile(
-      detail: reasonFailure,
+    volatileFactory(
       function: function,
       errorFactory: (x) => NegativeResult(
         identifier: codeReasonFailure,
         message: reasonFailure(),
         cause: x,
       ),
-      ifFails: ifFails,
-      ifUnknownFails: ifUnknownFails,
     );
 
 T programmingFailure<T>({
   required String Function() reasonFailure,
   required T Function() function,
 }) =>
-    volatile(
-      detail: reasonFailure,
+    volatileFactory(
       function: function,
       errorFactory: (x) => NegativeResult(
         identifier: NegativeResultCodes.implementationFailure,

@@ -10,10 +10,14 @@ class GetterReflectorStandard with IDeclarationReflector, IGetterReflector {
   @override
   late final IReflectionType reflectedType;
 
+  late final CustomSerialization? customSerialization;
+
   GetterReflectorStandard({required this.reflectable, required this.classMirror, required this.methodMirror}) {
     reflectedType = ReflectionManager.getReflectionType(methodMirror.reflectedReturnType, annotations: methodMirror.metadata);
     formalName = FormalName.searchFormalName(realName: name, annotations: annotations);
     validators = methodMirror.metadata.whereType<ValueValidator>().toList();
+
+    customSerialization = methodMirror.metadata.selectByType<CustomSerialization>();
   }
 
   @override
@@ -40,10 +44,18 @@ class GetterReflectorStandard with IDeclarationReflector, IGetterReflector {
       );
     }
 
+    late final dynamic value;
+
     if (isStatic) {
-      return ReflectorStandardUtilities.getStaticInstance(reflect: reflectable, type: classMirror.dynamicReflectedType).invokeGetter(name);
+      value = ReflectorStandardUtilities.getStaticInstance(reflect: reflectable, type: classMirror.dynamicReflectedType).invokeGetter(name);
     } else {
-      return ReflectorStandardUtilities.getInstance(reflect: reflectable, object: instance).invokeGetter(name);
+      value = ReflectorStandardUtilities.getInstance(reflect: reflectable, object: instance).invokeGetter(name);
+    }
+
+    if (customSerialization != null) {
+      return customSerialization!.performSerialization(entity: value, declaration: this);
+    } else {
+      return value;
     }
   }
 }

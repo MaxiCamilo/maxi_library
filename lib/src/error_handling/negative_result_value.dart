@@ -28,6 +28,18 @@ class NegativeResultValue extends NegativeResult {
     );
   }
 
+  factory NegativeResultValue.fromException({
+    required String name,
+    required dynamic ex,
+    dynamic value,
+  }) {
+    return NegativeResultValue.fromNegativeResult(
+      name: name,
+      value: value,
+      nr: NegativeResult.searchNegativity(item: ex, actionDescription: trc('Vefify value named %1', [name])),
+    );
+  }
+
   @override
   Map<String, dynamic> serialize() {
     final map = super.serialize();

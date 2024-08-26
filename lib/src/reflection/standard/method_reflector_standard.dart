@@ -18,7 +18,7 @@ class MethodReflectorStandard extends TemplateMethodReflection {
   @override
   bool get isSetter => methodMirror.isSetter;
 
-  
+  late final CustomSerialization? customSerialization;
 
   MethodReflectorStandard._(
       {required super.annotations,
@@ -29,7 +29,9 @@ class MethodReflectorStandard extends TemplateMethodReflection {
       required super.reflectedType,
       required this.classMirror,
       required this.methodMirror,
-      required this.reflectable});
+      required this.reflectable}) {
+    customSerialization = methodMirror.metadata.selectByType<CustomSerialization>();
+  }
 
   factory MethodReflectorStandard.make({required Reflectable reflectable, required ClassMirror classMirror, required MethodMirror methodMirror}) {
     final fixedParametes = <FixedParameter>[];
@@ -112,22 +114,28 @@ class MethodReflectorStandard extends TemplateMethodReflection {
 
   @override
   callMethodImplementationWithoutParameters({required instance}) {
-    if (isGetter) {
-      return callMethodImplementationWithGetter(instance: instance);
-    }
+    late final dynamic value;
 
-    if (isStatic) {
-      return ReflectorStandardUtilities.getStaticInstance(reflect: reflectable, type: classMirror.dynamicReflectedType).invoke(
+    if (isGetter) {
+      value = callMethodImplementationWithGetter(instance: instance);
+    } else if (isStatic) {
+      value = ReflectorStandardUtilities.getStaticInstance(reflect: reflectable, type: classMirror.dynamicReflectedType).invoke(
         name,
         const [],
         const {},
       );
     } else {
-      return ReflectorStandardUtilities.getInstance(reflect: reflectable, object: instance).invoke(
+      value = ReflectorStandardUtilities.getInstance(reflect: reflectable, object: instance).invoke(
         name,
         const [],
         const {},
       );
+    }
+
+    if (customSerialization != null) {
+      return customSerialization!.performSerialization(entity: value, declaration: this);
+    } else {
+      return value;
     }
   }
 }

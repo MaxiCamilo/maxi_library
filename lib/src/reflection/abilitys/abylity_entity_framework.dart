@@ -10,7 +10,7 @@ mixin AbylityEntityFramework on ITypeClassReflection, IEntityFramework {
   late final IGetterReflector? _primaryKey;
   late final CustomInterpretation? _customInterpretation;
 
-  dynamic intepretationMap(Map<String, dynamic> mapValues);
+  dynamic interpretAsMap(Map<String, dynamic> mapValues);
 
   @override
   bool get hasPrimaryKey {
@@ -85,7 +85,7 @@ mixin AbylityEntityFramework on ITypeClassReflection, IEntityFramework {
   }
 
   @override
-  dynamic interpretation({
+  dynamic interpret({
     required dynamic value,
     bool enableCustomInterpretation = true,
     bool verify = true,
@@ -95,7 +95,7 @@ mixin AbylityEntityFramework on ITypeClassReflection, IEntityFramework {
     }
 
     if (value is Map<String, dynamic>) {
-      return intepretationMap(value);
+      return interpretAsMap(value);
     } else {
       throw NegativeResult(
         identifier: NegativeResultCodes.wrongType,

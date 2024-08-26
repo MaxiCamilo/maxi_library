@@ -23,6 +23,7 @@ abstract class ReflectorsCatalog with IThreadInitializer {
     }
 
     for (final instance in instances) {
+      instance.initializeReflectableFunction();
       for (var x in instance.instanceClass.annotatedClasses) {
         addMirror(instance.instanceClass, x);
       }

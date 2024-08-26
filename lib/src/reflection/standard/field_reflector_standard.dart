@@ -22,12 +22,18 @@ class FieldReflectorStandard with IDeclarationReflector, IGetterReflector, ISett
   @override
   late final bool isRequired;
 
+  late final CustomInterpretation? customInterpretation;
+
+  late final CustomSerialization? customSerialization;
+
   FieldReflectorStandard({required this.reflectable, required this.classMirror, required this.variableMirror}) {
     reflectedType = ReflectionManager.getReflectionType(variableMirror.dynamicReflectedType, annotations: variableMirror.metadata);
     formalName = FormalName.searchFormalName(realName: name, annotations: annotations);
     isRequired = variableMirror.metadata.any((x) => x is EssentialKey);
-
     validators = variableMirror.metadata.whereType<ValueValidator>().toList();
+
+    customInterpretation = variableMirror.metadata.selectByType<CustomInterpretation>();
+    customSerialization = variableMirror.metadata.selectByType<CustomSerialization>();
   }
 
   @override
@@ -45,11 +51,18 @@ class FieldReflectorStandard with IDeclarationReflector, IGetterReflector, ISett
   @override
   getValue({required instance}) {
     _checkIsNullAndStatic(instance);
+    late final dynamic value;
 
     if (isStatic) {
-      return ReflectorStandardUtilities.getStaticInstance(reflect: reflectable, type: classMirror.dynamicReflectedType).invokeGetter(name);
+      value = ReflectorStandardUtilities.getStaticInstance(reflect: reflectable, type: classMirror.dynamicReflectedType).invokeGetter(name);
     } else {
-      return ReflectorStandardUtilities.getInstance(reflect: reflectable, object: instance).invokeGetter(name);
+      value = ReflectorStandardUtilities.getInstance(reflect: reflectable, object: instance).invokeGetter(name);
+    }
+
+    if (customSerialization != null) {
+      return customSerialization!.performSerialization(entity: value, declaration: this);
+    } else {
+      return value;
     }
   }
 
@@ -57,16 +70,20 @@ class FieldReflectorStandard with IDeclarationReflector, IGetterReflector, ISett
   void setValue({required instance, required newValue, bool beforeVerifying = true}) {
     _checkIsNullAndStatic(instance);
 
-    final formatedValue = reflectedType.convertObject(newValue);
+    if (customInterpretation != null) {
+      newValue = customInterpretation!.performInterpretation(value: newValue, declaration: this);
+    } else {
+      newValue = reflectedType.convertObject(newValue);
+    }
 
     if (beforeVerifying) {
       verifyValueDirectly(value: newValue, parentEntity: instance);
     }
 
     if (isStatic) {
-      ReflectorStandardUtilities.getStaticInstance(reflect: reflectable, type: classMirror.dynamicReflectedType).invokeSetter(name, formatedValue);
+      ReflectorStandardUtilities.getStaticInstance(reflect: reflectable, type: classMirror.dynamicReflectedType).invokeSetter(name, newValue);
     } else {
-      ReflectorStandardUtilities.getInstance(reflect: reflectable, object: instance).invokeSetter(name, formatedValue);
+      ReflectorStandardUtilities.getInstance(reflect: reflectable, object: instance).invokeSetter(name, newValue);
     }
   }
 
