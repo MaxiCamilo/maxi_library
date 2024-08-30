@@ -1,4 +1,4 @@
-import 'package:maxi_library/src/tasks/interfaces/ifunctional_task.dart';
+import 'package:maxi_library/maxi_library.dart';
 
 mixin IFunctionalTaskMixable {
   bool isCompatible(IFunctionalTask other);

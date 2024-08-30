@@ -1,5 +1,4 @@
-import 'package:maxi_library/src/tasks/interfaces/ifunctional_task.dart';
-import 'package:maxi_library/src/tasks/interfaces/ioperator_functional_task.dart';
+import 'package:maxi_library/maxi_library.dart';
 
 mixin ITaskExecutor {
   IOperatorFunctionalTask? get activeTask;
@@ -14,6 +13,4 @@ mixin ITaskExecutor {
     required Duration waitUntilRetry,
     required bool isMixable,
   });
-
-  
 }

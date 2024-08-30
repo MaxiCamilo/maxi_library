@@ -23,6 +23,8 @@ export 'package:maxi_library/src/reflection/standard/reflector_catalog.dart';
 export 'package:maxi_library/src/reflection/build/build_reflectors.dart';
 
 export 'package:maxi_library/src/reflection/validators/numbers/check_number_range.dart';
+export 'package:maxi_library/src/reflection/validators/numbers/check_ip_port.dart';
 export 'package:maxi_library/src/reflection/validators/texts/check_text_length.dart';
+export 'package:maxi_library/src/reflection/validators/texts/check_ip.dart';
 
 export 'package:maxi_library/src/reflection/standard/reflector_instance.dart';

@@ -1,5 +1,5 @@
 mixin IFunctionalControllerForTask {
-  checkState();
+  void checkState();
   Future<void> wait(Duration duration);
   void interruptWait();
 }

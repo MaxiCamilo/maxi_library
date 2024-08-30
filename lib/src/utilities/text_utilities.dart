@@ -12,9 +12,9 @@ mixin TextUtilities {
     if (dio.length > quantityZeros) {
       if (cutIfExceeds) {
         if (cutFromTheEnd) {
-          return dio.extractOften(since: dio.length - quantityZeros);
+          return dio.extractFrom(since: dio.length - quantityZeros);
         } else {
-          return dio.extractOften(since: 0, amount: quantityZeros);
+          return dio.extractFrom(since: 0, amount: quantityZeros);
         }
       } else {
         return dio;
@@ -30,7 +30,11 @@ mixin TextUtilities {
     return buffer.toString();
   }
 
-  static String generateCommand<T>({required Iterable<T> list, String Function(T)? function, String character = ','}) {
+  static String generateCommand<T>({
+    required Iterable<T> list,
+    String Function(T)? function,
+    String character = ',',
+  }) {
     final buffer = StringBuffer();
     final convertido = list.map<String>((e) => function == null ? e.toString() : function(e)).toList();
     final ultimo = convertido.length - 1;

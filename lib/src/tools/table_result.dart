@@ -136,6 +136,19 @@ class TableResult extends Iterable<Map<String, dynamic>> {
     return position;
   }
 
+  int addRowWithList({required List list}) {
+    if (list.length != columnsName.length) {
+      throw NegativeResult(
+        identifier: NegativeResultCodes.invalidValue,
+        message: trc('Cannot add an invalid list, the list contains %1 values, but the table have %2 columns', [list.length, columnsName.length]),
+      );
+    }
+
+    final position = length;
+    values.add(list);
+    return position;
+  }
+
   dynamic getValueByPosition({required int positionColumn, required int positionValue}) {
     if (positionColumn < 0 || positionColumn > length) {
       throw NegativeResult(
@@ -192,6 +205,4 @@ class TableResult extends Iterable<Map<String, dynamic>> {
       }
     }
   }
-
-  
 }
