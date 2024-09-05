@@ -1,6 +1,19 @@
 import 'package:maxi_library/maxi_library.dart';
 
 extension IteratorExtension<T> on Iterable<T> {
+  Iterable<(int, T)> asPositionalIterable({int start = 0, int? end}) sync* {
+    int i = 0;
+    end ??= length;
+
+    for (final item in this) {
+      if (i > end) {
+        break;
+      } else if (i >= start) {
+        yield (i, item);
+      }
+    }
+  }
+
   int count(bool Function(T x) funcion) {
     int va = 0;
 

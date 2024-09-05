@@ -8,8 +8,8 @@ void main() {
       // Additional setup goes here.
     });
 
-    test('Generate reflectors', () async {
-      await BuildReflectors.makeFilesReflection(mainFileDirection: 'test/entities/reflectors_generated.dart');
+    test('Generate file reflect', () {
+      ReflectorGenerator(directories: ['test/models', 'test/old_entities'], fileCreationPlace: '/home/maxiro/Proyectos/maxi_proyectos/maxi_library/test', albumName: 'Test').build();
     });
   });
 }

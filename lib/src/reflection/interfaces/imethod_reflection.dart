@@ -1,6 +1,4 @@
-import 'package:maxi_library/src/reflection/implementatios/fixed_parameter.dart';
-import 'package:maxi_library/src/reflection/implementatios/named_parameter.dart';
-import 'package:maxi_library/src/reflection/interfaces/ideclaration_reflector.dart';
+import 'package:maxi_library/maxi_library.dart';
 
 mixin IMethodReflection on IDeclarationReflector {
   bool get isConstructor;

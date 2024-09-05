@@ -10,7 +10,7 @@ import 'package:maxi_library/src/reflection/interfaces/itype_class_reflection.da
 
 import 'package:meta/meta.dart';
 
-abstract class TemplateTypeEntityReflector with IReflectionType, IDeclarationReflector, ITypeClassReflection, IEntityFramework, AbylityEntityFramework, ITypeEntityReflection {
+abstract class ReflectedEntityTypeTemplate with IReflectionType, IDeclarationReflector, ITypeClassReflection, IEntityFramework, AbylityEntityFramework, ITypeEntityReflection {
   @override
   final List annotations;
 
@@ -31,7 +31,7 @@ abstract class TemplateTypeEntityReflector with IReflectionType, IDeclarationRef
 
   bool _initialized = false;
 
-  TemplateTypeEntityReflector({required this.annotations, required this.type, required this.name}) {
+  ReflectedEntityTypeTemplate({required this.annotations, required this.type, required this.name}) {
     validators = annotations.whereType<ValueValidator>().toList();
 
     customBuilder = annotations.selectByType<ClassBuilderReflection>();

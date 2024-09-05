@@ -4,28 +4,24 @@ import 'dart:developer';
 import 'package:maxi_library/maxi_library.dart';
 import 'package:test/test.dart';
 
-import 'entities/instance_reflection_test.dart';
-import 'entities/reflectors_generated.dart';
+import 'old_entities/second_test_class.dart';
+import 'old_entities/test_class.dart';
+import 'old_entities/third_test_class.dart';
+import 'test.dart';
 
 void main() {
   group('Reflection test', () {
     setUp(() {
-      // Additional setup goes here.
+      ReflectionManager.defineAlbums = [testReflectors];
     });
 
-    test('Started reflectors', () {
-      InstanceReflectionTest().initializeReflectable();
-    });
 
     test('Invoke static method', () {
-      InstanceReflectionTest().initializeReflectable();
-
       final classTest = ReflectionManager.getReflectionEntity(TestClass);
       classTest.callMethod(name: 'getterStatic', instance: null, fixedParametersValues: [], namedParametesValues: {});
     });
 
     test('Build entity and change field', () {
-      InstanceReflectionTest().initializeReflectable();
 
       final classTest = ReflectionManager.getReflectionEntity(TestClass);
       final newItem = classTest.buildEntity();
@@ -37,7 +33,6 @@ void main() {
     });
 
     test('Using other builders', () {
-      InstanceReflectionTest().initializeReflectable();
 
       final classTest = ReflectionManager.getReflectionEntity(TestClass);
       final newItem = classTest.buildEntity(selectedBuild: 'superHuman', namedParametersValues: const {'name': 'Orito', 'date': 123456});
@@ -45,7 +40,6 @@ void main() {
     });
 
     test('Clone objetct', () {
-      InstanceReflectionTest().initializeReflectable();
 
       final classTest = ReflectionManager.getReflectionEntity(TestClass);
       final newItem = classTest.buildEntity(selectedBuild: 'superHuman', namedParametersValues: {'name': 'Maxitito', 'date': DateTime.now()});
@@ -61,7 +55,6 @@ void main() {
     });
 
     test('Get and change primary key', () {
-      InstanceReflectionTest().initializeReflectable();
       final classTest = ReflectionManager.getReflectionEntity(TestClass);
       final newItem = classTest.buildEntity();
 
@@ -73,7 +66,6 @@ void main() {
     });
 
     test('Excute in another thread', () async {
-      InstanceReflectionTest().initializeReflectable();
       final classTest = ReflectionManager.getReflectionEntity(TestClass);
       final newItem = classTest.buildEntity();
       classTest.changePrimaryKey(instance: newItem, newId: 21);
@@ -93,7 +85,6 @@ void main() {
     });
 
     test('Use custom builder', () {
-      InstanceReflectionTest().initializeReflectable();
 
       final classTest = ReflectionManager.getReflectionEntity(SecondTestClass);
       final newItem = classTest.buildEntity();
@@ -102,7 +93,6 @@ void main() {
     });
 
     test('Change property list', () {
-      InstanceReflectionTest().initializeReflectable();
       final classTest = ReflectionManager.getReflectionEntity(SecondTestClass);
       final newItem = classTest.buildEntity();
 
@@ -111,7 +101,6 @@ void main() {
     });
 
     test('Change property list', () {
-      InstanceReflectionTest().initializeReflectable();
       final classTest = ReflectionManager.getReflectionEntity(SecondTestClass);
       final newItem = classTest.buildEntity();
 
@@ -120,7 +109,6 @@ void main() {
     });
 
     test('Call a method with a parameter that has a value generator', () {
-      InstanceReflectionTest().initializeReflectable();
       final classTest = ReflectionManager.getReflectionEntity(SecondTestClass);
       final newItem = classTest.buildEntity();
 
@@ -128,7 +116,6 @@ void main() {
     });
 
     test('Testing the serialization and deserialization of entities', () {
-      InstanceReflectionTest().initializeReflectable();
       final classTest = ReflectionManager.getReflectionEntity(ThirdTestClass);
       final newItem = classTest.buildEntity();
 

@@ -1,7 +1,7 @@
 import 'package:maxi_library/maxi_library.dart';
 
 class TypeEnumeratorReflector with IReflectionType {
-  final List<Enum> optionsList;
+  final List<EnumOption> optionsList;
 
   @override
   final List annotations;
@@ -37,7 +37,7 @@ class TypeEnumeratorReflector with IReflectionType {
 
   @override
   generateEmptryObject() {
-    return optionsList.first;
+    return optionsList.first.value;
   }
 
   @override
@@ -72,7 +72,7 @@ class TypeEnumeratorReflector with IReflectionType {
     if (number >= optionsList.length) {
       throw NegativeResult(
         identifier: NegativeResultCodes.invalidValue,
-        message: trc('The numeric value exceeds the available options ("Only %1 options are available, starting from 0)', [optionsList.length]),
+        message: trc('The numeric value exceeds the available options (Only %1 options are available, starting from 0)', [optionsList.length]),
       );
     }
 

@@ -1,5 +1,5 @@
 import 'package:maxi_library/maxi_library.dart';
-import 'package:maxi_library/src/reflection/standard/type_entity_reflector.dart';
+import 'package:maxi_library/src/reflection/old_implementation/type_entity_reflector.dart';
 
 abstract class ReflectorsCatalog with IThreadInitializer {
   List<ReflectorInstance> get instances;
@@ -15,7 +15,6 @@ abstract class ReflectorsCatalog with IThreadInitializer {
 
     try {
       instances.first.instanceClass.annotatedClasses;
-      return;
     } catch (_) {
       for (final item in instances) {
         containErrorLog(detail: 'Reflector initialized failed', function: () => item.initializeReflectableFunction());
@@ -59,7 +58,7 @@ abstract class ReflectorsCatalog with IThreadInitializer {
     return TypeEnumeratorReflector(
       annotations: mirror.metadata,
       name: mirror.simpleName,
-      optionsList: optionsList,
+      optionsList: optionsList.map((x) => EnumOption(annotations: [], value: x)).toList(),
       type: mirror.dynamicReflectedType,
     );
   }

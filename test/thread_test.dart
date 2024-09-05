@@ -6,7 +6,7 @@ import 'dart:math' as math;
 import 'package:maxi_library/maxi_library.dart';
 import 'package:test/test.dart';
 
-import 'entities/thread_initialicer_test.dart';
+import 'old_entities/thread_initialicer_test.dart';
 import 'services/first_service.dart';
 
 Future<String> _greetUserMaxi(InvocationParameters parameters) async {

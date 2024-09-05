@@ -3,15 +3,12 @@ import 'dart:math' as math;
 
 import 'package:maxi_library/maxi_library.dart';
 
-
-import 'reflectors_generated.dart';
-
-@reflector
+@reflect
 class TestClassMakeIntList extends GeneratorList<int> {
   const TestClassMakeIntList();
 }
 
-@reflector
+@reflect
 class TestClassMakeRandomText with IValueGenerator {
   const TestClassMakeRandomText();
 
@@ -45,7 +42,7 @@ class TestClassMakeRandomText with IValueGenerator {
   }
 }
 
-@reflector
+@reflect
 class SecondTestClassGenerator extends ClassBuilderReflection<SecondTestClass> {
   const SecondTestClassGenerator();
   @override
@@ -59,7 +56,7 @@ class SecondTestClassGenerator extends ClassBuilderReflection<SecondTestClass> {
   }
 }
 
-@reflector
+@reflect
 @SecondTestClassGenerator()
 class SecondTestClass {
   @TestClassMakeIntList()

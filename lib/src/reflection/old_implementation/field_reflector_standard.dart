@@ -3,7 +3,7 @@ import 'package:maxi_library/src/reflection/decorators/essential_key.dart';
 import 'package:maxi_library/src/reflection/interfaces/ifield_reflection.dart';
 import 'package:maxi_library/src/reflection/interfaces/igetter_reflector.dart';
 import 'package:maxi_library/src/reflection/interfaces/isetter_reflector.dart';
-import 'package:maxi_library/src/reflection/standard/reflector_standard_utilities.dart';
+import 'package:maxi_library/src/reflection/old_implementation/reflector_standard_utilities.dart';
 
 class FieldReflectorStandard with IDeclarationReflector, IGetterReflector, ISetterReflector, IFieldReflection {
   final Reflectable reflectable;

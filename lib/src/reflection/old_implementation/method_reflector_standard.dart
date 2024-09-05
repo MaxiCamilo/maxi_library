@@ -1,10 +1,8 @@
 import 'package:maxi_library/maxi_library.dart';
-import 'package:maxi_library/src/reflection/implementatios/fixed_parameter.dart';
-import 'package:maxi_library/src/reflection/implementatios/named_parameter.dart';
-import 'package:maxi_library/src/reflection/standard/reflector_standard_utilities.dart';
-import 'package:maxi_library/src/reflection/templates/template_method_reflection.dart';
+import 'package:maxi_library/src/reflection/old_implementation/reflector_standard_utilities.dart';
+import 'package:maxi_library/src/reflection/templates/reflected_method_template.dart';
 
-class MethodReflectorStandard extends TemplateMethodReflection {
+class MethodReflectorStandard extends ReflectedMethodTemplate {
   final Reflectable reflectable;
   final ClassMirror classMirror;
   final MethodMirror methodMirror;

@@ -1,10 +1,8 @@
 import 'package:maxi_library/maxi_library.dart';
-import 'package:maxi_library/src/reflection/implementatios/fixed_parameter.dart';
-import 'package:maxi_library/src/reflection/implementatios/named_parameter.dart';
 import 'package:maxi_library/src/reflection/interfaces/imethod_reflection.dart';
 import 'package:meta/meta.dart';
 
-abstract class TemplateMethodReflection with IDeclarationReflector, IMethodReflection {
+abstract class ReflectedMethodTemplate with IDeclarationReflector, IMethodReflection {
   @override
   final List annotations;
 
@@ -40,7 +38,7 @@ abstract class TemplateMethodReflection with IDeclarationReflector, IMethodRefle
   late final List<NamedParameter> namedParametesRequired;
   late final List<NamedParameter> namedParametesOptionals;
 
-  TemplateMethodReflection({required this.annotations, required this.fixedParametes, required this.isStatic, required this.name, required this.namedParametes, required this.reflectedType}) {
+  ReflectedMethodTemplate({required this.annotations, required this.fixedParametes, required this.isStatic, required this.name, required this.namedParametes, required this.reflectedType}) {
     validators = annotations.whereType<ValueValidator>().toList();
     formalName = FormalName.searchFormalName(realName: name, annotations: annotations);
 

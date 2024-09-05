@@ -1,14 +1,13 @@
 import 'dart:developer';
 
-import 'package:maxi_library/src/reflection/decorators/primary_key.dart';
+import 'package:maxi_library/maxi_library.dart';
 
-import 'reflectors_generated.dart';
 
-@reflector
+@reflect
 enum TestClassType { stupid, idiot, motherFucker }
 
 
-@reflector
+@reflect
 class TestClass {
   @PrimaryKey()
   int identifier = 0;

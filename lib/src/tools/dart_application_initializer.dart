@@ -6,7 +6,7 @@ class DartApplicationInitializer with StartableFunctionality {
 
   final IFunctionalTask loadConfiguration;
   final IOperatorLanguage languages;
-  final ReflectorsCatalog reflectors;
+  final List<IReflectorAlbum> reflectors;
   final IThreadManagersFactory serverThreads;
   final List<Future Function()> startupFunctions;
 
@@ -66,7 +66,8 @@ class DartApplicationInitializer with StartableFunctionality {
   }
 
   Future<void> _loadReflectors() async {
-    reflectors.initializeReflectable();
+    ReflectionManager.defineAlbums = reflectors;
+    ReflectionManager.defineAsTheMainReflector();
   }
 
   Future<void> _loadLanguages() {

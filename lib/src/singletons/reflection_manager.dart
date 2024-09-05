@@ -1,17 +1,31 @@
 import 'package:maxi_library/maxi_library.dart';
 import 'package:maxi_library/src/reflection/types/type_generator_reflection.dart';
 import 'package:maxi_library/src/reflection/types/type_void_reflection.dart';
+import 'package:meta/meta.dart';
 
-class ReflectionManager {
+class ReflectionManager with IThreadInitializer {
   static ReflectionManager? _instance;
   // Avoid self instance
   ReflectionManager._();
 
+  List<IReflectorAlbum> albums = [];
   List<TypeEnumeratorReflector> enumerators = [];
   List<IReflectionType> predefinedTypes = [];
   List<ITypeEntityReflection> entities = [];
 
+  @internal
+  bool openedAlbums = false;
+
   static ITypeEntityReflection? _lastRequestedEntity;
+
+  static set defineAlbums(List<IReflectorAlbum> list) {
+    instance.albums = list;
+    instance.enumerators.addAll(list.expand((x) => x.getReflectedEnums()));
+  }
+
+  static void defineAsTheMainReflector() {
+    ThreadManager.addThreadInitializer(initializer: instance);
+  }
 
   static bool isInitialized = false;
 
@@ -40,27 +54,48 @@ class ReflectionManager {
       return isPredefined;
     }
 
+    final primitiveType = ReflectionUtilities.isPrimitive(type);
+    if (primitiveType != null) {
+      return TypePrimitiveReflection(annotations: [], type: type);
+    }
+
+    final isEnumerator = tryGetReflectionEntity(type);
+    if (isEnumerator != null) {
+      return isEnumerator;
+    }
+
     final isEntity = instance.entities.selectItem((x) => x.type == type);
     if (isEntity != null) {
       _lastRequestedEntity = isEntity;
       return isEntity;
     }
 
-    final primitiveType = ReflectionUtilities.isPrimitive(type);
-    if (primitiveType != null) {
-      return TypePrimitiveReflection(annotations: [], type: type);
-    }
-
-    final isEnumerator = instance.enumerators.selectItem((x) => x.type == type);
-    if (isEnumerator != null) {
-      return isEnumerator;
-    }
-
     return TypeUnknownReflection(type: type);
   }
 
   static ITypeEntityReflection? tryGetReflectionEntity(Type type) {
-    return instance.entities.selectItem((x) => x.type == type);
+    final existent = instance.entities.selectItem((x) => x.type == type);
+    if (existent != null) {
+      return existent;
+    }
+
+    if (!instance.openedAlbums) {
+      final list = instance.albums.expand((x) => x.getReflectedEntities()).toList();
+      instance.openedAlbums = true;
+      if (instance.entities.isEmpty) {
+        instance.entities.addAll(list);
+      } else {
+        for (final item in list) {
+          if (!instance.entities.any((x) => x.type == item.type)) {
+            instance.entities.add(item);
+          }
+        }
+      }
+
+      return tryGetReflectionEntity(type);
+    }
+
+    return null;
   }
 
   static ITypeEntityReflection getReflectionEntity(Type type) {
@@ -85,5 +120,10 @@ class ReflectionManager {
     }
 
     return item;
+  }
+
+  @override
+  Future<void> performInitializationInThread(IThreadCommunicationMethod channel) async {
+    _instance = this;
   }
 }

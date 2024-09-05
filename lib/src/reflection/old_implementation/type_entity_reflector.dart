@@ -3,13 +3,13 @@ import 'package:maxi_library/src/reflection/interfaces/ifield_reflection.dart';
 import 'package:maxi_library/src/reflection/interfaces/igetter_reflector.dart';
 import 'package:maxi_library/src/reflection/interfaces/imethod_reflection.dart';
 import 'package:maxi_library/src/reflection/interfaces/isetter_reflector.dart';
-import 'package:maxi_library/src/reflection/standard/field_reflector_standard.dart';
-import 'package:maxi_library/src/reflection/standard/getter_reflector_standard.dart';
-import 'package:maxi_library/src/reflection/standard/method_reflector_standard.dart';
-import 'package:maxi_library/src/reflection/standard/setter_reflector_standard.dart';
-import 'package:maxi_library/src/reflection/templates/template_type_entity_reflector.dart';
+import 'package:maxi_library/src/reflection/old_implementation/field_reflector_standard.dart';
+import 'package:maxi_library/src/reflection/old_implementation/getter_reflector_standard.dart';
+import 'package:maxi_library/src/reflection/old_implementation/method_reflector_standard.dart';
+import 'package:maxi_library/src/reflection/old_implementation/setter_reflector_standard.dart';
+import 'package:maxi_library/src/reflection/templates/reflected_entity_type_template.dart';
 
-class TypeEntityReflector extends TemplateTypeEntityReflector {
+class TypeEntityReflector extends ReflectedEntityTypeTemplate {
   final Reflectable reflectable;
   final ClassMirror classMirror;
 
@@ -26,7 +26,7 @@ class TypeEntityReflector extends TemplateTypeEntityReflector {
         );
 
   late final bool _hasDefaultConstructor;
-  late final ITypeEntityReflection? _baseClass;
+  late ITypeEntityReflection? _baseClass;
 
   final List<ITypeEntityReflection> _inheritance = [];
   final List<IMethodReflection> _constructors = [];
@@ -85,7 +85,7 @@ class TypeEntityReflector extends TemplateTypeEntityReflector {
         if (_baseClass == null) {
           throw NegativeResult(identifier: NegativeResultCodes.implementationFailure, message: trc('Class %1 has base class %2, but it is not reflected', [name, classMirror.superclass!.simpleName]));
         } else {
-          _inheritance.add(_baseClass);
+          _inheritance.add(_baseClass!);
         }
       } else {
         _baseClass = null;
@@ -165,6 +165,4 @@ class TypeEntityReflector extends TemplateTypeEntityReflector {
       }
     }
   }
-
- 
 }

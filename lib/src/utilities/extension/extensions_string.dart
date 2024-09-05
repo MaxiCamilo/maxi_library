@@ -111,4 +111,83 @@ extension ExtensionsString on String {
 
     return before + newText + after;
   }
+
+  Iterable<String> asIterable({int start = 0, int? end, bool inverse = false}) sync* {
+    end ??= length - 1;
+
+    if (inverse) {
+      if (end >= length) {
+        end = length - 1;
+      }
+
+      for (int i = end; i >= start && i >= 0; i--) {
+        yield this[i];
+      }
+    } else {
+      for (int i = start; i <= end && i < length; i++) {
+        yield this[i];
+      }
+    }
+  }
+
+  Iterable<(int, String)> asPositionalIterable({int start = 0, int? end, bool inverse = false}) sync* {
+    end ??= length - 1;
+
+    if (inverse) {
+      if (end >= length) {
+        end = length - 1;
+      }
+
+      for (int i = end; i >= start && i >= 0; i--) {
+        yield (i, this[i]);
+      }
+    } else {
+      for (int i = start; i <= end && i <= length; i++) {
+        yield (i, this[i]);
+      }
+    }
+  }
+
+  String removeQuotes({List<String> quotes = const ['\'', '"', '`']}) {
+    late final String selectedQuote;
+    int i = -1;
+
+    for (final (pos, char) in asPositionalIterable()) {
+      if (quotes.contains(char)) {
+        i = pos;
+        selectedQuote = char;
+        break;
+      }
+    }
+
+    if (i == -1) {
+      return this;
+    }
+
+    final buffer = StringBuffer();
+
+    for (final (pos, char) in asPositionalIterable(start: i + 1)) {
+      if (char == selectedQuote && !(pos - 1 != i && this[pos - 1] == '\\')) {
+        break;
+      } else {
+        buffer.write(char);
+      }
+    }
+
+    return buffer.toString();
+  }
+
+  String toFirstInCapitalLetter() {
+    if (isEmpty) {
+      return '';
+    }
+    return '${first.toUpperCase()}${extractFrom(since: 1)}';
+  }
+
+  String toFirstInLowercase() {
+    if (isEmpty) {
+      return '';
+    }
+    return '${first.toLowerCase()}${extractFrom(since: 1)}';
+  }
 }
