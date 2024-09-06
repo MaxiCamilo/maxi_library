@@ -13,8 +13,8 @@ void main() {
   group('Reflection test', () {
     setUp(() {
       ReflectionManager.defineAlbums = [testReflectors];
+      ReflectionManager.defineAsTheMainReflector();
     });
-
 
     test('Invoke static method', () {
       final classTest = ReflectionManager.getReflectionEntity(TestClass);
@@ -22,7 +22,6 @@ void main() {
     });
 
     test('Build entity and change field', () {
-
       final classTest = ReflectionManager.getReflectionEntity(TestClass);
       final newItem = classTest.buildEntity();
       log('Type de entity test: ${classTest.getProperty(name: 'name', instance: newItem)}');
@@ -33,14 +32,12 @@ void main() {
     });
 
     test('Using other builders', () {
-
       final classTest = ReflectionManager.getReflectionEntity(TestClass);
       final newItem = classTest.buildEntity(selectedBuild: 'superHuman', namedParametersValues: const {'name': 'Orito', 'date': 123456});
       log('Type de entity test: ${classTest.getProperty(name: 'anyDatetime', instance: newItem)}');
     });
 
     test('Clone objetct', () {
-
       final classTest = ReflectionManager.getReflectionEntity(TestClass);
       final newItem = classTest.buildEntity(selectedBuild: 'superHuman', namedParametersValues: {'name': 'Maxitito', 'date': DateTime.now()});
 
@@ -85,7 +82,6 @@ void main() {
     });
 
     test('Use custom builder', () {
-
       final classTest = ReflectionManager.getReflectionEntity(SecondTestClass);
       final newItem = classTest.buildEntity();
 
@@ -128,7 +124,7 @@ void main() {
 
       log(mapa);
 
-      final jsonItem = classTest.interpretationFromJson(rawJson: '{"isAdmin":true,"age":55,"age":17}');
+      final jsonItem = classTest.interpretationFromJson(rawJson: '{"isAdmin":true,"age":55,"age":29,"name":"jejeje"}');
       classTest.changeFieldValue(name: 'age', instance: jsonItem, newValue: 80);
       log(classTest.serializeToJson(value: jsonItem));
     });

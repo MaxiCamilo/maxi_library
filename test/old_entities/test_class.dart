@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:maxi_library/maxi_library.dart';
+import 'package:maxi_library/src/reflection/decorators/essential_key.dart';
 
 
 @reflect
@@ -47,6 +48,7 @@ class TestClass {
   }
 
   @override
+  @EssentialKey()
   String toString() {
     return 'This is $name and the date is $anyDatetime';
   }

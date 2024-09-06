@@ -1,3 +1,4 @@
+
 import 'package:analyzer/dart/ast/ast.dart';
 import 'package:maxi_library/maxi_library.dart';
 import 'package:maxi_library/src/reflection/build/detected/annotation_detected.dart';
@@ -31,6 +32,7 @@ class ClassDetected {
   });
 
   factory ClassDetected.fromClassAnalizer({required ClassDeclaration declaration}) {
+
     return ClassDetected(
       annotations: declaration.metadata.map((x) => AnnotationDetected.fromAnalizer(anotation: x)).toList(),
       name: declaration.name.toString(),

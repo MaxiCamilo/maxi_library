@@ -33,7 +33,7 @@ class FieldDetected {
     final parent = volatile(detail: () => trc('Parent of variable %1 is "VariableDeclaration"', [parentList.toString()]), function: () => parentList.parent as FieldDeclaration);
 
     return FieldDetected(
-      annotations: declaration.metadata.map((x) => AnnotationDetected.fromAnalizer(anotation: x)).toList(),
+      annotations: parent.metadata.map((x) => AnnotationDetected.fromAnalizer(anotation: x)).toList(),
       name: declaration.name.toString(),
       typeValue: parentList.type?.toString() ?? 'dynamic',
       isConst: declaration.isConst,

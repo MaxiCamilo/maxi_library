@@ -2,7 +2,12 @@
 
 import 'package:maxi_library/export_reflectors.dart';
 import 'package:maxi_library/maxi_library.dart';
+import 'package:maxi_library/src/reflection/decorators/essential_key.dart';
 import 'package:maxi_library/src/reflection/decorators/reflect.dart';
+import 'package:maxi_library/maxi_library.dart';
+import 'dart:developer';
+import 'dart:math' as math;
+
 import 'models/mammal.dart';
 import 'models/mutant.dart';
 import 'models/persons.dart';
@@ -11,10 +16,6 @@ import 'models/thing.dart';
 import 'old_entities/second_test_class.dart';
 import 'old_entities/test_class.dart';
 import 'old_entities/third_test_class.dart';
-import 'package:maxi_library/maxi_library.dart';
-import 'dart:developer';
-import 'dart:math' as math;
-import 'package:maxi_library/src/reflection/decorators/essential_key.dart';
 
 class _TypeAnimalEnum extends TypeEnumeratorReflector {
   const _TypeAnimalEnum()
@@ -231,7 +232,7 @@ class _PersonssayHiMethod extends GeneratedReflectedMethod<Persons, String> {
   MethodDetectedType get methodType => MethodDetectedType.commonMethod;
 
   @override
-  List get annotations => const [override];
+  List get annotations => const [override, EssentialKey()];
 
   static const _fix0 = GeneratedReflectedFixedParameter<String>(
     annotations: const [],
@@ -314,7 +315,7 @@ class _PersonsBuilder extends GeneratedReflectedMethod<Persons, Persons> {
 class _Persons extends GeneratedReflectedClass<Persons> {
   const _Persons();
   @override
-  List get annotations => const [reflect];
+  List get annotations => const [reflect, EssentialKey()];
 
   @override
   Type? get baseClass => Thing;
@@ -1047,7 +1048,7 @@ class _Thing extends GeneratedReflectedClass<Thing> {
 class _TestClassidentifier extends GeneratedReflectedField<TestClass, int> with GeneratedReflectedModifiableField<TestClass, int> {
   const _TestClassidentifier();
   @override
-  List get annotations => const [];
+  List get annotations => const [PrimaryKey()];
 
   @override
   String get name => 'identifier';
@@ -1278,7 +1279,7 @@ class _TestClasstoStringMethod extends GeneratedReflectedMethod<TestClass, Strin
   MethodDetectedType get methodType => MethodDetectedType.commonMethod;
 
   @override
-  List get annotations => const [override];
+  List get annotations => const [override, EssentialKey()];
 
   @override
   List<GeneratedReflectedFixedParameter> get fixedParameters => const [];
@@ -1823,7 +1824,7 @@ class _SecondTestClassGenerator extends GeneratedReflectedClass<SecondTestClassG
 class _SecondTestClasssuperList extends GeneratedReflectedField<SecondTestClass, List<int>> with GeneratedReflectedModifiableField<SecondTestClass, List<int>> {
   const _SecondTestClasssuperList();
   @override
-  List get annotations => const [];
+  List get annotations => const [TestClassMakeIntList()];
 
   @override
   String get name => 'superList';
@@ -1857,7 +1858,7 @@ class _SecondTestClasssuperList extends GeneratedReflectedField<SecondTestClass,
 class _SecondTestClassrandomText extends GeneratedReflectedField<SecondTestClass, String> with GeneratedReflectedModifiableField<SecondTestClass, String> {
   const _SecondTestClassrandomText();
   @override
-  List get annotations => const [];
+  List get annotations => const [TestClassMakeRandomText()];
 
   @override
   String get name => 'randomText';
@@ -1985,7 +1986,7 @@ class _SecondTestClass extends GeneratedReflectedClass<SecondTestClass> {
 class _ThirdTestClassidentifier extends GeneratedReflectedField<ThirdTestClass, int> with GeneratedReflectedModifiableField<ThirdTestClass, int> {
   const _ThirdTestClassidentifier();
   @override
-  List get annotations => const [];
+  List get annotations => const [PrimaryKey(), CheckNumberRange(maximum: 999)];
 
   @override
   String get name => 'identifier';
@@ -2019,7 +2020,7 @@ class _ThirdTestClassidentifier extends GeneratedReflectedField<ThirdTestClass, 
 class _ThirdTestClassname extends GeneratedReflectedField<ThirdTestClass, String> with GeneratedReflectedModifiableField<ThirdTestClass, String> {
   const _ThirdTestClassname();
   @override
-  List get annotations => const [];
+  List get annotations => const [EssentialKey(), CheckTextLength(minimum: 3, maximum: 120)];
 
   @override
   String get name => 'name';
@@ -2087,7 +2088,7 @@ class _ThirdTestClassisAdmin extends GeneratedReflectedField<ThirdTestClass, boo
 class _ThirdTestClassage extends GeneratedReflectedField<ThirdTestClass, int> with GeneratedReflectedModifiableField<ThirdTestClass, int> {
   const _ThirdTestClassage();
   @override
-  List get annotations => const [];
+  List get annotations => const [CheckNumberRange(minimum: 18, maximum: 120), EssentialKey()];
 
   @override
   String get name => 'age';

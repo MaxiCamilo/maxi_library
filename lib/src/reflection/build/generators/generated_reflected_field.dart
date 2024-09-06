@@ -85,6 +85,8 @@ abstract class GeneratedReflectedField<T, R> {
     final className = '_$entityName${field.name}';
     final isEditable = (!field.isFinal || field.isLate) && !field.isConst;
 
+   
+
     //Write if it is modificable
     final buffer = StringBuffer('class $className extends GeneratedReflectedField$genericsTypes');
     if (isEditable) {

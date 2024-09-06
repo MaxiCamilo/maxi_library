@@ -24,7 +24,7 @@ class MethodDetected {
     required this.parameters,
   });
 
-  factory MethodDetected.fromMethodAnalizer({required MethodDeclaration declaration}) {
+  factory MethodDetected.fromMethodAnalizer({required MethodDeclaration declaration}) { 
     return MethodDetected(
       isStatic: declaration.isStatic,
       name: declaration.name.toString(),
