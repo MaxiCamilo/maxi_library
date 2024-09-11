@@ -9,7 +9,7 @@ class NegativeResultValue extends NegativeResult {
     required this.name,
     super.identifier = NegativeResultCodes.invalidProperty,
     super.cause,
-    super.whenWas,
+    super.whenWasIt,
     this.value,
   });
 
@@ -24,7 +24,7 @@ class NegativeResultValue extends NegativeResult {
       identifier: nr.identifier,
       value: value,
       cause: nr.cause,
-      whenWas: nr.whenWas,
+      whenWasIt: nr.whenWasIt,
     );
   }
 
@@ -66,7 +66,7 @@ class NegativeResultValue extends NegativeResult {
         name: propertyName,
         message: error.message,
         cause: error.cause,
-        whenWas: error.whenWas,
+        whenWasIt: error.whenWasIt,
         value: value,
       );
     } else {

@@ -17,6 +17,9 @@ abstract class GeneratedReflectedClass<T> {
 
   Type get type => T;
 
+  GeneratorList<T> createListGenerator() => GeneratorList<T>(annotations: annotations);
+
+
   const GeneratedReflectedClass();
 
   static (String, String) makeScript({required ClassDetected classInstance}) {

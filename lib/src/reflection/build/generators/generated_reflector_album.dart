@@ -12,4 +12,7 @@ abstract class GeneratedReflectorAlbum with IReflectorAlbum {
 
   @override
   List<TypeEnumeratorReflector> getReflectedEnums() => enums;
+
+  @override
+  List<GeneratorList> getReflectedList() => classes.map((x) => x.createListGenerator()).toList();
 }

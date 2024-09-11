@@ -12,8 +12,6 @@ class Persons extends Thing with Mammal {
   bool isAdmin = false;
   int age = 0;
 
-  String _textPrivate = '¿?';
-
   static const int idealAge = 90;
 
   @override

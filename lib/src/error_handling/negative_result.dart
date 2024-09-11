@@ -5,15 +5,15 @@ import 'package:maxi_library/maxi_library.dart';
 class NegativeResult implements Exception, CustomSerialization {
   NegativeResultCodes identifier;
   String message;
-  DateTime whenWas;
+  DateTime whenWasIt;
   dynamic cause;
 
   NegativeResult({
     required this.identifier,
     required this.message,
-    DateTime? whenWas,
+    DateTime? whenWasIt,
     this.cause,
-  }) : whenWas = whenWas ?? DateTime.now();
+  }) : whenWasIt = whenWasIt ?? DateTime.now();
 
   @override
   String toString() => message;
@@ -39,13 +39,13 @@ class NegativeResult implements Exception, CustomSerialization {
       return {
         'idError': identifier.index,
         'message': message,
-        'whenWas': whenWas.millisecondsSinceEpoch,
+        'whenWasIt': whenWasIt.millisecondsSinceEpoch,
       };
     } else {
       return {
         'idError': identifier.index,
         'message': message,
-        'whenWas': whenWas.millisecondsSinceEpoch,
+        'whenWasIt': whenWasIt.millisecondsSinceEpoch,
         'originalError': cause.toString(),
       };
     }

@@ -6,7 +6,6 @@ import 'package:maxi_library/src/reflection/interfaces/ientity_framework.dart';
 import 'package:maxi_library/src/reflection/interfaces/ifield_reflection.dart';
 import 'package:maxi_library/src/reflection/interfaces/igetter_reflector.dart';
 import 'package:maxi_library/src/reflection/interfaces/isetter_reflector.dart';
-import 'package:maxi_library/src/reflection/interfaces/itype_class_reflection.dart';
 
 import 'package:meta/meta.dart';
 

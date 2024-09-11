@@ -1,5 +1,4 @@
 import 'package:maxi_library/maxi_library.dart';
-import 'package:maxi_library/src/reflection/interfaces/imethod_reflection.dart';
 import 'package:meta/meta.dart';
 
 abstract class ReflectedMethodTemplate with IDeclarationReflector, IMethodReflection {
@@ -84,12 +83,15 @@ abstract class ReflectedMethodTemplate with IDeclarationReflector, IMethodReflec
       );
     }
 
-    if (fixedParametersValues.length > fixedParametesRequired.length + fixedParametesOptionals.length) {
+    //if (fixedParametersValues.length > fixedParametesRequired.length + fixedParametesOptionals.length) {
+
+    /*
       throw NegativeResult(
         identifier: NegativeResultCodes.invalidFunctionality,
         message: trc('The Method %1 has a total of %2 fixed values, but %3 values were entered', [formalName, fixedParametesRequired.length + fixedParametesOptionals.length, fixedParametersValues.length]),
       );
-    }
+      */
+    // }
 
     if (fixedParametersValues.length < (fixedParametesRequired.length + fixedParametesOptionals.length)) {
       final maxValue = fixedParametesRequired.length + fixedParametesOptionals.length;
@@ -101,6 +103,10 @@ abstract class ReflectedMethodTemplate with IDeclarationReflector, IMethodReflec
 
     fixedParametersValues = fixedParametersValues.toList();
     namedParametesValues = Map.from(namedParametesValues);
+
+    while (fixedParametersValues.length > fixedParametesRequired.length + fixedParametesOptionals.length) {
+      fixedParametersValues.removeLast();
+    }
 
     for (final parameter in namedParametes) {
       if (!namedParametesValues.containsKey(parameter.name)) {
@@ -170,9 +176,9 @@ abstract class ReflectedMethodTemplate with IDeclarationReflector, IMethodReflec
         continue;
       }
 
-      if (!parameter.reflectedType.isCompatible(value)) {
+      if (parameter.reflectedType is! TypeUnknownReflection && !parameter.reflectedType.isCompatible(value)) {
         namedParametesValues[nameParameter] = addToErrorDescription(
-          additionalDetails: () => trc('Named parameter "%1"', [formalName]),
+          additionalDetails: () => trc('Named parameter "%1": ', [formalName]),
           function: () => parameter.reflectedType.convertObject(value),
         );
       }

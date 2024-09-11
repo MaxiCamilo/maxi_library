@@ -1,35 +1,40 @@
 import 'package:maxi_library/maxi_library.dart';
 import 'package:maxi_library/src/reflection/types/type_generator_reflection.dart';
 import 'package:maxi_library/src/reflection/types/type_void_reflection.dart';
-import 'package:meta/meta.dart';
 
 class ReflectionManager with IThreadInitializer {
   static ReflectionManager? _instance;
   // Avoid self instance
   ReflectionManager._();
 
-  List<IReflectorAlbum> albums = [];
-  List<TypeEnumeratorReflector> enumerators = [];
-  List<IReflectionType> predefinedTypes = [];
-  List<ITypeEntityReflection> entities = [];
+  final List<IReflectorAlbum> _albums = [];
+  final List<TypeEnumeratorReflector> _enumerators = [];
+  final List<IReflectionType> _predefinedTypes = [];
+  final List<ITypeEntityReflection> _entities = [];
 
-  @internal
-  bool openedAlbums = false;
+  bool _openedAlbums = false;
 
   static ITypeEntityReflection? _lastRequestedEntity;
 
   static set defineAlbums(List<IReflectorAlbum> list) {
-    instance.albums = list;
-    instance.enumerators.addAll(list.expand((x) => x.getReflectedEnums()));
+    instance._albums.addAll(list);
+    //instance.enumerators.addAll(list.expand((x) => x.getReflectedEnums()));
+
+    final listGenerators = instance._albums.expand((x) => x.getReflectedList()).toList();
+    instance._enumerators.addAll(instance._albums.expand((x) => x.getReflectedEnums()));
+    instance._predefinedTypes.addAll(listGenerators);
   }
 
   static void defineAsTheMainReflector() {
     ThreadManager.addThreadInitializer(initializer: instance);
   }
 
-  static bool isInitialized = false;
-
   static ReflectionManager get instance => _instance ??= ReflectionManager._();
+
+  static List<ITypeEntityReflection> getEntities() {
+    _openAlbums();
+    return instance._entities;
+  }
 
   static IReflectionType getReflectionType(Type type, {List annotations = const []}) {
     final generator = annotations.selectByType<IValueGenerator>();
@@ -49,22 +54,24 @@ class ReflectionManager with IThreadInitializer {
       return const TypeVoidReflection();
     }
 
-    final isPredefined = instance.predefinedTypes.selectItem((x) => x.type == type);
-    if (isPredefined != null) {
-      return isPredefined;
-    }
-
     final primitiveType = ReflectionUtilities.isPrimitive(type);
     if (primitiveType != null) {
       return TypePrimitiveReflection(annotations: [], type: type);
     }
 
-    final isEnumerator = tryGetReflectionEntity(type);
-    if (isEnumerator != null) {
-      return isEnumerator;
+    final isPredefined = instance._predefinedTypes.selectItem((x) => x.type == type);
+    if (isPredefined != null) {
+      return isPredefined;
     }
 
-    final isEntity = instance.entities.selectItem((x) => x.type == type);
+    final isEnum = instance._enumerators.selectItem((x) => x.type == type);
+    if (isEnum != null) {
+      return isEnum;
+    }
+
+    _openAlbums();
+
+    final isEntity = instance._entities.selectItem((x) => x.type == type);
     if (isEntity != null) {
       _lastRequestedEntity = isEntity;
       return isEntity;
@@ -73,33 +80,20 @@ class ReflectionManager with IThreadInitializer {
     return TypeUnknownReflection(type: type);
   }
 
-  static ITypeEntityReflection? tryGetReflectionEntity(Type type) {
-    final existent = instance.entities.selectItem((x) => x.type == type);
-    if (existent != null) {
-      return existent;
+  static void _openAlbums() {
+    if (instance._openedAlbums) {
+      return;
     }
 
-    if (!instance.openedAlbums) {
-      final list = instance.albums.expand((x) => x.getReflectedEntities()).toList();
-      instance.openedAlbums = true;
-      if (instance.entities.isEmpty) {
-        instance.entities.addAll(list);
-      } else {
-        for (final item in list) {
-          if (!instance.entities.any((x) => x.type == item.type)) {
-            instance.entities.add(item);
-          }
-        }
-      }
+    final entities = instance._albums.expand((x) => x.getReflectedEntities()).toList();
+    //final enums = instance.albums.expand((x) => x.getReflectedEnums()).toList();
 
-      return tryGetReflectionEntity(type);
-    }
-
-    return null;
+    instance._openedAlbums = true;
+    instance._entities.addAll(entities);
   }
 
   static ITypeEntityReflection getReflectionEntity(Type type) {
-    final item = tryGetReflectionEntity(type);
+    final item = instance._entities.selectItem((x) => x.type == type);
     if (item == null) {
       throw NegativeResult(
         identifier: NegativeResultCodes.nonExistent,
@@ -111,7 +105,7 @@ class ReflectionManager with IThreadInitializer {
   }
 
   static ITypeEntityReflection getReflectionEntityByName(String name) {
-    final item = instance.entities.selectItem((x) => x.name == name);
+    final item = instance._entities.selectItem((x) => x.name == name);
     if (item == null) {
       throw NegativeResult(
         identifier: NegativeResultCodes.nonExistent,
@@ -120,6 +114,10 @@ class ReflectionManager with IThreadInitializer {
     }
 
     return item;
+  }
+
+  static ITypeEntityReflection? tryGetReflectionEntity(Type type) {
+    return instance._entities.selectItem((x) => x.type == type);
   }
 
   @override
