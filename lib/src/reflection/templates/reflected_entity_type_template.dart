@@ -222,7 +222,7 @@ abstract class ReflectedEntityTypeTemplate with IReflectionType, IDeclarationRef
   }
 
   @override
-  serializeToMap(item, {bool onlyModificable = true, bool allowStaticFields = false}) {
+  serializeToMap(item, {bool onlyModificable = true, bool allowStaticFields = false, bool setTypeValue = false}) {
     initialized();
 
     if (custorSerialization != null) {
@@ -243,6 +243,10 @@ abstract class ReflectedEntityTypeTemplate with IReflectionType, IDeclarationRef
     for (final field in fields) {
       final value = field.getValue(instance: item);
       newMap[field.name] = field.reflectedType.serializeToMap(value);
+    }
+
+    if (setTypeValue) {
+      newMap['\$type'] = name;
     }
 
     return newMap;
@@ -401,8 +405,8 @@ abstract class ReflectedEntityTypeTemplate with IReflectionType, IDeclarationRef
   }
 
   @override
-  String serializeToJson({required dynamic value}) {
-    final mapValue = serializeToMap(value);
+  String serializeToJson({required dynamic value, bool setTypeValue = false}) {
+    final mapValue = serializeToMap(value, setTypeValue: setTypeValue);
     return json.encode(mapValue);
   }
 

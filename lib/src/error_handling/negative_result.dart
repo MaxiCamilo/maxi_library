@@ -37,12 +37,14 @@ class NegativeResult implements Exception, CustomSerialization {
   Map<String, dynamic> serialize() {
     if (cause == null) {
       return {
+        '\$type': 'error',
         'idError': identifier.index,
         'message': message,
         'whenWasIt': whenWasIt.millisecondsSinceEpoch,
       };
     } else {
       return {
+        '\$type': 'error',
         'idError': identifier.index,
         'message': message,
         'whenWasIt': whenWasIt.millisecondsSinceEpoch,

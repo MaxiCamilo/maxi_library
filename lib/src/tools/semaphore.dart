@@ -16,6 +16,14 @@ class Semaphore {
     return waiter.future;
   }
 
+  Future<T?> executeIfStopped<T>({required Future<T> Function() function}) async {
+    if (!_isActive) {
+      return await execute(function: function);
+    } else {
+      return null;
+    }
+  }
+
   Future<void> _runSemaphone() async {
     _isActive = true;
 
