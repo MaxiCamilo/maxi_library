@@ -147,7 +147,7 @@ void main() {
         onDone: () => log('The stream closed'),
       );
 
-      await stream.waitFinish();
+      await stream.waitFinish(errorsAreFatal: true);
 
       log('I am done');
     });

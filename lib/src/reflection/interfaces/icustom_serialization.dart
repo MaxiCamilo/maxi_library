@@ -1,0 +1,3 @@
+mixin ICustomSerialization {
+  dynamic serialize();
+}

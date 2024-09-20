@@ -8,6 +8,9 @@ mixin GeneratedReflectedModifiableField<T, R> {
   String get name;
   bool get acceptNull;
 
+  Type get entityType => T;
+  Type get returnType => R;
+
   @protected
   void setReservedValue({required T? entity, required R newValue});
 
@@ -34,10 +37,13 @@ mixin GeneratedReflectedModifiableField<T, R> {
         );
       }
     } else if (newValue is! R) {
+      //final isEnum = ReflectionManager.tryGetEnumReflector(R);
+      //if (isEnum == null || !isEnum.isCompatible(newValue)) {
       throw NegativeResult(
-        identifier: NegativeResultCodes.nullValue,
+        identifier: NegativeResultCodes.wrongType,
         message: trc('The %1 field of the %2 object does not accept %4 values, it only accept %3 values or their equivalents', [name, T, R, newValue.runtimeType]),
       );
+      //}
     }
 
     setReservedValue(entity: entity, newValue: newValue);
@@ -84,8 +90,6 @@ abstract class GeneratedReflectedField<T, R> {
     final genericsTypes = '<$entityName,${field.typeValue}>';
     final className = '_$entityName${field.name}';
     final isEditable = (!field.isFinal || field.isLate) && !field.isConst;
-
-   
 
     //Write if it is modificable
     final buffer = StringBuffer('class $className extends GeneratedReflectedField$genericsTypes');

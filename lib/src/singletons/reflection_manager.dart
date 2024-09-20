@@ -36,6 +36,10 @@ class ReflectionManager with IThreadInitializer {
     return instance._entities;
   }
 
+  static TypeEnumeratorReflector? tryGetEnumReflector(Type type) {
+    return instance._enumerators.selectItem((x) => x.type == type);
+  }
+
   static IReflectionType getReflectionType(Type type, {List annotations = const []}) {
     final generator = annotations.selectByType<IValueGenerator>();
     if (generator != null) {
@@ -93,7 +97,7 @@ class ReflectionManager with IThreadInitializer {
   }
 
   static ITypeEntityReflection getReflectionEntity(Type type) {
-    final item = instance._entities.selectItem((x) => x.type == type);
+    final item = getEntities().selectItem((x) => x.type == type);
     if (item == null) {
       throw NegativeResult(
         identifier: NegativeResultCodes.nonExistent,
@@ -105,7 +109,7 @@ class ReflectionManager with IThreadInitializer {
   }
 
   static ITypeEntityReflection getReflectionEntityByName(String name) {
-    final item = instance._entities.selectItem((x) => x.name == name);
+    final item = getEntities().selectItem((x) => x.name == name);
     if (item == null) {
       throw NegativeResult(
         identifier: NegativeResultCodes.nonExistent,

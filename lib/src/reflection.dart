@@ -7,6 +7,8 @@ export 'package:maxi_library/src/reflection/decorators/value_validator.dart';
 export 'package:maxi_library/src/reflection/decorators/custom_serialization.dart';
 export 'package:maxi_library/src/reflection/decorators/unique_key.dart';
 export 'package:maxi_library/src/reflection/decorators/reflect.dart';
+export 'package:maxi_library/src/reflection/decorators/entity_namer.dart';
+export 'package:maxi_library/src/reflection/decorators/essential_key.dart';
 
 export 'package:maxi_library/src/reflection/interfaces/ivalue_generator.dart';
 export 'package:maxi_library/src/reflection/interfaces/ireflection_type.dart';
@@ -16,12 +18,12 @@ export 'package:maxi_library/src/reflection/interfaces/ipost_verification.dart';
 export 'package:maxi_library/src/reflection/interfaces/ireflector_album.dart';
 export 'package:maxi_library/src/reflection/interfaces/imethod_reflection.dart';
 export 'package:maxi_library/src/reflection/interfaces/itype_class_reflection.dart';
+export 'package:maxi_library/src/reflection/interfaces/icustom_serialization.dart';
 
 export 'package:maxi_library/src/reflection/types/type_dynamic_reflection.dart';
 export 'package:maxi_library/src/reflection/types/type_enumerator_reflector.dart';
 export 'package:maxi_library/src/reflection/types/type_primitive_reflection.dart';
 export 'package:maxi_library/src/reflection/types/type_unknown_reflection.dart';
-
 
 export 'package:maxi_library/src/reflection/parameters/fixed_parameter.dart';
 export 'package:maxi_library/src/reflection/parameters/named_parameter.dart';

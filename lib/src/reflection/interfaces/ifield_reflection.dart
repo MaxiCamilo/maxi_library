@@ -7,6 +7,12 @@ mixin IFieldReflection on IDeclarationReflector, IGetterReflector, ISetterReflec
 
   bool get isRequired;
 
+  bool get isPrimaryKey;
+
+  bool get isEssentialKey;
+
+  String get nameInLowerCase;
+
   NegativeResult? checkValueIsCorrect({required instance}) {
     final value = getValue(instance: instance);
     return verifyValue(value: value, parentEntity: instance);

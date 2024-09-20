@@ -1,6 +1,5 @@
 import 'package:maxi_library/maxi_library.dart';
 import 'package:maxi_library/src/threads/factories/threadm_managers_factory_isolator.dart';
-import 'package:maxi_library/src/threads/interfaces/ithread_magares_factory.dart';
 import 'package:maxi_library/src/threads/interfaces/ithread_process.dart';
 import 'package:maxi_library/src/threads/interfaces/ithread_process_server.dart';
 

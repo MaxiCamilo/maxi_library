@@ -32,6 +32,15 @@ class FieldEntity<T, R> with IDeclarationReflector, IGetterReflector, ISetterRef
   @override
   final List<ValueValidator> validators;
 
+  @override
+  late final bool isPrimaryKey;
+
+  @override
+  late final bool isEssentialKey;
+
+  @override
+  late final String nameInLowerCase;
+
   late final CustomInterpretation? customInterpretation;
 
   late final CustomSerialization? customSerialization;
@@ -49,6 +58,10 @@ class FieldEntity<T, R> with IDeclarationReflector, IGetterReflector, ISetterRef
   }) {
     customInterpretation = annotations.selectByType<CustomInterpretation>();
     customSerialization = annotations.selectByType<CustomSerialization>();
+
+    isPrimaryKey = annotations.selectByType<PrimaryKey>() != null;
+    isEssentialKey = annotations.selectByType<EssentialKey>() != null;
+    nameInLowerCase = name.toLowerCase();
   }
 
   static FieldEntity<T, R> make<T, R>({required GeneratedReflectedField<T, R> field}) {

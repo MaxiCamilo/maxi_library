@@ -6,7 +6,11 @@ mixin ITypeEntityReflection on ITypeClassReflection, IEntityFramework {
 
   dynamic interpretationFromJson({
     required String rawJson,
+    required bool tryToCorrectNames,
     bool enableCustomInterpretation = true,
     bool verify = true,
+    bool acceptZeroIdentifier = true,
+    bool primaryKeyMustBePresent = true,
+    bool essentialKeysMustBePresent = true,
   });
 }

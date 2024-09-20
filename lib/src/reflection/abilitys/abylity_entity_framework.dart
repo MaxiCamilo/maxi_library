@@ -2,7 +2,6 @@ import 'package:maxi_library/maxi_library.dart';
 import 'package:maxi_library/src/reflection/interfaces/ientity_framework.dart';
 import 'package:maxi_library/src/reflection/interfaces/igetter_reflector.dart';
 import 'package:maxi_library/src/reflection/interfaces/isetter_reflector.dart';
-import 'package:maxi_library/src/reflection/interfaces/itype_class_reflection.dart';
 
 import 'package:meta/meta.dart';
 
@@ -10,7 +9,14 @@ mixin AbylityEntityFramework on ITypeClassReflection, IEntityFramework {
   late final IGetterReflector? _primaryKey;
   late final CustomInterpretation? _customInterpretation;
 
-  dynamic interpretAsMap(Map<String, dynamic> mapValues);
+  dynamic interpretAsMap({
+    required Map<String, dynamic> mapValues,
+    required bool tryToCorrectNames,
+    bool acceptZeroIdentifier = true,
+    bool primaryKeyMustBePresent = true,
+    bool essentialKeysMustBePresent = true,
+    bool verify = true,
+  });
 
   @override
   bool get hasPrimaryKey {
@@ -87,15 +93,25 @@ mixin AbylityEntityFramework on ITypeClassReflection, IEntityFramework {
   @override
   dynamic interpret({
     required dynamic value,
+    required bool tryToCorrectNames,
     bool enableCustomInterpretation = true,
     bool verify = true,
+    bool acceptZeroIdentifier = true,
+    bool primaryKeyMustBePresent = true,
+    bool essentialKeysMustBePresent = true,
   }) {
     if (enableCustomInterpretation && _customInterpretation != null) {
       return _customInterpretation.performInterpretation(value: value, declaration: this);
     }
 
     if (value is Map<String, dynamic>) {
-      return interpretAsMap(value);
+      return interpretAsMap(
+        mapValues: value,
+        tryToCorrectNames: tryToCorrectNames,
+        acceptZeroIdentifier: acceptZeroIdentifier,
+        primaryKeyMustBePresent: primaryKeyMustBePresent,
+        essentialKeysMustBePresent: essentialKeysMustBePresent,
+      );
     } else {
       throw NegativeResult(
         identifier: NegativeResultCodes.wrongType,

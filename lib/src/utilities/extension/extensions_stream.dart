@@ -4,23 +4,29 @@ import 'package:maxi_library/maxi_library.dart';
 
 extension IteratorStream<T> on Stream<T> {
   Future<void> waitFinish({
+    bool errorsAreFatal = true,
     void Function(T)? reactionItem,
     void Function(dynamic)? reactionError,
   }) {
     final waiter = Completer();
 
-    listen(
-        (x) {
-          if (reactionItem != null) {
-            reactionItem(x);
-          }
-        },
-        onDone: () => waiter.complete(),
-        onError: (x) {
-          if (reactionError != null) {
-            reactionError(x);
-          }
-        });
+    listen((x) {
+      if (reactionItem != null) {
+        reactionItem(x);
+      }
+    }, onDone: () {
+      if (!waiter.isCompleted) {
+        waiter.complete();
+      }
+    }, onError: (x) {
+      if (reactionError != null) {
+        reactionError(x);
+      }
+
+      if (errorsAreFatal && !waiter.isCompleted) {
+        waiter.completeError(x);
+      }
+    });
 
     return waiter.future;
   }

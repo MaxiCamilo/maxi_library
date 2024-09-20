@@ -12,6 +12,7 @@ dependencies:
   meta: ^1.15.0
   http: ^1.2.2
   analyzer: ^6.7.0
+  collection: ^1.18.0
   
   # path: ^1.8.0
 

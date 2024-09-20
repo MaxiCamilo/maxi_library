@@ -19,7 +19,6 @@ abstract class GeneratedReflectedClass<T> {
 
   GeneratorList<T> createListGenerator() => GeneratorList<T>(annotations: annotations);
 
-
   const GeneratedReflectedClass();
 
   static (String, String) makeScript({required ClassDetected classInstance}) {
@@ -41,6 +40,10 @@ abstract class GeneratedReflectedClass<T> {
     buffer.writeln('/*${classInstance.name.toUpperCase()} METHODS*/\n');
 
     for (final method in classInstance.methods.where((x) => !x.isPrivate)) {
+      if (classInstance.isAbstract && (method.type == MethodDetectedType.buildMethod || method.type == MethodDetectedType.factoryMethod)) {
+        continue;
+      }
+
       final (name, content) = GeneratedReflectedMethod.makeScript(entityName: classInstance.name, method: method);
       methodNameList.add(name);
       buffer.writeln(content);

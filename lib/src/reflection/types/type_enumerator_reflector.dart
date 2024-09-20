@@ -76,7 +76,7 @@ class TypeEnumeratorReflector with IReflectionType {
       );
     }
 
-    return optionsList[number.toInt()];
+    return optionsList[number.toInt()].value;
   }
 
   dynamic castString(String text) {
@@ -88,7 +88,7 @@ class TypeEnumeratorReflector with IReflectionType {
     final selectedItem = optionsList.selectItem((x) => x.name == text);
 
     if (selectedItem != null) {
-      return selectedItem;
+      return selectedItem.value;
     } else {
       throw NegativeResult(identifier: NegativeResultCodes.invalidValue, message: trc('The option named "%1" cannot be found', [text]));
     }

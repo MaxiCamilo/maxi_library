@@ -241,8 +241,13 @@ abstract class ReflectedEntityTypeTemplate with IReflectionType, IDeclarationRef
 
     final newMap = <String, dynamic>{};
     for (final field in fields) {
-      final value = field.getValue(instance: item);
-      newMap[field.name] = field.reflectedType.serializeToMap(value);
+      dynamic value = field.getValue(instance: item);
+
+      if (value is ICustomSerialization) {
+        newMap[field.name] = value.serialize();
+      } else {
+        newMap[field.name] = field.reflectedType.serializeToMap(value);
+      }
     }
 
     if (setTypeValue) {
@@ -315,26 +320,38 @@ abstract class ReflectedEntityTypeTemplate with IReflectionType, IDeclarationRef
   }
 
   @override
-  dynamic interpretAsMap(Map<String, dynamic> mapValues) {
+  dynamic interpretAsMap({
+    required Map<String, dynamic> mapValues,
+    required bool tryToCorrectNames,
+    bool acceptZeroIdentifier = true,
+    bool primaryKeyMustBePresent = true,
+    bool essentialKeysMustBePresent = true,
+    bool verify = true,
+  }) {
     initialized();
-    final newItem = generateEmptryObject();
 
+    if (tryToCorrectNames) {
+      mapValues = _tryToCorrectNames(mapValues);
+    }
+
+    final newItem = generateEmptryObject();
     final errorList = <NegativeResultValue>[];
 
     for (final prop in modificableFields) {
-      final value = mapValues[prop.name];
+      final value = mapValues.entries.selectItem((x) => x.key == prop.name || (tryToCorrectNames && x.key == prop.nameInLowerCase))?.value;
       if (value == null) {
-        if (prop.isRequired) {
+        if (prop.isRequired || (prop.isEssentialKey && essentialKeysMustBePresent) || (prop.isPrimaryKey && primaryKeyMustBePresent)) {
           errorList.add(NegativeResultValue(
-            message: trc('Entity %1 needs the value of %2, but its value was not defined', [formalName, prop.formalName]),
+            message: trc('Entity "%1" needs the value of "%2", but its value was not defined', [formalName, prop.formalName]),
             name: name,
           ));
         }
+
         continue;
       }
 
       try {
-        prop.setValue(instance: newItem, newValue: value);
+        prop.setValue(instance: newItem, newValue: value, beforeVerifying: verify);
       } catch (ex) {
         errorList.add(NegativeResultValue.searchNegativity(
           error: ex,
@@ -346,14 +363,16 @@ abstract class ReflectedEntityTypeTemplate with IReflectionType, IDeclarationRef
 
     _throwErrorIfThereErrorInList(errorList);
 
-    for (final val in validators) {
-      final error = val.performValidation(name: formalName, item: newItem, parentEntity: null);
-      if (error != null) {
-        throw NegativeResultEntity(
-          message: trc('The entity %1 is invalid', [name]),
-          name: name,
-          invalidProperties: [NegativeResultValue.searchNegativity(error: error, propertyName: val.formalName)],
-        );
+    if (verify) {
+      for (final val in validators) {
+        final error = val.performValidation(name: formalName, item: newItem, parentEntity: null);
+        if (error != null) {
+          throw NegativeResultEntity(
+            message: trc('The entity %1 is invalid', [name]),
+            name: name,
+            invalidProperties: [NegativeResultValue.searchNegativity(error: error, propertyName: val.formalName)],
+          );
+        }
       }
     }
 
@@ -367,6 +386,19 @@ abstract class ReflectedEntityTypeTemplate with IReflectionType, IDeclarationRef
           invalidProperties: [NegativeResultValue.searchNegativity(error: ex, propertyName: formalName)],
         );
       }
+    }
+
+    if (hasPrimaryKey && !acceptZeroIdentifier && getPrimaryKey(instance: newItem) <= 0) {
+      throw NegativeResultEntity(
+        message: trc('The entity %1 is invalid', [name]),
+        name: name,
+        invalidProperties: [
+          NegativeResultValue.searchNegativity(
+            error: NegativeResult(identifier: NegativeResultCodes.invalidProperty, message: trc('The primary key (%2) for entity %1 needs to be defined', [primaryKey.formalName, formalName])),
+            propertyName: primaryKey.formalName,
+          )
+        ],
+      );
     }
 
     return newItem;
@@ -385,8 +417,12 @@ abstract class ReflectedEntityTypeTemplate with IReflectionType, IDeclarationRef
   @override
   dynamic interpretationFromJson({
     required String rawJson,
+    required bool tryToCorrectNames,
     bool enableCustomInterpretation = true,
     bool verify = true,
+    bool acceptZeroIdentifier = true,
+    bool primaryKeyMustBePresent = true,
+    bool essentialKeysMustBePresent = true,
   }) {
     initialized();
     final mapJson = volatile(
@@ -401,7 +437,15 @@ abstract class ReflectedEntityTypeTemplate with IReflectionType, IDeclarationRef
       );
     }
 
-    return interpret(value: mapJson, enableCustomInterpretation: enableCustomInterpretation, verify: enableCustomInterpretation);
+    return interpret(
+      value: mapJson,
+      tryToCorrectNames: tryToCorrectNames,
+      enableCustomInterpretation: enableCustomInterpretation,
+      verify: enableCustomInterpretation,
+      acceptZeroIdentifier: acceptZeroIdentifier,
+      primaryKeyMustBePresent: acceptZeroIdentifier,
+      essentialKeysMustBePresent: acceptZeroIdentifier,
+    );
   }
 
   @override
@@ -413,8 +457,12 @@ abstract class ReflectedEntityTypeTemplate with IReflectionType, IDeclarationRef
   @override
   List<T> interpretAslist<T>({
     required dynamic value,
+    required bool tryToCorrectNames,
     bool enableCustomInterpretation = true,
     bool verify = true,
+    bool acceptZeroIdentifier = true,
+    bool primaryKeyMustBePresent = true,
+    bool essentialKeysMustBePresent = true,
   }) {
     initialized();
     checkProgrammingFailure(
@@ -431,8 +479,12 @@ abstract class ReflectedEntityTypeTemplate with IReflectionType, IDeclarationRef
           errorFactory: (x) => NegativeResultValue.fromException(ex: x, value: item, name: trc('Validate item N° %1', [i])),
           function: () => interpret(
             value: item,
+            tryToCorrectNames: tryToCorrectNames,
             enableCustomInterpretation: enableCustomInterpretation,
             verify: verify,
+            acceptZeroIdentifier: acceptZeroIdentifier,
+            primaryKeyMustBePresent: acceptZeroIdentifier,
+            essentialKeysMustBePresent: acceptZeroIdentifier,
           ),
         );
         i += 1;
@@ -442,6 +494,7 @@ abstract class ReflectedEntityTypeTemplate with IReflectionType, IDeclarationRef
     } else {
       newList.add(interpret(
         value: value,
+        tryToCorrectNames: tryToCorrectNames,
         enableCustomInterpretation: enableCustomInterpretation,
         verify: verify,
       ));
@@ -452,4 +505,15 @@ abstract class ReflectedEntityTypeTemplate with IReflectionType, IDeclarationRef
 
   @override
   String toString() => 'Entity type $name';
+
+  Map<String, dynamic> _tryToCorrectNames(Map<String, dynamic> mapValues) {
+    final newMap = <String, dynamic>{};
+
+    for (final item in mapValues.entries) {
+      final newName = TextUtilities.parseSnakeCaseToCamelCase(item.key).toLowerCase();
+      newMap[newName] = item.value;
+    }
+
+    return newMap;
+  }
 }

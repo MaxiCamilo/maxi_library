@@ -1,0 +1,3 @@
+class EntityNamer {
+  const EntityNamer();
+}
