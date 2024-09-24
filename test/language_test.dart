@@ -33,13 +33,13 @@ void main() {
 
       await builder.start();
     });
-
+/*
     test('test translated text', () async {
       await LanguageManager.changeOperator(
-        LanguageOperatorDirectory(selectedPrefix: 'es', translatedFileAddress: '/home/maxiro/Proyectos/maxi_proyectos/maxi_library/lang'),
+       LanguageOperatorDirectory(selectedPrefix: 'es', translatedFileAddress: '/home/maxiro/Proyectos/maxi_proyectos/maxi_library/lang'),
       );
 
-      containErrorLog(detail: '', function: () => 'jejeje'.convertQuickly.toInt(propertyName: 'pepe'));
-    });
+      containErrorLog(detail: tr(''), function: () => 'jejeje'.convertQuickly.toInt(propertyName: tr('pepe')));
+    });*/
   });
 }

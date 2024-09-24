@@ -13,7 +13,7 @@ mixin IDeclarationReflector {
     for (final val in validators) {
       final negative = val.performValidation(name: name, item: value, parentEntity: parentEntity);
       if (negative != null) {
-        return NegativeResultValue.fromNegativeResult(name: formalName, nr: negative);
+        return NegativeResultValue.fromNegativeResult(name: tr(formalName), nr: negative);
       }
     }
 
@@ -23,7 +23,7 @@ mixin IDeclarationReflector {
       } catch (ex) {
         final nr = NegativeResultValue.searchNegativity(
           error: ex,
-          propertyName: formalName,
+          propertyName: tr(formalName),
           value: value,
         );
         return nr;

@@ -56,7 +56,7 @@ class ChannelIsolates {
     } catch (ex) {
       throw NegativeResult(
         identifier: NegativeResultCodes.implementationFailure,
-        message: 'Its not possible to pass the object to the thread, because the object has some non-passable value through the channel',
+        message: tr('Its not possible to pass the object to the thread, because the object has some non-passable value through the channel'),
         cause: ex,
       );
     }
@@ -114,7 +114,7 @@ class ChannelIsolates {
       } else {
         throw NegativeResult(
           identifier: NegativeResultCodes.implementationFailure,
-          message: trc('It was expected that the isolator would return a "Sendport", but it returned a %1', [sender.runtimeType]),
+          message: tr('It was expected that the isolator would return a "Sendport", but it returned a %1', [sender.runtimeType]),
         );
       }
     } catch (_) {

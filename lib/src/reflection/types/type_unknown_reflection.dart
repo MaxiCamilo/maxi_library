@@ -1,6 +1,5 @@
 import 'package:maxi_library/maxi_library.dart';
 
-
 class TypeUnknownReflection with IReflectionType {
   @override
   List get annotations => const [];
@@ -15,17 +14,17 @@ class TypeUnknownReflection with IReflectionType {
 
   @override
   cloneObject(originalItem) {
-    throw NegativeResult(identifier: NegativeResultCodes.implementationFailure, message: trc('The object of type %1 cannot be cloned, because it is an unreflected or unknown type', [type]));
+    throw NegativeResult(identifier: NegativeResultCodes.implementationFailure, message: tr('The object of type %1 cannot be cloned, because it is an unreflected or unknown type', [type]));
   }
 
   @override
   convertObject(originalItem) {
-    throw NegativeResult(identifier: NegativeResultCodes.implementationFailure, message: trc('The object of type %1 cannot be converted, because it is an unreflected or unknown type', [type]));
+    throw NegativeResult(identifier: NegativeResultCodes.implementationFailure, message: tr('The object of type %1 cannot be converted, because it is an unreflected or unknown type', [type]));
   }
 
   @override
   generateEmptryObject() {
-    throw NegativeResult(identifier: NegativeResultCodes.implementationFailure, message: trc('Unable to create an instance of type %1, because it is an unreflected or unknown type', [type]));
+    throw NegativeResult(identifier: NegativeResultCodes.implementationFailure, message: tr('Unable to create an instance of type %1, because it is an unreflected or unknown type', [type]));
   }
 
   @override
@@ -40,7 +39,7 @@ class TypeUnknownReflection with IReflectionType {
 
   @override
   serializeToMap(item) {
-    throw NegativeResult(identifier: NegativeResultCodes.implementationFailure, message: trc('It is not safe to assign an object of type %1, as it is an unknown and unreflected type', [type]));
+    throw NegativeResult(identifier: NegativeResultCodes.implementationFailure, message: tr('It is not safe to assign an object of type %1, as it is an unknown and unreflected type', [type]));
   }
 
   @override

@@ -35,7 +35,7 @@ class SeriesFunctions with IFunctionalControllerForTask {
         _results.add(result);
         _position += 1;
       } catch (ex) {
-        final nr = NegativeResult.searchNegativity(item: ex, actionDescription: trc('Module number %1', [_position + 1]));
+        final nr = NegativeResult.searchNegativity(item: ex, actionDescription: tr('Module number %1', [_position + 1]));
         throw nr;
       }
     }

@@ -33,7 +33,7 @@ class ThreadComunicationStandar with IThreadCommunication, IAbilityProcessMessag
   late final IThreadStreamManager streamManager;
 
   ThreadComunicationStandar({required this.managerThisTread, required this.port}) {
-    checkProgrammingFailure(thatChecks: () => '[ThreadComunicationStandar] ${tr('The communication port is active')}', result: () => port.isActive);
+    checkProgrammingFailure(thatChecks: tr('[ThreadComunicationStandar] ${tr('The communication port is active')}'), result: () => port.isActive);
 
     executorRequestFunction = ExecutorRequestThreadFunctionMessages(manager: managerThisTread, sender: port.sender);
     executorRequestStream = ExecutorRequestThreadStreamStandar(manager: managerThisTread, sender: port.sender);
@@ -54,7 +54,7 @@ class ThreadComunicationStandar with IThreadCommunication, IAbilityProcessMessag
   @override
   Future<void> processMessage(IThreadMessage message) async {
     containErrorLog(
-      detail: '[ThreadComunicationStandar] The opening of the "${message.runtimeType}" message did not end correctly',
+      detail: tr('[ThreadComunicationStandar] The opening of the "${message.runtimeType}" message did not end correctly'),
       function: () async => await message.openMessage(context: ContextProcessThreadMessages(managerThisThread: managerThisTread, communicator: this)),
     );
   }

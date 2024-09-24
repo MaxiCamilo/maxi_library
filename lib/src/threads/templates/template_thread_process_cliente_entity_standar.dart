@@ -8,7 +8,7 @@ mixin TemplateThreadProcessClienteEntityStandar<E> on IThreadProcessEntity<E> {
   @override
   E get entity {
     checkProgrammingFailure(
-      thatChecks: () => '[ThreadProcessClienteEntityStandar] No entity of type "$E" has been assigned yet',
+      thatChecks: tr('[ThreadProcessClienteEntityStandar] No entity of type "$E" has been assigned yet'),
       result: () => _isAssigned,
     );
 

@@ -33,14 +33,14 @@ class GeneratedReflectedFixedParameter<T> {
   }
 
   T getValueFromList(List list) {
-    if (position >= list.length ) {
+    if (position >= list.length) {
       if (hasDefaultValue) {
         assert(defaultValue != null);
         return defaultValue!;
       } else {
         throw NegativeResult(
           identifier: NegativeResultCodes.nonExistent,
-          message: trc('The parameter at position %1 (%2) needs a value', [position, name]),
+          message: tr('The parameter at position %1 (%2) needs a value', [position, name]),
         );
       }
     }
@@ -53,7 +53,7 @@ class GeneratedReflectedFixedParameter<T> {
       } else {
         throw NegativeResult(
           identifier: NegativeResultCodes.nullValue,
-          message: trc('The parameter at position %1 (%2) cannot be null', [position, name]),
+          message: tr('The parameter at position %1 (%2) cannot be null', [position, name]),
         );
       }
     } else if (value is T) {
@@ -61,7 +61,7 @@ class GeneratedReflectedFixedParameter<T> {
     } else {
       throw NegativeResult(
         identifier: NegativeResultCodes.wrongType,
-        message: trc(
+        message: tr(
           'The parameter at position %1 is expected to be of type %2, but the value provided (%3) is not compatible',
           [position, T, value.runtimeType],
         ),

@@ -6,7 +6,7 @@ class CheckIpPort extends ValueValidator {
   const CheckIpPort({required this.acceptZero});
 
   @override
-  String get formalName => tr('Check port number');
+  String get formalName => tr('Check port number').toString();
 
   @override
   NegativeResult? performValidation({required String name, required item, required parentEntity}) {

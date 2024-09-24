@@ -1,6 +1,5 @@
 import 'package:maxi_library/maxi_library.dart';
 import 'package:maxi_library/src/reflection/build/generators/generated_reflected_field.dart';
-import 'package:maxi_library/src/reflection/decorators/essential_key.dart';
 import 'package:maxi_library/src/reflection/interfaces/ifield_reflection.dart';
 import 'package:maxi_library/src/reflection/interfaces/igetter_reflector.dart';
 import 'package:maxi_library/src/reflection/interfaces/isetter_reflector.dart';
@@ -108,7 +107,7 @@ class FieldEntity<T, R> with IDeclarationReflector, IGetterReflector, ISetterRef
     } else {
       throw NegativeResult(
         identifier: NegativeResultCodes.invalidFunctionality,
-        message: trc('Field %1 is not modifiable', [name]),
+        message: tr('Field %1 is not modifiable', [name]),
       );
     }
   }

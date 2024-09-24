@@ -22,7 +22,7 @@ mixin ThreadManager {
     if (_instance != null) {
       throw NegativeResult(
         identifier: NegativeResultCodes.implementationFailure,
-        message: '[ThreadManager] Thread manager has already been initialized',
+        message: tr('[ThreadManager] Thread manager has already been initialized'),
       );
     }
 
@@ -55,7 +55,7 @@ mixin ThreadManager {
 
     throw NegativeResult(
       identifier: NegativeResultCodes.implementationFailure,
-      message: '[ThreadManager] The invoker is not a process manager',
+      message: tr('[ThreadManager] The invoker is not a process manager'),
     );
   }
 }

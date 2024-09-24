@@ -11,4 +11,3 @@ export 'package:maxi_library/src/language/builders/translated_text_builder_json.
 
 export 'package:maxi_library/src/language/automatic_translation_generator.dart';
 
-export 'package:maxi_library/src/language/language_operator_directory.dart';

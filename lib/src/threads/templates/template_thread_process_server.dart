@@ -53,7 +53,7 @@ mixin TemplateThreadProcessServer on IThreadInvoker, IThreadProcess, IThreadProc
     final thread = await _reserveBackgroundThread();
 
     final stream = await volatileAsync(
-      detail: () => tr('Call anonymous stream'),
+      detail: tr('Call anonymous stream'),
       function: () => thread.streamManager.callStreamAsAnonymous(function: function, parameters: parameters),
       ifFailsAnyway: (_) {
         _listOccupiedAnonymousCommunicators.remove(thread);
@@ -84,7 +84,7 @@ mixin TemplateThreadProcessServer on IThreadInvoker, IThreadProcess, IThreadProc
 
   @override
   Future<void> mountEntity<T>({required T entity, bool ifExistsOmit = true}) async {
-    checkProgrammingFailure(thatChecks: () => 'The entity type is not dynamic (T != dynamic)', result: () => T != dynamic);
+    checkProgrammingFailure(thatChecks: tr('The entity type is not dynamic (T != dynamic)'), result: () => T != dynamic);
     final existing = mapConnectionsEntity[T];
 
     if (existing != null) {
@@ -93,7 +93,7 @@ mixin TemplateThreadProcessServer on IThreadInvoker, IThreadProcess, IThreadProc
       } else {
         throw NegativeResult(
           identifier: NegativeResultCodes.invalidFunctionality,
-          message: trc('The entity %1 was mounted previously', [T]),
+          message: tr('The entity %1 was mounted previously', [T]),
         );
       }
     }
@@ -108,7 +108,7 @@ mixin TemplateThreadProcessServer on IThreadInvoker, IThreadProcess, IThreadProc
       if (existing != null) {
         throw NegativeResult(
           identifier: NegativeResultCodes.invalidFunctionality,
-          message: trc('The entity %1 was created previously. There cannot be two entities of the same type mounted.', [T]),
+          message: tr('The entity %1 was created previously. There cannot be two entities of the same type mounted.', [T]),
         );
       }
     }
@@ -143,7 +143,7 @@ mixin TemplateThreadProcessServer on IThreadInvoker, IThreadProcess, IThreadProc
 
     throw NegativeResult(
       identifier: NegativeResultCodes.contextInvalidFunctionality,
-      message: trc('The entity %1 was not mounted previously.', [T]),
+      message: tr('The entity %1 was not mounted previously.', [T]),
     );
   }
 

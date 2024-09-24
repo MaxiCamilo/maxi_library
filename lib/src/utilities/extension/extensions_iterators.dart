@@ -97,7 +97,7 @@ extension IteratorExtension<T> on Iterable<T> {
 
   T directObtaining(
     bool Function(T x) filtro, {
-    String? ifNotExists,
+    TranslatableText? ifNotExists,
   }) {
     for (final item in this) {
       if (filtro(item)) {
@@ -165,6 +165,29 @@ extension IteratorExtension<T> on Iterable<T> {
 
     if (temporal.isNotEmpty) {
       yield temporal;
+    }
+  }
+
+  Iterable<R> convert<R>(R Function(T) function) sync* {
+    int i = 1;
+    for (final item in this) {
+      try {
+        yield function(item);
+        i += 1;
+      } on NegativeResult catch (rn) {
+        throw NegativeResultValue(
+          message: rn.message,
+          identifier: rn.identifier,
+          name: tr('Item located at %1', [i]),
+          cause: rn.cause,
+        );
+      } catch (ex) {
+        throw NegativeResult(
+          identifier: NegativeResultCodes.nonStandardError,
+          message: tr('In the list, an item located at position %1 caused an error: %2', [i, ex.toString()]),
+          cause: ex,
+        );
+      }
     }
   }
 }

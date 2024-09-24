@@ -29,7 +29,7 @@ class ReflectorGenerator {
 
     for (final path in castDirectories) {
       if (!Directory(path).existsSync()) {
-        throw NegativeResult(identifier: NegativeResultCodes.nonExistent, message: trc('Directory %1 does not exists', [path]));
+        throw NegativeResult(identifier: NegativeResultCodes.nonExistent, message: tr('Directory %1 does not exists', [path]));
       }
     }
 
@@ -77,7 +77,7 @@ class ReflectorGenerator {
       if (enumNames.contains(name)) {
         throw NegativeResult(
           identifier: NegativeResultCodes.invalidFunctionality,
-          message: trc('Two enumerators with the same name were found ("%1")', [name]),
+          message: tr('Two enumerators with the same name were found ("%1")', [name]),
         );
       } else {
         enumNames.add(name);
@@ -90,7 +90,7 @@ class ReflectorGenerator {
       if (classNames.contains(name)) {
         throw NegativeResult(
           identifier: NegativeResultCodes.invalidFunctionality,
-          message: trc('Two class with the same name were found ("%1")', [name]),
+          message: tr('Two class with the same name were found ("%1")', [name]),
         );
       } else {
         classNames.add(name);
@@ -123,7 +123,6 @@ class SuperAlbum extends GeneratedReflectorAlbum {
 
   @override
   List<GeneratedReflectedEnum> get enums => throw UnimplementedError();
-
 }
 
 class _ReflectVisitor extends GeneralizingAstVisitor<void> {

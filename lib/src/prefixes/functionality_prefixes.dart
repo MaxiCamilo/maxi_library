@@ -26,21 +26,21 @@ T? containError<T>({
 }
 
 T? containErrorLog<T>({
-  required String detail,
+  required TranslatableText detail,
   required T Function() function,
-  void Function(String, NegativeResult)? ifFails,
-  void Function(String, dynamic)? ifUnknownFails,
+  void Function(TranslatableText, NegativeResult)? ifFails,
+  void Function(TranslatableText, dynamic)? ifUnknownFails,
 }) {
   return containError(
     function: function,
     ifFails: (x) {
-      log(trc('[X] Negative response was contained in "%1": %2', [detail, x]));
+      log(tr('[X] Negative response was contained in "%1": %2', [detail, x]).toString());
       if (ifFails != null) {
         ifFails(detail, x);
       }
     },
     ifUnknownFails: (x) {
-      log(trc('[¡X!] Failure contained in: "%1": %2', [detail, x]));
+      log(tr('[¡X!] Failure contained in: "%1": %2', [detail, x]).toString());
 
       if (ifUnknownFails != null) {
         ifUnknownFails(detail, x);
@@ -69,18 +69,18 @@ Future<T?> containErrorAsync<T>({
 }
 
 Future<T?> containErrorLogAsync<T>({
-  required String Function() detail,
+  required TranslatableText detail,
   required Future<T> Function() function,
 }) {
   return containErrorAsync(
     function: function,
-    ifFails: (x) => log(trc('[X] Negative response contained in "%1": "%2"', [detail(), x])),
-    ifUnknownFails: (x) => log(trc('[¡X!] Failure contained in "%1": "%2"', [detail(), x])),
+    ifFails: (x) => log(tr('[X] Negative response contained in "%1": "%2"', [detail, x]).toString()),
+    ifUnknownFails: (x) => log(tr('[¡X!] Failure contained in "%1": "%2"', [detail, x]).toString()),
   );
 }
 
 T addToErrorDescription<T>({
-  required String Function() additionalDetails,
+  required TranslatableText additionalDetails,
   required T Function() function,
   bool before = true,
   NegativeResultCodes ifIsUnknownError = NegativeResultCodes.implementationFailure,
@@ -88,12 +88,14 @@ T addToErrorDescription<T>({
   try {
     return function();
   } on NegativeResult catch (nr) {
-    nr.message = before ? '${additionalDetails()}${nr.message}' : '${nr.message}${additionalDetails()}';
+    nr.message = tr('%1%2', before ? [additionalDetails, nr.message] : [nr.message, additionalDetails]);
+
+    //before ? '${additionalDetails.toString()}${nr.message.toString()}' : '${nr.message.toString()}${additionalDetails.toString()}';
     rethrow;
   } catch (ex) {
     throw NegativeResult(
       identifier: ifIsUnknownError,
-      message: '${additionalDetails()}: "$ex"',
+      message: tr('%1: "%2"', [additionalDetails, ex]),
       cause: ex,
     );
   }
@@ -118,7 +120,7 @@ T volatileFactory<T>({
 }
 
 T volatile<T>({
-  required String Function() detail,
+  required TranslatableText detail,
   required T Function() function,
   void Function(NegativeResult)? ifFails,
   void Function(dynamic)? ifUnknownFails,
@@ -137,7 +139,7 @@ T volatile<T>({
   } catch (ex) {
     final NegativeResult rn = NegativeResult(
       identifier: NegativeResultCodes.nonStandardError,
-      message: trc('An error occurred while executing the functionality "%1", the error was: %2', [detail(), ex]),
+      message: tr('An error occurred while executing the functionality "%1", the error was: %2', [detail, ex]),
       cause: ex,
     );
 
@@ -158,19 +160,19 @@ T volatile<T>({
 }
 
 T volatileByFunctionality<T>({
-  required String Function() errorMessage,
+  required TranslatableText errorMessage,
   required T Function() function,
 }) =>
     volatileFactory(
       function: function,
       errorFactory: (p0) => NegativeResult(
         identifier: NegativeResultCodes.invalidFunctionality,
-        message: errorMessage(),
+        message: errorMessage,
       ),
     );
 
 Future<T> volatileAsync<T>({
-  required String Function() detail,
+  required TranslatableText detail,
   required Future<T> Function() function,
   void Function(NegativeResult)? ifFails,
   void Function(dynamic)? ifUnknownFails,
@@ -193,7 +195,7 @@ Future<T> volatileAsync<T>({
     if (errorFactory == null) {
       rn = NegativeResult(
         identifier: NegativeResultCodes.nonStandardError,
-        message: trc('Something went wrong while the function was running "%1", the error was: %2', [detail(), ex]),
+        message: tr('Something went wrong while the function was running "%1", the error was: %2', [detail, ex]),
       );
     } else {
       rn = errorFactory(ex);
@@ -216,7 +218,7 @@ Future<T> volatileAsync<T>({
 }
 
 T cautious<T>({
-  required String Function() reasonFailure,
+  required TranslatableText reasonFailure,
   required T Function() function,
   NegativeResultCodes codeReasonFailure = NegativeResultCodes.invalidFunctionality,
 }) =>
@@ -224,43 +226,43 @@ T cautious<T>({
       function: function,
       errorFactory: (x) => NegativeResult(
         identifier: codeReasonFailure,
-        message: reasonFailure(),
+        message: reasonFailure,
         cause: x,
       ),
     );
 
 T programmingFailure<T>({
-  required String Function() reasonFailure,
+  required TranslatableText reasonFailure,
   required T Function() function,
 }) =>
     volatileFactory(
       function: function,
       errorFactory: (x) => NegativeResult(
         identifier: NegativeResultCodes.implementationFailure,
-        message: reasonFailure(),
+        message: reasonFailure,
         cause: x,
       ),
     );
 
 void checkProgrammingFailure<T>({
-  required String Function() thatChecks,
+  required TranslatableText thatChecks,
   required bool Function() result,
 }) {
   final resultFunction = programmingFailure(
-    reasonFailure: () => trc('%1 fired an error', [thatChecks]),
+    reasonFailure: tr('%1 fired an error', [thatChecks]),
     function: result,
   );
 
   if (!resultFunction) {
     throw NegativeResult(
       identifier: NegativeResultCodes.implementationFailure,
-      message: trc('The checker "%1" tested negative', [thatChecks]),
+      message: tr('The checker "%1" tested negative', [thatChecks]),
     );
   }
 }
 
 T volatileProperty<T>({
-  required String Function() propertyName,
+  required TranslatableText propertyName,
   required T Function() function,
   void Function(NegativeResultValue)? ifFails,
   void Function(dynamic)? ifUnknownFails,
@@ -270,7 +272,7 @@ T volatileProperty<T>({
   try {
     return function();
   } on NegativeResult catch (nr) {
-    final rnp = NegativeResultValue.fromNegativeResult(name: propertyName(), nr: nr);
+    final rnp = NegativeResultValue.fromNegativeResult(name: propertyName, nr: nr);
     if (ifFails != null) {
       containError(function: () => ifFails(rnp));
     }
@@ -282,12 +284,12 @@ T volatileProperty<T>({
     late final NegativeResultValue rnp;
     if (errorFactory == null) {
       rnp = NegativeResultValue(
-        name: propertyName(),
-        message: trc('An error occurred while executing the functionality in the property %1, the error was: %2', [propertyName(), ex]),
+        name: propertyName,
+        message: tr('An error occurred while executing the functionality in the property %1, the error was: %2', [propertyName, ex]),
         cause: ex,
       );
     } else {
-      rnp = errorFactory(propertyName(), ex);
+      rnp = errorFactory(propertyName.toString(), ex);
     }
 
     if (ifFails != null) {

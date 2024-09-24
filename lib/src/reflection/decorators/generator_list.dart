@@ -35,7 +35,7 @@ class GeneratorList<T> with IValueGenerator, IReflectionType {
         } else {
           throw NegativeResult(
             identifier: NegativeResultCodes.wrongType,
-            message: 'The item N° $i is ${part.runtimeType}, but only objects of type $T are accepted (and it is incompatible)',
+            message: tr('The item N° %1 is %2, but only objects of type $T are accepted (and it is incompatible)', [i, part.runtimeType]),
           );
         }
       }
@@ -47,7 +47,7 @@ class GeneratorList<T> with IValueGenerator, IReflectionType {
 
     throw NegativeResult(
       identifier: NegativeResultCodes.wrongType,
-      message: 'It was about adapting a value to a list of type $T, but it But it is not a valid type for the list (it is ${originalItem.runtimeType})',
+      message: tr('It was about adapting a value to a list of type %1, but it But it is not a valid type for the list (it is %2)', [T, originalItem.runtimeType]),
     );
   }
 
@@ -61,7 +61,7 @@ class GeneratorList<T> with IValueGenerator, IReflectionType {
     if (item! is Iterable) {
       throw NegativeResult(
         identifier: NegativeResultCodes.wrongType,
-        message: 'A list of type $T was expected (The object is ${item.runtimeType})',
+        message: tr('A list of type %1 was expected (The object is %2)', [T, item.runtimeType]),
       );
     }
 
@@ -85,7 +85,7 @@ class GeneratorList<T> with IValueGenerator, IReflectionType {
 
     for (final item in list) {
       final newItem = addToErrorDescription(
-        additionalDetails: () => 'Item N° $i',
+        additionalDetails: tr('Item N° %1', [i]),
         function: () => typeOperator.serializeToMap(item),
       );
       newList.add(newItem);
@@ -105,13 +105,13 @@ class GeneratorList<T> with IValueGenerator, IReflectionType {
     for (final item in list) {
       if (typeOperator == null || typeOperator.type != item.runtimeType) {
         typeOperator = addToErrorDescription(
-          additionalDetails: () => 'Item N° $i',
+          additionalDetails: tr('Item N° %1', [i]),
           function: () => ReflectionManager.getReflectionType(item.runtimeType, annotations: []),
         );
       }
 
       final newItem = addToErrorDescription(
-        additionalDetails: () => 'Item N° $i',
+        additionalDetails: tr('Item N° %1', [i]),
         function: () => typeOperator!.serializeToMap(item),
       );
       newList.add(newItem);
@@ -126,7 +126,7 @@ class GeneratorList<T> with IValueGenerator, IReflectionType {
     if (originalItem! is Iterable) {
       throw NegativeResult(
         identifier: NegativeResultCodes.wrongType,
-        message: 'A list of type $T was expected (The object is ${originalItem.runtimeType})',
+        message: tr('A list of type $T was expected (The object is %2)', [T, originalItem.runtimeType]),
       );
     }
 
@@ -137,13 +137,13 @@ class GeneratorList<T> with IValueGenerator, IReflectionType {
     for (final item in originalItem) {
       if (typeOperator == null || typeOperator.type != item.runtimeType) {
         typeOperator = addToErrorDescription(
-          additionalDetails: () => 'Item N° $i',
+          additionalDetails: tr('Item N° %1', [i]),
           function: () => ReflectionManager.getReflectionType(item.runtimeType, annotations: []),
         );
       }
 
       final newItem = addToErrorDescription(
-        additionalDetails: () => 'Item N° $i',
+        additionalDetails: tr('Item N° %1', [i]),
         function: () => typeOperator!.cloneObject(item),
       );
       newList.add(newItem);

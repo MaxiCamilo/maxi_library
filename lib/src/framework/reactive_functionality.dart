@@ -145,7 +145,7 @@ abstract class ReactiveFunctionalityImplementation<S, R> implements IReactiveFun
     } else {
       _streamer!.addError(NegativeResult(
         identifier: NegativeResultCodes.wrongType,
-        message: trc('The functionality only accepts receiving objects of type %1, but a packet of type %2 was received', [R, event.runtimeType]),
+        message: tr('The functionality only accepts receiving objects of type %1, but a packet of type %2 was received', [R, event.runtimeType]),
       ));
     }
   }
@@ -354,7 +354,7 @@ class _SpectatorReactiveFunctionality<S, R, SE, RE> {
     } else {
       output.addError(NegativeResult(
         identifier: NegativeResultCodes.wrongType,
-        message: trc('The output does not accept the message the functionality is trying to send (%1 is incompatible with %2)', [event.runtimeType.toString(), SE.toString()]),
+        message: tr('The output does not accept the message the functionality is trying to send (%1 is incompatible with %2)', [event.runtimeType.toString(), SE.toString()]),
       ));
     }
   }

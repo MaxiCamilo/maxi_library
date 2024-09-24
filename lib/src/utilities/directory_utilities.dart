@@ -60,7 +60,7 @@ mixin DirectoryUtilities {
 
     final partido = directoryDirection.replaceAll('\\', '/').split('/');
 
-    checkProgrammingFailure(thatChecks: () => trc('The route %1 is not root', [directoryDirection]), result: () => partido.length > 1);
+    checkProgrammingFailure(thatChecks: tr('The route %1 is not root', [directoryDirection]), result: () => partido.length > 1);
 
     if (partido.last == '') {
       partido.removeLast();
@@ -71,12 +71,12 @@ mixin DirectoryUtilities {
     for (int i = 1; i < partido.length; i++) {
       final parte = partido[i];
 
-      checkProgrammingFailure(thatChecks: () => trc('Part %1 of %2 is not empty', [parte, directoryDirection]), result: () => parte.isNotEmpty);
+      checkProgrammingFailure(thatChecks: tr('Part %1 of %2 is not empty', [parte, directoryDirection]), result: () => parte.isNotEmpty);
       buffer.write('/$parte');
       final total = buffer.toString();
       final carpeta = Directory(total);
       if (!await carpeta.exists()) {
-        await volatileAsync(detail: () => trc('Create folder located at %1', [total]), function: () => carpeta.create());
+        await volatileAsync(detail: tr('Create folder located at %1', [total]), function: () => carpeta.create());
       }
     }
 
@@ -92,10 +92,10 @@ mixin DirectoryUtilities {
     fileDirection = interpretPrefix(fileDirection);
     final file = File(fileDirection);
     if (!await file.exists()) {
-      await volatileAsync(detail: () => trc('Creating text file located at %1', [fileDirection]), function: () => file.create());
+      await volatileAsync(detail: tr('Creating text file located at %1', [fileDirection]), function: () => file.create());
     }
 
-    await volatileAsync(detail: () => trc('Writing text file located at %1', [fileDirection]), function: () => file.writeAsBytes(content, flush: true, mode: mode));
+    await volatileAsync(detail: tr('Writing text file located at %1', [fileDirection]), function: () => file.writeAsBytes(content, flush: true, mode: mode));
   }
 
   static Future<void> writeTextFile({
@@ -108,11 +108,11 @@ mixin DirectoryUtilities {
     final file = File(fileDirection);
     if (!await file.exists()) {
       if (!await file.exists()) {
-        await volatileAsync(detail: () => trc('Creating text file located at %1', [fileDirection]), function: () => file.create());
+        await volatileAsync(detail: tr('Creating text file located at %1', [fileDirection]), function: () => file.create());
       }
     }
 
-    await volatileAsync(detail: () => trc('Writing text file located at %1', [fileDirection]), function: () => file.writeAsString(content, encoding: encoder ?? utf8, flush: true, mode: mode));
+    await volatileAsync(detail: tr('Writing text file located at %1', [fileDirection]), function: () => file.writeAsString(content, encoding: encoder ?? utf8, flush: true, mode: mode));
   }
 
   static Future<String> createFile(String route) async {
@@ -134,7 +134,7 @@ mixin DirectoryUtilities {
     final generado = '$carpeta/$file';
     final instancia = File(generado);
     if (!await instancia.exists()) {
-      await volatileAsync(detail: () => trc('Creating file located at %1', [route]), function: () => instancia.create());
+      await volatileAsync(detail: tr('Creating file located at %1', [route]), function: () => instancia.create());
     }
 
     return generado;
@@ -160,7 +160,7 @@ mixin DirectoryUtilities {
     fileDirection = interpretPrefix(fileDirection);
     await createFile(fileDirection);
 
-    await volatileAsync(detail: () => trc('Writing file located at %1', [fileDirection]), function: () => File(fileDirection).writeAsString(content, flush: true, mode: mode, encoding: encoder ?? utf8));
+    await volatileAsync(detail: tr('Writing file located at %1', [fileDirection]), function: () => File(fileDirection).writeAsString(content, flush: true, mode: mode, encoding: encoder ?? utf8));
   }
 
   static Future<void> writeFileSecured({
@@ -171,7 +171,7 @@ mixin DirectoryUtilities {
     fileDirection = interpretPrefix(fileDirection);
     await createFile(fileDirection);
 
-    await volatileAsync(detail: () => trc('Writing file located at %1', [fileDirection]), function: () => File(fileDirection).writeAsBytes(content, flush: true, mode: mode));
+    await volatileAsync(detail: tr('Writing file located at %1', [fileDirection]), function: () => File(fileDirection).writeAsBytes(content, flush: true, mode: mode));
   }
 
   static Future<String> readTextualFile({required String fileDirection, Encoding? encoder, int? maxSize}) async {
@@ -181,21 +181,21 @@ mixin DirectoryUtilities {
     if (!await file.exists()) {
       throw NegativeResult(
         identifier: NegativeResultCodes.nonExistent,
-        message: trc('The file located at %1 cannot be read because it does not exist', [fileDirection]),
+        message: tr('The file located at %1 cannot be read because it does not exist', [fileDirection]),
       );
     }
 
     if (maxSize != null && await file.length() > maxSize) {
       throw NegativeResult(
         identifier: NegativeResultCodes.invalidFunctionality,
-        message: trc(
+        message: tr(
           'The file located at %1 cannot be read because its size exceeds the allowed limit (%2 kb > %3 kb) ',
           [fileDirection, (await file.length() ~/ 1024), (maxSize ~/ 1024)],
         ),
       );
     }
 
-    return await volatileAsync(detail: () => trc('Reading file located at %1', [fileDirection]), function: () => file.readAsString(encoding: encoder ?? utf8));
+    return await volatileAsync(detail: tr('Reading file located at %1', [fileDirection]), function: () => file.readAsString(encoding: encoder ?? utf8));
   }
 
   static Future<Uint8List> readFile({required String fileDirection, int? maxSize}) async {
@@ -205,21 +205,21 @@ mixin DirectoryUtilities {
     if (!await file.exists()) {
       throw NegativeResult(
         identifier: NegativeResultCodes.nonExistent,
-        message: trc('The file located at %1 cannot be read because it does not exist', [fileDirection]),
+        message: tr('The file located at %1 cannot be read because it does not exist', [fileDirection]),
       );
     }
 
     if (maxSize != null && await file.length() > maxSize) {
       throw NegativeResult(
         identifier: NegativeResultCodes.invalidFunctionality,
-        message: trc(
+        message: tr(
           'The file located at %1 cannot be read because its size exceeds the allowed limit (%2 kb > %3 kb) ',
           [fileDirection, (await file.length() ~/ 1024), (maxSize ~/ 1024)],
         ),
       );
     }
 
-    return await volatileAsync(detail: () => trc('Reading file located at %1', [fileDirection]), function: () => file.readAsBytes());
+    return await volatileAsync(detail: tr('Reading file located at %1', [fileDirection]), function: () => file.readAsBytes());
   }
 
   static String extractFileName({required String route, required bool includeExtension}) {
@@ -277,7 +277,7 @@ mixin DirectoryUtilities {
       return;
     }
 
-    await volatileAsync(detail: () => trc('Deleting file located at %1', [direction]), function: () => file.delete());
+    await volatileAsync(detail: tr('Deleting file located at %1', [direction]), function: () => file.delete());
   }
 
   static Future<void> deleteDirectory(String direction) async {
@@ -288,7 +288,7 @@ mixin DirectoryUtilities {
       return;
     }
     await volatileAsync(
-      detail: () => trc('Deleting folder located at %1', [direction]),
+      detail: tr('Deleting folder located at %1', [direction]),
       function: () => directory.delete(recursive: true),
     );
   }
@@ -302,7 +302,7 @@ mixin DirectoryUtilities {
     if (!await file.exists()) {
       throw NegativeResult(
         identifier: NegativeResultCodes.nonExistent,
-        message: trc('The file located at %1 could not be copied because it does not exist', [fileDirection]),
+        message: tr('The file located at %1 could not be copied because it does not exist', [fileDirection]),
       );
     }
 
@@ -312,7 +312,7 @@ mixin DirectoryUtilities {
 
     final newRoute = '$destinationFolder/${extractFileName(route: fileDirection, includeExtension: true)}';
 
-    await volatileAsync(detail: () => trc('Copying file located at %1 to folder %2', [fileDirection, destinationFolder]), function: () => file.copy(newRoute));
+    await volatileAsync(detail: tr('Copying file located at %1 to folder %2', [fileDirection, destinationFolder]), function: () => file.copy(newRoute));
     return newRoute;
   }
 
@@ -335,9 +335,9 @@ mixin DirectoryUtilities {
     }
 
     final carpeta = Directory(direction);
-    checkProgrammingFailure(thatChecks: () => 'No existe la carpeta temporal', result: () => !carpeta.existsSync());
+    checkProgrammingFailure(thatChecks: tr('Temporary folder not found'), result: () => !carpeta.existsSync());
 
-    await volatileAsync(detail: () => trc('Something went wrong while creating directory %1', [direction]), function: () => carpeta.create());
+    await volatileAsync(detail: tr('Something went wrong while creating directory %1', [direction]), function: () => carpeta.create());
 
     late final T dio;
     try {
@@ -358,11 +358,11 @@ mixin DirectoryUtilities {
     if (!await file.exists()) {
       throw NegativeResult(
         identifier: NegativeResultCodes.nonExistent,
-        message: trc('The file located at %1 not exist', [fileDirection]),
+        message: tr('The file located at %1 not exist', [fileDirection]),
       );
     }
 
-    return volatileAsync(detail: () => trc('Getting file size located at %1', [fileDirection]), function: () => file.length());
+    return volatileAsync(detail:  tr('Getting file size located at %1', [fileDirection]), function: () => file.length());
   }
 
   static Future<Uint8List> readFilePartially({required String fileDirection, required int from, required int amount, bool checkSize = true}) async {
@@ -373,11 +373,11 @@ mixin DirectoryUtilities {
     if (!await file.exists()) {
       throw NegativeResult(
         identifier: NegativeResultCodes.nonExistent,
-        message: trc('The file located at %1 not exist', [fileDirection]),
+        message: tr('The file located at %1 not exist', [fileDirection]),
       );
     }
 
-    final lector = await volatileAsync(detail: () => trc('Opening file located in %1', [fileDirection]), function: () => file.open(mode: FileMode.read));
+    final lector = await volatileAsync(detail: tr('Opening file located in %1', [fileDirection]), function: () => file.open(mode: FileMode.read));
 
     try {
       await lector.setPosition(from);
@@ -392,7 +392,7 @@ mixin DirectoryUtilities {
       }
 
       return await volatileAsync(
-        detail: () => trc('Reading file %1, from part %2, trying to read %3 bytes', [fileDirection, from, amount]),
+        detail:  tr('Reading file %1, from part %2, trying to read %3 bytes', [fileDirection, from, amount]),
         function: () => lector.read(amount),
       );
     } finally {

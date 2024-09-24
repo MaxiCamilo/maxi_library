@@ -4,7 +4,7 @@ import 'dart:typed_data';
 import 'package:maxi_library/maxi_library.dart';
 
 mixin ConverterUtilities {
-  static int toInt({required dynamic value, String propertyName = '', bool ifEmptyIsZero = false}) {
+  static int toInt({required dynamic value, TranslatableText propertyName = TranslatableText.empty, bool ifEmptyIsZero = false}) {
     if (value == null) {
       throw NegativeResult(
         identifier: NegativeResultCodes.nullValue,
@@ -21,7 +21,7 @@ mixin ConverterUtilities {
       return volatileFactory(
         function: () => int.parse(value),
         errorFactory: (x) =>
-            NegativeResult(identifier: NegativeResultCodes.incorrectFormat, message: trc('The property %1 must be an integer number, but non-numeric values ​​were found in the text', [propertyName]), cause: x),
+            NegativeResult(identifier: NegativeResultCodes.incorrectFormat, message: tr('The property %1 must be an integer number, but non-numeric values ​​were found in the text', [propertyName]), cause: x),
       );
     } else if (value is bool) {
       return value ? 1 : 0;
@@ -32,12 +32,12 @@ mixin ConverterUtilities {
     } else {
       throw NegativeResult(
         identifier: NegativeResultCodes.incorrectFormat,
-        message: propertyName.isNotEmpty ? trc('The property %1 has an unknown value, an integer number is expected', [propertyName]) : tr('Cannot transform value to integer number'),
+        message: propertyName.isNotEmpty ? tr('The property %1 has an unknown value, an integer number is expected', [propertyName]) : tr('Cannot transform value to integer number'),
       );
     }
   }
 
-  static double toDouble({required dynamic value, String propertyName = '', bool ifEmptyIsZero = false}) {
+  static double toDouble({required dynamic value, TranslatableText propertyName = TranslatableText.empty, bool ifEmptyIsZero = false}) {
     if (value == null) {
       throw NegativeResult(
         identifier: NegativeResultCodes.nullValue,
@@ -55,7 +55,7 @@ mixin ConverterUtilities {
         function: () => double.parse(value),
         errorFactory: (x) => NegativeResult(
           identifier: NegativeResultCodes.incorrectFormat,
-          message: trc('The property %1 must be an decimal number, but non-numeric values ​​were found in the text', [propertyName]),
+          message: tr('The property %1 must be an decimal number, but non-numeric values ​​were found in the text', [propertyName]),
           cause: x,
         ),
       );
@@ -68,16 +68,16 @@ mixin ConverterUtilities {
     } else {
       throw NegativeResult(
         identifier: NegativeResultCodes.incorrectFormat,
-        message: propertyName.isNotEmpty ? trc('The property %1 has an unknown value, an double number is expected', [propertyName]) : tr('Cannot transform value to integer number'),
+        message: propertyName.isNotEmpty ? tr('The property %1 has an unknown value, an double number is expected', [propertyName]) : tr('Cannot transform value to integer number'),
       );
     }
   }
 
-  static bool toBoolean({required dynamic value, String propertyName = ''}) {
+  static bool toBoolean({required dynamic value, TranslatableText propertyName = TranslatableText.empty}) {
     if (value == null) {
       throw NegativeResult(
         identifier: NegativeResultCodes.nullValue,
-        message: trc('A null value cannot be interpreted as a boolean in the property ', [propertyName]),
+        message: tr('A null value cannot be interpreted as a boolean in the property ', [propertyName]),
       );
     } else if (value is bool) {
       return value;
@@ -100,11 +100,11 @@ mixin ConverterUtilities {
         '1' => true,
         _ => throw NegativeResult(
             identifier: NegativeResultCodes.incorrectFormat,
-            message: trc('The property %1 does not have a valid text to be transformed into a boolean option', [propertyName]),
+            message: tr('The property %1 does not have a valid text to be transformed into a boolean option', [propertyName]),
           )
       };
     } else {
-      throw NegativeResult(identifier: NegativeResultCodes.wrongType, message: trc('The property %1 only accepts boolean values ​​or equivalent', [propertyName]));
+      throw NegativeResult(identifier: NegativeResultCodes.wrongType, message: tr('The property %1 only accepts boolean values ​​or equivalent', [propertyName]));
     }
   }
 
@@ -119,7 +119,7 @@ mixin ConverterUtilities {
   static Enum toEnum({
     required List<Enum> optionsList,
     required dynamic value,
-    String propertyName = '',
+    TranslatableText propertyName = TranslatableText.empty,
   }) {
     if (value is String) {
       final letra = value.toLowerCase();
@@ -130,7 +130,7 @@ mixin ConverterUtilities {
       }
       throw NegativeResult(
         identifier: NegativeResultCodes.invalidValue,
-        message: propertyName.isNotEmpty ? trc('The property %1 does not have the "%2" option', [propertyName, value]) : trc('Value does not have the "%1" option', [value]),
+        message: propertyName.isNotEmpty ? tr('The property %1 does not have the "%2" option', [propertyName, value]) : tr('Value does not have the "%1" option', [value]),
       );
     } else if (value is num) {
       for (final item in optionsList) {
@@ -140,7 +140,7 @@ mixin ConverterUtilities {
       }
       throw NegativeResult(
         identifier: NegativeResultCodes.invalidValue,
-        message: propertyName.isNotEmpty ? trc('The property %1 does not have the N° %2 option', [propertyName, value]) : '${tr('Value does not have the N° ')} "$value" ${tr('option')}',
+        message: propertyName.isNotEmpty ? tr('The property %1 does not have the N° %2 option', [propertyName, value]) : tr('Value does not have the N° %1 option', [value]),
       );
     } else if (value is Enum) {
       if (optionsList.any((element) => value == element)) {
@@ -148,14 +148,14 @@ mixin ConverterUtilities {
       } else {
         throw NegativeResult(
           identifier: NegativeResultCodes.wrongType,
-          message: propertyName.isNotEmpty ? trc('The property %1 only accepts the type "Enum", not thing "%2" option', [propertyName, value]) : trc('Value does not have the N° "%1" option', [value]),
+          message: propertyName.isNotEmpty ? tr('The property %1 only accepts the type "Enum", not thing "%2" option', [propertyName, value]) : tr('Value does not have the N° "%1" option', [value]),
         );
       }
     } else {
       throw NegativeResult(
         identifier: NegativeResultCodes.wrongType,
         message:
-            propertyName.isNotEmpty ? trc('The property %1 only accepts the type enumerator, not %2', [propertyName, value.runtimeType]) : trc('The value only accepts the type enumerator, not "%1"', [value.runtimeType]),
+            propertyName.isNotEmpty ? tr('The property %1 only accepts the type enumerator, not %2', [propertyName, value.runtimeType]) : tr('The value only accepts the type enumerator, not "%1"', [value.runtimeType]),
       );
     }
   }
@@ -163,12 +163,12 @@ mixin ConverterUtilities {
   static DateTime toDateTime({
     required dynamic value,
     bool isLocal = true,
-    String propertyName = '',
+    TranslatableText propertyName = TranslatableText.empty,
   }) {
     if (value == null) {
       throw NegativeResult(
         identifier: NegativeResultCodes.nullValue,
-        message: trc('A null value cannot be interpreted as a boolean in the property %1', [propertyName]),
+        message: tr('A null value cannot be interpreted as a boolean in the property %1', [propertyName]),
       );
     } else if (value is DateTime) {
       if (value.isUtc && isLocal) {
@@ -179,7 +179,7 @@ mixin ConverterUtilities {
       return value;
     } else if (value is num) {
       return volatile(
-        detail: () => trc('The property %1 does not have a valid number to be adapted to date', [propertyName]),
+        detail: tr('The property %1 does not have a valid number to be adapted to date', [propertyName]),
         function: () => DateTime.fromMillisecondsSinceEpoch(value.toInt(), isUtc: !isLocal),
       );
     } else if (value is String) {
@@ -188,35 +188,35 @@ mixin ConverterUtilities {
       } catch (ex) {
         throw NegativeResult(
           identifier: NegativeResultCodes.invalidValue,
-          message: propertyName.isNotEmpty ? trc('The property %1 does not have a valid textuan format to be adapted to date', [propertyName]) : tr('The value does not have a valid textan format to be adapted to date'),
+          message: propertyName.isNotEmpty ? tr('The property %1 does not have a valid textuan format to be adapted to date', [propertyName]) : tr('The value does not have a valid textan format to be adapted to date'),
         );
       }
     } else {
       throw NegativeResult(
         identifier: NegativeResultCodes.wrongType,
         message: propertyName.isNotEmpty
-            ? trc('The property %1 only accepts the type date or equivalent, not %2', [propertyName, value.runtimeType])
-            : trc('The value only accepts the type date or equivalent, not %1', [value.runtimeType]),
+            ? tr('The property %1 only accepts the type date or equivalent, not %2', [propertyName, value.runtimeType])
+            : tr('The value only accepts the type date or equivalent, not %1', [value.runtimeType]),
       );
     }
   }
 
-  static Uint8List toBinary({required dynamic value, String propertyName = '', Encoding encoder = utf8}) {
+  static Uint8List toBinary({required dynamic value, TranslatableText propertyName = TranslatableText.empty, Encoding encoder = utf8}) {
     if (value is Uint8List) {
       return value;
     } else if (value is List<int>) {
       return Uint8List.fromList(value);
     } else if (value is String) {
       return Uint8List.fromList(volatile(
-        detail: () => propertyName.isNotEmpty ? trc('Encoding property %1 with %2', [propertyName, encoder.name]) : trc('Encoding value with %1', [encoder.name]),
+        detail: propertyName.isNotEmpty ? tr('Encoding property %1 with %2', [propertyName, encoder.name]) : tr('Encoding value with %1', [encoder.name]),
         function: () => encoder.encode(value),
       ));
     } else {
       throw NegativeResult(
         identifier: NegativeResultCodes.wrongType,
         message: propertyName.isNotEmpty
-            ? trc('The property %1 only accepts the type binary or equivalent, not %2', [propertyName, value.runtimeType])
-            : trc('The value only accepts the type binary or equivalent, not %1', [value.runtimeType]),
+            ? tr('The property %1 only accepts the type binary or equivalent, not %2', [propertyName, value.runtimeType])
+            : tr('The value only accepts the type binary or equivalent, not %1', [value.runtimeType]),
       );
     }
   }
@@ -246,7 +246,7 @@ mixin ConverterUtilities {
       default:
         throw NegativeResult(
           identifier: NegativeResultCodes.implementationFailure,
-          message: '[normalizePrimitive] ${tr('The value is not a primitive type')}',
+          message: tr('[normalizePrimitive] The value is not a primitive type'),
         );
     }
   }

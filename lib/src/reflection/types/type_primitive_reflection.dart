@@ -13,7 +13,7 @@ class TypePrimitiveReflection with IReflectionType {
   String get name => type.toString();
 
   TypePrimitiveReflection({required this.annotations, required this.type}) {
-    primitiveType = volatile(detail: () => trc('The type %1 is not primitive', [type]), function: () => ReflectionUtilities.isPrimitive(type)!);
+    primitiveType = volatile(detail:  tr('The type %1 is not primitive', [type]), function: () => ReflectionUtilities.isPrimitive(type)!);
   }
 
   @override
@@ -47,6 +47,9 @@ class TypePrimitiveReflection with IReflectionType {
 
   @override
   serializeToMap(item) {
+    if (item is DateTime) {
+      return item.millisecondsSinceEpoch;
+    }
     return ReflectionUtilities.primitiveClone(item);
   }
 

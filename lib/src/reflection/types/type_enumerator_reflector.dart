@@ -31,7 +31,7 @@ class TypeEnumeratorReflector with IReflectionType {
 
     throw NegativeResult(
       identifier: NegativeResultCodes.invalidValue,
-      message: '${tr('The value of type  "')}${originalItem.runtimeType}${tr('" is not a valid option for the enumerator "')}$type"',
+      message: tr('The value of type "%1" is not a valid option for the enumerator "%2"', [originalItem.runtimeType, type]),
     );
   }
 
@@ -62,17 +62,17 @@ class TypeEnumeratorReflector with IReflectionType {
 
     throw NegativeResult(
       identifier: NegativeResultCodes.invalidValue,
-      message: trc('The value of type  "%1" is not a valid option for the enumerator "%2"', [item.runtimeType, type]),
+      message: tr('The value of type  "%1" is not a valid option for the enumerator "%2"', [item.runtimeType, type]),
     );
   }
 
   dynamic castNumber(num number) {
-    checkProgrammingFailure(thatChecks: () => tr('The value is zero or positive'), result: () => number >= 0);
+    checkProgrammingFailure(thatChecks:  tr('The value is zero or positive'), result: () => number >= 0);
 
     if (number >= optionsList.length) {
       throw NegativeResult(
         identifier: NegativeResultCodes.invalidValue,
-        message: trc('The numeric value exceeds the available options (Only %1 options are available, starting from 0)', [optionsList.length]),
+        message: tr('The numeric value exceeds the available options (Only %1 options are available, starting from 0)', [optionsList.length]),
       );
     }
 
@@ -90,7 +90,7 @@ class TypeEnumeratorReflector with IReflectionType {
     if (selectedItem != null) {
       return selectedItem.value;
     } else {
-      throw NegativeResult(identifier: NegativeResultCodes.invalidValue, message: trc('The option named "%1" cannot be found', [text]));
+      throw NegativeResult(identifier: NegativeResultCodes.invalidValue, message: tr('The option named "%1" cannot be found', [text]));
     }
   }
 

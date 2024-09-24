@@ -59,28 +59,28 @@ class InvocationParameters {
 
     throw throw NegativeResult(
       identifier: NegativeResultCodes.implementationFailure,
-      message: trc('There is no %1 type in the listing of invoction', [T]),
+      message: tr('There is no %1 type in the listing of invoction', [T]),
     );
   }
 
   T fixed<T>([int location = 0]) {
-    checkProgrammingFailure(thatChecks: () => trc('The fixed parameter that is desired is zero or greater (%1 >= 0)', [location]), result: () => location >= 0);
-    checkProgrammingFailure(thatChecks: () => trc('The fixed parameter that is desired is less than the amount listed (%1 < %2)', [location, fixedParameters.length]), result: () => location < fixedParameters.length);
+    checkProgrammingFailure(thatChecks:  tr('The fixed parameter that is desired is zero or greater (%1 >= 0)', [location]), result: () => location >= 0);
+    checkProgrammingFailure(thatChecks:  tr('The fixed parameter that is desired is less than the amount listed (%1 < %2)', [location, fixedParameters.length]), result: () => location < fixedParameters.length);
 
     final item = fixedParameters[location];
     return programmingFailure(
-      reasonFailure: () => trc('The item N° %1 is not %2, but it is %3', [location, T, item.runtimeType]),
+      reasonFailure:  tr('The item N° %1 is not %2, but it is %3', [location, T, item.runtimeType]),
       function: () => item as T,
     );
   }
 
   T named<T>(String name) {
-    checkProgrammingFailure(thatChecks: () => tr('The list is not empty'), result: () => namedParameters.isNotEmpty);
+    checkProgrammingFailure(thatChecks:  tr('The list is not empty'), result: () => namedParameters.isNotEmpty);
 
     final item = namedParameters[name];
-    checkProgrammingFailure(thatChecks: () => trc('The listing constains an item called "%1"', [name]), result: () => item != null);
+    checkProgrammingFailure(thatChecks:  tr('The listing constains an item called "%1"', [name]), result: () => item != null);
     return programmingFailure(
-      reasonFailure: () => trc('The item called  "%1"  is not %2, but it is %3', [name, T, item.runtimeType]),
+      reasonFailure:  tr('The item called  "%1"  is not %2, but it is %3', [name, T, item.runtimeType]),
       function: () => item as T,
     );
   }
@@ -96,7 +96,7 @@ class InvocationParameters {
     }
 
     return programmingFailure(
-      reasonFailure: () => trc('The item called %1 is not %2, but it is %3', [name, T, item.runtimeType]),
+      reasonFailure:  tr('The item called %1 is not %2, but it is %3', [name, T, item.runtimeType]),
       function: () => item as T,
     );
   }

@@ -17,12 +17,12 @@ class AutomaticTranslationGenerator {
     log('-> ${tr('Searching texts')}');
     final texts = await locator.searchTranslatableText();
 
-    log('└-> ${trc('%1 translatable texts were found', [texts.length])}');
+    log('└-> ${tr('%1 translatable texts were found', [texts.length])}');
     if (texts.isEmpty) {
       return;
     }
 
-    log('-> ${trc('Translating %1 texts', [texts.length])}');
+    log('-> ${tr('Translating %1 texts', [texts.length])}');
 
     final translatingTexts = <String, String>{};
     int i = 1;

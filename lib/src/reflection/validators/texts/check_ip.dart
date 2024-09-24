@@ -9,14 +9,14 @@ class CheckIp extends ValueValidator {
   const CheckIp({this.verificationType = CheckIpType.both, this.acceptLocalhost = true});
 
   @override
-  String get formalName => tr('Valid IP checker');
+  String get formalName => tr('Valid IP checker').toString();
 
   @override
   NegativeResult? performValidation({required String name, required item, required parentEntity}) {
     if (item is! String) {
       throw NegativeResultValue(
-        message: trc('The property %1 only accepts text value', [name]),
-        name: name,
+        message: tr('The property %1 only accepts text value', [name]),
+        name: tr(name),
         value: item,
       );
     }
@@ -24,8 +24,8 @@ class CheckIp extends ValueValidator {
     if (item == 'localhost') {
       if (!acceptLocalhost) {
         throw NegativeResultValue(
-          message: trc('The property %1 only accepts ip addresses, not the textual value "localhost"', [name]),
-          name: name,
+          message: tr('The property %1 only accepts ip addresses, not the textual value "localhost"', [name]),
+          name: tr(name),
           value: item,
         );
       }
@@ -54,8 +54,8 @@ class CheckIp extends ValueValidator {
   NegativeResult? _validate(String name, String item) {
     if (!isIpv4(item) && !isIpv6(item)) {
       throw NegativeResultValue(
-        message: trc('The property %1 is not a Ip Address valid', [name]),
-        name: name,
+        message: tr('The property %1 is not a Ip Address valid', [name]),
+        name: tr(name),
         value: item,
       );
     }
@@ -66,8 +66,8 @@ class CheckIp extends ValueValidator {
   NegativeResult? _validateIpv4(String name, String item) {
     if (!isIpv4(item)) {
       throw NegativeResultValue(
-        message: trc('The property %1 is not a Ipv4 Address valid', [name]),
-        name: name,
+        message: tr('The property %1 is not a Ipv4 Address valid', [name]),
+        name: tr(name),
         value: item,
       );
     }
@@ -78,8 +78,8 @@ class CheckIp extends ValueValidator {
   NegativeResult? _validateIpv6(String name, String item) {
     if (!isIpv4(item)) {
       throw NegativeResultValue(
-        message: trc('The property %1 is not a Ipv6 Address valid', [name]),
-        name: name,
+        message: tr('The property %1 is not a Ipv6 Address valid', [name]),
+        name: tr(name),
         value: item,
       );
     }

@@ -10,12 +10,12 @@ mixin IThreadCommunicationMethod {
 
   Future<void> closeCommunication() async {
     containErrorLog(
-      detail: '[IThreadCommunicationMethod] FAILED! Could not close in the sender',
+      detail: tr('[IThreadCommunicationMethod] FAILED! Could not close in the sender'),
       function: () async => await sender.closerConnection(),
     );
 
     containErrorLog(
-      detail: '[IThreadCommunicationMethod] FAILED! Could not close in the receiver',
+      detail: tr('[IThreadCommunicationMethod] FAILED! Could not close in the receiver'),
       function: () async => await receiver.closerConnection(),
     );
   }

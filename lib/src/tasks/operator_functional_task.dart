@@ -79,7 +79,7 @@ class OperatorFunctionalTask<T> with IOperatorFunctionalTask<T> {
     if (_lastError == null) {
       return NegativeResult(
         identifier: NegativeResultCodes.implementationFailure,
-        message: trc('Task %1 never failed', [identifier]),
+        message: tr('Task %1 never failed', [identifier]),
       );
     } else {
       return _lastError!;
@@ -91,7 +91,7 @@ class OperatorFunctionalTask<T> with IOperatorFunctionalTask<T> {
     if (_lastResult == null) {
       throw NegativeResult(
         identifier: NegativeResultCodes.implementationFailure,
-        message: trc('Task %1 was never completed', [identifier]),
+        message: tr('Task %1 was never completed', [identifier]),
       );
     } else {
       return _lastResult!;
@@ -103,7 +103,7 @@ class OperatorFunctionalTask<T> with IOperatorFunctionalTask<T> {
     if (_whenFailed == null) {
       throw NegativeResult(
         identifier: NegativeResultCodes.implementationFailure,
-        message: trc('Task %1 never failed', [identifier]),
+        message: tr('Task %1 never failed', [identifier]),
       );
     } else {
       return _whenFailed!;
@@ -115,7 +115,7 @@ class OperatorFunctionalTask<T> with IOperatorFunctionalTask<T> {
 
   OperatorFunctionalTask({required this.identifier, required this.task, required this.isPersistent, required this.waitUntilRetry}) {
     _communicationOperator = volatile(
-      detail: () => trc('The functionality %1 return a communication operator complete (%1 is IFunctionalControllerForOperator and IFunctionalControllerForTask)', [task.runtimeType]),
+      detail: tr('The functionality %1 return a communication operator complete (%1 is IFunctionalControllerForOperator and IFunctionalControllerForTask)', [task.runtimeType]),
       function: () => task.generateCommunicationOperator() as IFunctionalController,
     );
 
@@ -126,7 +126,7 @@ class OperatorFunctionalTask<T> with IOperatorFunctionalTask<T> {
     if (_isDisponsed) {
       throw NegativeResult(
         identifier: NegativeResultCodes.statusFunctionalityInvalid,
-        message: trc('The execution of task %1 cannot be started because it has already finished', [identifier]),
+        message: tr('The execution of task %1 cannot be started because it has already finished', [identifier]),
       );
     }
   }
@@ -150,14 +150,14 @@ class OperatorFunctionalTask<T> with IOperatorFunctionalTask<T> {
       if (ca.wantReset) {
         return execute();
       }
-      _lastError = NegativeResult(identifier: NegativeResultCodes.functionalityCancelled, message: trc('Task %1 was canceled', [identifier]));
+      _lastError = NegativeResult(identifier: NegativeResultCodes.functionalityCancelled, message: tr('Task %1 was canceled', [identifier]));
       isCancelled = true;
       _state = FunctionalTaskStates.canceled;
     } on NegativeResult catch (nr) {
       _lastError = nr;
       _state = FunctionalTaskStates.failed;
     } catch (ex) {
-      _lastError = NegativeResult.searchNegativity(item: ex, actionDescription: trc('Executing functional task No. %1', [identifier]));
+      _lastError = NegativeResult.searchNegativity(item: ex, actionDescription: tr('Executing functional task No. %1', [identifier]));
       _state = FunctionalTaskStates.failed;
     }
 
@@ -171,9 +171,9 @@ class OperatorFunctionalTask<T> with IOperatorFunctionalTask<T> {
       _notifyFailedTask.add(_lastError!);
       _waitResult?.completeError(_lastError!);
       if (isCancelled) {
-        containErrorLogAsync(detail: () => trc('Cancelling task No. %1', [identifier]), function: () => task.reactCancellation());
+        containErrorLogAsync(detail: tr('Cancelling task No. %1', [identifier]), function: () => task.reactCancellation());
       } else {
-        containErrorLogAsync(detail: () => trc('Reacting to task failure No. %1', [identifier]), function: () => task.reactFailure());
+        containErrorLogAsync(detail: tr('Reacting to task failure No. %1', [identifier]), function: () => task.reactFailure());
       }
       if (isCancelled || !isPersistent) {
         _notifyCanceledTask.add(this);
@@ -193,11 +193,11 @@ class OperatorFunctionalTask<T> with IOperatorFunctionalTask<T> {
     }
 
     final isRunning = _state == FunctionalTaskStates.running;
-    _lastError = NegativeResult(identifier: NegativeResultCodes.functionalityCancelled, message: trc('Task %1 was canceled', [identifier]));
+    _lastError = NegativeResult(identifier: NegativeResultCodes.functionalityCancelled, message: tr('Task %1 was canceled', [identifier]));
 
     if (isRunning) {
       _communicationOperator.cancel();
-      containErrorLogAsync(detail: () => trc('Cancelling task #%1', [identifier]), function: () => task.reactCancellation());
+      containErrorLogAsync(detail: tr('Cancelling task #%1', [identifier]), function: () => task.reactCancellation());
     } else {
       _notifyCanceledTask.add(this);
       _state = FunctionalTaskStates.canceled;
@@ -219,7 +219,7 @@ class OperatorFunctionalTask<T> with IOperatorFunctionalTask<T> {
     }
     _isDisponsed = true;
 
-    containErrorLogAsync(detail: () => trc('Reacting to task disponse No. %1', [identifier]), function: () => task.reactDisponse());
+    containErrorLogAsync(detail: tr('Reacting to task disponse No. %1', [identifier]), function: () => task.reactDisponse());
     _notifyCanceledTask.close();
     _notifyCompletedTask.close();
     _notifyFailedTask.close();

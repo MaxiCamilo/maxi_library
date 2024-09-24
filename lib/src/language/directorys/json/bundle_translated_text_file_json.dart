@@ -17,12 +17,12 @@ class BundleTranslatedTextFileJson with IBundleTranslatedText {
   @override
   Future<SplayTreeMap<String, String>> readTranslatedText() async {
     final content = await DirectoryUtilities.readTextualFile(fileDirection: direction);
-    final jsonContent = volatile(detail: () => trc('Processing JSON content from file %1', [direction]), function: () => json.decode(content));
+    final jsonContent = volatile(detail:  tr('Processing JSON content from file %1', [direction]), function: () => json.decode(content));
 
     if (jsonContent is Map<String, dynamic>) {
       return SplayTreeMap<String, String>.of(jsonContent.map((x, y) => MapEntry(x, y.toString())));
     } else {
-      throw NegativeResult(identifier: NegativeResultCodes.wrongType, message: trc('The data in file %1 is not formatted as a JSON object', [direction]));
+      throw NegativeResult(identifier: NegativeResultCodes.wrongType, message: tr('The data in file %1 is not formatted as a JSON object', [direction]));
     }
   }
 }

@@ -10,30 +10,30 @@ class CheckNumberRange extends ValueValidator {
   });
 
   @override
-  String get formalName => tr('Numerical limit');
+  String get formalName => tr('Numerical limit').toString();
 
   @override
   NegativeResult? performValidation({required String name, required item, required parentEntity}) {
     if (item is! num) {
       return NegativeResultValue(
-        message: trc('The property %1 only accepts numbers', [name]),
-        name: name,
+        message: tr('The property %1 only accepts numbers', [name]),
+        name: tr( name),
         value: item,
       );
     }
 
     if (item < minimum) {
       return NegativeResultValue(
-        message: trc('The property %1 is constrained to numeric values of %2 or more', [name, minimum]),
-        name: name,
+        message: tr('The property %1 is constrained to numeric values of %2 or more', [name, minimum]),
+        name: tr( name),
         value: item,
       );
     }
 
     if (item > maximum) {
       return NegativeResultValue(
-        message: trc('The property %1 is constrained to numeric values not exceeding %2', [name, maximum]),
-        name: name,
+        message: tr('The property %1 is constrained to numeric values not exceeding %2', [name, maximum]),
+        name: tr( name),
         value: item,
       );
     }

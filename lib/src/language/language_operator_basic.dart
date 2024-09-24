@@ -9,14 +9,8 @@ class LanguageOperatorBasic with StartableFunctionality, IOperatorLanguage {
   @override
   String get prefixLanguage => 'en';
 
-
   @override
   Stream get notifyLanguageChange => _streamController.stream;
-
-  @override
-  String getTranslation(String reference) {
-    return reference;
-  }
 
   @override
   Future<void> initializeFunctionality() async {}
@@ -24,5 +18,10 @@ class LanguageOperatorBasic with StartableFunctionality, IOperatorLanguage {
   @override
   Future<void> changeLanguage(String newPrefixLanguage) async {
     log('[LanguageOperatorBasic] WARNING! A language operator has not been assigned, so only English text will be displayed');
+  }
+
+  @override
+  String translateText(TranslatableText text) {
+    return text.toString();
   }
 }

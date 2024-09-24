@@ -16,7 +16,7 @@ class FirstService with StartableFunctionality, ThreadService {
     log('¡Hi Susana!');
 
     if (isMustFail) {
-      throw NegativeResult(identifier: NegativeResultCodes.invalidFunctionality, message: 'Hey! I must fail');
+      throw NegativeResult(identifier: NegativeResultCodes.invalidFunctionality, message: tr('Hey! I must fail'));
     }
   }
 

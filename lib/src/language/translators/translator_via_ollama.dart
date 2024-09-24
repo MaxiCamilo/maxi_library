@@ -26,17 +26,17 @@ class TranslatorViaOllama with ITextTraslator {
       if (response.statusCode != 200) {
         throw NegativeResult(
           identifier: NegativeResultCodes.externalFault,
-          message: trc('The request to server %1 ended with an error, the error message is: %2', [url, response.body]),
+          message: tr('The request to server %1 ended with an error, the error message is: %2', [url, response.body]),
         );
       }
 
-      final responseJson = volatile(detail: () => trc('Processing server response %1, expected a JSON object.', [url]), function: () => json.decode(response.body) as Map<String, dynamic>);
+      final responseJson = volatile(detail:  tr('Processing server response %1, expected a JSON object.', [url]), function: () => json.decode(response.body) as Map<String, dynamic>);
       final data = responseJson['response'];
 
       if (data == null) {
         throw NegativeResult(
           identifier: NegativeResultCodes.resultInvalid,
-          message: trc('The server %1 did not return data', [url]),
+          message: tr('The server %1 did not return data', [url]),
         );
       }
 

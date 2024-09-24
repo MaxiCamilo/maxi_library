@@ -35,7 +35,7 @@ class ExecutorRequestThreadStreamStandar with IExecutorRequestedThreadStream {
       flow = await function(entity, parameters);
       await _sendStreamStart(newId, T);
       final subscription = programmingFailure(
-        reasonFailure: () => 'The function returns a non-broadcast stream or is busy',
+        reasonFailure: tr('The function returns a non-broadcast stream or is busy'),
         function: () => flow.listen(
           (x) => _sendStreamItem(newId, x, T),
           onError: (x) => _sendStreamError(newId, x, T),
@@ -60,7 +60,7 @@ class ExecutorRequestThreadStreamStandar with IExecutorRequestedThreadStream {
       flow = await function(parameters);
       await _sendStreamStart(newId, null);
       final subscription = programmingFailure(
-        reasonFailure: () => 'The function returns a non-broadcast stream or is busy',
+        reasonFailure: tr('The function returns a non-broadcast stream or is busy'),
         function: () => flow.listen(
           (x) => _sendStreamItem(newId, x, null),
           onError: (x) => _sendStreamError(newId, x, null),
@@ -82,9 +82,9 @@ class ExecutorRequestThreadStreamStandar with IExecutorRequestedThreadStream {
     if (flow == null) {
       log('[ExecutorRequestThreadStreamStandar] The stream N° $idStream non exists');
       return;
-    }    
+    }
 
-    containErrorLog(detail: 'Cancel stream N° $idStream', function: () => flow.cancel());
+    containErrorLog(detail: tr('Cancel stream N° $idStream'), function: () => flow.cancel());
   }
 
   @override
@@ -109,7 +109,7 @@ class ExecutorRequestThreadStreamStandar with IExecutorRequestedThreadStream {
     }
 
     await containErrorLogAsync(
-      detail: () => detail,
+      detail: tr(detail),
       function: () => sender.sendMessage(messege),
     );
   }

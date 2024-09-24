@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:maxi_library/maxi_library.dart';
 
 class TableResult extends Iterable<Map<String, dynamic>> {
@@ -47,7 +49,7 @@ class TableResult extends Iterable<Map<String, dynamic>> {
     if (position < 0 || position > length) {
       throw NegativeResult(
         identifier: NegativeResultCodes.invalidFunctionality,
-        message: trc('The table has %1 rows, but an attempt was made to get the %2 position (starting from zero)', [length, position]),
+        message: tr('The table has %1 rows, but an attempt was made to get the %2 position (starting from zero)', [length, position]),
       );
     }
 
@@ -85,7 +87,7 @@ class TableResult extends Iterable<Map<String, dynamic>> {
     if (position == null) {
       throw NegativeResult(
         identifier: NegativeResultCodes.nonExistent,
-        message: trc('The table does not contain the column %1', [columnName]),
+        message: tr('The table does not contain the column %1', [columnName]),
       );
     }
 
@@ -103,7 +105,7 @@ class TableResult extends Iterable<Map<String, dynamic>> {
     if (position < 0 || position > length) {
       throw NegativeResult(
         identifier: NegativeResultCodes.invalidFunctionality,
-        message: trc('The table has %1 columns, but an attempt was made to get the %2 position (starting from zero)', [columnsName.length, position]),
+        message: tr('The table has %1 columns, but an attempt was made to get the %2 position (starting from zero)', [columnsName.length, position]),
       );
     }
 
@@ -126,7 +128,7 @@ class TableResult extends Iterable<Map<String, dynamic>> {
       } else {
         throw NegativeResult(
           identifier: NegativeResultCodes.contextInvalidFunctionality,
-          message: trc('An attempt was made to add a row, but column %1 is missing', [name]),
+          message: tr('An attempt was made to add a row, but column %1 is missing', [name]),
         );
       }
     }
@@ -140,7 +142,7 @@ class TableResult extends Iterable<Map<String, dynamic>> {
     if (list.length != columnsName.length) {
       throw NegativeResult(
         identifier: NegativeResultCodes.invalidValue,
-        message: trc('Cannot add an invalid list, the list contains %1 values, but the table have %2 columns', [list.length, columnsName.length]),
+        message: tr('Cannot add an invalid list, the list contains %1 values, but the table have %2 columns', [list.length, columnsName.length]),
       );
     }
 
@@ -153,7 +155,7 @@ class TableResult extends Iterable<Map<String, dynamic>> {
     if (positionColumn < 0 || positionColumn > length) {
       throw NegativeResult(
         identifier: NegativeResultCodes.invalidFunctionality,
-        message: trc('The table has %1 columns, but an attempt was made to get the %2 position (starting from zero)', [columnsName.length, positionColumn]),
+        message: tr('The table has %1 columns, but an attempt was made to get the %2 position (starting from zero)', [columnsName.length, positionColumn]),
       );
     }
 
@@ -167,7 +169,7 @@ class TableResult extends Iterable<Map<String, dynamic>> {
     if (position == null) {
       throw NegativeResult(
         identifier: NegativeResultCodes.nonExistent,
-        message: trc('The table does not contain the column %1', [columnName]),
+        message: tr('The table does not contain the column %1', [columnName]),
       );
     }
 
@@ -205,4 +207,7 @@ class TableResult extends Iterable<Map<String, dynamic>> {
       }
     }
   }
+
+  @override
+  String toString() => json.encode(generarIterador().toList());
 }

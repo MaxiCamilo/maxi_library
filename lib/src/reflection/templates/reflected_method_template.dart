@@ -60,7 +60,7 @@ abstract class ReflectedMethodTemplate with IDeclarationReflector, IMethodReflec
     if (instance == null && !isStatic) {
       throw NegativeResult(
         identifier: NegativeResultCodes.invalidFunctionality,
-        message: trc('The method %1 is not static, it requires an instance', [formalName]),
+        message: tr('The method %1 is not static, it requires an instance', [formalName]),
       );
     }
 
@@ -79,7 +79,7 @@ abstract class ReflectedMethodTemplate with IDeclarationReflector, IMethodReflec
     if (fixedParametersValues.length < fixedParametesRequired.length) {
       throw NegativeResult(
         identifier: NegativeResultCodes.invalidFunctionality,
-        message: trc('The method %1 requires a minimum of %2 fixed values, and %3 values were entered', [formalName, fixedParametesRequired.length, fixedParametersValues.length]),
+        message: tr('The method %1 requires a minimum of %2 fixed values, and %3 values were entered', [formalName, fixedParametesRequired.length, fixedParametersValues.length]),
       );
     }
 
@@ -88,7 +88,7 @@ abstract class ReflectedMethodTemplate with IDeclarationReflector, IMethodReflec
     /*
       throw NegativeResult(
         identifier: NegativeResultCodes.invalidFunctionality,
-        message: trc('The Method %1 has a total of %2 fixed values, but %3 values were entered', [formalName, fixedParametesRequired.length + fixedParametesOptionals.length, fixedParametersValues.length]),
+        message: tr('The Method %1 has a total of %2 fixed values, but %3 values were entered', [formalName, fixedParametesRequired.length + fixedParametesOptionals.length, fixedParametersValues.length]),
       );
       */
     // }
@@ -113,7 +113,7 @@ abstract class ReflectedMethodTemplate with IDeclarationReflector, IMethodReflec
         if (parameter.isRequierd) {
           throw NegativeResult(
             identifier: NegativeResultCodes.invalidFunctionality,
-            message: trc('The named parameter %1 of method %2 (in %3) requires a value', [parameter.formalName, formalName]),
+            message: tr('The named parameter %1 of method %2 (in %3) requires a value', [parameter.formalName, formalName]),
           );
         } else {
           namedParametesValues[parameter.name] = parameter.optinalValue;
@@ -130,14 +130,14 @@ abstract class ReflectedMethodTemplate with IDeclarationReflector, IMethodReflec
     if (fixedParametersValues.length < fixedParametesRequired.length) {
       throw NegativeResult(
         identifier: NegativeResultCodes.invalidFunctionality,
-        message: trc('The method %1 requires a minimum of %2 fixed values, and %3 values were entered', [formalName, fixedParametesRequired.length, fixedParametersValues.length]),
+        message: tr('The method %1 requires a minimum of %2 fixed values, and %3 values were entered', [formalName, fixedParametesRequired.length, fixedParametersValues.length]),
       );
     }
 
     if (fixedParametersValues.length > fixedParametesRequired.length + fixedParametesOptionals.length) {
       throw NegativeResult(
         identifier: NegativeResultCodes.invalidFunctionality,
-        message: trc('The Method %1 has a total of %2 fixed values, but %3 values were entered', [formalName, fixedParametesRequired.length + fixedParametesOptionals.length, fixedParametersValues.length]),
+        message: tr('The Method %1 has a total of %2 fixed values, but %3 values were entered', [formalName, fixedParametesRequired.length + fixedParametesOptionals.length, fixedParametersValues.length]),
       );
     }
 
@@ -145,7 +145,7 @@ abstract class ReflectedMethodTemplate with IDeclarationReflector, IMethodReflec
       if (!namedParametesValues.containsKey(parameter.name)) {
         throw NegativeResult(
           identifier: NegativeResultCodes.invalidFunctionality,
-          message: trc('The named parameter %1 of method %2 requires a value', [parameter.formalName, formalName]),
+          message: tr('The named parameter %1 of method %2 requires a value', [parameter.formalName, formalName]),
         );
       }
     }
@@ -160,7 +160,7 @@ abstract class ReflectedMethodTemplate with IDeclarationReflector, IMethodReflec
 
       if (!parameter.reflectedType.isCompatible(value)) {
         fixedParametersValues[i] = addToErrorDescription(
-          additionalDetails: () => trc('Fixed parameter  N° %1 "%2" ', [i + 1, formalName]),
+          additionalDetails:  tr('Fixed parameter  N° %1 "%2" ', [i + 1, formalName]),
           function: () => parameter.reflectedType.convertObject(value),
         );
       }
@@ -178,7 +178,7 @@ abstract class ReflectedMethodTemplate with IDeclarationReflector, IMethodReflec
 
       if (parameter.reflectedType is! TypeUnknownReflection && !parameter.reflectedType.isCompatible(value)) {
         namedParametesValues[nameParameter] = addToErrorDescription(
-          additionalDetails: () => trc('Named parameter "%1": ', [formalName]),
+          additionalDetails: tr('Named parameter "%1": ', [formalName]),
           function: () => parameter.reflectedType.convertObject(value),
         );
       }

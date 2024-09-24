@@ -27,10 +27,10 @@ mixin AbylitysIsolateClientThreadGetSenderEntity on IThreadInvoker, IThreadProce
     final inputSender = parameter.firts<SendPort>();
     final server = ThreadManager.getProcess();
 
-    checkProgrammingFailure(thatChecks: () => 'The invocation is not being done on a thread server', result: () => server is IThreadProcessServer);
+    checkProgrammingFailure(thatChecks: tr('The invocation is not being done on a thread server'), result: () => server is IThreadProcessServer);
 
     final entity = await volatile(
-      detail: () => 'The thread is not an AbylitysThreadLinkedSender',
+      detail: tr('The thread is not an AbylitysThreadLinkedSender'),
       function: () async => (await server.searchEntityManager<T>()) as AbylitysThreadLinkedSender,
     );
 

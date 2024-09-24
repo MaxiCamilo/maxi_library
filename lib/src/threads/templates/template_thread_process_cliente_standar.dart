@@ -71,7 +71,7 @@ mixin TemplateThreadProcessClienteStandar on IThreadInvoker, IThreadProcess, ITh
 
   @override
   Future<IThreadCommunication> searchEntityManager<T>() async {
-    checkProgrammingFailure(thatChecks: () => 'There cannot exist a dynamic entity type', result: () => T != dynamic);
+    checkProgrammingFailure(thatChecks: tr('There cannot exist a dynamic entity type'), result: () => T != dynamic);
 
     final existing = mapConnectionsEntity[T];
     if (existing != null) {

@@ -1,7 +1,7 @@
 import 'package:maxi_library/maxi_library.dart';
 
 class NegativeResultValue extends NegativeResult {
-  String name;
+  TranslatableText name;
   dynamic value;
 
   NegativeResultValue({
@@ -13,7 +13,7 @@ class NegativeResultValue extends NegativeResult {
     this.value,
   });
 
-  factory NegativeResultValue.fromNegativeResult({required String name, required NegativeResult nr, dynamic value}) {
+  factory NegativeResultValue.fromNegativeResult({required TranslatableText name, required NegativeResult nr, dynamic value}) {
     if (nr is NegativeResultValue) {
       return nr;
     }
@@ -29,21 +29,23 @@ class NegativeResultValue extends NegativeResult {
   }
 
   factory NegativeResultValue.fromException({
-    required String name,
+    required TranslatableText name,
     required dynamic ex,
     dynamic value,
   }) {
     return NegativeResultValue.fromNegativeResult(
       name: name,
       value: value,
-      nr: NegativeResult.searchNegativity(item: ex, actionDescription: trc('Vefify value named %1', [name])),
+      nr: NegativeResult.searchNegativity(item: ex, actionDescription: tr('Vefify value named %1', [name])),
     );
   }
 
   @override
   Map<String, dynamic> serialize() {
     final map = super.serialize();
-    map['name'] = name;
+    
+    map['\$type'] = 'error.value';
+    map['name'] = name.toString();
 
     if (value != null) {
       map['value'] = value.toString();
@@ -54,7 +56,7 @@ class NegativeResultValue extends NegativeResult {
 
   static NegativeResultValue searchNegativity({
     required dynamic error,
-    required String propertyName,
+    required TranslatableText propertyName,
     dynamic value,
     NegativeResultCodes codeDescription = NegativeResultCodes.externalFault,
   }) {
@@ -73,7 +75,7 @@ class NegativeResultValue extends NegativeResult {
       return NegativeResultValue(
         identifier: codeDescription,
         name: propertyName,
-        message: trc('The validation for property %1 failed with the following error: "%2"', [propertyName, error.toString()]),
+        message: tr('The validation for property %1 failed with the following error: "%2"', [propertyName, error.toString()]),
         cause: error,
         value: value,
       );

@@ -4,7 +4,7 @@ import 'package:maxi_library/maxi_library.dart';
 
 class NegativeResult implements Exception, CustomSerialization {
   NegativeResultCodes identifier;
-  String message;
+  TranslatableText message;
   DateTime whenWasIt;
   dynamic cause;
 
@@ -16,7 +16,7 @@ class NegativeResult implements Exception, CustomSerialization {
   }) : whenWasIt = whenWasIt ?? DateTime.now();
 
   @override
-  String toString() => message;
+  String toString() => LanguageManager.translateText(message);
 
   void printConsole() {
     log('[X: ${identifier.name}] $message');
@@ -24,13 +24,13 @@ class NegativeResult implements Exception, CustomSerialization {
 
   static NegativeResult searchNegativity({
     required dynamic item,
-    required String actionDescription,
+    required TranslatableText actionDescription,
     NegativeResultCodes codeDescription = NegativeResultCodes.externalFault,
   }) {
     if (item is NegativeResult) {
       return item;
     } else {
-      return NegativeResult(identifier: codeDescription, message: trc('The functionality %1 failed', [actionDescription]));
+      return NegativeResult(identifier: codeDescription, message: tr('The functionality %1 failed', [actionDescription]));
     }
   }
 
@@ -39,14 +39,14 @@ class NegativeResult implements Exception, CustomSerialization {
       return {
         '\$type': 'error',
         'idError': identifier.index,
-        'message': message,
+        'message': message.serialize(),
         'whenWasIt': whenWasIt.millisecondsSinceEpoch,
       };
     } else {
       return {
         '\$type': 'error',
         'idError': identifier.index,
-        'message': message,
+        'message': message.serialize(),
         'whenWasIt': whenWasIt.millisecondsSinceEpoch,
         'originalError': cause.toString(),
       };

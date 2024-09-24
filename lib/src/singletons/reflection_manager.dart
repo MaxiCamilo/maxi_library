@@ -101,7 +101,7 @@ class ReflectionManager with IThreadInitializer {
     if (item == null) {
       throw NegativeResult(
         identifier: NegativeResultCodes.nonExistent,
-        message: trc('There is no entity reflector for type %1', [type]),
+        message: tr('There is no entity reflector for type %1', [type]),
       );
     }
 
@@ -113,7 +113,7 @@ class ReflectionManager with IThreadInitializer {
     if (item == null) {
       throw NegativeResult(
         identifier: NegativeResultCodes.nonExistent,
-        message: trc('An entity named %1 was not found', [name]),
+        message: tr('An entity named %1 was not found', [name]),
       );
     }
 
@@ -127,5 +127,22 @@ class ReflectionManager with IThreadInitializer {
   @override
   Future<void> performInitializationInThread(IThreadCommunicationMethod channel) async {
     _instance = this;
+  }
+
+  static String serializeListToJson({required List list, bool setTypeValue = false}) {
+    final jsonList = <String>[];
+    ITypeEntityReflection? lastReflector;
+    Type? lastType;
+
+    for (final item in list) {
+      if (lastType == null || item.runtimeType != lastType) {
+        lastType = item.runtimeType;
+        lastReflector = getReflectionEntity(item.runtimeType);
+      }
+
+      jsonList.add(lastReflector!.serializeToJson(value: item, setTypeValue: setTypeValue));
+    }
+
+    return '[${TextUtilities.generateCommand(list: jsonList)}]';
   }
 }

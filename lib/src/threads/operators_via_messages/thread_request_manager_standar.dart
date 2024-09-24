@@ -91,7 +91,7 @@ class ThreadRequestManagerStandar with IThreadRequestManager {
     } catch (ex) {
       pending.completeError(NegativeResult(
         identifier: NegativeResultCodes.implementationFailure,
-        message: 'The result of the task of type "${result.runtimeType}" was not accepted',
+        message: tr('The result of the task of type "${result.runtimeType}" was not accepted'),
       ));
     }
   }
@@ -110,7 +110,7 @@ class ThreadRequestManagerStandar with IThreadRequestManager {
     if (!_isActive) {
       throw NegativeResult(
         identifier: NegativeResultCodes.functionalityCancelled,
-        message: 'The thread/subthread finished its execution',
+        message: tr('The thread/subthread finished its execution'),
       );
     }
   }
@@ -145,7 +145,7 @@ class ThreadRequestManagerStandar with IThreadRequestManager {
 
     final error = NegativeResult(
       identifier: NegativeResultCodes.functionalityCancelled,
-      message: 'The function was canceled because the thread/subthread finished its execution',
+      message: tr('The function was canceled because the thread/subthread finished its execution'),
     );
 
     _pendingTask.entries.map((x) => x.value.completeError(error));

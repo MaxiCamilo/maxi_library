@@ -6,7 +6,7 @@ mixin LanguageManager {
 
   static IOperatorLanguage get instance => _instance;
 
-  static String getTranslation(String reference) => _instance.getTranslation(reference);
+  static String translateText(TranslatableText text) => _instance.translateText(text);
 
   static Stream get notifyLanguageChange => _instance.notifyLanguageChange;
 

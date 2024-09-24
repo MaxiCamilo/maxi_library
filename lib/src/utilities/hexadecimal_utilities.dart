@@ -32,14 +32,14 @@ mixin HexadecimalUtilities {
     if (numero > uint32MaxValue) {
       throw NegativeResult(
         identifier: NegativeResultCodes.wrongType,
-        message: trc('It is not possible to convert the number value to a 32-bit binary, because it exceeds its maximum (%1)', [numero]),
+        message: tr('It is not possible to convert the number value to a 32-bit binary, because it exceeds its maximum (%1)', [numero]),
       );
     }
 
     if (numero < 0) {
       throw NegativeResult(
         identifier: NegativeResultCodes.wrongType,
-        message: 'It is not possible to convert the number value to a 32-bit binary, because it is negative',
+        message: tr('It is not possible to convert the number value to a 32-bit binary, because it is negative'),
       );
     }
 
@@ -57,14 +57,14 @@ mixin HexadecimalUtilities {
     if (numero > uint8MaxValue) {
       throw NegativeResult(
         identifier: NegativeResultCodes.wrongType,
-        message: trc('It is not possible to convert the number value to a 8-bit binary, because it exceeds its maximum (%1)', [numero]),
+        message: tr('It is not possible to convert the number value to a 8-bit binary, because it exceeds its maximum (%1)', [numero]),
       );
     }
 
     if (numero < 0) {
       throw NegativeResult(
         identifier: NegativeResultCodes.wrongType,
-        message: 'It is not possible to convert the number value to a 8-bit binary, because it is negative',
+        message: tr('It is not possible to convert the number value to a 8-bit binary, because it is negative'),
       );
     }
 
@@ -219,7 +219,7 @@ mixin HexadecimalUtilities {
 
   static int passLiteralHexEquivalentNumeric(String numero) {
     if (numero.length > 2) {
-      throw NegativeResult(identifier: NegativeResultCodes.wrongType, message: trc('The number %1 has 2 digits', []));
+      throw NegativeResult(identifier: NegativeResultCodes.wrongType, message: tr('The number %1 has 2 digits', []));
     } else if (numero.length == 2) {
       for (final item in _referencesTable.entries) {
         int maximo = 0;
@@ -230,17 +230,17 @@ mixin HexadecimalUtilities {
               return maximo + otroItem.key;
             }
           }
-          throw NegativeResult(identifier: NegativeResultCodes.wrongType, message: trc('The number %1 is not hexadecimal valid number', []));
+          throw NegativeResult(identifier: NegativeResultCodes.wrongType, message: tr('The number %1 is not hexadecimal valid number', []));
         }
       }
-      throw NegativeResult(identifier: NegativeResultCodes.wrongType, message: trc('The number %1 is not hexadecimal valid number', []));
+      throw NegativeResult(identifier: NegativeResultCodes.wrongType, message: tr('The number %1 is not hexadecimal valid number', []));
     } else if (numero.length == 1) {
       for (final item in _referencesTable.entries) {
         if (item.value == numero) {
           return item.key;
         }
       }
-      throw NegativeResult(identifier: NegativeResultCodes.wrongType, message: trc('The number %1 is not hexadecimal valid number', []));
+      throw NegativeResult(identifier: NegativeResultCodes.wrongType, message: tr('The number %1 is not hexadecimal valid number', []));
     } else {
       return 0;
     }

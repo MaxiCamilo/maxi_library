@@ -56,7 +56,7 @@ GeneratedReflectedNamedParameter<${parameter.typeValue}>(
       } else {
         throw NegativeResult(
           identifier: NegativeResultCodes.nonExistent,
-          message: trc('The parameter named %1 needs a value', [name]),
+          message: tr('The parameter named %1 needs a value', [name]),
         );
       }
     } else if (value is T) {
@@ -64,7 +64,7 @@ GeneratedReflectedNamedParameter<${parameter.typeValue}>(
     } else {
       throw NegativeResult(
         identifier: NegativeResultCodes.wrongType,
-        message: trc(
+        message: tr(
           'The parameter named %1 is expected to be of type %2, but the value provided (%3) is not compatible',
           [name, T, value.runtimeType],
         ),

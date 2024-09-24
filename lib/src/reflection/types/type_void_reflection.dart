@@ -36,7 +36,7 @@ class TypeVoidReflection with IReflectionType {
 
   @override
   serializeToMap(item) {
-    throw NegativeResult(identifier: NegativeResultCodes.implementationFailure, message: trc('It is not safe to assign an object of type %1, as it is an void type', [type]));
+    throw NegativeResult(identifier: NegativeResultCodes.implementationFailure, message: tr('It is not safe to assign an object of type %1, as it is an void type', [type]));
   }
 
   @override

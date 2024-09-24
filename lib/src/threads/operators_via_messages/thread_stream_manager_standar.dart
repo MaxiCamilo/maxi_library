@@ -69,7 +69,7 @@ class ThreadStreamManagerStandar with IThreadStreamManager {
     final item = _searchController(idStream);
     if (item != null) {
       containErrorLog(
-        detail: '[ThreadStreamManagerStandar] FAILED!: Controller number $idStream failed to close due to cancelation',
+        detail: tr('[ThreadStreamManagerStandar] FAILED!: Controller number $idStream failed to close due to cancelation'),
         function: () => item.close(),
       );
     }
@@ -81,7 +81,7 @@ class ThreadStreamManagerStandar with IThreadStreamManager {
     if (item != null) {
       _activeStreams.remove(idStream);
       containErrorLog(
-        detail: '[ThreadStreamManagerStandar] FAILED!: Controller number $idStream failed to close due to finalized',
+        detail: tr('[ThreadStreamManagerStandar] FAILED!: Controller number $idStream failed to close due to finalized'),
         function: () => item.close(),
       );
     }
@@ -92,7 +92,7 @@ class ThreadStreamManagerStandar with IThreadStreamManager {
     final stream = _searchController(idStream);
     if (stream != null) {
       containErrorLog(
-        detail: '[ThreadStreamManagerStandar] FAILED!: Controller number $idStream failed to send error',
+        detail: tr('[ThreadStreamManagerStandar] FAILED!: Controller number $idStream failed to send error'),
         function: () => stream.addError(failure),
       );
     }
@@ -114,7 +114,7 @@ class ThreadStreamManagerStandar with IThreadStreamManager {
     if (stream != null) {
       if (!stream.isClosed) {
         containErrorLog(
-          detail: '[ThreadStreamManagerStandar] FAILED!:a Controlled number $idStream did not accept the value received (${item.runtimeType})',
+          detail: tr('[ThreadStreamManagerStandar] FAILED!:a Controlled number $idStream did not accept the value received (${item.runtimeType})'),
           function: () => stream.add(item),
         );
       }
@@ -135,7 +135,7 @@ class ThreadStreamManagerStandar with IThreadStreamManager {
     if (!_isActive) {
       throw NegativeResult(
         identifier: NegativeResultCodes.functionalityCancelled,
-        message: 'The thread/subthread finished its execution',
+        message: tr('The thread/subthread finished its execution'),
       );
     }
   }
@@ -186,12 +186,12 @@ class ThreadStreamManagerStandar with IThreadStreamManager {
 
     final error = NegativeResult(
       identifier: NegativeResultCodes.functionalityCancelled,
-      message: 'The function was canceled because the thread/subthread finished its execution',
+      message: tr('The function was canceled because the thread/subthread finished its execution'),
     );
 
     _activeStreams.entries.map(
       (x) => containErrorLog(
-        detail: '[ThreadStreamManagerStandar] FAILED!: Controller number ${x.key} failed to send error',
+        detail: tr('[ThreadStreamManagerStandar] FAILED!: Controller number ${x.key} failed to send error'),
         function: () => x.value.addError(error),
       ),
     );

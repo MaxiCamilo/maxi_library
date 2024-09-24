@@ -65,7 +65,7 @@ class IsolateInitializer {
       );
     } catch (ex) {
       containErrorLog(
-        detail: '[IsolateInitializer] FAILED!: The negative result could not be sent to the other isolator.',
+        detail: tr('[IsolateInitializer] FAILED!: The negative result could not be sent to the other isolator.'),
         function: () => channel.sendObject(
           _IsolateInitializerFinalized(error: ex, isCorrect: false),
         ),
@@ -78,7 +78,7 @@ class IsolateInitializer {
   static void _autoCloseIsolate() {
     Future.delayed(Duration(milliseconds: 20)).whenComplete(() {
       containErrorLog(
-        detail: '[IsolateInitializer] FAILED!: The negative result cannot be sent to the other isolator.',
+        detail: tr('[IsolateInitializer] FAILED!: The negative result cannot be sent to the other isolator.'),
         function: () => Isolate.exit(),
       );
     });
