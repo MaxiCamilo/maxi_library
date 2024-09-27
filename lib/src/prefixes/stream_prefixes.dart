@@ -7,6 +7,7 @@ State<S, R> streamStatus<S, R>(S item) => StreamStateItem(item: item);
 State<S, R> checkStreamState<S, R>() => const StreamCheckActive();
 State<S, R> partialError<S, R>(ex) => StreamStatePartialError(partialError: partialError);
 State<S, R> streamResult<S, R>(R result) => StreamStateResult(result: result);
+State<TranslatableText, R> streamTextStatus<R>(String part, [List parts = const []]) => StreamStateItem(item: tr(part, parts));
 
 Stream<State<S, R>> connectFunctionalStream<S, R, SR>(Stream<State<S, SR>> other, [void Function(SR x)? sendResult]) async* {
   late final SR result;

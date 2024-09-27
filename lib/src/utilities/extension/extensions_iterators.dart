@@ -40,7 +40,7 @@ extension IteratorExtension<T> on Iterable<T> {
     return reduce((curr, next) => funcion(curr) > funcion(next) ? curr : next);
   }
 
-  R generateFromIteration<R>(R inicial, R Function({required R goes, required T item, required int position}) funcion) {
+  R regenerateFromIteration<R>(R inicial, R Function({required R goes, required T item, required int position}) funcion) {
     R goes = inicial;
     int posicion = 0;
     for (final item in this) {
@@ -168,23 +168,23 @@ extension IteratorExtension<T> on Iterable<T> {
     }
   }
 
-  Iterable<R> convert<R>(R Function(T) function) sync* {
-    int i = 1;
+  Iterable<R> convert<R>(R Function({required T originalValue, required int position}) function) sync* {
+    int i = 0;
     for (final item in this) {
       try {
-        yield function(item);
+        yield function(originalValue: item, position: i);
         i += 1;
       } on NegativeResult catch (rn) {
         throw NegativeResultValue(
           message: rn.message,
           identifier: rn.identifier,
-          name: tr('Item located at %1', [i]),
+          name: tr('Item located at %1', [i + 1]),
           cause: rn.cause,
         );
       } catch (ex) {
         throw NegativeResult(
           identifier: NegativeResultCodes.nonStandardError,
-          message: tr('In the list, an item located at position %1 caused an error: %2', [i, ex.toString()]),
+          message: tr('In the list, an item located at position %1 caused an error: %2', [i + 1, ex.toString()]),
           cause: ex,
         );
       }
