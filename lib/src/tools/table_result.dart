@@ -20,6 +20,17 @@ class TableResult extends Iterable<Map<String, dynamic>> {
     List<List<dynamic>>? values,
   }) {
     this.values = values ?? [];
+
+    int i = 1;
+    for (final item in this.values) {
+      if (item.length != columnsName.length) {
+        throw NegativeResult(
+          identifier: NegativeResultCodes.invalidProperty,
+          message: tr('Row %1 has %2 values, but it should have %3 values', [i, item.length, columnsName.length]),
+        );
+      }
+      i += 1;
+    }
   }
 
   factory TableResult.emptyTable() => TableResult(columnsName: []);

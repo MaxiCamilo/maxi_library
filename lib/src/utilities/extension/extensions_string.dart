@@ -190,4 +190,46 @@ extension ExtensionsString on String {
     }
     return '${first.toLowerCase()}${extractFrom(since: 1)}';
   }
+
+  String extractSinceItStarted({
+    required List<String> options,
+    int start = 0,
+    int? end,
+    bool inclueOptionInExtraction = true,
+  }) {
+    if (isEmpty) {
+      return '';
+    }
+
+    for (int i = start; i < length || (end != null && i <= end); i++) {
+      for (final opt in options) {
+        if (startsWith(opt, i)) {
+          return extractFrom(since: inclueOptionInExtraction ? i : i + opt.length);
+        }
+      }
+    }
+
+    return this;
+  }
+
+  String extractUpToOption({
+    required List<String> options,
+    int start = 0,
+    int? end,
+    bool inclueOptionInExtraction = true,
+  }) {
+    if (isEmpty) {
+      return '';
+    }
+
+    for (int i = start; i < length || (end != null && i <= end); i++) {
+      for (final opt in options) {
+        if (startsWith(opt, i)) {
+          return extractFrom(since: start, amount: inclueOptionInExtraction ? i + opt.length : i);
+        }
+      }
+    }
+
+    return this;
+  }
 }
