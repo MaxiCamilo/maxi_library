@@ -1,7 +1,6 @@
 import 'package:maxi_library/maxi_library.dart';
 
-abstract class CustomInterpretation {
-  const CustomInterpretation();
+mixin CustomInterpretation {
 
   dynamic performInterpretation({
     required dynamic value,

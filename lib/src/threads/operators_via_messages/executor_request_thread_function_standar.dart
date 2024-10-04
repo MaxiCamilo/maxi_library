@@ -2,10 +2,8 @@ import 'dart:async';
 import 'dart:developer';
 
 import 'package:maxi_library/maxi_library.dart';
-import 'package:maxi_library/src/prefixes/functionality_prefixes.dart';
 import 'package:maxi_library/src/threads/abilitys/iability_send_thread_messages.dart';
 import 'package:maxi_library/src/threads/interfaces/iexecutor_requested_thread_functions.dart';
-import 'package:maxi_library/src/threads/invocation_parameters.dart';
 import 'package:maxi_library/src/threads/interfaces/ithread_process_entity.dart';
 import 'package:maxi_library/src/threads/interfaces/ithread_message.dart';
 import 'package:maxi_library/src/threads/interfaces/ithread_process.dart';
