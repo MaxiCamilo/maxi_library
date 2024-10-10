@@ -3,8 +3,7 @@ import 'dart:developer';
 import 'dart:isolate';
 
 import 'package:maxi_library/maxi_library.dart';
-import 'package:maxi_library/src/threads/isolates/channel_isolates.dart';
-import 'package:maxi_library/src/threads/isolates/thread_communication_method_isolator.dart';
+import 'package:maxi_library/src/threads/isolates/isolated_thread_client.dart';
 
 class _IsolateInitializerFinalized {
   final bool isCorrect;
@@ -28,10 +27,11 @@ class IsolateInitializer {
   Future<ChannelIsolates> mountIsolate(String name) async {
     final channel = ChannelIsolates.createInitialChannelManually();
     final completer = Completer<_IsolateInitializerFinalized>();
+    scheduleMicrotask(() => Isolate.spawn(_prepareThread, _IsolateInitializerContext(initializers: initializers, sender: channel.serder), debugName: name, errorsAreFatal: false));
 
-    Isolate.spawn(_prepareThread, _IsolateInitializerContext(initializers: initializers, sender: channel.serder), debugName: name, errorsAreFatal: false);
-
-    final subscription = channel.dataReceivedNotifier.whereType<_IsolateInitializerFinalized>().listen((x) => completer.complete(x));
+    final subscription = channel.dataReceivedNotifier.whereType<_IsolateInitializerFinalized>().listen((x) {
+      completer.complete(x);
+    });
     final result = await completer.future;
     subscription.cancel();
 
@@ -53,11 +53,13 @@ class IsolateInitializer {
       return;
     }
 
-    final port = ThreadCommunicationMethodIsolator(channel: channel);
+    final newThread = IsolatedThreadClient(channel: channel);
+
+    ThreadManager.instance = newThread;
 
     try {
       for (final init in context.initializers.toList()) {
-        await init.performInitializationInThread(port);
+        await init.performInitializationInThread(newThread);
       }
 
       channel.sendObject(
@@ -70,7 +72,7 @@ class IsolateInitializer {
           _IsolateInitializerFinalized(error: ex, isCorrect: false),
         ),
       );
-      _autoCloseIsolate();
+      newThread.closeThread();
       return;
     }
   }

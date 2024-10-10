@@ -7,10 +7,11 @@ extension IteratorStream<T> on Stream<T> {
     bool errorsAreFatal = true,
     void Function(T)? reactionItem,
     void Function(dynamic)? reactionError,
+    List<Future> finished = const [],
   }) {
     final waiter = Completer();
 
-    listen((x) {
+    final subscription = listen((x) {
       if (reactionItem != null) {
         reactionItem(x);
       }
@@ -27,6 +28,13 @@ extension IteratorStream<T> on Stream<T> {
         waiter.completeError(x);
       }
     });
+
+    for (final item in finished) {
+      item.whenComplete(() {
+        subscription.cancel();
+        finished.iterar((x) => x.ignore());
+      });
+    }
 
     return waiter.future;
   }
@@ -78,5 +86,19 @@ extension IteratorStream<T> on Stream<T> {
     );
 
     return waiter.future;
+  }
+
+  void repeatWithController({required StreamSink<T> repeater, bool closeToo = true}) {
+    final subscription = listen(
+      (event) => repeater.add(event),
+      onError: (x, y) => repeater.addError(x, y),
+      onDone: () {
+        if (closeToo) {
+          repeater.close();
+        }
+      },
+    );
+
+    repeater.done.whenComplete(() => subscription.cancel());
   }
 }

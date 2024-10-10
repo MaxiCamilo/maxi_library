@@ -11,7 +11,7 @@ class _DefineCurrentPathInThreads with IThreadInitializer {
   const _DefineCurrentPathInThreads({required this.direction});
 
   @override
-  Future<void> performInitializationInThread(IThreadCommunicationMethod channel) async {
+  Future<void> performInitializationInThread(IThreadManager channel) async {
     DirectoryUtilities.changeFixedRoute(direction);
   }
 }

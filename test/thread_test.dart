@@ -8,6 +8,7 @@ import 'package:test/test.dart';
 
 import 'old_entities/thread_initialicer_test.dart';
 import 'services/first_service.dart';
+import 'services/second_service.dart';
 
 Future<String> _greetUserMaxi(InvocationParameters parameters) async {
   log('Hello maxi!');
@@ -28,11 +29,13 @@ Future<String> _greetUser(InvocationParameters parameters) async {
 Stream<String> _makeTexts() async* {
   int i = 1;
   while (i <= 5) {
-    await Future.delayed(Duration(seconds: 1));
+    await Future.delayed(Duration(seconds: 3));
     log('In thread, send $i');
 
     yield 'Now I am at $i';
     i += 1;
+
+    //throw 'D:';
   }
 
   log('Now, I have finished');
@@ -44,66 +47,119 @@ void main() {
       // Additional setup goes here.
     });
 
-    test('Mount thread', () async {
+    test('Start and finalize thread', () async {
+      final newThread = await (ThreadManager.instance as IThreadManagerServer).makeNewThread(initializers: [], name: 'Test thread');
+
+      newThread.callFunctionAsAnonymous(function: (p) async {
+        log('waiting to finish');
+        await Future.delayed(Duration(seconds: 10));
+        scheduleMicrotask(() async {
+          log('Bye!');
+          p.thread.closeThread();
+        });
+
+        return 'juajuajua';
+      }).then((x) {
+        log('Function sent $x');
+      });
+
+      await newThread.done;
+      log('Thread has finalized');
+    });
+
+    test('Request the end of the thread', () async {
+      final newThread = await (ThreadManager.instance as IThreadManagerServer).makeNewThread(initializers: [], name: 'Test thread');
+      newThread.callFunctionAsAnonymous(function: (p) async {
+        log('Hi maxi');
+      });
+
+      await Future.delayed(Duration(seconds: 5));
+      log('We\'ll now kill the child process');
+
+      newThread.requestEndOfThread();
+      await newThread.done;
+
+      log('Thread is dead');
+    });
+
+    test('New thread', () async {
       ThreadManager.addThreadInitializer(initializer: ThreadInitializerTest());
 
-      final textReceive = await ThreadManager.callFunctionAsAnonymous(function: _greetUserMaxi);
+      await ThreadManager.instance.callFunctionOnTheServer(function: (_) async => print('Hi from here!'));
+
+      final newThread = await (ThreadManager.instance as IThreadManagerServer).makeNewThread(initializers: [], name: 'Test thread');
+      final received = await newThread.callFunctionAsAnonymous(function: (_) async {
+        log('Hi from client!');
+        return 'jejejeje';
+      });
+      print('Thred sent $received');
+    });
+
+    test('Mount thread and execute functions', () async {
+      ThreadManager.addThreadInitializer(initializer: ThreadInitializerTest());
+      final newThread = await (ThreadManager.instance as IThreadManagerServer).makeNewThread(initializers: [], name: 'Test thread');
+
+      final textReceive = await newThread.callFunctionAsAnonymous(function: _greetUserMaxi);
       log('The Thread sent "$textReceive"');
 
-      String greetingText = await ThreadManager.callFunctionAsAnonymous(function: _greetUser, parameters: InvocationParameters.only('Peludo'));
+      String greetingText = await newThread.callFunctionAsAnonymous(function: _greetUser, parameters: InvocationParameters.only('Peludo'));
       log('The Thread sent "$greetingText"');
 
-      greetingText = await ThreadManager.callFunctionAsAnonymous(function: _greetUser, parameters: InvocationParameters.only('Pelado'));
+      greetingText = await newThread.callFunctionAsAnonymous(function: _greetUser, parameters: InvocationParameters.only('Pelado'));
       log('The Thread sent "$greetingText"');
 
-      greetingText = await ThreadManager.callFunctionAsAnonymous(function: _greetUser, parameters: InvocationParameters.only('Petizo'));
+      greetingText = await newThread.callFunctionAsAnonymous(function: _greetUser, parameters: InvocationParameters.only('Petizo'));
       log('The Thread sent "$greetingText"');
 
-      greetingText = await ThreadManager.callFunctionAsAnonymous(function: _greetUser, parameters: InvocationParameters.only('Barbudo'));
+      greetingText = await newThread.callFunctionAsAnonymous(function: _greetUser, parameters: InvocationParameters.only('Barbudo'));
       log('The Thread sent "$greetingText"');
     });
 
     test('check synchronization', () async {
+      final newThread = await (ThreadManager.instance as IThreadManagerServer).makeNewThread(initializers: [], name: 'Test thread');
+
       await Future.wait([
-        ThreadManager.callFunctionAsAnonymous(function: _greetUser, parameters: InvocationParameters.only('First')).then((x) {
+        newThread.callFunctionAsAnonymous(function: _greetUser, parameters: InvocationParameters.only('First')).then((x) {
           log('Finished first: $x');
         }),
-        ThreadManager.callFunctionAsAnonymous(function: _greetUser, parameters: InvocationParameters.only('Second')).then((x) {
+        newThread.callFunctionAsAnonymous(function: _greetUser, parameters: InvocationParameters.only('Second')).then((x) {
           log('Finished second: $x');
         }),
-        ThreadManager.callFunctionAsAnonymous(function: _greetUser, parameters: InvocationParameters.only('Third')).then((x) {
+        newThread.callFunctionAsAnonymous(function: _greetUser, parameters: InvocationParameters.only('Third')).then((x) {
           log('Finished third: $x');
         }),
       ]);
 
       log('Function finished');
 
-      await ThreadManager.callFunctionAsAnonymous(function: _greetUser, parameters: InvocationParameters.only('Fourth')).then((x) {
+      await newThread.callFunctionAsAnonymous(function: _greetUser, parameters: InvocationParameters.only('Fourth')).then((x) {
         log('Finished Fourth: $x');
       });
 
-      await ThreadManager.callFunctionAsAnonymous(function: _greetUser, parameters: InvocationParameters.only('Fifth')).then((x) {
+      await newThread.callFunctionAsAnonymous(function: _greetUser, parameters: InvocationParameters.only('Fifth')).then((x) {
         log('Finished fifth: $x');
       });
 
       await Future.wait([
-        ThreadManager.callFunctionAsAnonymous(function: _greetUser, parameters: InvocationParameters.only('Sixth')).then((x) {
+        newThread.callFunctionAsAnonymous(function: _greetUser, parameters: InvocationParameters.only('Sixth')).then((x) {
           log('Finished sixth: $x');
         }),
-        ThreadManager.callFunctionAsAnonymous(function: _greetUser, parameters: InvocationParameters.only('Seventh')).then((x) {
+        newThread.callFunctionAsAnonymous(function: _greetUser, parameters: InvocationParameters.only('Seventh')).then((x) {
           log('Finished seventh: $x');
         }),
-        ThreadManager.callFunctionAsAnonymous(function: _greetUser, parameters: InvocationParameters.only('Eighth')).then((x) {
+        newThread.callFunctionAsAnonymous(function: _greetUser, parameters: InvocationParameters.only('Eighth')).then((x) {
           log('Finished eighth: $x');
         }),
-        ThreadManager.callFunctionAsAnonymous(function: _greetUser, parameters: InvocationParameters.only('Nineth')).then((x) {
+        newThread.callFunctionAsAnonymous(function: _greetUser, parameters: InvocationParameters.only('Nineth')).then((x) {
           log('Finished nineth: $x');
         }),
       ]);
     });
 
     test('check Streams', () async {
-      final stream = await ThreadManager.callStreamAsAnonymous<String>(function: (_) async => _makeTexts());
+      final newThread = await (ThreadManager.instance as IThreadManagerServer).makeNewThread(initializers: [], name: 'Test thread');
+
+      final stream = await newThread.callStreamAsAnonymous<String>(function: (_) async => _makeTexts());
       final waiter = Completer();
       // ignore: unused_local_variable
       final subcription = stream.listen(
@@ -113,6 +169,7 @@ void main() {
       );
 
       //Future.delayed(Duration(seconds: 5)).whenComplete(() {
+      //  //CAUTION: If a stream is canceled, the "onDone" is not triggered
       //  subcription.cancel();
       //});
 
@@ -140,7 +197,7 @@ void main() {
     test('Using Stream in the entities', () async {
       await ThreadManager.mountEntity(entity: FirstService(isMustFail: false));
 
-      final stream = await ThreadManager.callEntityStream<FirstService, String>(function: (x, p) async => x.generateSomeText(amount: 15, waitingSeconds: 3));
+      final stream = (await ThreadManager.callEntityStream<FirstService, String>(function: (x, p) async => x.generateSomeText(amount: 15, waitingSeconds: 3))).asBroadcastStream();
 
       stream.listen(
         (x) => log('The stream of the entity sent "$x"'),
@@ -149,6 +206,36 @@ void main() {
 
       await stream.waitFinish(errorsAreFatal: true);
 
+      log('I am done');
+    });
+
+    test('Service calling another service', () async {
+      await ThreadManager.mountEntity(entity: FirstService(isMustFail: false));
+      await ThreadManager.mountEntity(entity: SecondService());
+
+      await ThreadManager.callEntityFunction<SecondService, void>(function: (service, parameters) => service.callFromFirstService());
+      log('yey');
+    });
+
+    test('Service Stream another service', () async {
+      await ThreadManager.mountEntity(entity: FirstService(isMustFail: false));
+      await ThreadManager.mountEntity(entity: SecondService());
+
+      final stream = (await ThreadManager.callEntityStream<SecondService, String>(function: (x, p) async => x.callStreamFromFirstService())).asBroadcastStream();
+
+      stream.listen(
+        (x) => log('The stream of the entity sent "$x"'),
+        onDone: () => log('The stream closed'),
+      );
+
+      await stream.waitFinish(errorsAreFatal: true);
+
+      log('I am done');
+    });
+
+    test('Service mount another service', () async {
+      await ThreadManager.mountEntity(entity: SecondService());
+      await ThreadManager.callEntityFunction<SecondService, void>(function: (service, parameters) => service.mountFirstService());
       log('I am done');
     });
   });

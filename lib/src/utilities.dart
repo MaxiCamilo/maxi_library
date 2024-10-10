@@ -8,3 +8,4 @@ export 'package:maxi_library/src/utilities/reflection_utilities.dart';
 export 'package:maxi_library/src/utilities/text_utilities.dart';
 export 'package:maxi_library/src/utilities/hexadecimal_utilities.dart';
 export 'package:maxi_library/src/utilities/directory_utilities.dart';
+export 'package:maxi_library/src/utilities/functionality_utilities.dart';

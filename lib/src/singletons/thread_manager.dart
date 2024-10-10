@@ -1,14 +1,11 @@
 import 'package:maxi_library/maxi_library.dart';
-import 'package:maxi_library/src/threads/factories/threadm_managers_factory_isolator.dart';
-import 'package:maxi_library/src/threads/interfaces/ithread_process.dart';
-import 'package:maxi_library/src/threads/interfaces/ithread_process_server.dart';
 
 mixin ThreadManager {
-  static IThreadInvoker? _instance;
-  static IThreadManagersFactory generalFactory = const ThreadManagersFactoryIsolator();
+  static IThreadManager? _instance;
+  static IThreadManagersFactory generalFactory = const IsolatedThreadFactory();
   //static List<IThreadInitializer> initializerForNewIsolates = [];
 
-  static IThreadInvoker get instance {
+  static IThreadManager get instance {
     if (_instance != null) {
       return _instance!;
     }
@@ -18,7 +15,7 @@ mixin ThreadManager {
     return _instance!;
   }
 
-  static set instance(IThreadInvoker newInvoker) {
+  static set instance(IThreadManager newInvoker) {
     if (_instance != null) {
       throw NegativeResult(
         identifier: NegativeResultCodes.implementationFailure,
@@ -29,33 +26,23 @@ mixin ThreadManager {
     _instance = newInvoker;
   }
 
-  static Future<R> callFunctionAsAnonymous<R>({InvocationParameters parameters = InvocationParameters.emptry, required Future<R> Function(InvocationParameters) function}) =>
+  static Future<R> callFunctionAsAnonymous<R>({InvocationParameters parameters = InvocationParameters.emptry, required Future<R> Function(InvocationParameters parameters) function}) =>
       instance.callFunctionAsAnonymous<R>(function: function, parameters: parameters);
-  static Future<Stream<R>> callStreamAsAnonymous<R>({InvocationParameters parameters = InvocationParameters.emptry, required Future<Stream<R>> Function(InvocationParameters) function}) =>
-      instance.callStreamAsAnonymous<R>(function: function, parameters: parameters);
+  static Future<Stream<R>> callStreamAsAnonymous<R>(
+          {InvocationParameters parameters = InvocationParameters.emptry, required Future<Stream<R>> Function(InvocationParameters parameters) function, bool cancelOnError = false}) =>
+      instance.callStreamAsAnonymous<R>(function: function, parameters: parameters, cancelOnError: cancelOnError);
 
-  static Future<R> callEntityFunction<T, R>({InvocationParameters parameters = InvocationParameters.emptry, required Future<R> Function(T, InvocationParameters) function}) =>
+  static Future<R> callEntityFunction<T, R>({InvocationParameters parameters = InvocationParameters.emptry, required Future<R> Function(T service, InvocationParameters parameters) function}) =>
       instance.callEntityFunction<T, R>(function: function, parameters: parameters);
-  static Future<Stream<R>> callEntityStream<T, R>({InvocationParameters parameters = InvocationParameters.emptry, required Future<Stream<R>> Function(T, InvocationParameters) function}) =>
-      instance.callEntityStream<T, R>(function: function, parameters: parameters);
+  static Future<Stream<R>> callEntityStream<T, R>(
+          {InvocationParameters parameters = InvocationParameters.emptry, required Future<Stream<R>> Function(T service, InvocationParameters parameters) function, bool cancelOnError = false}) =>
+      instance.callEntityStream<T, R>(function: function, parameters: parameters, cancelOnError: cancelOnError);
 
-  static Future<void> mountEntity<T>({required T entity, bool ifExistsOmit = true}) => instance.mountEntity<T>(entity: entity, ifExistsOmit: ifExistsOmit);
+  static Future<void> mountEntity<T extends Object>({required T entity, bool ifExistsOmit = true}) => instance.mountEntity<T>(entity: entity, ifExistsOmit: ifExistsOmit);
 
   static void addThreadInitializer({required IThreadInitializer initializer}) {
-    if (instance is IThreadProcessServer) {
-      (instance as IThreadProcessServer).addThreadInitializer(initializer: initializer);
+    if (instance is IThreadManagerServer) {
+      (instance as IThreadManagerServer).addThreadInitializer(initializer: initializer);
     }
-  }
-
-  static IThreadProcess getProcess() {
-    final item = instance;
-    if (item is IThreadProcess) {
-      return item;
-    }
-
-    throw NegativeResult(
-      identifier: NegativeResultCodes.implementationFailure,
-      message: tr('[ThreadManager] The invoker is not a process manager'),
-    );
   }
 }
