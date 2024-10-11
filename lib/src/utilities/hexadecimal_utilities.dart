@@ -7,6 +7,7 @@ import 'package:maxi_library/maxi_library.dart';
 
 mixin HexadecimalUtilities {
   static const int uint32MaxValue = 4294967295;
+  static const int uint16MaxValue = 32767;
   static const int uint8MaxValue = 255;
 
   static const _referencesTable = <int, String>{
@@ -69,6 +70,29 @@ mixin HexadecimalUtilities {
     }
 
     return [(numero >> 0) & 0xFF];
+  }
+
+  static List<int> serialize16Bits(int numero) {
+    if (numero > uint16MaxValue) {
+      throw NegativeResult(
+        identifier: NegativeResultCodes.wrongType,
+        message: tr('It is not possible to convert the number value to a 16-bit binary, because it exceeds its maximum (%1)', [numero]),
+      );
+    }
+
+    if (numero < 0) {
+      throw NegativeResult(
+        identifier: NegativeResultCodes.wrongType,
+        message: tr('It is not possible to convert the number value to a 16-bit binary, because it is negative'),
+      );
+    }
+
+    List<int> lista = [];
+
+    lista.add((numero >> 8) & 0xFF);
+    lista.add((numero >> 0) & 0xFF);
+
+    return lista;
   }
 
   static int interpretNumber(List<int> bytes, {bool fromLowestToHighest = true}) {

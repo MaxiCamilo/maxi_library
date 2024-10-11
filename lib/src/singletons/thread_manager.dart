@@ -26,16 +26,16 @@ mixin ThreadManager {
     _instance = newInvoker;
   }
 
-  static Future<R> callFunctionAsAnonymous<R>({InvocationParameters parameters = InvocationParameters.emptry, required Future<R> Function(InvocationParameters parameters) function}) =>
+  static Future<R> callFunctionAsAnonymous<R>({InvocationParameters parameters = InvocationParameters.emptry, required Future<R> Function(InvocationParameters para) function}) =>
       instance.callFunctionAsAnonymous<R>(function: function, parameters: parameters);
   static Future<Stream<R>> callStreamAsAnonymous<R>(
-          {InvocationParameters parameters = InvocationParameters.emptry, required Future<Stream<R>> Function(InvocationParameters parameters) function, bool cancelOnError = false}) =>
+          {InvocationParameters parameters = InvocationParameters.emptry, required Future<Stream<R>> Function(InvocationParameters para) function, bool cancelOnError = false}) =>
       instance.callStreamAsAnonymous<R>(function: function, parameters: parameters, cancelOnError: cancelOnError);
 
-  static Future<R> callEntityFunction<T, R>({InvocationParameters parameters = InvocationParameters.emptry, required Future<R> Function(T service, InvocationParameters parameters) function}) =>
+  static Future<R> callEntityFunction<T, R>({InvocationParameters parameters = InvocationParameters.emptry, required Future<R> Function(T serv, InvocationParameters para) function}) =>
       instance.callEntityFunction<T, R>(function: function, parameters: parameters);
   static Future<Stream<R>> callEntityStream<T, R>(
-          {InvocationParameters parameters = InvocationParameters.emptry, required Future<Stream<R>> Function(T service, InvocationParameters parameters) function, bool cancelOnError = false}) =>
+          {InvocationParameters parameters = InvocationParameters.emptry, required Future<Stream<R>> Function(T serv, InvocationParameters para) function, bool cancelOnError = false}) =>
       instance.callEntityStream<T, R>(function: function, parameters: parameters, cancelOnError: cancelOnError);
 
   static Future<void> mountEntity<T extends Object>({required T entity, bool ifExistsOmit = true}) => instance.mountEntity<T>(entity: entity, ifExistsOmit: ifExistsOmit);

@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:maxi_library/export_reflectors.dart';
 import 'package:maxi_library/src/reflection/entity_implementation/field_entity.dart';
 import 'package:maxi_library/src/reflection/entity_implementation/method_entity.dart';
@@ -67,7 +65,7 @@ class ReflectedEntity<T> extends ReflectedEntityTypeTemplate {
 
   @override
   buildEntityWithoutParameters() {
-    checkProgrammingFailure(thatChecks:  tr('Entity %1 has a default construct', [name]), result: () => _defalutContruct != null);
+    checkProgrammingFailure(thatChecks: tr('Entity %1 has a default construct', [name]), result: () => _defalutContruct != null);
     return _defalutContruct!.callMethod(instance: null, fixedParametersValues: const [], namedParametesValues: const {});
   }
 
@@ -89,9 +87,7 @@ class ReflectedEntity<T> extends ReflectedEntityTypeTemplate {
 
     for (final type in reflectedClass.classThatImplement) {
       final found = ReflectionManager.tryGetReflectionEntity(type);
-      if (found == null) {
-        log('[DANGER] The entity $name extends class $type, but that class was not reflected!');
-      } else {
+      if (found != null) {
         _inheritance.add(found);
       }
     }
