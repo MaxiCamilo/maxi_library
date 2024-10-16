@@ -13,6 +13,8 @@ mixin IFieldReflection on IDeclarationReflector, IGetterReflector, ISetterReflec
 
   String get nameInLowerCase;
 
+  bool areSame({required dynamic first, required dynamic second});
+
   NegativeResult? checkValueIsCorrect({required instance}) {
     final value = getValue(instance: instance);
     return verifyValue(value: value, parentEntity: instance);

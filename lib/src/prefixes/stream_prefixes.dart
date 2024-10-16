@@ -39,8 +39,9 @@ Stream<State<S, R>> connectFunctionalStream<S, R, SR>(Stream<State<S, SR>> other
 Future<R> waitFunctionalStream<S, R>({
   required Stream<State<S, R>> stream,
   void Function(S x)? onData,
-  void Function()? onDone,
+  void Function(R?)? onDoneOrCanceled,
   void Function(dynamic ex)? onError,
+  void Function(StreamSubscription<State<S, R>>)? onSubscription,
 }) async {
   final completer = Completer<R>();
 
@@ -50,6 +51,9 @@ Future<R> waitFunctionalStream<S, R>({
         onData?.call(item.item);
       } else if (item is StreamStateResult<S, R>) {
         completer.completeIfIncomplete(item.result);
+        if (onDoneOrCanceled != null) {
+          onDoneOrCanceled(item.result);
+        }
       } else if (item is StreamStatePartialError<S, R>) {
         onError?.call(item.partialError);
       }
@@ -58,6 +62,10 @@ Future<R> waitFunctionalStream<S, R>({
       completer.completeErrorIfIncomplete(x, y);
     },
     onDone: () {
+      if (!completer.isCompleted && onDoneOrCanceled != null) {
+        onDoneOrCanceled(null);
+      }
+
       if (!completer.isCompleted) {
         if (R == dynamic || R.toString() == 'void') {
           completer.complete();
@@ -70,6 +78,10 @@ Future<R> waitFunctionalStream<S, R>({
       }
     },
   );
+
+  if (onSubscription != null) {
+    onSubscription(subscription);
+  }
 
   try {
     return await completer.future;

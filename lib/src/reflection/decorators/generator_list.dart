@@ -152,4 +152,24 @@ class GeneratorList<T> with IValueGenerator, IReflectionType {
 
     return newList;
   }
+
+  bool areSame({required dynamic first, required dynamic second}) {
+    final firstList = first as List;
+    final secondList = second as List;
+
+    if (firstList.length != secondList.length) {
+      return false;
+    }
+
+    for (int i = 0; i < firstList.length; i++) {
+      final firtsValue = firstList[i];
+      final secondValue = secondList[i];
+
+      if (!ReflectionManager.areSame(first: firtsValue, second: secondValue)) {
+        return false;
+      }
+    }
+
+    return true;
+  }
 }

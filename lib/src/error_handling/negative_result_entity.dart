@@ -10,7 +10,7 @@ class NegativeResultEntity extends NegativeResultValue {
     final map = super.serialize();
 
     map['\$type'] = 'error.entity';
-    map['invalidProperties'] = Map.fromEntries(invalidProperties.map((x) => MapEntry(x.name, x.serialize())));
+    map['invalidProperties'] = invalidProperties.map<Map<String, dynamic>>((x) => x.serialize()).toList();
 
     return map;
   }

@@ -145,4 +145,31 @@ class ReflectionManager with IThreadInitializer {
 
     return '[${TextUtilities.generateCommand(list: jsonList)}]';
   }
+
+  static bool areSame({required dynamic first, required dynamic second, List annotations = const []}) {
+    if (first == null && second == null) {
+      return true;
+    } else if (first == null && second != null || first != null && second == null) {
+      return false;
+    }
+
+    if (first.runtimeType != second.runtimeType) {
+      return false;
+    }
+
+    final reflectedType = getReflectionType(first.runtimeType, annotations: annotations);
+
+    if (reflectedType is GeneratorList) {
+      return reflectedType.areSame(first: first, second: second);
+    } else if (reflectedType is TypePrimitiveReflection || reflectedType is TypeEnumeratorReflector || reflectedType is TypeDynamicReflection) {
+      return first == second;
+    } else if (reflectedType is ITypeClassReflection) {
+      return reflectedType.areSame(first: first, second: second);
+    } else {
+      throw NegativeResult(
+        identifier: NegativeResultCodes.implementationFailure,
+        message: tr('It is not possible to dynamically compare type %1', [reflectedType.type]),
+      );
+    }
+  }
 }

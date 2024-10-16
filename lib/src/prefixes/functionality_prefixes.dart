@@ -139,7 +139,7 @@ T volatile<T>({
   } catch (ex) {
     final NegativeResult rn = NegativeResult(
       identifier: NegativeResultCodes.nonStandardError,
-      message: tr('An error occurred while executing the functionality "%1", the error was: %2', [detail, ex]),
+      message: detail,
       cause: ex,
     );
 

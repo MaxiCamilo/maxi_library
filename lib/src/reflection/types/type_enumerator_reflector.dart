@@ -96,4 +96,6 @@ class TypeEnumeratorReflector with IReflectionType {
 
   @override
   String toString() => 'Enumerator $name';
+
+  
 }

@@ -8,3 +8,6 @@ export 'package:maxi_library/src/tools/dart_application_initializer.dart';
 export 'package:maxi_library/src/tools/arguments_parser.dart';
 export 'package:maxi_library/src/tools/entity_file.dart';
 export 'package:maxi_library/src/tools/asynchronous_singleton.dart';
+export 'package:maxi_library/src/tools/entity_list.dart';
+export 'package:maxi_library/src/tools/future_blocker.dart';
+export 'package:maxi_library/src/tools/entity_list_file.dart';

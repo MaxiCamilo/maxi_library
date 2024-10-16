@@ -126,7 +126,7 @@ mixin DirectoryUtilities {
     final file = partido.removeLast();
 
     if (partido.isEmpty) {
-      return route;
+      partido.add(route);
     }
 
     final carpeta = await createFolder(partido.join('/'));

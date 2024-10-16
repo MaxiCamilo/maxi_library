@@ -111,4 +111,12 @@ class FieldEntity<T, R> with IDeclarationReflector, IGetterReflector, ISetterRef
       );
     }
   }
+
+  @override
+  bool areSame({required first, required second}) {
+    final firstValue = getValue(instance: first);
+    final secondValue = getValue(instance: second);
+
+    return ReflectionManager.areSame(first: firstValue, second: secondValue);
+  }
 }

@@ -51,7 +51,9 @@ abstract class IBidirectionalStream<T> implements StreamSink<T> {
       },
     );
 
-    doneSunscription = done.whenComplete(() => subscription.cancel());
+    doneSunscription = done.whenComplete(() {
+      subscription.cancel();
+    });
   }
 }
 

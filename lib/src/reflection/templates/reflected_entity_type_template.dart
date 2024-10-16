@@ -516,4 +516,19 @@ abstract class ReflectedEntityTypeTemplate with IReflectionType, IDeclarationRef
 
     return newMap;
   }
+
+  @override
+  bool areSame({required dynamic first, required dynamic second}) {
+    if (!isCompatible(first) || !isCompatible(second)) {
+      return false;
+    }
+
+    for (final field in fields) {
+      if (!field.areSame(first: first, second: second)) {
+        return false;
+      }
+    }
+
+    return true;
+  }
 }

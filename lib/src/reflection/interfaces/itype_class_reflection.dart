@@ -3,7 +3,6 @@ import 'package:maxi_library/src/reflection/interfaces/ifield_reflection.dart';
 import 'package:maxi_library/src/reflection/interfaces/igetter_reflector.dart';
 import 'package:maxi_library/src/reflection/interfaces/isetter_reflector.dart';
 
-
 mixin ITypeClassReflection on IReflectionType, IDeclarationReflector {
   List<IFieldReflection> get fields;
   List<IMethodReflection> get methods;
@@ -18,6 +17,8 @@ mixin ITypeClassReflection on IReflectionType, IDeclarationReflector {
   bool get hasDefaultConstructor;
 
   bool get isAbstract;
+
+  bool areSame({required dynamic first, required dynamic second});
 
   dynamic buildEntity({
     String selectedBuild = '',

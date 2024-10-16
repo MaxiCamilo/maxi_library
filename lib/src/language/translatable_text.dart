@@ -14,7 +14,7 @@ class TranslatableText with ICustomSerialization {
   static const TranslatableText empty = TranslatableText(message: '');
 
   const TranslatableText({required this.message, this.tokenId = '', this.textParts = const []});
-  
+
   factory TranslatableText.interpretFromJson({required String text}) =>
       volatile(detail: tr('The translatable text cannot be interpreted (it must be JSON)'), function: () => TranslatableText.interpret(map: json.decode(text)));
 
@@ -60,12 +60,13 @@ class TranslatableText with ICustomSerialization {
   }
 
   @override
-  serialize() {
+  Map<String, dynamic> serialize() {
     final list = <String>[];
 
     for (final item in textParts) {
+      //TODO REIMPLEMENTAR ESTO!
       if (item is TranslatableText) {
-        list.add(item.serialize());
+        //list.add(item.serialize());
       } else {
         list.add(item.toString());
       }

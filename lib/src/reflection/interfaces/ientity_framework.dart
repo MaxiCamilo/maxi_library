@@ -1,3 +1,6 @@
+import 'dart:convert';
+
+import 'package:maxi_library/maxi_library.dart';
 import 'package:maxi_library/src/reflection/interfaces/igetter_reflector.dart';
 
 mixin IEntityFramework {
@@ -29,5 +32,24 @@ mixin IEntityFramework {
     bool essentialKeysMustBePresent = true,
   });
 
-  
+  List<T> interpretJsonAslist<T>({
+    required String rawText,
+    required bool tryToCorrectNames,
+    bool enableCustomInterpretation = true,
+    bool verify = true,
+    bool acceptZeroIdentifier = true,
+    bool primaryKeyMustBePresent = true,
+    bool essentialKeysMustBePresent = true,
+  }) {
+    final jsonContent = volatile(detail: tr('The text is not valid json'), function: () => json.decode(rawText));
+    return interpretAslist<T>(
+      value: jsonContent,
+      tryToCorrectNames: tryToCorrectNames,
+      enableCustomInterpretation: enableCustomInterpretation,
+      verify: verify,
+      acceptZeroIdentifier: acceptZeroIdentifier,
+      primaryKeyMustBePresent: primaryKeyMustBePresent,
+      essentialKeysMustBePresent: essentialKeysMustBePresent,
+    );
+  }
 }

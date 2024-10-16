@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:developer';
 
 import 'package:maxi_library/maxi_library.dart';
@@ -52,6 +53,8 @@ class NegativeResult implements Exception, CustomSerialization {
       };
     }
   }
+
+  String serializeToJson() => json.encode(serialize());
 
   @override
   performSerialization({required entity, required IDeclarationReflector declaration, bool onlyModificable = true, bool allowStaticFields = false}) => serialize();

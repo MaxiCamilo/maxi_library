@@ -4,7 +4,7 @@ import 'package:maxi_library/src/reflection/interfaces/itype_class_reflection.da
 
 mixin ITypeEntityReflection on ITypeClassReflection, IEntityFramework {
   String serializeToJson({required dynamic value, bool setTypeValue = false});
-
+  
   dynamic interpretationFromJson({
     required String rawJson,
     required bool tryToCorrectNames,

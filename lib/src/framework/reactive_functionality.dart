@@ -295,11 +295,11 @@ abstract class ReactiveFunctionalityImplementation<S, R> implements IReactiveFun
     final newSpectator = _SpectatorReactiveFunctionality<S, R, SE, RE>(input: input, output: output, parent: this);
     newSpectator.done.whenComplete(() => _removeSpectator(newSpectator));
 
-    if (_isActive) {
-      newSpectator.start();
-    } else {
+    if (!_isActive) {
       start();
     }
+
+    newSpectator.start();
 
     _spectators.add(newSpectator);
   }

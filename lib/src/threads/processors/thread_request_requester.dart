@@ -82,15 +82,25 @@ class ThreadRequestRequester {
     }
 
     messageOutput.add(RequestCancellationStreamInThread(streamId: id));
+
+    controller.close();
+    _functionsWaitingForResponse.remove(id);
   }
 
   Future<Stream<R>> callEntityStream<T, R>({InvocationParameters parameters = InvocationParameters.emptry, required Future<Stream<R>> Function(T, InvocationContext) function, bool cancelOnError = false}) async {
     final id = _getLastId();
-    final message = MessageExecuteEntityStreamInThread<T, R>(function: function, parameters: parameters, taskId: id, cancelOnError: cancelOnError);
+    final message = MessageExecuteEntityStreamInThread<T, R>(
+      function: function,
+      parameters: parameters,
+      taskId: id,
+      cancelOnError: cancelOnError,
+    );
     await _waitingConfirmation(id: id, message: message);
 
     final controller = StreamController<R>();
     _activeStreams[id] = controller;
+
+    controller.onCancel = () => _reactCancelStream(id: id, controller: controller);
 
     return controller.stream;
   }

@@ -191,3 +191,7 @@ extension IteratorExtension<T> on Iterable<T> {
     }
   }
 }
+
+extension MapEntryListExtension<T, R> on Iterable<MapEntry<T, R>> {
+  Map<T, R> toMap() => Map<T, R>.fromEntries(this);
+}

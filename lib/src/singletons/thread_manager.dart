@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:maxi_library/maxi_library.dart';
 
 mixin ThreadManager {
@@ -28,8 +30,7 @@ mixin ThreadManager {
 
   static Future<R> callFunctionAsAnonymous<R>({InvocationParameters parameters = InvocationParameters.emptry, required Future<R> Function(InvocationParameters para) function}) =>
       instance.callFunctionAsAnonymous<R>(function: function, parameters: parameters);
-  static Future<Stream<R>> callStreamAsAnonymous<R>(
-          {InvocationParameters parameters = InvocationParameters.emptry, required Future<Stream<R>> Function(InvocationParameters para) function, bool cancelOnError = false}) =>
+  static Future<Stream<R>> callStreamAsAnonymous<R>({InvocationParameters parameters = InvocationParameters.emptry, required Future<Stream<R>> Function(InvocationParameters para) function, bool cancelOnError = false}) =>
       instance.callStreamAsAnonymous<R>(function: function, parameters: parameters, cancelOnError: cancelOnError);
 
   static Future<R> callEntityFunction<T, R>({InvocationParameters parameters = InvocationParameters.emptry, required Future<R> Function(T serv, InvocationParameters para) function}) =>
@@ -45,4 +46,19 @@ mixin ThreadManager {
       (instance as IThreadManagerServer).addThreadInitializer(initializer: initializer);
     }
   }
+
+  static Future<StreamSubscription<R>> callEntityStreamDirectly<T, R>({
+    InvocationParameters parameters = InvocationParameters.emptry,
+    required Future<Stream<R>> Function(T serv, InvocationParameters para) function,
+    bool cancelOnError = false,
+    void Function(R)? onListen,
+    void Function()? onDone,
+    void Function(Object error, [StackTrace? stackTrace])? onError,
+  }) async =>
+      (await instance.callEntityStream<T, R>(function: function, parameters: parameters, cancelOnError: cancelOnError)).listen(
+        onListen,
+        onDone: onDone,
+        onError: onError,
+        cancelOnError: cancelOnError,
+      );
 }
