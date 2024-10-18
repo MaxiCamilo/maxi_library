@@ -61,4 +61,9 @@ mixin ThreadManager {
         onError: onError,
         cancelOnError: cancelOnError,
       );
+
+  Future<R> callBackgroundFunction<R>({InvocationParameters parameters = InvocationParameters.emptry, required Future<R> Function(InvocationContext para) function}) =>
+      instance.callBackgroundFunction<R>(function: function, parameters: parameters);
+
+  static ThreadPipe<R, S> makePipe<R, S>() => instance.pipeProcessor.createExternalStream<R, S>();
 }

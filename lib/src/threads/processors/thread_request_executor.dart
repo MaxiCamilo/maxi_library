@@ -14,8 +14,8 @@ class ThreadRequestExecutor {
   final StreamSink messageOutput;
   final IThreadManager manager;
 
-  final List<IThreadMessage> activeTasks = [];
-  final List<ThreadStreamInstance> activeStreams = [];
+  final activeTasks = <IThreadMessage>[];
+  final activeStreams = <ThreadStreamInstance>[];
 
   ThreadRequestExecutor({required this.messageOutput, required this.manager});
 
@@ -48,4 +48,6 @@ class ThreadRequestExecutor {
   void close() {
     activeStreams.iterar((x) => x.cancel());
   }
+
+  
 }

@@ -4,10 +4,10 @@ import 'package:meta/meta.dart';
 mixin StartableFunctionality {
   @protected
   Future<void> initializeFunctionality();
-
   bool _isInitialized = false;
-
   bool get isInitialized => _isInitialized;
+
+  Semaphore? _semaphore;
 
   void checkInitialize() {
     if (!_isInitialized) {
@@ -28,7 +28,14 @@ mixin StartableFunctionality {
       return;
     }
 
-    await initializeFunctionality();
-    _isInitialized = true;
+    _semaphore ??= Semaphore();
+
+    await _semaphore!.execute(function: () async {
+      if (_isInitialized) {
+        return;
+      }
+      await initializeFunctionality();
+      _isInitialized = true;
+    });
   }
 }

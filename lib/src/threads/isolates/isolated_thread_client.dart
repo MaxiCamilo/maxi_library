@@ -2,6 +2,8 @@ import 'dart:async';
 import 'dart:isolate';
 
 import 'package:maxi_library/maxi_library.dart';
+import 'package:maxi_library/src/threads/iexternal_thread_stream_processor.dart';
+import 'package:maxi_library/src/threads/isolates/isolate_thread_pipe_processor.dart';
 import 'package:maxi_library/src/threads/isolates/isolate_thread_connection.dart';
 import 'package:maxi_library/src/threads/isolates/isolated_thread_server.dart';
 import 'package:maxi_library/src/threads/ithread_invoke_instance.dart';
@@ -12,6 +14,9 @@ class IsolatedThreadClient with IThreadInvoker, IThreadManager, IThreadManagerCl
   late final IThreadInvokeInstance serverConnection;
 
   @override
+  final int threadID;
+
+  @override
   dynamic entity;
 
   @override
@@ -20,13 +25,17 @@ class IsolatedThreadClient with IThreadInvoker, IThreadManager, IThreadManagerCl
   @override
   final connections = <IThreadInvokeInstance>[];
 
+  @override
+  final ThreadPipeProcessor pipeProcessor = IsolateThreadPipeProcessor();
+
   final externalConnections = <IThreadInvokeInstance>[];
 
   final _tipOrderSynchronizer = Semaphore();
 
-  IsolatedThreadClient({required ChannelIsolates channel}) {
+  IsolatedThreadClient({required ChannelIsolates channel, required this.threadID}) {
     final serverPort = IsolateThreadConnection(channel: channel);
     serverConnection = ThreadInvokeInstance(connection: serverPort, manager: this, isConnectionServer: true);
+    serverConnection.defineThreadID(0); //<--- Server connections are always 0
   }
 
   bool _isTheEntity<T>() {
@@ -118,6 +127,12 @@ class IsolatedThreadClient with IThreadInvoker, IThreadManager, IThreadManagerCl
     return await server.getRawConnectionAccordingToEntity<T>();
   }
 
+  static Future<SendPort> _requestTipForID(InvocationContext parameters) async {
+    final server = parameters.thread as IsolatedThreadServer;
+    final id = parameters.firts<int>();
+    return await server.getRawConnectionAccordingToID(id);
+  }
+
   FutureOr<void> _reactConnectionClose(IThreadInvokeInstance connection) {
     connections.remove(connection);
     externalConnections.remove(connection);
@@ -173,5 +188,63 @@ class IsolatedThreadClient with IThreadInvoker, IThreadManager, IThreadManagerCl
     newConnection.done.then(_reactConnectionClose);
 
     return newTip.serder;
+  }
+
+  @override
+  Future<IThreadInvokeInstance> locateConnection(int id) async {
+    if (id == 0) {
+      return serverConnection;
+    }
+
+    for (final conn in [...externalConnections, ...connections]) {
+      if ((await conn.getThreadID()) == id) {
+        return conn;
+      }
+    }
+
+    return await _tipOrderSynchronizer.execute(function: () async {
+      for (final conn in [...externalConnections, ...connections]) {
+        if ((await conn.getThreadID()) == id) {
+          return conn;
+        }
+      }
+
+      final sendPort = await callFunctionOnTheServer(function: _requestTipForID, parameters: InvocationParameters.only(id));
+      final newChannel = ChannelIsolates.createDestinationChannel(sendSender: true, sender: sendPort);
+      final newConnection = IsolateThreadConnection(channel: newChannel);
+      final newInvoker = ThreadInvokeInstance(connection: newConnection, isConnectionServer: false, manager: this, entityType: null);
+
+      connections.add(newInvoker);
+      newInvoker.done.then(_reactConnectionClose);
+
+      return newInvoker;
+    });
+  }
+
+  @override
+  Future<R> callBackgroundFunction<R>({InvocationParameters parameters = InvocationParameters.emptry, required Future<R> Function(InvocationContext para) function}) {
+    final parametersClone = InvocationParameters.clone(parameters, avoidConstants: false);
+    parametersClone.namedParameters['#FUNCTION#'] = function;
+
+    return callFunctionOnTheServer<R>(parameters: parametersClone, function: _callBackgroundFunctionOnServer<R>);
+  }
+
+  static Future<R> _callBackgroundFunctionOnServer<R>(InvocationParameters parameters) {
+    final function = parameters.named<Future<R> Function(InvocationContext)>('#FUNCTION#');
+
+    return ThreadManager.instance.callBackgroundFunction(function: function, parameters: InvocationParameters.clone(parameters));
+  }
+
+  @override
+  Future<ThreadPipe<R, S>> connectWithEntityBroadcastPipe<T, R, S>(
+      {InvocationParameters parameters = InvocationParameters.emptry, required Future<BroadcastPipe<R, S>> Function(T p1, InvocationContext p2) function}) async {
+    if (_isTheEntity<T>()) {
+      final broadcats = await function(entity as T, InvocationContext.fromParametes(thread: this, parametres: parameters));
+      await broadcats.initialize();
+      return broadcats.makePipe();
+    }
+
+    final connection = await requestConnectionForService<T>();
+    return connection.connectWithEntityBroadcastPipe<T, R, S>(function: function, parameters: parameters);
   }
 }

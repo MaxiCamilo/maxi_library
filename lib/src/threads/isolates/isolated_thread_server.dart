@@ -3,16 +3,24 @@ import 'dart:developer';
 import 'dart:isolate';
 
 import 'package:maxi_library/maxi_library.dart';
+import 'package:maxi_library/src/threads/iexternal_thread_stream_processor.dart';
+import 'package:maxi_library/src/threads/isolates/isolate_thread_pipe_processor.dart';
 import 'package:maxi_library/src/threads/isolates/isolate_initializer.dart';
 import 'package:maxi_library/src/threads/isolates/isolate_thread_connection.dart';
 import 'package:maxi_library/src/threads/isolates/isolated_thread_client.dart';
 import 'package:maxi_library/src/threads/ithread_invoke_instance.dart';
+import 'package:maxi_library/src/threads/processors/background_processor.dart';
 import 'package:maxi_library/src/threads/processors/thread_invoke_instance.dart';
 
 class IsolatedThreadServer with IThreadInvoker, IThreadManager, IThreadManagerServer {
+  @override
+  int get threadID => 0;
+
   final Set<IThreadInitializer> _initializers = {};
 
   final _entityMountSynchronizer = Semaphore();
+
+  late final BackgroundProcessor _backgroudProcessor;
 
   @override
   final connectionWithServices = <Type, IThreadInvokeInstance>{};
@@ -21,9 +29,16 @@ class IsolatedThreadServer with IThreadInvoker, IThreadManager, IThreadManagerSe
   final connections = <IThreadInvokeInstance>[];
 
   @override
+  final ThreadPipeProcessor pipeProcessor = IsolateThreadPipeProcessor();
+
+  @override
   get entity => null;
 
-  IsolatedThreadServer();
+  int _lastThreadID = 1;
+
+  IsolatedThreadServer() {
+    _backgroudProcessor = BackgroundProcessor(server: this);
+  }
 
   @override
   void addThreadInitializer({required IThreadInitializer initializer}) {
@@ -134,9 +149,13 @@ class IsolatedThreadServer with IThreadInvoker, IThreadManager, IThreadManagerSe
     final allInitializers = [..._initializers, ...initializers];
     final threadInitializer = IsolateInitializer(initializers: allInitializers);
 
-    final channel = await threadInitializer.mountIsolate(name);
+    final threadID = _lastThreadID;
+    _lastThreadID += 1;
+
+    final channel = await threadInitializer.mountIsolate(name: name, threadID: threadID);
     final connection = IsolateThreadConnection(channel: channel);
     final newThread = ThreadInvokeInstance(connection: connection, isConnectionServer: false, manager: this, entityType: null);
+    newThread.defineThreadID(threadID);
 
     connections.add(newThread);
 
@@ -155,5 +174,35 @@ class IsolatedThreadServer with IThreadInvoker, IThreadManager, IThreadManagerSe
     }
 
     return exists;
+  }
+
+  @override
+  Future<IThreadInvokeInstance> locateConnection(int id) async {
+    checkProgrammingFailure(thatChecks: tr('ID must not be 0'), result: () => id > 0);
+    final connection = await connections.selectItemAsync((x) async => (await x.getThreadID()) == id);
+    if (connection == null) {
+      throw NegativeResult(
+        identifier: NegativeResultCodes.nonExistent,
+        message: tr('There is no thread with ID number %1', [id]),
+      );
+    }
+
+    return connection;
+  }
+
+  @override
+  Future getRawConnectionAccordingToID(int id) async {
+    return (await locateConnection(id)).callFunctionAsAnonymous(function: _getSendPortFromClient);
+  }
+
+  @override
+  Future<R> callBackgroundFunction<R>({InvocationParameters parameters = InvocationParameters.emptry, required Future<R> Function(InvocationContext para) function}) {
+    return _backgroudProcessor.callBackgroundFunction<R>(function: function, parameters: parameters);
+  }
+
+  @override
+  Future<ThreadPipe<R, S>> connectWithEntityBroadcastPipe<T, R, S>({InvocationParameters parameters = InvocationParameters.emptry, required Future<BroadcastPipe<R, S>> Function(T p1, InvocationContext p2) function}) {
+    final connection = _getConnectionByEntity<T>();
+    return connection.connectWithEntityBroadcastPipe<T, R, S>(function: function, parameters: parameters);
   }
 }

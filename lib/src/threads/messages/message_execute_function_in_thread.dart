@@ -18,14 +18,15 @@ class MessageExecuteFunctionInThread<T> with IThreadMessage {
   void execute({required ThreadRequestExecutor executor}) {
     executor.messageOutput.add(TaskRunningMessage(taskId: taskId));
     executor.activeTasks.add(this);
-    scheduleMicrotask(() {
-      function(InvocationContext.fromParametes(thread: executor.manager, parametres: parameters)).then((x) {
-        executor.messageOutput.add(TaskFinishedMessage(taskId: taskId, isFailed: false, result: x));
-      }).onError((x, trace) {
-        executor.messageOutput.add(TaskFinishedMessage(taskId: taskId, isFailed: true, result: x, trace: trace));
-      }).whenComplete(() {
+    scheduleMicrotask(() async {
+      try {
+        final result = await function(InvocationContext.fromParametes(thread: executor.manager, parametres: parameters));
+        executor.messageOutput.add(TaskFinishedMessage(taskId: taskId, isFailed: false, result: result));
+      } catch (ex, trace) {
+        executor.messageOutput.add(TaskFinishedMessage(taskId: taskId, isFailed: true, result: ex, trace: trace));
+      } finally {
         executor.activeTasks.remove(this);
-      });
+      }
     });
   }
 }

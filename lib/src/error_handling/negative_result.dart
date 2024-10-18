@@ -3,7 +3,7 @@ import 'dart:developer';
 
 import 'package:maxi_library/maxi_library.dart';
 
-class NegativeResult implements Exception, CustomSerialization {
+class NegativeResult implements Exception, CustomSerialization, ICustomSerialization {
   NegativeResultCodes identifier;
   TranslatableText message;
   DateTime whenWasIt;
@@ -35,6 +35,7 @@ class NegativeResult implements Exception, CustomSerialization {
     }
   }
 
+  @override
   Map<String, dynamic> serialize() {
     if (cause == null) {
       return {

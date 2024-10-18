@@ -17,6 +17,8 @@ class ThreadInvokeInstance with IThreadInvokeInstance {
   @override
   Type? entityType;
 
+  int? _threadID;
+
   final _connectionDone = Completer<IThreadInvokeInstance>();
 
   late final ThreadRequestExecutor _requestExecutor;
@@ -113,5 +115,50 @@ class ThreadInvokeInstance with IThreadInvokeInstance {
     if (connection.isActive) {
       connection.sendMessage(message: RequestThreadClosure());
     }
+  }
+
+  @override
+  Future<int> getThreadID() async {
+    if (_threadID != null) {
+      return _threadID!;
+    }
+
+    _threadID = await callFunctionAsAnonymous(function: (x) async => x.thread.threadID);
+    return _threadID!;
+  }
+
+  @override
+  void defineThreadID(int id) {
+    _threadID = id;
+  }
+
+  @override
+  Future<ThreadPipe<R, S>> connectWithBroadcastPipe<R, S>({InvocationParameters parameters = InvocationParameters.emptry, required Future<BroadcastPipe<R, S>> Function(InvocationContext p1) function}) {
+    final newParameters = InvocationParameters.clone(parameters, avoidConstants: false);
+    newParameters.namedParameters['#FUNCTION#'] = function;
+    return callFunctionAsAnonymous(function: _connectWithBroadcastPipe<R, S>, parameters: parameters);
+  }
+
+  static Future<ThreadPipe<R, S>> _connectWithBroadcastPipe<R, S>(InvocationContext parameters) async {
+    final function = parameters.named<Future<BroadcastPipe<R, S>> Function(InvocationContext)>('#FUNCTION#');
+    final broadcast = await function(parameters);
+    await broadcast.initialize();
+
+    return broadcast.makePipe();
+  }
+
+  @override
+  Future<ThreadPipe<R, S>> connectWithEntityBroadcastPipe<T, R, S>({InvocationParameters parameters = InvocationParameters.emptry, required Future<BroadcastPipe<R, S>> Function(T p1, InvocationContext p2) function}) {
+    final newParameters = InvocationParameters.clone(parameters, avoidConstants: false);
+    newParameters.namedParameters['#FUNCTION#'] = function;
+    return callEntityFunction<T, ThreadPipe<R, S>>(function: _connectWithEntityBroadcastPipe<T, R, S>, parameters: parameters);
+  }
+
+  static Future<ThreadPipe<R, S>> _connectWithEntityBroadcastPipe<T, R, S>(T entity, InvocationContext parameters) async {
+    final function = parameters.named<Future<BroadcastPipe<R, S>> Function(T, InvocationContext)>('#FUNCTION#');
+    final broadcast = await function(entity, parameters);
+    await broadcast.initialize();
+
+    return broadcast.makePipe();
   }
 }

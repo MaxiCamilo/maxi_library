@@ -36,6 +36,16 @@ extension IteratorExtension<T> on Iterable<T> {
     return null;
   }
 
+  Future<T?> selectItemAsync(Future<bool> Function(T x) funcion) async {
+    for (final item in this) {
+      if (await funcion(item)) {
+        return item;
+      }
+    }
+
+    return null;
+  }
+
   T maximumOf(num Function(T x) funcion) {
     return reduce((curr, next) => funcion(curr) > funcion(next) ? curr : next);
   }

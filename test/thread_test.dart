@@ -41,6 +41,26 @@ Stream<String> _makeTexts() async* {
   log('Now, I have finished');
 }
 
+Future<void> _testExternalTest(InvocationParameters parameters) async {
+  final pipe = parameters.firts<ThreadPipe<String, String>>();
+  await pipe.initialize();
+
+  pipe.stream.listen((x) {
+    print('Server sent $x');
+  });
+
+  Future.delayed(Duration(seconds: 17)).whenComplete(() => pipe.close());
+
+  for (int i = 0; i < 5; i++) {
+    if (pipe.isActive) {
+      pipe.addIfActive('Hi! Number $i');
+    }
+    await Future.delayed(Duration(seconds: 5));
+  }
+
+  await pipe.close();
+}
+
 void main() {
   group('Thread test', () {
     setUp(() {
@@ -237,6 +257,26 @@ void main() {
       await ThreadManager.mountEntity(entity: SecondService());
       await ThreadManager.callEntityFunction<SecondService, void>(function: (service, parameters) => service.mountFirstService());
       log('I am done');
+    });
+
+    test('External Stream Test ', () async {
+      final pipe = ThreadManager.makePipe<String, String>();
+      final newThread = await (ThreadManager.instance as IThreadManagerServer).makeNewThread(initializers: [], name: 'Test thread');
+
+      newThread.callFunctionAsAnonymous(function: _testExternalTest, parameters: InvocationParameters.only(pipe.cloner()));
+      await pipe.initialize();
+
+      scheduleMicrotask(() async {
+        for (int i = 1; i < 3; i++) {
+          pipe.addIfActive('N° $i');
+          await Future.delayed(Duration(seconds: 7));
+        }
+      });
+
+      pipe.stream.listen((x) => print('Thread sent: $x'));
+      await pipe.done;
+      print('Finish');
+      //await Future.delayed(Duration(seconds: 90));
     });
   });
 }

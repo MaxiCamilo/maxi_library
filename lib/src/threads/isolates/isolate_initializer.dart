@@ -13,10 +13,11 @@ class _IsolateInitializerFinalized {
 }
 
 class _IsolateInitializerContext {
+  final int threadID;
   final SendPort sender;
   final List<IThreadInitializer> initializers;
 
-  const _IsolateInitializerContext({required this.sender, required this.initializers});
+  const _IsolateInitializerContext({required this.sender, required this.initializers, required this.threadID});
 }
 
 class IsolateInitializer {
@@ -24,10 +25,10 @@ class IsolateInitializer {
 
   const IsolateInitializer({required this.initializers});
 
-  Future<ChannelIsolates> mountIsolate(String name) async {
+  Future<ChannelIsolates> mountIsolate({required String name, required int threadID}) async {
     final channel = ChannelIsolates.createInitialChannelManually();
     final completer = Completer<_IsolateInitializerFinalized>();
-    scheduleMicrotask(() => Isolate.spawn(_prepareThread, _IsolateInitializerContext(initializers: initializers, sender: channel.serder), debugName: name, errorsAreFatal: false));
+    scheduleMicrotask(() => Isolate.spawn(_prepareThread, _IsolateInitializerContext(initializers: initializers, sender: channel.serder, threadID: threadID), debugName: name, errorsAreFatal: false));
 
     final subscription = channel.dataReceivedNotifier.whereType<_IsolateInitializerFinalized>().listen((x) {
       completer.complete(x);
@@ -53,7 +54,7 @@ class IsolateInitializer {
       return;
     }
 
-    final newThread = IsolatedThreadClient(channel: channel);
+    final newThread = IsolatedThreadClient(channel: channel, threadID: context.threadID);
 
     ThreadManager.instance = newThread;
 

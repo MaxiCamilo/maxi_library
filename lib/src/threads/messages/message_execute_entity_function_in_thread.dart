@@ -19,14 +19,15 @@ class MessageExecuteEntityFunctionInThread<E, R> with IThreadMessage {
   void execute({required ThreadRequestExecutor executor}) {
     executor.messageOutput.add(TaskRunningMessage(taskId: taskId));
     executor.activeTasks.add(this);
-    scheduleMicrotask(() {
-      _getEntityFirst(executor: executor).then((x) {
-        executor.messageOutput.add(TaskFinishedMessage(taskId: taskId, isFailed: false, result: x));
-      }).onError((x, trace) {
+    scheduleMicrotask(() async {
+      try {
+        final result = await _getEntityFirst(executor: executor);
+        executor.messageOutput.add(TaskFinishedMessage(taskId: taskId, isFailed: false, result: result));
+      } catch (x, trace) {
         executor.messageOutput.add(TaskFinishedMessage(taskId: taskId, isFailed: true, result: x, trace: trace));
-      }).whenComplete(() {
+      } finally {
         executor.activeTasks.remove(this);
-      });
+      }
     });
   }
 

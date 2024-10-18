@@ -7,4 +7,6 @@ mixin IThreadManagerServer on IThreadInvoker, IThreadManager {
   Future<IThreadInvokeInstance> makeNewThread({required List<IThreadInitializer> initializers, required String name });
 
   Future<dynamic> getRawConnectionAccordingToEntity<T>();
+
+  Future<dynamic> getRawConnectionAccordingToID(int id);
 }
