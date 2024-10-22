@@ -4,7 +4,7 @@ import 'package:maxi_library/maxi_library.dart';
 import 'package:maxi_library/src/threads/isolates/isolate_thread_pipe_processor.dart';
 import 'package:maxi_library/src/threads/ithread_invoke_instance.dart';
 
-class IsolateThreadPipe<R, S> with StartableFunctionality, ThreadPipe<R, S> {
+class IsolateThreadPipe<R, S> with StartableFunctionality, IPipe<R, S> ,ThreadPipe<R, S> {
   final int identifier;
 
   late final int externalID;

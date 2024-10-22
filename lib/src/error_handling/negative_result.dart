@@ -8,12 +8,14 @@ class NegativeResult implements Exception, CustomSerialization, ICustomSerializa
   TranslatableText message;
   DateTime whenWasIt;
   dynamic cause;
+  String stackTrace;
 
   NegativeResult({
     required this.identifier,
     required this.message,
     DateTime? whenWasIt,
     this.cause,
+    this.stackTrace = '',
   }) : whenWasIt = whenWasIt ?? DateTime.now();
 
   @override

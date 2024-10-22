@@ -27,10 +27,10 @@ class FutureExpander<T> {
     _isActive = true;
     try {
       final result = await reservedFunction();
-      _waitingList.startIteration((x) => x.complete(result));
+      _waitingList.iterarWithPosition((x,_) => x.complete(result));
       _waitingList.clear();
     } catch (ex) {
-      _waitingList.startIteration((x) => x.completeError(ex));
+      _waitingList.iterarWithPosition((x,_) => x.completeError(ex));
       _waitingList.clear();
     }
     _isActive = false;

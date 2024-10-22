@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:maxi_library/maxi_library.dart';
 
 class StreamStateItem<S, R> implements State<S, R>, ICustomSerialization {
@@ -20,11 +22,25 @@ class StreamStateResult<S, R> implements State<S, R>, ICustomSerialization {
 
   @override
   serialize() {
-    if (result is ICustomSerialization) {
-      return (result as ICustomSerialization).serialize();
+    late final dynamic serializeResult;
+
+    if (result == null) {
+      serializeResult = null;
+    } else if (result is ICustomSerialization) {
+      serializeResult = (result as ICustomSerialization).serialize();
+    } else if (result is List) {
+      serializeResult = ReflectionManager.serializeList(list: result as List);
+    } else if (ReflectionUtilities.isPrimitive(result.runtimeType) != null) {
+      serializeResult = result;
+    } else {
+      serializeResult = ReflectionManager.getReflectionEntity(result.runtimeType).serializeToJson(value: result);
     }
 
-    return result;
+    return json.encode({
+      '\$type': 'Result',
+      'resultType': serializeResult == null ? 'null' : serializeResult.runtimeType.toString(),
+      'value': serializeResult,
+    });
   }
 }
 

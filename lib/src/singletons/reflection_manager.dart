@@ -1,3 +1,5 @@
+import 'dart:collection';
+
 import 'package:maxi_library/maxi_library.dart';
 import 'package:maxi_library/src/reflection/types/type_generator_reflection.dart';
 import 'package:maxi_library/src/reflection/types/type_void_reflection.dart';
@@ -129,7 +131,47 @@ class ReflectionManager with IThreadInitializer {
     _instance = this;
   }
 
-  static String serializeListToJson({required List list, bool setTypeValue = false}) {
+  static List serializeList({required List list, bool setTypeValue = true}) {
+    final mapList = [];
+    ITypeEntityReflection? lastReflector;
+    Type? lastType;
+
+    for (final item in list) {
+      if (lastType == null || item.runtimeType != lastType) {
+        lastType = item.runtimeType;
+        lastReflector = getReflectionEntity(item.runtimeType);
+      }
+
+      final result = lastReflector!.serializeToMap(item);
+
+      if (setTypeValue && result is Map<String, dynamic>) {
+        result['\$type'] = item.runtimeType.toString();
+      }
+
+      mapList.add(result);
+    }
+
+    return mapList;
+  }
+
+  static String serializeJson({required dynamic value, bool setTypeValue = true}) {
+    if (value == null) {
+      return 'null';
+    } else if (value is List) {
+      return serializeListToJson(list: value, setTypeValue: setTypeValue);
+    } else if (value is Enum) {
+      return value.index.toString();
+    }
+
+    if (ReflectionUtilities.isPrimitive(value.runtimeType) != null) {
+      return ReflectionUtilities.serializeToJson(value);
+    }
+
+    final entity = getReflectionEntity(value.runtimeType);
+    return entity.serializeToJson(value: value);
+  }
+
+  static String serializeListToJson({required List list, bool setTypeValue = true}) {
     final jsonList = <String>[];
     ITypeEntityReflection? lastReflector;
     Type? lastType;
@@ -144,6 +186,32 @@ class ReflectionManager with IThreadInitializer {
     }
 
     return '[${TextUtilities.generateCommand(list: jsonList)}]';
+  }
+
+  static int getIdentifier(dynamic item) {
+    return getReflectionEntity(item.runtimeType).getPrimaryKey(instance: item);
+  }
+
+  static SplayTreeMap<int, dynamic> mapByIdentifier({required Iterable list}) {
+    final map = SplayTreeMap<int, dynamic>();
+    ITypeEntityReflection? reflector;
+    Type? lastType;
+
+    for (final item in list) {
+      if (reflector == null || lastType == null || lastType != item.runtimeType) {
+        lastType = item.runtimeType;
+        reflector = getReflectionEntity(lastType);
+      }
+
+      final id = reflector.getPrimaryKey(instance: item);
+      map[id] = item;
+    }
+
+    return map;
+  }
+
+  static List<T> orderListByIdentifier<T>({required Iterable<T> list}) {
+    return mapByIdentifier(list: list).values.cast<T>().toList();
   }
 
   static bool areSame({required dynamic first, required dynamic second, List annotations = const []}) {

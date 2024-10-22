@@ -9,6 +9,7 @@ export 'package:maxi_library/src/reflection/decorators/unique_key.dart';
 export 'package:maxi_library/src/reflection/decorators/reflect.dart';
 export 'package:maxi_library/src/reflection/decorators/entity_namer.dart';
 export 'package:maxi_library/src/reflection/decorators/essential_key.dart';
+export 'package:maxi_library/src/reflection/decorators/generator_primitive_list.dart';
 
 export 'package:maxi_library/src/reflection/interfaces/ivalue_generator.dart';
 export 'package:maxi_library/src/reflection/interfaces/ireflection_type.dart';

@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:maxi_library/maxi_library.dart';
@@ -15,6 +16,19 @@ mixin ReflectionUtilities {
       const (num) => PrimitiesType.isNum,
       const (Uint8List) || const (List<int>) => PrimitiesType.isBinary,
       _ => null,
+    };
+  }
+
+  static String serializeToJson(dynamic value) {
+    final type = volatile(detail: tr('%1 is primitive', [value.runtimeType]), function: () => isPrimitive(value.runtimeType)!);
+    return switch (type) {
+      PrimitiesType.isInt => value.toString(),
+      PrimitiesType.isDouble => value.toString(),
+      PrimitiesType.isNum => value.toString(),
+      PrimitiesType.isString => '"${value.toString()}"',
+      PrimitiesType.isBoolean => value.toString(),
+      PrimitiesType.isDateTime => (value as DateTime).millisecondsSinceEpoch.toString(),
+      PrimitiesType.isBinary => '"${utf8.decode(value)}"',
     };
   }
 

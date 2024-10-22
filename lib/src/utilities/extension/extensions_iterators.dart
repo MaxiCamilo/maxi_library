@@ -143,13 +143,7 @@ extension IteratorExtension<T> on Iterable<T> {
     return -1;
   }
 
-  void startIteration(Function(T x) function) {
-    for (final item in this) {
-      function(item);
-    }
-  }
-
-  void startIterationWithPosition(Function(T item, int i) function) {
+  void iterarWithPosition(Function(T item, int i) function) {
     int i = 0;
     for (final item in this) {
       function(item, i);
@@ -200,8 +194,38 @@ extension IteratorExtension<T> on Iterable<T> {
       }
     }
   }
+
+  List<T> orderByIdentifier() => ReflectionManager.orderListByIdentifier<T>(list: this);
+
+  Map<int, T> mapByIdentifier() => ReflectionManager.mapByIdentifier(list: this).cast<int, T>();
 }
 
 extension MapEntryListExtension<T, R> on Iterable<MapEntry<T, R>> {
   Map<T, R> toMap() => Map<T, R>.fromEntries(this);
+}
+
+extension ListrExtension<T> on List<T> {
+  bool startWith({required Iterable<T> compare, int from = 0}) {
+    if (isEmpty) {
+      return false;
+    }
+
+    if (from >= length) {
+      return false;
+    }
+
+    for (final item in compare) {
+      if (from >= length) {
+        return false;
+      }
+
+      if (this[from] != item) {
+        return false;
+      }
+
+      from += 1;
+    }
+
+    return true;
+  }
 }

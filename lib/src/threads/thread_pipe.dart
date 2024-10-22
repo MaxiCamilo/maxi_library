@@ -2,18 +2,8 @@ import 'dart:async';
 
 import 'package:maxi_library/maxi_library.dart';
 
-mixin ThreadPipe<R, S> on StartableFunctionality implements StreamSink<S> {
-  bool get isActive;
-
-  Stream<R> get stream;
-
-  ThreadPipe<R, S> cloner();
-
-  void addIfActive(S item) {
-    if (isActive) {
-      add(item);
-    }
-  }
+mixin ThreadPipe<R, S> on StartableFunctionality, IPipe<R, S>  {
+  ThreadPipe<R, S> cloner(); 
 
   Future<void> join({
     Stream<S>? input,

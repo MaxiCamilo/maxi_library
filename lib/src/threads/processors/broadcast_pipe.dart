@@ -2,12 +2,15 @@ import 'dart:async';
 
 import 'package:maxi_library/maxi_library.dart';
 
-class BroadcastPipe<R, S> with StartableFunctionality, ThreadPipe<R, S> {
+class BroadcastPipe<R, S> with StartableFunctionality, IPipe<R, S>, ThreadPipe<R, S> {
   late final List<ThreadPipe<R, S>> _pipeList;
   late final StreamController<R> _receiver;
   late final List<Future> _pendingFutures;
 
+  bool _wasClosed = false;
+
   Completer? _waitingDone;
+  final _waitingNewPipesList = <Completer>[];
 
   @override
   ThreadPipe<R, S> cloner() {
@@ -36,6 +39,15 @@ class BroadcastPipe<R, S> with StartableFunctionality, ThreadPipe<R, S> {
 
   @override
   bool get isActive => isInitialized && _pipeList.isNotEmpty;
+
+  void _checkIfClosed() {
+    if (_wasClosed) {
+      throw NegativeResult(
+        identifier: NegativeResultCodes.invalidFunctionality,
+        message: tr('Pipe is closed'),
+      );
+    }
+  }
 
   @override
   void add(S event) {
@@ -68,6 +80,8 @@ class BroadcastPipe<R, S> with StartableFunctionality, ThreadPipe<R, S> {
   Future close() async {
     checkInitialize();
 
+    _wasClosed = true;
+
     _receiver.close();
     _pipeList.iterar((x) => x.close());
     _pipeList.clear();
@@ -81,10 +95,15 @@ class BroadcastPipe<R, S> with StartableFunctionality, ThreadPipe<R, S> {
   }
 
   @override
-  Future get done {
+  Future get done async {
     checkInitialize();
+
+    if (_wasClosed) {
+      return;
+    }
+
     _waitingDone ??= Completer();
-    return _waitingDone!.future;
+    return await _waitingDone!.future;
   }
 
   @override
@@ -96,6 +115,7 @@ class BroadcastPipe<R, S> with StartableFunctionality, ThreadPipe<R, S> {
 
   void addPipe({required ThreadPipe<R, S> pipe}) {
     checkInitialize();
+    _checkIfClosed();
 
     if (!pipe.isInitialized) {
       final future = pipe.initialize();
@@ -103,8 +123,12 @@ class BroadcastPipe<R, S> with StartableFunctionality, ThreadPipe<R, S> {
       _pendingFutures.add(future);
 
       future.then((_) {
-        addPipe(pipe: pipe);
-        _pendingFutures.remove(future);
+        if (_wasClosed) {
+          pipe.close();
+        } else {
+          addPipe(pipe: pipe);
+          _pendingFutures.remove(future);
+        }
       });
       return;
     }
@@ -113,9 +137,47 @@ class BroadcastPipe<R, S> with StartableFunctionality, ThreadPipe<R, S> {
 
     pipe.stream.listen((x) => _receiver.add);
     pipe.done.whenComplete(() => _pipeEnd(pipe));
+
+    for (final item in _waitingNewPipesList) {
+      item.complete();
+    }
+    _waitingNewPipesList.clear();
   }
 
   _pipeEnd(ThreadPipe<R, S> pipe) {
     _pipeList.remove(pipe);
+  }
+
+  Future<bool> waitForNewPipes({required Duration? timeout, bool omitIfThereIsPipe = false}) async {
+    checkInitialize();
+
+    if (omitIfThereIsPipe && _pipeList.isNotEmpty) {
+      return true;
+    }
+
+    final waiting = Completer();
+    _waitingNewPipesList.add(waiting);
+
+    final future = waiting.future;
+    Future? timeoutFuture;
+
+    bool thereIsSomeone = true;
+
+    if (timeout != null) {
+      timeoutFuture = Future.delayed(timeout).whenComplete(() {
+        if (!waiting.isCompleted) {
+          waiting.complete(false);
+        }
+        _waitingNewPipesList.remove(waiting);
+        timeoutFuture = null;
+        thereIsSomeone = false;
+      });
+    }
+
+    await future;
+    timeoutFuture?.ignore();
+    _waitingNewPipesList.remove(waiting);
+
+    return thereIsSomeone;
   }
 }
