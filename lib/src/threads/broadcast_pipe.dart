@@ -6,6 +6,9 @@ class BroadcastPipe<R, S> with StartableFunctionality, IPipe<R, S>, ThreadPipe<R
   late final List<ThreadPipe<R, S>> _pipeList;
   late final StreamController<R> _receiver;
   late final List<Future> _pendingFutures;
+  late final StreamController<ThreadPipe<R, S>> _notifyNewPipe;
+
+  Stream<ThreadPipe<R, S>> get notifyNewPipe => _notifyNewPipe.stream;
 
   bool _wasClosed = false;
 
@@ -110,6 +113,7 @@ class BroadcastPipe<R, S> with StartableFunctionality, IPipe<R, S>, ThreadPipe<R
   Future<void> initializeFunctionality() async {
     _pipeList = <ThreadPipe<R, S>>[];
     _receiver = StreamController<R>.broadcast();
+    _notifyNewPipe = StreamController<ThreadPipe<R, S>>();
     _pendingFutures = <Future>[];
   }
 
