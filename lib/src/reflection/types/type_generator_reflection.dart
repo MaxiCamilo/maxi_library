@@ -46,11 +46,15 @@ class TypeGeneratorReflection with IReflectionType, IValueGenerator {
 
   @override
   generateEmptryObject() {
-    generator.generateEmptryObject();
+    return generator.generateEmptryObject();
   }
 
   @override
   serializeToMap(item) {
+    if (generator is IPrimitiveValueGenerator) {
+      return (generator as IPrimitiveValueGenerator).convertToPrimitiveValue(item);
+    }
+
     final newItme = convertObject(item);
     final classItem = ReflectionManager.getReflectionType(newItme.runtimeType, annotations: []);
     return classItem.serializeToMap(newItme);

@@ -1,6 +1,6 @@
 import 'package:maxi_library/maxi_library.dart';
 
-class TypeEnumeratorReflector with IReflectionType {
+class TypeEnumeratorReflector with IReflectionType, IValueGenerator, IPrimitiveValueGenerator {
   final List<EnumOption> optionsList;
 
   @override
@@ -11,6 +11,9 @@ class TypeEnumeratorReflector with IReflectionType {
 
   @override
   final String name;
+
+  @override
+  PrimitiesType get primitiveType => PrimitiesType.isInt;
 
   const TypeEnumeratorReflector({required this.optionsList, required this.annotations, required this.type, required this.name});
 
@@ -67,7 +70,7 @@ class TypeEnumeratorReflector with IReflectionType {
   }
 
   dynamic castNumber(num number) {
-    checkProgrammingFailure(thatChecks:  tr('The value is zero or positive'), result: () => number >= 0);
+    checkProgrammingFailure(thatChecks: tr('The value is zero or positive'), result: () => number >= 0);
 
     if (number >= optionsList.length) {
       throw NegativeResult(
@@ -97,5 +100,13 @@ class TypeEnumeratorReflector with IReflectionType {
   @override
   String toString() => 'Enumerator $name';
 
-  
+  @override
+  convertToPrimitiveValue(value) {
+    serializeToMap(value);
+  }
+
+  @override
+  interpretPrimitiveValue(value) {
+    convertObject(value);
+  }
 }

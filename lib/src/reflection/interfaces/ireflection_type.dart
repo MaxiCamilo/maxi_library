@@ -5,7 +5,6 @@ mixin IReflectionType {
 
   String get name;
 
-
   bool isCompatible(dynamic item);
 
   bool isTypeCompatible(Type type);

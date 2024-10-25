@@ -9,7 +9,7 @@ import 'package:maxi_library/src/reflection/interfaces/isetter_reflector.dart';
 
 import 'package:meta/meta.dart';
 
-abstract class ReflectedEntityTypeTemplate with IReflectionType, IDeclarationReflector, ITypeClassReflection, IEntityFramework, AbylityEntityFramework, ITypeEntityReflection {
+abstract class ReflectedEntityTypeTemplate with IReflectionType, IDeclarationReflector, ITypeClassReflection, IEntityFramework, AbylityEntityFramework, ITypeEntityReflection, IValueGenerator {
   @override
   final List annotations;
 

@@ -138,6 +138,7 @@ class BroadcastPipe<R, S> with StartableFunctionality, IPipe<R, S>, ThreadPipe<R
     }
 
     _pipeList.add(pipe);
+    _notifyNewPipe.add(pipe);
 
     pipe.stream.listen((x) => _receiver.add);
     pipe.done.whenComplete(() => _pipeEnd(pipe));

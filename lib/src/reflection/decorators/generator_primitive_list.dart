@@ -1,6 +1,8 @@
+import 'dart:convert';
+
 import 'package:maxi_library/maxi_library.dart';
 
-class GeneratorPrimitiveList<T> with IValueGenerator, IReflectionType {
+class GeneratorPrimitiveList<T> with IValueGenerator, IReflectionType, IPrimitiveValueGenerator {
   @override
   List get annotations => [];
 
@@ -10,6 +12,9 @@ class GeneratorPrimitiveList<T> with IValueGenerator, IReflectionType {
   @override
   String get name => 'Primitive List $T';
 
+  @override
+  PrimitiesType get primitiveType => PrimitiesType.isString;
+
   const GeneratorPrimitiveList();
 
   @override
@@ -17,8 +22,8 @@ class GeneratorPrimitiveList<T> with IValueGenerator, IReflectionType {
     if (originalItem is Iterable) {
       final newList = <T>[];
       for (final item in originalItem) {
-        final reflector = volatile(detail: tr('Item at list is primitive',[item.runtimeType]), function: ()=> ReflectionUtilities.isPrimitive(item.runtimeType)!);
-        newList.add(ReflectionUtilities.convertSpecificPrimitive(type: reflector ,value: item));
+        final reflector = volatile(detail: tr('Item at list is primitive', [item.runtimeType]), function: () => ReflectionUtilities.isPrimitive(item.runtimeType)!);
+        newList.add(ReflectionUtilities.convertSpecificPrimitive(type: reflector, value: item));
       }
       return newList;
     } else if (originalItem is T) {
@@ -30,7 +35,16 @@ class GeneratorPrimitiveList<T> with IValueGenerator, IReflectionType {
 
   @override
   convertObject(originalItem) {
-    return cloneObject(originalItem);
+    if (originalItem is Iterable) {
+      return cloneObject(originalItem);
+    } else if (originalItem is String && originalItem.isNotEmpty && originalItem.first == '[' && originalItem.last == ']') {
+      final jsonValue = volatile(detail: tr('Text value is a json list'), function: () => json.decode(originalItem) as List);
+      return cloneObject(jsonValue);
+    } else if (originalItem is T) {
+      return <T>[originalItem];
+    }
+
+    throw NegativeResult(identifier: NegativeResultCodes.implementationFailure, message: tr('Cannot cast type %1 to a primitive list'));
   }
 
   @override
@@ -51,5 +65,38 @@ class GeneratorPrimitiveList<T> with IValueGenerator, IReflectionType {
   @override
   serializeToMap(item) {
     return cloneObject(item);
+  }
+
+  @override
+  convertToPrimitiveValue(value) {
+    final reflector = TypePrimitiveReflection(annotations: annotations, type: T);
+    if (value is Iterable) {
+      final buffer = StringBuffer('[');
+
+      buffer.write(value.map((x) {
+        return json.encode('${reflector.serializeToMap(x)}');
+      }).join(','));
+
+      buffer.write(']');
+      return buffer.toString();
+    } else {
+      return json.encode('[${reflector.serializeToMap(value)}]');
+    }
+  }
+
+  @override
+  interpretPrimitiveValue(value) {
+    final reflector = TypePrimitiveReflection(annotations: annotations, type: T);
+    if (value is Iterable) {
+      final list = <T>[];
+
+      for (final item in value) {
+        list.add(reflector.convertObject(item));
+      }
+
+      return list;
+    } else {
+      return <T>[reflector.convertObject(reflector)];
+    }
   }
 }

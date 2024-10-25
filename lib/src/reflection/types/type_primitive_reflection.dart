@@ -1,19 +1,20 @@
 import 'package:maxi_library/maxi_library.dart';
 
-class TypePrimitiveReflection with IReflectionType {
+class TypePrimitiveReflection with IReflectionType, IValueGenerator, IPrimitiveValueGenerator {
   @override
   final List annotations;
 
   @override
   final Type type;
 
+  @override
   late final PrimitiesType primitiveType;
 
   @override
   String get name => type.toString();
 
   TypePrimitiveReflection({required this.annotations, required this.type}) {
-    primitiveType = volatile(detail:  tr('The type %1 is not primitive', [type]), function: () => ReflectionUtilities.isPrimitive(type)!);
+    primitiveType = volatile(detail: tr('The type %1 is not primitive', [type]), function: () => ReflectionUtilities.isPrimitive(type)!);
   }
 
   @override
@@ -55,4 +56,14 @@ class TypePrimitiveReflection with IReflectionType {
 
   @override
   String toString() => 'Primitive type ($primitiveType)';
+
+  @override
+  convertToPrimitiveValue(value) {
+    serializeToMap(value);
+  }
+
+  @override
+  interpretPrimitiveValue(value) {
+    convertObject(value);
+  }
 }

@@ -1,6 +1,8 @@
+import 'dart:convert';
+
 import 'package:maxi_library/maxi_library.dart';
 
-class GeneratorList<T> with IValueGenerator, IReflectionType {
+class GeneratorList<T> with IValueGenerator, IReflectionType, IPrimitiveValueGenerator {
   @override
   final List annotations;
 
@@ -171,5 +173,30 @@ class GeneratorList<T> with IValueGenerator, IReflectionType {
     }
 
     return true;
+  }
+
+  @override
+  PrimitiesType get primitiveType => PrimitiesType.isString;
+
+  @override
+  convertToPrimitiveValue(value) {
+    final result = serializeToMap(value);
+    return json.encode(result);
+  }
+
+  @override
+  interpretPrimitiveValue(value) {
+    final jsonValue = json.decode(value);
+    final reflector = ReflectionManager.getReflectionEntity(T);
+
+    if (jsonValue is Iterable) {
+      final list = <T>[];
+      for (final item in jsonValue) {
+        list.add(reflector.interpretationFromJson(rawJson: item, tryToCorrectNames: true));
+      }
+      return list;
+    } else {
+      return [reflector.interpretationFromJson(rawJson: jsonValue, tryToCorrectNames: true)];
+    }
   }
 }

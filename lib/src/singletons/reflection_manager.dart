@@ -42,6 +42,80 @@ class ReflectionManager with IThreadInitializer {
     return instance._enumerators.selectItem((x) => x.type == type);
   }
 
+  static IValueGenerator getValuesAdapter(Type type, {List annotations = const []}) {
+    final exists = tryGetValuesAdapter(type, annotations: annotations);
+
+    if (exists == null) {
+      throw NegativeResult(
+        identifier: NegativeResultCodes.nonExistent,
+        message: tr('There is no value reflector adapter for type %1', [type]),
+      );
+    }
+
+    return exists;
+  }
+
+  static IValueGenerator? tryGetValuesAdapter(Type type, {List annotations = const []}) {
+    final generator = annotations.selectByType<IValueGenerator>();
+    if (generator != null) {
+      return generator;
+    }
+
+    final isPrimitive = ReflectionUtilities.isPrimitive(type);
+    if (isPrimitive != null) {
+      return TypePrimitiveReflection(annotations: annotations, type: type);
+    }
+
+    final isEnum = instance._enumerators.selectItem((x) => x.type == type);
+    if (isEnum != null) {
+      return isEnum;
+    }
+
+    final isPredefine = instance._predefinedTypes.selectItem((x) => x is IValueGenerator && x.type == type);
+    if (isPredefine != null) {
+      return isPredefine as IValueGenerator;
+    }
+
+    return null;
+  }
+
+  static IPrimitiveValueGenerator getPrimitiveAdapter(Type type, {List annotations = const []}) {
+    final exists = tryGetPrimitiveAdapter(type, annotations: annotations);
+
+    if (exists == null) {
+      throw NegativeResult(
+        identifier: NegativeResultCodes.nonExistent,
+        message: tr('There is no primitive reflector adapter for type %1', [type]),
+      );
+    }
+
+    return exists;
+  }
+
+  static IPrimitiveValueGenerator? tryGetPrimitiveAdapter(Type type, {List annotations = const []}) {
+    final generator = annotations.selectByType<IPrimitiveValueGenerator>();
+    if (generator != null) {
+      return generator;
+    }
+
+    final isPrimitive = ReflectionUtilities.isPrimitive(type);
+    if (isPrimitive != null) {
+      return TypePrimitiveReflection(annotations: annotations, type: type);
+    }
+
+    final isEnum = instance._enumerators.selectItem((x) => x.type == type);
+    if (isEnum != null) {
+      return isEnum;
+    }
+
+    final isPredefine = instance._predefinedTypes.selectItem((x) => x is IPrimitiveValueGenerator && x.type == type);
+    if (isPredefine != null) {
+      return isPredefine as IPrimitiveValueGenerator;
+    }
+
+    return null;
+  }
+
   static IReflectionType getReflectionType(Type type, {List annotations = const []}) {
     final generator = annotations.selectByType<IValueGenerator>();
     if (generator != null) {
