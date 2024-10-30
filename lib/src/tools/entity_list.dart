@@ -282,11 +282,11 @@ class EntityList<T> with IEntityWriter<T>, IEntityReader<T> {
   }
 
   @override
-  Stream<State<TranslatableText, void>> deleteAll() {
+  Stream<StreamState<TranslatableText, void>> deleteAll() {
     return _blocker.blockStream(function: () async => _deleteAll());
   }
 
-  Stream<State<TranslatableText, void>> _deleteAll() async* {
+  Stream<StreamState<TranslatableText, void>> _deleteAll() async* {
     _mapList.clear();
     _notifyListChanged.add(null);
     _notifyTotalEliminations.add(null);
@@ -295,11 +295,11 @@ class EntityList<T> with IEntityWriter<T>, IEntityReader<T> {
   }
 
   @override
-  Stream<State<TranslatableText, void>> add({required List<T> list}) {
+  Stream<StreamState<TranslatableText, void>> add({required List<T> list}) {
     return _blocker.blockStream(function: () async => _add(list: list));
   }
 
-  Stream<State<TranslatableText, void>> _add({required List<T> list}) async* {
+  Stream<StreamState<TranslatableText, void>> _add({required List<T> list}) async* {
     try {
       final newMap = _defineIDZeros(list: list);
       newMap.values.iterar((x) => _checkUniqueProperties(item: x));
@@ -331,11 +331,11 @@ class EntityList<T> with IEntityWriter<T>, IEntityReader<T> {
   }
 
   @override
-  Stream<State<TranslatableText, void>> assign({required List<T> list}) {
+  Stream<StreamState<TranslatableText, void>> assign({required List<T> list}) {
     return _blocker.blockStream(function: () async => _assign(list: list));
   }
 
-  Stream<State<TranslatableText, void>> _assign({required List<T> list}) async* {
+  Stream<StreamState<TranslatableText, void>> _assign({required List<T> list}) async* {
     try {
       final newMap = _defineIDZeros(list: list);
       newMap.values.iterar((x) => _checkUniqueProperties(item: x));
@@ -350,11 +350,11 @@ class EntityList<T> with IEntityWriter<T>, IEntityReader<T> {
   }
 
   @override
-  Stream<State<TranslatableText, void>> delete({required List<int> listIDs}) {
+  Stream<StreamState<TranslatableText, void>> delete({required List<int> listIDs}) {
     return _blocker.blockStream(function: () async => _delete(listIDs: listIDs));
   }
 
-  Stream<State<TranslatableText, void>> _delete({required List<int> listIDs}) async* {
+  Stream<StreamState<TranslatableText, void>> _delete({required List<int> listIDs}) async* {
     listIDs.iterar((x) => _mapList.remove(x));
 
     _notifyListChanged.add(null);
@@ -364,11 +364,11 @@ class EntityList<T> with IEntityWriter<T>, IEntityReader<T> {
   }
 
   @override
-  Stream<State<TranslatableText, void>> modify({required List<T> list}) {
+  Stream<StreamState<TranslatableText, void>> modify({required List<T> list}) {
     return _blocker.blockStream(function: () async => _modify(list: list));
   }
 
-  Stream<State<TranslatableText, void>> _modify({required List<T> list}) async* {
+  Stream<StreamState<TranslatableText, void>> _modify({required List<T> list}) async* {
     try {
       final newMap = _defineIDZeros(list: list);
       newMap.values.iterar((x) => _checkUniqueProperties(item: x));

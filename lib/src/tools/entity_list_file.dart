@@ -30,35 +30,35 @@ class EntityListFile<T> extends EntityList<T> {
   }
 
   @override
-  Stream<State<TranslatableText, void>> add({required List<T> list}) async* {
+  Stream<StreamState<TranslatableText, void>> add({required List<T> list}) async* {
     final original = this.list;
     yield* super.add(list: list);
     await _updateOrDisponse(before: original);
   }
 
   @override
-  Stream<State<TranslatableText, void>> modify({required List<T> list}) async* {
+  Stream<StreamState<TranslatableText, void>> modify({required List<T> list}) async* {
     final original = this.list;
     yield* super.modify(list: list);
     await _updateOrDisponse(before: original);
   }
 
   @override
-  Stream<State<TranslatableText, void>> assign({required List<T> list}) async* {
+  Stream<StreamState<TranslatableText, void>> assign({required List<T> list}) async* {
     final original = this.list;
     yield* super.assign(list: list);
     await _updateOrDisponse(before: original);
   }
 
   @override
-  Stream<State<TranslatableText, void>> deleteAll() async* {
+  Stream<StreamState<TranslatableText, void>> deleteAll() async* {
     final original = list;
     yield* super.deleteAll();
     await _updateOrDisponse(before: original);
   }
 
   @override
-  Stream<State<TranslatableText, void>> delete({required List<int> listIDs}) async* {
+  Stream<StreamState<TranslatableText, void>> delete({required List<int> listIDs}) async* {
     final original = list;
     yield* super.delete(listIDs: listIDs);
     await _updateOrDisponse(before: original);

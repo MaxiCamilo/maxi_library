@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:maxi_library/maxi_library.dart';
 
-class StreamStateItem<S, R> implements State<S, R>, ICustomSerialization {
+class StreamStateItem<S, R> implements StreamState<S, R>, ICustomSerialization {
   final S item;
   const StreamStateItem({required this.item});
 
@@ -16,7 +16,7 @@ class StreamStateItem<S, R> implements State<S, R>, ICustomSerialization {
   }
 }
 
-class StreamStateResult<S, R> implements State<S, R>, ICustomSerialization {
+class StreamStateResult<S, R> implements StreamState<S, R>, ICustomSerialization {
   final R result;
   const StreamStateResult({required this.result});
 
@@ -44,7 +44,7 @@ class StreamStateResult<S, R> implements State<S, R>, ICustomSerialization {
   }
 }
 
-class StreamStatePartialError<S, R> implements State<S, R>, ICustomSerialization {
+class StreamStatePartialError<S, R> implements StreamState<S, R>, ICustomSerialization {
   final dynamic partialError;
   const StreamStatePartialError({required this.partialError});
 
@@ -62,6 +62,6 @@ class StreamStatePartialError<S, R> implements State<S, R>, ICustomSerialization
   }
 }
 
-class StreamCheckActive<S, R> implements State<S, R> {
+class StreamCheckActive<S, R> implements StreamState<S, R> {
   const StreamCheckActive();
 }

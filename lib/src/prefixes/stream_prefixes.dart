@@ -3,13 +3,13 @@ import 'dart:async';
 import 'package:maxi_library/maxi_library.dart';
 import 'package:maxi_library/src/framework/stream_state_internal.dart';
 
-State<S, R> streamStatus<S, R>(S item) => StreamStateItem(item: item);
-State<S, R> checkStreamState<S, R>() => const StreamCheckActive();
-State<S, R> partialError<S, R>(ex) => StreamStatePartialError(partialError: partialError);
-State<S, R> streamResult<S, R>(R result) => StreamStateResult(result: result);
-State<TranslatableText, R> streamTextStatus<R>(String part, [List parts = const []]) => StreamStateItem(item: tr(part, parts));
+StreamState<S, R> streamStatus<S, R>(S item) => StreamStateItem(item: item);
+StreamState<S, R> checkStreamState<S, R>() => const StreamCheckActive();
+StreamState<S, R> partialError<S, R>(ex) => StreamStatePartialError(partialError: partialError);
+StreamState<S, R> streamResult<S, R>(R result) => StreamStateResult(result: result);
+StreamState<TranslatableText, R> streamTextStatus<R>(String part, [List parts = const []]) => StreamStateItem(item: tr(part, parts));
 
-Stream<State<S, R>> connectFunctionalStream<S, R, SR>(Stream<State<S, SR>> other, [void Function(SR x)? sendResult]) async* {
+Stream<StreamState<S, R>> connectFunctionalStream<S, R, SR>(Stream<StreamState<S, SR>> other, [void Function(SR x)? sendResult]) async* {
   late final SR result;
   bool returnResult = false;
   await for (final item in other) {
@@ -37,11 +37,11 @@ Stream<State<S, R>> connectFunctionalStream<S, R, SR>(Stream<State<S, SR>> other
 }
 
 Future<R> waitFunctionalStream<S, R>({
-  required Stream<State<S, R>> stream,
+  required Stream<StreamState<S, R>> stream,
   void Function(S x)? onData,
   void Function(R?)? onDoneOrCanceled,
   void Function(dynamic ex)? onError,
-  void Function(StreamSubscription<State<S, R>>)? onSubscription,
+  void Function(StreamSubscription<StreamState<S, R>>)? onSubscription,
 }) async {
   final completer = Completer<R>();
 

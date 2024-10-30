@@ -1,5 +1,5 @@
-mixin State<S, R> {}
+mixin StreamState<S, R> {}
 
 mixin FunctionalStream<S, R> {
-  Stream<State<S, R>> execute();
+  Stream<StreamState<S, R>> execute();
 }

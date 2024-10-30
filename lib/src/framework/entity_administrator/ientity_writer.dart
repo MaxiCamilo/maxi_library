@@ -6,15 +6,15 @@ mixin IEntityWriter<T> {
   Stream<List<int>> get notifyDeletedItems;
   Stream<void> get notifyTotalElimination;
 
-  Stream<State<TranslatableText, void>> add({required List<T> list});
+  Stream<StreamState<TranslatableText, void>> add({required List<T> list});
 
-  Stream<State<TranslatableText, void>> modify({required List<T> list});
+  Stream<StreamState<TranslatableText, void>> modify({required List<T> list});
 
-  Stream<State<TranslatableText, void>> assign({required List<T> list});
+  Stream<StreamState<TranslatableText, void>> assign({required List<T> list});
 
-  Stream<State<TranslatableText, void>> delete({required List<int> listIDs});
+  Stream<StreamState<TranslatableText, void>> delete({required List<int> listIDs});
 
-  Stream<State<TranslatableText, void>> deleteAll();
+  Stream<StreamState<TranslatableText, void>> deleteAll();
 
   Future<bool> checkUniqueProperties({required T item});
 
