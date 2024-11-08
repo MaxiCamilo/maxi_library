@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:maxi_library/maxi_library.dart';
 import 'package:maxi_library/src/reflection/abilitys/abylity_entity_framework.dart';
 import 'package:maxi_library/src/reflection/interfaces/ientity_framework.dart';
-import 'package:maxi_library/src/reflection/interfaces/ifield_reflection.dart';
 import 'package:maxi_library/src/reflection/interfaces/igetter_reflector.dart';
 import 'package:maxi_library/src/reflection/interfaces/isetter_reflector.dart';
 
@@ -20,7 +19,7 @@ abstract class ReflectedEntityTypeTemplate with IReflectionType, IDeclarationRef
   final String name;
 
   @override
-  late final String formalName;
+  late final TranslatableText formalName;
 
   @override
   late final List<ValueValidator> validators;
@@ -28,15 +27,19 @@ abstract class ReflectedEntityTypeTemplate with IReflectionType, IDeclarationRef
   late final ClassBuilderReflection? customBuilder;
   late final CustomSerialization? custorSerialization;
 
+  @override
+  late final TranslatableText description;
+
   bool _initialized = false;
 
   ReflectedEntityTypeTemplate({required this.annotations, required this.type, required this.name}) {
     validators = annotations.whereType<ValueValidator>().toList();
+    description = Description.searchDescription(annotations: annotations);
 
     customBuilder = annotations.selectByType<ClassBuilderReflection>();
     custorSerialization = annotations.selectByType<CustomSerialization>();
 
-    formalName = FormalName.searchFormalName(realName: name, annotations: annotations);
+    formalName = FormalName.searchFormalName(realName: tr(name), annotations: annotations);
   }
 
   late final List<IFieldReflection> modificableFields;
@@ -303,7 +306,7 @@ abstract class ReflectedEntityTypeTemplate with IReflectionType, IDeclarationRef
         if (error is NegativeResultValue) {
           errorList.add(error);
         } else {
-          errorList.add(NegativeResultValue.fromNegativeResult(name: tr(field.formalName), nr: error));
+          errorList.add(NegativeResultValue.fromNegativeResult(name: field.formalName, nr: error));
         }
       }
     }
@@ -356,7 +359,7 @@ abstract class ReflectedEntityTypeTemplate with IReflectionType, IDeclarationRef
         errorList.add(NegativeResultValue.searchNegativity(
           error: ex,
           value: value,
-          propertyName: tr(formalName),
+          propertyName: formalName,
         ));
       }
     }
@@ -365,7 +368,7 @@ abstract class ReflectedEntityTypeTemplate with IReflectionType, IDeclarationRef
 
     if (verify) {
       for (final val in validators) {
-        final error = val.performValidation(name: formalName, item: newItem, parentEntity: null);
+        final error = val.performValidation(name: formalName.toString(), item: newItem, parentEntity: null);
         if (error != null) {
           throw NegativeResultEntity(
             message: tr('The entity %1 is invalid', [name]),
@@ -383,7 +386,7 @@ abstract class ReflectedEntityTypeTemplate with IReflectionType, IDeclarationRef
         throw NegativeResultEntity(
           message: tr('The entity %1 is invalid', [name]),
           name: tr(name),
-          invalidProperties: [NegativeResultValue.searchNegativity(error: ex, propertyName: tr(formalName))],
+          invalidProperties: [NegativeResultValue.searchNegativity(error: ex, propertyName: formalName)],
         );
       }
     }
@@ -395,7 +398,7 @@ abstract class ReflectedEntityTypeTemplate with IReflectionType, IDeclarationRef
         invalidProperties: [
           NegativeResultValue.searchNegativity(
             error: NegativeResult(identifier: NegativeResultCodes.invalidProperty, message: tr('The primary key (%2) for entity %1 needs to be defined', [primaryKey.formalName, formalName])),
-            propertyName: tr(primaryKey.formalName),
+            propertyName: primaryKey.formalName,
           )
         ],
       );

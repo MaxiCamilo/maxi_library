@@ -8,7 +8,7 @@ class MethodSetEntity<T, R> with IDeclarationReflector, ISetterReflector {
   final List annotations;
 
   @override
-  final String formalName;
+  final TranslatableText formalName;
 
   @override
   final bool isStatic;
@@ -24,6 +24,9 @@ class MethodSetEntity<T, R> with IDeclarationReflector, ISetterReflector {
 
   late final CustomInterpretation? customInterpretation;
 
+  @override
+  late final TranslatableText description;
+
   MethodSetEntity._({
     required this.method,
     required this.annotations,
@@ -34,6 +37,7 @@ class MethodSetEntity<T, R> with IDeclarationReflector, ISetterReflector {
     required this.validators,
   }) {
     customInterpretation = annotations.selectByType<CustomInterpretation>();
+    description = Description.searchDescription(annotations: annotations);
   }
 
   static MethodSetEntity<T, R> make<T, R>({required GeneratedReflectedMethod<T, R> method}) {
@@ -45,7 +49,7 @@ class MethodSetEntity<T, R> with IDeclarationReflector, ISetterReflector {
       name: method.name,
       reflectedType: ReflectionManager.getReflectionType(method.typeReturn, annotations: method.annotations),
       validators: method.annotations.whereType<ValueValidator>().toList(),
-      formalName: FormalName.searchFormalName(realName: method.name, annotations: method.annotations),
+      formalName: FormalName.searchFormalName(realName: tr(method.name), annotations: method.annotations),
     );
   }
 

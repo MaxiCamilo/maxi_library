@@ -44,12 +44,20 @@ mixin DirectoryUtilities {
 
   static String serializePrefix(String route) => route.replaceAll(currentPath, prefixRouteLocal).replaceAll('\\', '/');
 
-  static void useDebugPath() {
-    _fixedCurrentPath = Directory.current.path;
+  static String useDebugPath() {
+    _fixedCurrentPath = '${Directory.current.path}/debug';
+
+    final direction = Directory(_fixedCurrentPath!);
+    if (!direction.existsSync()) {
+      direction.createSync();
+    }
+
+    return _fixedCurrentPath!;
   }
 
-  static void changeFixedRoute(String newRoute) {
+  static String changeFixedRoute(String newRoute) {
     _fixedCurrentPath = newRoute;
+    return _fixedCurrentPath!;
   }
 
   static Future<String> createFolder(String directoryDirection) async {
@@ -362,7 +370,7 @@ mixin DirectoryUtilities {
       );
     }
 
-    return volatileAsync(detail:  tr('Getting file size located at %1', [fileDirection]), function: () => file.length());
+    return volatileAsync(detail: tr('Getting file size located at %1', [fileDirection]), function: () => file.length());
   }
 
   static Future<Uint8List> readFilePartially({required String fileDirection, required int from, required int amount, bool checkSize = true}) async {
@@ -392,7 +400,7 @@ mixin DirectoryUtilities {
       }
 
       return await volatileAsync(
-        detail:  tr('Reading file %1, from part %2, trying to read %3 bytes', [fileDirection, from, amount]),
+        detail: tr('Reading file %1, from part %2, trying to read %3 bytes', [fileDirection, from, amount]),
         function: () => lector.read(amount),
       );
     } finally {

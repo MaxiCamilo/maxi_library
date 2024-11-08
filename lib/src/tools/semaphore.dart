@@ -1,5 +1,8 @@
 import 'dart:async';
 
+import 'package:maxi_library/maxi_library.dart';
+import 'package:maxi_library/src/error_handling/negative_result.dart';
+
 class Semaphore {
   final _waitingList = <(Completer, Future Function())>[];
   final _waitingStreamList = <(StreamController, Future<Stream> Function())>[];
@@ -38,6 +41,14 @@ class Semaphore {
     }
   }
 
+  void cancel() {
+    _waitingList.iterar((x) => x.$1.completeErrorIfIncomplete(NegativeResult(identifier: NegativeResultCodes.functionalityCancelled, message: tr('The task was canceled'))));
+    _waitingList.clear();
+
+    _waitingStreamList.iterar((x) => x.$1.close());
+    _waitingStreamList.clear();
+  }
+
   Future<void> _runSemaphone() async {
     _isActive = true;
 
@@ -46,9 +57,9 @@ class Semaphore {
         final item = _waitingList.removeAt(0);
         try {
           final result = await item.$2();
-          item.$1.complete(result);
+          item.$1.completeIfIncomplete(result);
         } catch (ex) {
-          item.$1.completeError(ex);
+          item.$1.completeErrorIfIncomplete(ex);
         }
       }
 

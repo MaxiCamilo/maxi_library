@@ -4,9 +4,14 @@ class CheckTextLength extends ValueValidator {
   final num maximum;
   final num minimum;
 
+  final int? maximumLines;
+  final int? minimumLines;
+
   const CheckTextLength({
     this.minimum = double.negativeInfinity,
     this.maximum = double.infinity,
+    this.maximumLines,
+    this.minimumLines,
   });
 
   @override
@@ -44,6 +49,26 @@ class CheckTextLength extends ValueValidator {
         name: tr(name),
         value: item,
       );
+    }
+
+    if (maximumLines != null || minimumLines != null) {
+      final lines = '\n'.allMatches(item).length;
+
+      if (maximumLines != null && maximumLines! < lines) {
+        return NegativeResultValue(
+          message: tr('The property %1 only accepts text with a maximum of %2 lines', [name, maximumLines!]),
+          name: tr(name),
+          value: item,
+        );
+      }
+
+      if (minimumLines != null && minimumLines! > lines) {
+        return NegativeResultValue(
+          message: tr('The property %1 requires at least %2 lines', [name, minimumLines!]),
+          name: tr(name),
+          value: item,
+        );
+      }
     }
 
     return null;

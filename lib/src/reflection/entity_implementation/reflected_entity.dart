@@ -3,7 +3,6 @@ import 'package:maxi_library/src/reflection/entity_implementation/field_entity.d
 import 'package:maxi_library/src/reflection/entity_implementation/method_entity.dart';
 import 'package:maxi_library/src/reflection/entity_implementation/method_get_entity.dart';
 import 'package:maxi_library/src/reflection/entity_implementation/method_set_entity.dart';
-import 'package:maxi_library/src/reflection/interfaces/ifield_reflection.dart';
 import 'package:maxi_library/src/reflection/interfaces/igetter_reflector.dart';
 import 'package:maxi_library/src/reflection/interfaces/isetter_reflector.dart';
 import 'package:maxi_library/src/reflection/templates/reflected_entity_type_template.dart';

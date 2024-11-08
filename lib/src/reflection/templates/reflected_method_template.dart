@@ -15,7 +15,7 @@ abstract class ReflectedMethodTemplate with IDeclarationReflector, IMethodReflec
   final String name;
 
   @override
-  late final String formalName;
+  late final TranslatableText formalName;
 
   @override
   final List<NamedParameter> namedParametes;
@@ -39,7 +39,7 @@ abstract class ReflectedMethodTemplate with IDeclarationReflector, IMethodReflec
 
   ReflectedMethodTemplate({required this.annotations, required this.fixedParametes, required this.isStatic, required this.name, required this.namedParametes, required this.reflectedType}) {
     validators = annotations.whereType<ValueValidator>().toList();
-    formalName = FormalName.searchFormalName(realName: name, annotations: annotations);
+    formalName = FormalName.searchFormalName(realName: tr(name), annotations: annotations);
 
     fixedParametesRequired = fixedParametes.where((x) => !x.isOptional).toList();
     fixedParametesOptionals = fixedParametes.where((x) => x.isOptional).toList();

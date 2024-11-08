@@ -8,7 +8,7 @@ class MethodGetEntity<T, R> with IDeclarationReflector, IGetterReflector {
   final List annotations;
 
   @override
-  final String formalName;
+  final TranslatableText formalName;
 
   @override
   final bool isStatic;
@@ -24,6 +24,9 @@ class MethodGetEntity<T, R> with IDeclarationReflector, IGetterReflector {
 
   late final CustomSerialization? customSerialization;
 
+  @override
+  late final TranslatableText description;
+
   MethodGetEntity._({
     required this.method,
     required this.annotations,
@@ -34,6 +37,7 @@ class MethodGetEntity<T, R> with IDeclarationReflector, IGetterReflector {
     required this.validators,
   }) {
     customSerialization = annotations.selectByType<CustomSerialization>();
+    description = Description.searchDescription(annotations: annotations);
   }
 
   static MethodGetEntity<T, R> make<T, R>({required GeneratedReflectedMethod<T, R> method}) {
@@ -45,7 +49,7 @@ class MethodGetEntity<T, R> with IDeclarationReflector, IGetterReflector {
       name: method.name,
       reflectedType: ReflectionManager.getReflectionType(method.typeReturn, annotations: method.annotations),
       validators: method.annotations.whereType<ValueValidator>().toList(),
-      formalName: FormalName.searchFormalName(realName: method.name, annotations: method.annotations),
+      formalName: FormalName.searchFormalName(realName: tr(method.name), annotations: method.annotations),
     );
   }
 

@@ -59,4 +59,7 @@ class TypeGeneratorReflection with IReflectionType, IValueGenerator {
     final classItem = ReflectionManager.getReflectionType(newItme.runtimeType, annotations: []);
     return classItem.serializeToMap(newItme);
   }
+
+  @override
+  TranslatableText get description => TranslatableText.empty;
 }

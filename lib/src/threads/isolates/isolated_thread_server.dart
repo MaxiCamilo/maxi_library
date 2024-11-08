@@ -18,7 +18,7 @@ class IsolatedThreadServer with IThreadInvoker, IThreadManager, IThreadManagerSe
 
   final Set<IThreadInitializer> _initializers = {};
 
-  final _entityMountSynchronizer = Semaphore();
+  final _entityMountSynchronizer = <Type, Semaphore>{};
 
   late final BackgroundProcessor _backgroudProcessor;
 
@@ -106,7 +106,11 @@ class IsolatedThreadServer with IThreadInvoker, IThreadManager, IThreadManagerSe
       }
     }
 
-    return await _entityMountSynchronizer.execute(function: () async {
+    if (!_entityMountSynchronizer.containsKey(T)) {
+      _entityMountSynchronizer[T] = Semaphore();
+    }
+
+    return await _entityMountSynchronizer[T]!.execute(function: () async {
       final existsAgain = connectionWithServices[T];
 
       if (existsAgain != null) {
@@ -127,6 +131,8 @@ class IsolatedThreadServer with IThreadInvoker, IThreadManager, IThreadManagerSe
 
       newThread.entityType = T;
       connectionWithServices[T] = newThread;
+
+      _entityMountSynchronizer.remove(T);
 
       return newThread;
     });

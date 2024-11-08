@@ -15,6 +15,9 @@ class GeneratorPrimitiveList<T> with IValueGenerator, IReflectionType, IPrimitiv
   @override
   PrimitiesType get primitiveType => PrimitiesType.isString;
 
+  @override
+  TranslatableText get description => Description.searchDescription(annotations: annotations);
+
   const GeneratorPrimitiveList();
 
   @override

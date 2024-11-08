@@ -36,6 +36,11 @@ mixin StartableFunctionality {
       }
       await initializeFunctionality();
       _isInitialized = true;
+      _semaphore = null;
     });
+  }
+
+  void declareDeinitialized() {
+    _isInitialized = false;
   }
 }

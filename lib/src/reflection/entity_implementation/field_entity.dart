@@ -1,6 +1,5 @@
 import 'package:maxi_library/maxi_library.dart';
 import 'package:maxi_library/src/reflection/build/generators/generated_reflected_field.dart';
-import 'package:maxi_library/src/reflection/interfaces/ifield_reflection.dart';
 import 'package:maxi_library/src/reflection/interfaces/igetter_reflector.dart';
 import 'package:maxi_library/src/reflection/interfaces/isetter_reflector.dart';
 
@@ -11,7 +10,7 @@ class FieldEntity<T, R> with IDeclarationReflector, IGetterReflector, ISetterRef
   final List annotations;
 
   @override
-  final String formalName;
+  final TranslatableText formalName;
 
   @override
   final bool isRequired;
@@ -44,6 +43,9 @@ class FieldEntity<T, R> with IDeclarationReflector, IGetterReflector, ISetterRef
 
   late final CustomSerialization? customSerialization;
 
+  @override
+  late final TranslatableText description;
+
   FieldEntity._({
     required this.field,
     required this.annotations,
@@ -55,6 +57,7 @@ class FieldEntity<T, R> with IDeclarationReflector, IGetterReflector, ISetterRef
     required this.reflectedType,
     required this.validators,
   }) {
+    description = Description.searchDescription(annotations: annotations);
     customInterpretation = annotations.selectByType<CustomInterpretation>();
     customSerialization = annotations.selectByType<CustomSerialization>();
 
@@ -67,7 +70,7 @@ class FieldEntity<T, R> with IDeclarationReflector, IGetterReflector, ISetterRef
     return FieldEntity<T, R>._(
       field: field,
       annotations: field.annotations,
-      formalName: FormalName.searchFormalName(realName: field.name, annotations: field.annotations),
+      formalName: FormalName.searchFormalName(realName: tr(field.name), annotations: field.annotations),
       isRequired: field.annotations.any((x) => x is EssentialKey),
       isStatic: field.isStatic || field.isConst,
       name: field.name,

@@ -1,9 +1,13 @@
+import 'package:maxi_library/maxi_library.dart';
+
 mixin IReflectionType {
   List get annotations;
 
   Type get type;
 
   String get name;
+
+  TranslatableText get description;
 
   bool isCompatible(dynamic item);
 

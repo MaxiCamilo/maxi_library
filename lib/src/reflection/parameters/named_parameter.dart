@@ -18,10 +18,13 @@ class NamedParameter with IDeclarationReflector {
   late final IReflectionType reflectedType;
 
   @override
-  late final String formalName;
+  late final TranslatableText formalName;
 
   @override
   late final List<ValueValidator> validators;
+
+  @override
+  late final TranslatableText description;
 
   NamedParameter({
     required this.annotations,
@@ -30,8 +33,9 @@ class NamedParameter with IDeclarationReflector {
     required this.optinalValue,
     required this.type,
   }) {
+    description = Description.searchDescription(annotations: annotations);
     reflectedType = ReflectionManager.getReflectionType(type, annotations: annotations);
-    formalName = FormalName.searchFormalName(realName: name, annotations: annotations);
+    formalName = FormalName.searchFormalName(realName: tr(name), annotations: annotations);
     validators = annotations.whereType<ValueValidator>().toList();
   }
 }

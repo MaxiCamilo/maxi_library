@@ -5,15 +5,16 @@ mixin IDeclarationReflector {
   List<ValueValidator> get validators;
 
   String get name;
-  String get formalName;
+  TranslatableText get formalName;
   IReflectionType get reflectedType;
   bool get isStatic;
+  TranslatableText get description;
 
   NegativeResult? verifyValue({required dynamic value, required dynamic parentEntity}) {
     for (final val in validators) {
       final negative = val.performValidation(name: name, item: value, parentEntity: parentEntity);
       if (negative != null) {
-        return NegativeResultValue.fromNegativeResult(name: tr(formalName), nr: negative);
+        return NegativeResultValue.fromNegativeResult(name: formalName, nr: negative);
       }
     }
 
@@ -23,7 +24,7 @@ mixin IDeclarationReflector {
       } catch (ex) {
         final nr = NegativeResultValue.searchNegativity(
           error: ex,
-          propertyName: tr(formalName),
+          propertyName: formalName,
           value: value,
         );
         return nr;

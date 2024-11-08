@@ -7,6 +7,9 @@ class TypeVoidReflection with IReflectionType {
   List get annotations => [];
 
   @override
+  TranslatableText get description => tr('Hello darkness my old friend');
+
+  @override
   cloneObject(originalItem) {
     return null;
   }

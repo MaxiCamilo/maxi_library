@@ -25,6 +25,9 @@ class GeneratorList<T> with IValueGenerator, IReflectionType, IPrimitiveValueGen
   }
 
   @override
+  TranslatableText get description => Description.searchDescription(annotations: annotations);
+
+  @override
   convertObject(originalItem) {
     if (originalItem is Iterable<T>) {
       return originalItem.toList();

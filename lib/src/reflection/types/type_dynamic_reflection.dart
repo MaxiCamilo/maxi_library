@@ -12,6 +12,9 @@ class TypeDynamicReflection with IReflectionType {
   String get name => 'dynamic';
 
   @override
+  TranslatableText get description => TranslatableText.empty;
+
+  @override
   Type get type => dynamic;
 
   @override

@@ -10,6 +10,7 @@ export 'package:maxi_library/src/reflection/decorators/reflect.dart';
 export 'package:maxi_library/src/reflection/decorators/entity_namer.dart';
 export 'package:maxi_library/src/reflection/decorators/essential_key.dart';
 export 'package:maxi_library/src/reflection/decorators/generator_primitive_list.dart';
+export 'package:maxi_library/src/reflection/decorators/description.dart';
 
 export 'package:maxi_library/src/reflection/interfaces/ivalue_generator.dart';
 export 'package:maxi_library/src/reflection/interfaces/ireflection_type.dart';
@@ -17,6 +18,7 @@ export 'package:maxi_library/src/reflection/interfaces/ideclaration_reflector.da
 export 'package:maxi_library/src/reflection/interfaces/itype_entity_reflection.dart';
 export 'package:maxi_library/src/reflection/interfaces/ipost_verification.dart';
 export 'package:maxi_library/src/reflection/interfaces/ireflector_album.dart';
+export 'package:maxi_library/src/reflection/interfaces/ifield_reflection.dart';
 export 'package:maxi_library/src/reflection/interfaces/imethod_reflection.dart';
 export 'package:maxi_library/src/reflection/interfaces/itype_class_reflection.dart';
 export 'package:maxi_library/src/reflection/interfaces/icustom_serialization.dart';

@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:collection';
 
 import 'package:maxi_library/maxi_library.dart';
-import 'package:maxi_library/src/reflection/interfaces/ifield_reflection.dart';
 
 class EntityList<T> with IEntityWriter<T>, IEntityReader<T> {
   final int splits;

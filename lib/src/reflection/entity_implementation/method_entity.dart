@@ -4,6 +4,9 @@ import 'package:maxi_library/src/reflection/templates/reflected_method_template.
 class MethodEntity<T, R> extends ReflectedMethodTemplate {
   final GeneratedReflectedMethod<T, R> method;
 
+  @override
+  late final TranslatableText description;
+
   MethodEntity._({
     required this.method,
     required super.annotations,
@@ -12,7 +15,9 @@ class MethodEntity<T, R> extends ReflectedMethodTemplate {
     required super.name,
     required super.namedParametes,
     required super.reflectedType,
-  });
+  }){
+    description = Description.searchDescription(annotations: annotations);
+  }
 
   static MethodEntity<T, R> make<T, R>({required GeneratedReflectedMethod<T, R> method}) {
     return MethodEntity<T, R>._(

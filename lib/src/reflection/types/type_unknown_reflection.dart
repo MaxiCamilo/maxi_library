@@ -8,6 +8,9 @@ class TypeUnknownReflection with IReflectionType {
   final Type type;
 
   @override
+  TranslatableText get description => TranslatableText(message: '<Unkown Type ($type)>');
+
+  @override
   String get name => type.toString();
 
   const TypeUnknownReflection({required this.type});

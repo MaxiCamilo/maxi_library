@@ -15,6 +15,9 @@ class TypeEnumeratorReflector with IReflectionType, IValueGenerator, IPrimitiveV
   @override
   PrimitiesType get primitiveType => PrimitiesType.isInt;
 
+  @override
+  TranslatableText get description => Description.searchDescription(annotations: annotations);
+
   const TypeEnumeratorReflector({required this.optionsList, required this.annotations, required this.type, required this.name});
 
   @override
