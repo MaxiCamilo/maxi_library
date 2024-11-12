@@ -10,12 +10,7 @@ class InvocationParameters {
     return InvocationParameters(
         fixedParameters: avoidConstants ? original.fixedParameters.toList() : original.fixedParameters, namedParameters: avoidConstants ? Map<String, dynamic>.from(original.namedParameters) : original.namedParameters);
   }
-
-  factory InvocationParameters.clonarConOtrosfixeds(InvocationParameters original, List fixedParameters, {bool avoidConstants = true}) {
-    return InvocationParameters(
-        fixedParameters: avoidConstants ? fixedParameters.toList() : fixedParameters, namedParameters: avoidConstants ? Map<String, dynamic>.from(original.namedParameters) : original.namedParameters);
-  }
-
+  
   static const InvocationParameters emptry = InvocationParameters();
 
   factory InvocationParameters.only(item) => InvocationParameters(fixedParameters: [item]);

@@ -4,7 +4,7 @@ import 'dart:developer';
 import 'package:maxi_library/maxi_library.dart';
 import 'package:maxi_library/src/tools/internal/shared_values_service.dart';
 
-class IsolatedPointer<T extends Object> with StartableFunctionality {
+class IsolatedValue<T extends Object> with StartableFunctionality {
   static bool _serviceInitialized = false;
 
   final String name;
@@ -19,7 +19,7 @@ class IsolatedPointer<T extends Object> with StartableFunctionality {
 
   bool _gettingValue = false;
 
-  IsolatedPointer({
+  IsolatedValue({
     required this.name,
     required this.synchronized,
   });
@@ -103,7 +103,7 @@ class IsolatedPointer<T extends Object> with StartableFunctionality {
 
   void _dataChanged(dynamic newValue) {
     if (newValue is! T) {
-      log('[IsolatedPointer] Cannot accept value of type $T');
+      log('[IsolatedValue] Cannot accept value of type $T');
       return;
     }
 

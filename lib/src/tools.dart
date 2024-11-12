@@ -13,4 +13,6 @@ export 'package:maxi_library/src/tools/future_blocker.dart';
 export 'package:maxi_library/src/tools/entity_list_file.dart';
 export 'package:maxi_library/src/tools/bidirectional_stream.dart';
 export 'package:maxi_library/src/tools/pointer_define_after.dart';
-export 'package:maxi_library/src/tools/isolated_pointer.dart';
+export 'package:maxi_library/src/tools/isolated_value.dart';
+export 'package:maxi_library/src/tools/isolated_function.dart';
+export 'package:maxi_library/src/tools/isolated_module_pointer.dart';
