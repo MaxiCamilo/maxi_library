@@ -1,6 +1,6 @@
 import 'package:maxi_library/maxi_library.dart';
 
-mixin IOperatorLanguage on StartableFunctionality {
+mixin IOperatorLanguage {
   String get prefixLanguage;
 
   String translateText(TranslatableText text);

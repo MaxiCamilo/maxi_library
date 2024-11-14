@@ -4,6 +4,7 @@ export 'package:maxi_library/src/framework/needs_additional_verification.dart';
 export 'package:maxi_library/src/framework/ifunctionality.dart';
 export 'package:maxi_library/src/framework/stream_state.dart';
 export 'package:maxi_library/src/framework/ipipe.dart';
+export 'package:maxi_library/src/framework/file_operator.dart';
 
 export 'package:maxi_library/src/framework/icondition_query.dart';
 export 'package:maxi_library/src/framework/conditions/compare_fields.dart';
@@ -14,3 +15,5 @@ export 'package:maxi_library/src/framework/conditions/compare_value.dart';
 
 export 'package:maxi_library/src/framework/entity_administrator/ientity_reader.dart';
 export 'package:maxi_library/src/framework/entity_administrator/ientity_writer.dart';
+
+export 'package:maxi_library/src/framework/application_manager.dart';

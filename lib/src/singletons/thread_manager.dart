@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:maxi_library/maxi_library.dart';
 
 mixin ThreadManager {
+  static bool get instanceDefined => _instance != null;
   static IThreadManager? _instance;
   static IThreadManagersFactory generalFactory = const IsolatedThreadFactory();
   //static List<IThreadInitializer> initializerForNewIsolates = [];

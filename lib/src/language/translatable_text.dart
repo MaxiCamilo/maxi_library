@@ -15,6 +15,10 @@ class TranslatableText with ICustomSerialization {
 
   const TranslatableText({required this.message, this.tokenId = '', this.textParts = const []});
 
+  factory TranslatableText.changeMessage({required TranslatableText original, required String text}) {
+    return TranslatableText(message: text, textParts: original.textParts, tokenId: original.tokenId);
+  }
+
   factory TranslatableText.interpretFromJson({required String text}) =>
       volatile(detail: tr('The translatable text cannot be interpreted (it must be JSON)'), function: () => TranslatableText.interpret(map: json.decode(text)));
 

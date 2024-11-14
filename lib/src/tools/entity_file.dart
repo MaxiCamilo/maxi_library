@@ -1,11 +1,10 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:maxi_library/maxi_library.dart';
 
 class EntityFile<T> with StartableFunctionality {
-  final String _address;
+  final IFileOperator _address;
   final _saveSyncronous = Semaphore();
 
   int? maxSize;
@@ -18,11 +17,11 @@ class EntityFile<T> with StartableFunctionality {
   Stream<T> get changeItem => _changeEvent.stream;
 
   EntityFile({
-    required String address,
+    required IFileOperator address,
     T? item,
     this.maxSize,
   })  : _item = item,
-        _address = DirectoryUtilities.interpretPrefix(address) {
+        _address = address {
     _reflected = ReflectionManager.getReflectionType(T);
   }
 
@@ -39,9 +38,9 @@ class EntityFile<T> with StartableFunctionality {
 
   Future<void> loadFile() {
     return _saveSyncronous.execute(function: () async {
-      await DirectoryUtilities.createFile(_address);
+      await _address.createAsFile(secured: true);
 
-      final rawContent = await DirectoryUtilities.readTextualFile(fileDirection: _address, maxSize: maxSize);
+      final rawContent = await _address.readTextual(maxSize: maxSize);
 
       final newValue = (_reflected.convertObject(rawContent) as T);
 
@@ -57,7 +56,7 @@ class EntityFile<T> with StartableFunctionality {
   Future<void> saveFile() {
     return _saveSyncronous.execute(function: () {
       final contentJson = json.encode(_reflected.serializeToMap(item));
-      return DirectoryUtilities.writeTextFile(fileDirection: _address, content: contentJson);
+      return _address.writeText(content: contentJson);
     });
   }
 
@@ -69,15 +68,15 @@ class EntityFile<T> with StartableFunctionality {
   @override
   Future<void> initializeFunctionality() async {
     if (_item == null) {
-      if (await File(_address).exists()) {
+      if (await _address.existsFile()) {
         await loadFile();
       } else {
         _item = _reflected.generateEmptryObject();
         await saveFile();
       }
     } else {
-      final folder = DirectoryUtilities.extractFileLocation(fileDirection: _address);
-      await DirectoryUtilities.createFolder(folder);
+      final folder = _address.getContainingFolder();
+      await folder.createAsFolder(secured: true);
     }
   }
 }

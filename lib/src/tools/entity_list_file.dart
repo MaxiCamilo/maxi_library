@@ -1,31 +1,26 @@
-import 'dart:io';
-
 import 'package:maxi_library/maxi_library.dart';
 
 class EntityListFile<T> extends EntityList<T> {
-  final String fileAddress;
+  final IFileOperator file;
   final int maxSize;
 
-  EntityListFile._({super.splits, super.initList, required this.fileAddress, required this.maxSize});
+  EntityListFile._({super.splits, super.initList, required this.file, required this.maxSize});
 
-  static Future<EntityListFile<T>> loadFile<T>({required String fileAddress, required int maxSize, int? splits}) async {
-    final content = await getContentFile<T>(fileAddress: fileAddress, maxSize: maxSize);
+  static Future<EntityListFile<T>> loadFile<T>({required IFileOperator file, required int maxSize, int? splits}) async {
+    final content = await getContentFile<T>(file: file, maxSize: maxSize);
 
-    return EntityListFile._(fileAddress: fileAddress, maxSize: maxSize, initList: content, splits: splits ?? 500);
+    return EntityListFile._(file: file, maxSize: maxSize, initList: content, splits: splits ?? 500);
   }
 
-  static Future<List<T>> getContentFile<T>({required String fileAddress, required int maxSize}) async {
+  static Future<List<T>> getContentFile<T>({required IFileOperator file, required int maxSize}) async {
     final reflector = ReflectionManager.getReflectionEntity(T);
 
-    final directFileAddress = DirectoryUtilities.interpretPrefix(fileAddress);
-
-    final file = File(directFileAddress);
-    if (!await file.exists()) {
-      await DirectoryUtilities.writeTextFile(fileDirection: fileAddress, content: '[]');
+    if (!await file.existsFile()) {
+      await file.writeText(content: '[]');
       return [];
     }
 
-    final content = await DirectoryUtilities.readTextualFile(fileDirection: fileAddress, maxSize: maxSize);
+    final content = await file.readTextual(maxSize: maxSize);
     return reflector.interpretJsonAslist(rawText: content, tryToCorrectNames: true, acceptZeroIdentifier: false);
   }
 
@@ -83,6 +78,6 @@ class EntityListFile<T> extends EntityList<T> {
       );
     }
 
-    return DirectoryUtilities.writeTextFile(fileDirection: fileAddress, content: jsonContent);
+    return file.writeText(content: jsonContent);
   }
 }

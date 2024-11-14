@@ -4,10 +4,8 @@ class DartApplicationInitializer with StartableFunctionality {
   final String appName;
   final double appVersion;
 
+  final IApplicationManager appManager;
   final IFunctionalTask loadConfiguration;
-  final IOperatorLanguage languages;
-  final List<IReflectorAlbum> reflectors;
-  final IThreadManagersFactory serverThreads;
   final List<Future Function()> startupFunctions;
 
   late final SeriesFunctions _serialExecutor;
@@ -17,17 +15,13 @@ class DartApplicationInitializer with StartableFunctionality {
     required this.loadConfiguration,
     required this.appName,
     required this.appVersion,
-    required this.languages,
-    required this.reflectors,
-    required this.serverThreads,
     required this.startupFunctions,
+    required this.appManager,
   }) {
     _serialExecutor = SeriesFunctions(functions: [
       FunctionalTaskExpress.withoutController(_printAppVersion),
+      FunctionalTaskExpress.withoutController(_makeAppManager),
       loadConfiguration,
-      FunctionalTaskExpress.withoutController(_loadReflectors),
-      FunctionalTaskExpress.withoutController(_loadLanguages),
-      FunctionalTaskExpress.withoutController(_loadServerThread),
       FunctionalTaskExpress.withoutController(_loadStartupFunctions),
     ]);
 
@@ -65,20 +59,11 @@ class DartApplicationInitializer with StartableFunctionality {
     print('----------------------------------------------------------------------------------');
   }
 
-  Future<void> _loadReflectors() async {
-    ReflectionManager.defineAlbums = reflectors;
-    ReflectionManager.defineAsTheMainReflector();
-  }
-
-  Future<void> _loadLanguages() {
-    return LanguageManager.changeOperator(languages);
-  }
-
-  Future<void> _loadServerThread() async {
-    ThreadManager.generalFactory = serverThreads;
-  }
-
   Future<void> _loadStartupFunctions() {
     return _serviceLoader.execute();
+  }
+
+  Future<void> _makeAppManager() async {
+    await appManager.initialize();
   }
 }

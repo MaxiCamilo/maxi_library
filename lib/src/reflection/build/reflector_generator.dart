@@ -18,11 +18,17 @@ class ReflectorGenerator {
     required this.albumName,
   });
 
-  void build() {
+  Future<void> build() async {
     final imports = <String>{
       'import \'package:maxi_library/export_reflectors.dart\'',
       'import \'package:maxi_library/maxi_library.dart\'',
     };
+
+    await ApplicationManager.changeInstance(
+      initialize: true,
+      newInstance: DartApplicationManager(defineLanguageOperatorInOtherThread: false, useWorkingPathInDebug: false, useWorkingPath: true, reflectors: []),
+    );
+
     final castDirectories = directories.map((x) => DirectoryUtilities.interpretPrefix(x)).toList();
     final enumNames = <String>[];
     final classNames = <String>[];

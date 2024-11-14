@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:maxi_library/maxi_library.dart';
-import 'package:maxi_library/src/error_handling/negative_result.dart';
 
 class Semaphore {
   final _waitingList = <(Completer, Future Function())>[];

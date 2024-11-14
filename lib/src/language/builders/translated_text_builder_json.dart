@@ -1,7 +1,7 @@
 import 'dart:convert';
 
+import 'package:maxi_library/maxi_library.dart';
 import 'package:maxi_library/src/language/interfaces/itranslated_text_builder.dart';
-import 'package:maxi_library/src/utilities/directory_utilities.dart';
 
 class TranslatedTextBuilderJson with ITranslatedTextBuilder {
   final String locationToGenerate;
@@ -10,11 +10,12 @@ class TranslatedTextBuilderJson with ITranslatedTextBuilder {
 
   @override
   Future<void> generate({required String prefix, required Map<String, String> mapTexts}) async {
-    await DirectoryUtilities.createFolder(locationToGenerate);
+    await FileOperatorMask(rawRoute: locationToGenerate, isLocal: false).createAsFolder(secured: true);
 
     final route = DirectoryUtilities.interpretPrefix('$locationToGenerate/$prefix.json');
+    final file = FileOperatorMask(rawRoute: route, isLocal: false);
 
-    await DirectoryUtilities.deleteFile(route);
-    await DirectoryUtilities.writeTextFile(fileDirection: route, content: json.encode(mapTexts));
+    await file.deleteFile();
+    await file.writeText(content: json.encode(mapTexts));
   }
 }
