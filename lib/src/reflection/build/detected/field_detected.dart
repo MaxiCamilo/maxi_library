@@ -14,7 +14,7 @@ class FieldDetected {
   final String defaulValue;
 
   bool get isPrivate => name.first == '_';
-  bool get acceptNull => name.last == '?';
+  bool get acceptNull => typeValue.last == '?';
 
   const FieldDetected({
     required this.annotations,

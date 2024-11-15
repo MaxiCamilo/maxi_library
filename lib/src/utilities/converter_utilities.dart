@@ -180,7 +180,14 @@ mixin ConverterUtilities {
     } else if (value is num) {
       return volatile(
         detail: tr('The property %1 does not have a valid number to be adapted to date', [propertyName]),
-        function: () => DateTime.fromMillisecondsSinceEpoch(value.toInt(), isUtc: !isLocal),
+        function: () {
+          final datetime = DateTime.fromMillisecondsSinceEpoch(value.toInt(), isUtc: true);
+          if (isLocal) {
+            return datetime.toLocal();
+          } else {
+            return datetime;
+          }
+        },
       );
     } else if (value is String) {
       try {

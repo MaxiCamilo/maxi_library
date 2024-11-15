@@ -65,12 +65,11 @@ class TranslatableText with ICustomSerialization {
 
   @override
   Map<String, dynamic> serialize() {
-    final list = <String>[];
+    final list = [];
 
     for (final item in textParts) {
-      //TODO REIMPLEMENTAR ESTO!
       if (item is TranslatableText) {
-        //list.add(item.serialize());
+        list.add(item.serialize());
       } else {
         list.add(item.toString());
       }

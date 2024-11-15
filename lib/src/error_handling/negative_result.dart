@@ -18,6 +18,21 @@ class NegativeResult implements Exception, CustomSerialization, ICustomSerializa
     this.stackTrace = '',
   }) : whenWasIt = whenWasIt ?? DateTime.now();
 
+  factory NegativeResult.interpret({required Map<String, dynamic> values, required bool checkTypeFlag}) {
+    if (checkTypeFlag && (!values.containsKey('\$type') || values['\$type'] is! String || !(values['\$type']! as String).startsWith('error'))) {
+      throw NegativeResult(
+        identifier: NegativeResultCodes.wrongType,
+        message: tr('Errors or negative results are invalid or do not have their type label'),
+      );
+    }
+
+    return NegativeResult(
+      message: TranslatableText.interpretFromJson(text: volatileProperty(propertyName: tr('message'), function: () => values['message']!)),
+      identifier: NegativeResultCodes.values[volatileProperty(propertyName: tr('identifier'), function: () => values['identifier']! as int)],
+      whenWasIt: DateTime.fromMillisecondsSinceEpoch(volatileProperty(propertyName: tr('whenWasIt'), function: () => values['whenWasIt']! as int), isUtc: true).toLocal(),
+    );
+  }
+
   @override
   String toString() => LanguageManager.translateText(message);
 
@@ -44,14 +59,14 @@ class NegativeResult implements Exception, CustomSerialization, ICustomSerializa
         '\$type': 'error',
         'idError': identifier.index,
         'message': message.serialize(),
-        'whenWasIt': whenWasIt.millisecondsSinceEpoch,
+        'whenWasIt': whenWasIt.toUtc().millisecondsSinceEpoch,
       };
     } else {
       return {
         '\$type': 'error',
         'idError': identifier.index,
         'message': message.serialize(),
-        'whenWasIt': whenWasIt.millisecondsSinceEpoch,
+        'whenWasIt': whenWasIt.toUtc().millisecondsSinceEpoch,
         'originalError': cause.toString(),
       };
     }
