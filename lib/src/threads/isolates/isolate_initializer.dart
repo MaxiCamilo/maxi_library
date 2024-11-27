@@ -3,7 +3,7 @@ import 'dart:developer';
 import 'dart:isolate';
 
 import 'package:maxi_library/maxi_library.dart';
-import 'package:maxi_library/src/threads/isolates/isolated_thread_client.dart';
+import 'package:maxi_library/src/threads/isolates/thread_isolator_client.dart';
 
 class _IsolateInitializerFinalized {
   final bool isCorrect;
@@ -30,7 +30,7 @@ class IsolateInitializer {
     final completer = Completer<_IsolateInitializerFinalized>();
     scheduleMicrotask(() => Isolate.spawn(_prepareThread, _IsolateInitializerContext(initializers: initializers, sender: channel.serder, threadID: threadID), debugName: name, errorsAreFatal: false));
 
-    final subscription = channel.dataReceivedNotifier.whereType<_IsolateInitializerFinalized>().listen((x) {
+    final subscription = channel.stream.whereType<_IsolateInitializerFinalized>().listen((x) {
       completer.complete(x);
     });
     final result = await completer.future;
@@ -44,37 +44,42 @@ class IsolateInitializer {
   }
 
   static Future<void> _prepareThread(_IsolateInitializerContext context) async {
-    late final ChannelIsolates channel;
-
     try {
-      channel = ChannelIsolates.createDestinationChannel(sender: context.sender, sendSender: true);
-    } catch (_) {
-      log('FATAL FAILURE! The thread connector could not be generated');
-      _autoCloseIsolate();
-      return;
-    }
+      late final ChannelIsolates channel;
 
-    final newThread = IsolatedThreadClient(channel: channel, threadID: context.threadID);
-
-    ThreadManager.instance = newThread;
-
-    try {
-      for (final init in context.initializers.toList()) {
-        await init.performInitializationInThread(newThread);
+      try {
+        channel = ChannelIsolates.createDestinationChannel(sender: context.sender, sendSender: true);
+      } catch (_) {
+        log('FATAL FAILURE! The thread connector could not be generated');
+        _autoCloseIsolate();
+        return;
       }
 
-      channel.sendObject(
-        _IsolateInitializerFinalized(error: null, isCorrect: true),
-      );
+      final newThread = ThreadIsolatorClient(serverChannel: channel, threadID: context.threadID);
+
+      ThreadManager.instance = newThread;
+
+      try {
+        for (final init in context.initializers.toList()) {
+          await init.performInitializationInThread(newThread);
+        }
+
+        channel.add(
+          _IsolateInitializerFinalized(error: null, isCorrect: true),
+        );
+      } catch (ex) {
+        containErrorLog(
+          detail: tr('[IsolateInitializer] FAILED!: The negative result could not be sent to the other isolator.'),
+          function: () => channel.add(
+            _IsolateInitializerFinalized(error: ex, isCorrect: false),
+          ),
+        );
+        newThread.closeThread();
+        return;
+      }
     } catch (ex) {
-      containErrorLog(
-        detail: tr('[IsolateInitializer] FAILED!: The negative result could not be sent to the other isolator.'),
-        function: () => channel.sendObject(
-          _IsolateInitializerFinalized(error: ex, isCorrect: false),
-        ),
-      );
-      newThread.closeThread();
-      return;
+      log('[IsolateInitializer] Fatal error starting thread: $ex');
+      _autoCloseIsolate();
     }
   }
 

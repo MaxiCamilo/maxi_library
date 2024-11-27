@@ -144,4 +144,15 @@ class ReflectedEntity<T> extends ReflectedEntityTypeTemplate {
       }
     }
   }
+
+  @override
+  List createList([Iterable? content]) {
+    final newList = reflectedClass.createListGenerator().generateEmptryObject() as List;
+
+    if (content != null) {
+      newList.addAll(content);
+    }
+
+    return newList;
+  }
 }

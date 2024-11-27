@@ -29,18 +29,15 @@ mixin ThreadManager {
     _instance = newInvoker;
   }
 
-  static Future<R> callFunctionAsAnonymous<R>({InvocationParameters parameters = InvocationParameters.emptry, required Future<R> Function(InvocationParameters para) function}) =>
-      instance.callFunctionAsAnonymous<R>(function: function, parameters: parameters);
-  static Future<Stream<R>> callStreamAsAnonymous<R>({InvocationParameters parameters = InvocationParameters.emptry, required Future<Stream<R>> Function(InvocationParameters para) function, bool cancelOnError = false}) =>
-      instance.callStreamAsAnonymous<R>(function: function, parameters: parameters, cancelOnError: cancelOnError);
+  static Future<IThreadInvokeInstance> getEntityInstance<T extends Object>() => volatileAsync(detail: tr('entity %1 was not mounted'), function: () async => (await instance.getEntityInstance<T>())!);
 
-  static Future<R> callEntityFunction<T, R>({InvocationParameters parameters = InvocationParameters.emptry, required Future<R> Function(T serv, InvocationParameters para) function}) =>
+  static Future<R> callEntityFunction<T extends Object, R>({InvocationParameters parameters = InvocationParameters.emptry, required Future<R> Function(T serv, InvocationParameters para) function}) =>
       instance.callEntityFunction<T, R>(function: function, parameters: parameters);
-  static Future<Stream<R>> callEntityStream<T, R>(
-          {InvocationParameters parameters = InvocationParameters.emptry, required Future<Stream<R>> Function(T serv, InvocationParameters para) function, bool cancelOnError = false}) =>
-      instance.callEntityStream<T, R>(function: function, parameters: parameters, cancelOnError: cancelOnError);
+  static Future<Stream<R>> callEntityStream<T extends Object, R>(
+          {InvocationParameters parameters = InvocationParameters.emptry, required FutureOr<Stream<R>> Function(T serv, InvocationParameters para) function}) =>
+      instance.callEntityStream<T, R>(function: function, parameters: parameters);
 
-  static Future<void> mountEntity<T extends Object>({required T entity, bool ifExistsOmit = true}) => instance.mountEntity<T>(entity: entity, ifExistsOmit: ifExistsOmit);
+  static Future<IThreadInvokeInstance> mountEntity<T extends Object>({required T entity, bool ifExistsOmit = true}) => instance.mountEntity<T>(entity: entity, ifExistsOmit: ifExistsOmit);
 
   static void addThreadInitializer({required IThreadInitializer initializer}) {
     if (instance is IThreadManagerServer) {
@@ -48,7 +45,7 @@ mixin ThreadManager {
     }
   }
 
-  static Future<StreamSubscription<R>> callEntityStreamDirectly<T, R>({
+  static Future<StreamSubscription<R>> callEntityStreamDirectly<T extends Object, R>({
     InvocationParameters parameters = InvocationParameters.emptry,
     required Future<Stream<R>> Function(T serv, InvocationParameters para) function,
     bool cancelOnError = false,
@@ -56,15 +53,19 @@ mixin ThreadManager {
     void Function()? onDone,
     void Function(Object error, [StackTrace? stackTrace])? onError,
   }) async =>
-      (await instance.callEntityStream<T, R>(function: function, parameters: parameters, cancelOnError: cancelOnError)).listen(
+      (await instance.callEntityStream<T, R>(function: function, parameters: parameters)).listen(
         onListen,
         onDone: onDone,
         onError: onError,
         cancelOnError: cancelOnError,
       );
 
-  Future<R> callBackgroundFunction<R>({InvocationParameters parameters = InvocationParameters.emptry, required Future<R> Function(InvocationContext para) function}) =>
+  static Future<R> callBackgroundFunction<R>({InvocationParameters parameters = InvocationParameters.emptry, required FutureOr<R> Function(InvocationContext para) function}) =>
       instance.callBackgroundFunction<R>(function: function, parameters: parameters);
 
-  static ThreadPipe<R, S> makePipe<R, S>() => instance.pipeProcessor.createExternalStream<R, S>();
+  static Future<IPipe<S, R>> createEntityPipe<T extends Object, R, S>({
+    InvocationParameters parameters = InvocationParameters.emptry,
+    required FutureOr<void> Function(T entity, InvocationContext context, IPipe<R, S> pipe) function,
+  }) =>
+      instance.createEntityPipe<T, R, S>(function: function, parameters: parameters);
 }

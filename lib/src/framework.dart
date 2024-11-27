@@ -5,6 +5,7 @@ export 'package:maxi_library/src/framework/ifunctionality.dart';
 export 'package:maxi_library/src/framework/stream_state.dart';
 export 'package:maxi_library/src/framework/ipipe.dart';
 export 'package:maxi_library/src/framework/file_operator.dart';
+export 'package:maxi_library/src/framework/ihttp_requester.dart';
 
 export 'package:maxi_library/src/framework/icondition_query.dart';
 export 'package:maxi_library/src/framework/conditions/compare_fields.dart';

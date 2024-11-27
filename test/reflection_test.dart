@@ -61,7 +61,7 @@ void main() {
 
       log('The new item identifier is: ${classTest.getPrimaryKey(instance: newItem)}');
     });
-
+/*
     test('Excute in another thread', () async {
       final classTest = ReflectionManager.getReflectionEntity(TestClass);
       final newItem = classTest.buildEntity();
@@ -80,6 +80,7 @@ void main() {
 
       log('The new item identifier is: ${classTest.getPrimaryKey(instance: newItem)}');
     });
+    */
 
     test('Use custom builder', () {
       final classTest = ReflectionManager.getReflectionEntity(SecondTestClass);

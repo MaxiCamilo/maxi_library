@@ -1,3 +1,0 @@
-class UniqueKey {
-  const UniqueKey();
-}

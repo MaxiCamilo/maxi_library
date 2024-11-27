@@ -22,6 +22,8 @@ mixin IEntityFramework {
     bool essentialKeysMustBePresent = true,
   });
 
+  List createList([Iterable? content]);
+
   List<T> interpretAslist<T>({
     required dynamic value,
     required bool tryToCorrectNames,

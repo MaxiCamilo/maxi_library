@@ -32,15 +32,8 @@ class NegativeResult implements Exception, CustomSerialization, ICustomSerializa
       whenWasIt: DateTime.fromMillisecondsSinceEpoch(volatileProperty(propertyName: tr('whenWasIt'), function: () => values['whenWasIt']! as int), isUtc: true).toLocal(),
     );
   }
-
-  @override
-  String toString() => LanguageManager.translateText(message);
-
-  void printConsole() {
-    log('[X: ${identifier.name}] $message');
-  }
-
-  static NegativeResult searchNegativity({
+  
+  factory NegativeResult.searchNegativity({
     required dynamic item,
     required TranslatableText actionDescription,
     NegativeResultCodes codeDescription = NegativeResultCodes.externalFault,
@@ -50,6 +43,13 @@ class NegativeResult implements Exception, CustomSerialization, ICustomSerializa
     } else {
       return NegativeResult(identifier: codeDescription, message: tr('The functionality %1 failed', [actionDescription]));
     }
+  }
+
+  @override
+  String toString() => LanguageManager.translateText(message);
+
+  void printConsole() {
+    log('[X: ${identifier.name}] $message');
   }
 
   @override

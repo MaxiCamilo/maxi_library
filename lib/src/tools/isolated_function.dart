@@ -1,6 +1,6 @@
 import 'package:maxi_library/maxi_library.dart';
 
-class IsolatedFunction<S, T> {
+class IsolatedFunction<S extends Object, T> {
   final Future<T> Function(S serv, InvocationParameters para) function;
 
   const IsolatedFunction({required this.function});

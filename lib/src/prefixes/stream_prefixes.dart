@@ -45,7 +45,22 @@ Future<R> waitFunctionalStream<S, R>({
 }) async {
   final completer = Completer<R>();
 
-  final subscription = stream.listen(
+  final subscription = stream.doOnCancel(() {
+    if (!completer.isCompleted) {
+      if (onDoneOrCanceled != null) {
+        onDoneOrCanceled(null);
+      }
+
+      if (R == dynamic || R.toString() == 'void') {
+        completer.complete();
+      } else {
+        completer.completeError(NegativeResult(
+          identifier: NegativeResultCodes.implementationFailure,
+          message: tr('Functional stream has not returned a result'),
+        ));
+      }
+    }
+  }).listen(
     (item) {
       if (item is StreamStateItem<S, R>) {
         onData?.call(item.item);

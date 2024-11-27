@@ -1,4 +1,5 @@
 import 'dart:collection';
+import 'dart:convert';
 
 import 'package:maxi_library/maxi_library.dart';
 import 'package:maxi_library/src/reflection/types/type_generator_reflection.dart';
@@ -173,6 +174,10 @@ class ReflectionManager with IThreadInitializer {
   }
 
   static ITypeEntityReflection getReflectionEntity(Type type) {
+    if (_lastRequestedEntity != null && _lastRequestedEntity!.type == type) {
+      return _lastRequestedEntity!;
+    }
+
     final item = getEntities().selectItem((x) => x.type == type);
     if (item == null) {
       throw NegativeResult(
@@ -181,10 +186,15 @@ class ReflectionManager with IThreadInitializer {
       );
     }
 
+    _lastRequestedEntity = item;
     return item;
   }
 
   static ITypeEntityReflection getReflectionEntityByName(String name) {
+    if (_lastRequestedEntity != null && _lastRequestedEntity!.name == name) {
+      return _lastRequestedEntity!;
+    }
+
     final item = getEntities().selectItem((x) => x.name == name);
     if (item == null) {
       throw NegativeResult(
@@ -193,6 +203,7 @@ class ReflectionManager with IThreadInitializer {
       );
     }
 
+    _lastRequestedEntity = item;
     return item;
   }
 
@@ -205,58 +216,45 @@ class ReflectionManager with IThreadInitializer {
     _instance = this;
   }
 
-  static List serializeList({required List list, bool setTypeValue = true}) {
-    final mapList = [];
-    ITypeEntityReflection? lastReflector;
-    Type? lastType;
-
-    for (final item in list) {
-      if (lastType == null || item.runtimeType != lastType) {
-        lastType = item.runtimeType;
-        lastReflector = getReflectionEntity(item.runtimeType);
-      }
-
-      final result = lastReflector!.serializeToMap(item);
-
-      if (setTypeValue && result is Map<String, dynamic>) {
-        result['\$type'] = item.runtimeType.toString();
-      }
-
-      mapList.add(result);
-    }
-
-    return mapList;
-  }
-
-  static String serializeJson({required dynamic value, bool setTypeValue = true}) {
+  static String serializeListToJson({required dynamic value, bool setTypeValue = true}) {
     if (value == null) {
       return 'null';
-    } else if (value is List) {
-      return serializeListToJson(list: value, setTypeValue: setTypeValue);
-    } else if (value is Enum) {
-      return value.index.toString();
     }
 
-    if (ReflectionUtilities.isPrimitive(value.runtimeType) != null) {
-      return ReflectionUtilities.serializeToJson(value);
+    if (value is! List) {
+      if (ReflectionUtilities.isPrimitive(value.runtimeType) != null) {
+        return value.runtimeType == String ? '["${value.toString()}"]' : '[${value.toString()}]';
+      } else {
+        return '[${getReflectionEntity(value.runtimeType).serializeToJson(value: value, setTypeValue: setTypeValue)}]';
+      }
     }
 
-    final entity = getReflectionEntity(value.runtimeType);
-    return entity.serializeToJson(value: value);
-  }
-
-  static String serializeListToJson({required List list, bool setTypeValue = true}) {
     final jsonList = <String>[];
     ITypeEntityReflection? lastReflector;
     Type? lastType;
 
-    for (final item in list) {
-      if (lastType == null || item.runtimeType != lastType) {
-        lastType = item.runtimeType;
-        lastReflector = getReflectionEntity(item.runtimeType);
-      }
+    for (final item in value) {
+      if (item is List) {
+        jsonList.add(serializeListToJson(value: item, setTypeValue: setTypeValue));
+      } else if (item is Enum || ReflectionUtilities.isPrimitive(item.runtimeType) != null) {
+        jsonList.add(ReflectionUtilities.serializeToJson(item));
+      } else if (item is ICustomSerialization) {
+        final customSer = item.serialize();
+        if (customSer is String) {
+          jsonList.add(customSer);
+        } else if (customSer is Map<String, dynamic>) {
+          jsonList.add(json.encode(customSer));
+        } else {
+          throw NegativeResult(identifier: NegativeResultCodes.wrongType, message: tr('Custom serialization returned an object of type %1, but it is not convertible to json', [customSer.runtimeType]));
+        }
+      } else {
+        if (lastType == null || item.runtimeType != lastType) {
+          lastType = item.runtimeType;
+          lastReflector = getReflectionEntity(item.runtimeType);
+        }
 
-      jsonList.add(lastReflector!.serializeToJson(value: item, setTypeValue: setTypeValue));
+        jsonList.add(lastReflector!.serializeToJson(value: item, setTypeValue: setTypeValue));
+      }
     }
 
     return '[${TextUtilities.generateCommand(list: jsonList)}]';
@@ -313,5 +311,56 @@ class ReflectionManager with IThreadInitializer {
         message: tr('It is not possible to dynamically compare type %1', [reflectedType.type]),
       );
     }
+  }
+
+  static Object tryToInterpretFromUnknownJson({required String rawJson, required bool tryToCorrectNames}) {
+    if (!rawJson.startsWith('{') || !rawJson.endsWith('}')) {
+      throw NegativeResult(identifier: NegativeResultCodes.wrongType, message: tr('The JSON Objects must be enclosed in {}'));
+    }
+
+    final mapValues = volatile(detail: tr('The value received is not a valid json object'), function: () => json.encode(rawJson) as Map<String, dynamic>);
+
+    final typeName = volatile(detail: tr('Json does not have the type signature'), function: () => mapValues['\$type']! as String);
+
+    if (typeName == 'error' || typeName.startsWith('error.')) {
+      return NegativeResult.interpret(values: mapValues, checkTypeFlag: false);
+    }
+
+    return getReflectionEntityByName(typeName).interpret(value: rawJson, tryToCorrectNames: tryToCorrectNames);
+  }
+
+  static List<Object> tryToInterpretFromUnknownJsonList({required String rawJson, required bool tryToCorrectNames}) {
+    if (!rawJson.startsWith('[') || !rawJson.endsWith(']')) {
+      throw NegativeResult(identifier: NegativeResultCodes.wrongType, message: tr('The JSON List must be enclosed in []'));
+    }
+
+    final newList = <Object>[];
+
+    final rawList = volatile(detail: tr('The value received is not a valid json object'), function: () => json.encode(rawJson) as List);
+
+    for (final value in rawList) {
+      if (value.startsWith('{') && value.endsWith('}')) {
+        newList.add(tryToInterpretFromUnknownJson(rawJson: rawJson, tryToCorrectNames: tryToCorrectNames));
+      } else if (value.startsWith('[') && value.endsWith(']')) {
+        newList.add(tryToInterpretFromUnknownJsonList(rawJson: rawJson, tryToCorrectNames: tryToCorrectNames));
+      } else {
+        newList.add(value);
+      }
+    }
+
+    if (newList.isNotEmpty) {
+      final sameType = newList.first.runtimeType;
+      if (ReflectionUtilities.isPrimitive(sameType) == null || tryGetReflectionEntity(sameType) != null) {
+        for (final item in newList) {
+          if (item.runtimeType != sameType) {
+            break;
+          }
+        }
+
+        return getReflectionEntity(sameType).createList(newList) as List<Object>;
+      }
+    }
+
+    return newList;
   }
 }

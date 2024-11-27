@@ -20,6 +20,10 @@ mixin ReflectionUtilities {
   }
 
   static String serializeToJson(dynamic value) {
+    if (value is Enum) {
+      return value.index.toString();
+    }
+
     final type = volatile(detail: tr('%1 is primitive', [value.runtimeType]), function: () => isPrimitive(value.runtimeType)!);
     return switch (type) {
       PrimitiesType.isInt => value.toString(),

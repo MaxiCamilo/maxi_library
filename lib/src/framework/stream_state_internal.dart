@@ -29,7 +29,7 @@ class StreamStateResult<S, R> implements StreamState<S, R>, ICustomSerialization
     } else if (result is ICustomSerialization) {
       serializeResult = (result as ICustomSerialization).serialize();
     } else if (result is List) {
-      serializeResult = ReflectionManager.serializeList(list: result as List);
+      serializeResult = ReflectionManager.serializeListToJson(value: result, setTypeValue: true);
     } else if (ReflectionUtilities.isPrimitive(result.runtimeType) != null) {
       serializeResult = result;
     } else {

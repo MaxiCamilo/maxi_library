@@ -101,4 +101,18 @@ extension IteratorStream<T> on Stream<T> {
 
     repeater.done.whenComplete(() => subscription.cancel());
   }
+
+  Stream<dynamic> streamEntitiesViaJson({required bool tryToCorrectName}) async* {
+    await for (final value in this) {
+      if (value is! String) {
+        continue;
+      }
+
+      if (value.startsWith('{') && value.endsWith('}')) {
+        yield ReflectionManager.tryToInterpretFromUnknownJson(rawJson: value, tryToCorrectNames: tryToCorrectName);
+      } else if (value.startsWith('[') && value.endsWith(']')) {
+        yield ReflectionManager.tryToInterpretFromUnknownJsonList(rawJson: value, tryToCorrectNames: tryToCorrectName);
+      }
+    }
+  }
 }

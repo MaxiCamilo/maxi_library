@@ -16,6 +16,8 @@ class SecondService with StartableFunctionality, ThreadService {
       function: (service, parameters) => service.passSomeText(),
     );
 
+    (await ThreadManager.instance.getEntityInstance<FirstService>())!.done.whenComplete(() => log('First service is closed in Second service'));
+
     log('First service returned $any');
   }
 
@@ -34,5 +36,21 @@ class SecondService with StartableFunctionality, ThreadService {
   Future<void> mountFirstService() async {
     await ThreadManager.mountEntity<FirstService>(entity: FirstService(isMustFail: false));
     await callFromFirstService();
+  }
+
+  Future<void> usePipe(IPipe<int, String> pipe) async {
+    pipe.add('Waiting number');
+    await for (final number in pipe.stream) {
+      if (number == 5) {
+        pipe.add('Oh no! It\'s five, that\'s bad');
+        break;
+      }
+
+      pipe.add('You sent #$number');
+      await Future.delayed(Duration(seconds: 3));
+    }
+
+    pipe.add('Good bye!');
+    pipe.close();
   }
 }

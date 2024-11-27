@@ -4,31 +4,35 @@ import 'dart:isolate';
 
 import 'package:maxi_library/maxi_library.dart';
 
-class ChannelIsolates {
+class ChannelIsolates with IPipe {
   final bool isDetination;
   final ReceivePort _receiver;
+
+  final _completerDone = Completer<ChannelIsolates>();
+  final _completerInitilizer = Completer<ChannelIsolates>();
 
   SendPort? _serder;
 
   bool _isFinalized = false;
 
   final _dataReceivedNotifier = StreamController.broadcast();
-  final _finalizationNotifier = StreamController<ChannelIsolates>.broadcast();
 
-  Stream get dataReceivedNotifier => _dataReceivedNotifier.stream;
+  @override
+  Stream get stream => _dataReceivedNotifier.stream;
 
-  Stream<ChannelIsolates> get finalizationNotifier => _finalizationNotifier.stream;
-
+  @override
   bool get isActive => !_isFinalized;
 
   SendPort get serder => _receiver.sendPort;
+
+  Future<ChannelIsolates> get wasInitialized => _completerInitilizer.future;
 
   ChannelIsolates._({required this.isDetination, required ReceivePort receiver, SendPort? serder}) : _receiver = receiver {
     _serder = serder;
 
     _receiver.listen(
       _processDataReceived,
-      onDone: closeConnection,
+      onDone: () => close(),
     );
   }
 
@@ -48,20 +52,6 @@ class ChannelIsolates {
     }
   }
 
-  void sendObject(dynamic item) {
-    _checkActivity();
-
-    try {
-      _serder!.send(item);
-    } catch (ex) {
-      throw NegativeResult(
-        identifier: NegativeResultCodes.implementationFailure,
-        message: tr('Its not possible to pass the object to the thread, because the object has some non-passable value through the channel'),
-        cause: ex,
-      );
-    }
-  }
-
   factory ChannelIsolates.createInitialChannelManually() {
     return ChannelIsolates._(isDetination: false, receiver: ReceivePort());
   }
@@ -74,7 +64,11 @@ class ChannelIsolates {
     if (sendSender) {
       sender.send(receiver.sendPort);
     }
-    return ChannelIsolates._(isDetination: true, receiver: receiver, serder: sender);
+    final channel = ChannelIsolates._(isDetination: true, receiver: receiver, serder: sender);
+
+    channel._completerInitilizer.completeIfIncomplete(channel);
+
+    return channel;
   }
 
   static Future<ChannelIsolates> createInitialChannel({required void Function(SendPort) pointerSender}) async {
@@ -83,7 +77,7 @@ class ChannelIsolates {
     final waiterSender = Completer();
 
     late final StreamSubscription subscription;
-    subscription = channel.dataReceivedNotifier.listen(
+    subscription = channel.stream.listen(
       (x) {
         if (!waiterSender.isCompleted) {
           waiterSender.complete(x);
@@ -111,6 +105,7 @@ class ChannelIsolates {
 
       if (sender is SendPort) {
         channel._serder = sender;
+        channel._completerInitilizer.completeIfIncomplete(channel);
       } else {
         throw NegativeResult(
           identifier: NegativeResultCodes.implementationFailure,
@@ -136,15 +131,11 @@ class ChannelIsolates {
     _serder = sender;
   }
 
-  void closeConnection() {
-    _isFinalized = true;
-    _receiver.close();
-  }
-
   void _processDataReceived(message) {
     if (_serder == null) {
       if (message is SendPort) {
         _serder = message;
+        _completerInitilizer.completeIfIncomplete(this);
         return;
       } else {
         log('[ChannelIsolates] DANGER!: The sender was not sent! The channel is not working yet');
@@ -152,5 +143,63 @@ class ChannelIsolates {
     }
 
     _dataReceivedNotifier.add(message);
+  }
+
+  @override
+  Future<ChannelIsolates> get done => _completerDone.future;
+
+  @override
+  void add(item) {
+    _checkActivity();
+
+    try {
+      _serder!.send(item);
+    } catch (ex) {
+      throw NegativeResult(
+        identifier: NegativeResultCodes.implementationFailure,
+        message: tr('Its not possible to pass the object to the thread, because the object has some non-passable value through the channel'),
+        cause: ex,
+      );
+    }
+  }
+
+  @override
+  void addError(Object error, [StackTrace? stackTrace]) {
+    final rn = NegativeResult.searchNegativity(item: error, actionDescription: tr('wire current'));
+    add(rn);
+  }
+
+  @override
+  Future close() async {
+    if (_isFinalized) {
+      return;
+    }
+
+    _isFinalized = true;
+    _receiver.close();
+    _completerDone.completeIfIncomplete(this);
+  }
+
+  @override
+  Future addStream(Stream stream) async {
+    if (!isActive) {
+      log('[ChannelIsolates] The pipe is closed');
+      return;
+    }
+
+    final compelteter = Completer();
+
+    final subscription = stream.listen(
+      (x) => add(x),
+      onError: (x, y) => addError(x, y),
+      onDone: () => compelteter.completeIfIncomplete(),
+    );
+
+    final future = done.whenComplete(() => compelteter.completeIfIncomplete());
+
+    await compelteter.future;
+
+    subscription.cancel();
+    future.ignore();
   }
 }

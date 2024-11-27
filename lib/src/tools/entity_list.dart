@@ -40,7 +40,7 @@ class EntityList<T> with IEntityWriter<T>, IEntityReader<T> {
   EntityList({this.splits = 500, List<T>? initList}) {
     reflector = ReflectionManager.getReflectionEntity(T);
 
-    _uniqueProperties = reflector.fields.where((x) => x.annotations.selectByType<UniqueKey>() != null).toList(growable: false);
+    _uniqueProperties = reflector.fields.where((x) => x.annotations.selectByType<UniqueProperty>() != null).toList(growable: false);
 
     checkProgrammingFailure(thatChecks: tr('Entity %1 has primary key', [T]), result: () => reflector.hasPrimaryKey);
 

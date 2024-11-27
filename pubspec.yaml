@@ -13,6 +13,7 @@ dependencies:
   http: ^1.2.2
   analyzer: ^6.7.0
   collection: ^1.18.0
+  web_socket_channel: ^3.0.1
   
   # path: ^1.8.0
 

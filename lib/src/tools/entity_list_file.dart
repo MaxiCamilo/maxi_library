@@ -69,7 +69,7 @@ class EntityListFile<T> extends EntityList<T> {
   }
 
   Future<void> updateFile() {
-    final jsonContent = ReflectionManager.serializeListToJson(list: list);
+    final jsonContent = ReflectionManager.serializeListToJson(value: list);
 
     if (jsonContent.length > maxSize) {
       throw NegativeResult(
