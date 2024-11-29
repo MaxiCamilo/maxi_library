@@ -123,7 +123,9 @@ class FakeThreadServer with IThreadInvoker, IThreadManager, IThreadManagerServer
     final id = _lastID;
     _lastID += 1;
 
-    return FakeThreadClient(serverConnection: this, threadID: id, entity: null);
+    final newClient = FakeThreadClient(serverConnection: this, threadID: id, entity: null);
+    _clients.add(newClient);
+    return newClient;
   }
 
   @override

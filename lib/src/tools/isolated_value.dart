@@ -27,7 +27,7 @@ class IsolatedValue<T extends Object> with StartableFunctionality {
   T get localValue {
     checkInitialize();
 
-    if (synchronized) {
+    if (!synchronized) {
       throw NegativeResult(
         identifier: NegativeResultCodes.contextInvalidFunctionality,
         message: tr('Isolated pointer is not synchronized'),
@@ -58,10 +58,12 @@ class IsolatedValue<T extends Object> with StartableFunctionality {
 
   Future<void> changeValue({required T item}) async {
     await initialize();
+    await Future.delayed(Duration.zero);
     await ThreadManager.callEntityFunction<SharedValuesService, void>(
       parameters: InvocationParameters.list([name, item]),
       function: (serv, para) => serv.setValue(name: para.firts<String>(), value: para.second()),
     );
+    _gettingValue = true;
     _item = item;
   }
 
@@ -71,6 +73,7 @@ class IsolatedValue<T extends Object> with StartableFunctionality {
 
     if (!_serviceInitialized) {
       await _mountService();
+      _serviceInitialized = true;
     }
 
     final subscription = await ThreadManager.callEntityStream<SharedValuesService, dynamic>(

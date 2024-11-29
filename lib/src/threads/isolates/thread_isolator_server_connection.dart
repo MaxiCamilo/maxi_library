@@ -200,6 +200,7 @@ class ThreadIsolatorServerConnection with IThreadInvoker, IThreadInvokeInstance,
     externalFunctionExecutor.close();
     externalFunctionalRequester.close();
     _doneCompleter.completeIfIncomplete(this);
+    streamManager.close();
   }
 
   @override

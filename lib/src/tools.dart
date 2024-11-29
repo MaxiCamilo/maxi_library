@@ -18,6 +18,7 @@ export 'package:maxi_library/src/tools/isolated_module_pointer.dart';
 export 'package:maxi_library/src/tools/stream_pipe.dart';
 export 'package:maxi_library/src/tools/broadcast_pipe.dart';
 export 'package:maxi_library/src/tools/converted_stream_sink.dart';
+export 'package:maxi_library/src/tools/response_http_request.dart';
 
 export 'package:maxi_library/src/tools/online_http_requester.dart';
 export 'package:maxi_library/src/tools/online_web_socket.dart';

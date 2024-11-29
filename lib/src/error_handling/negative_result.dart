@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:developer';
+import 'dart:io';
 
 import 'package:maxi_library/maxi_library.dart';
 
@@ -28,11 +29,11 @@ class NegativeResult implements Exception, CustomSerialization, ICustomSerializa
 
     return NegativeResult(
       message: TranslatableText.interpretFromJson(text: volatileProperty(propertyName: tr('message'), function: () => values['message']!)),
-      identifier: NegativeResultCodes.values[volatileProperty(propertyName: tr('identifier'), function: () => values['identifier']! as int)],
+      identifier: NegativeResultCodes.values[volatileProperty(propertyName: tr('identifier'), function: () => (values['identifier'] ?? values['idError'])! as int)],
       whenWasIt: DateTime.fromMillisecondsSinceEpoch(volatileProperty(propertyName: tr('whenWasIt'), function: () => values['whenWasIt']! as int), isUtc: true).toLocal(),
     );
   }
-  
+
   factory NegativeResult.searchNegativity({
     required dynamic item,
     required TranslatableText actionDescription,
@@ -40,8 +41,14 @@ class NegativeResult implements Exception, CustomSerialization, ICustomSerializa
   }) {
     if (item is NegativeResult) {
       return item;
+    }
+    if (item is ArgumentError) {
+      return NegativeResult(identifier: NegativeResultCodes.invalidValue, message: tr('Argument error: %1', [item.message]));
+    }
+    if (item is SocketException) {
+      return NegativeResult(identifier: NegativeResultCodes.systemFailure, message: tr('A connection error occurred, Socket error %1: %2', [item.osError?.errorCode, item.message]));
     } else {
-      return NegativeResult(identifier: codeDescription, message: tr('The functionality %1 failed', [actionDescription]));
+      return NegativeResult(identifier: codeDescription, message: tr('The functionality %1 failed: %2', [actionDescription, item.toString()]));
     }
   }
 

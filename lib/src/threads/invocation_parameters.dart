@@ -10,7 +10,7 @@ class InvocationParameters {
     return InvocationParameters(
         fixedParameters: avoidConstants ? original.fixedParameters.toList() : original.fixedParameters, namedParameters: avoidConstants ? Map<String, dynamic>.from(original.namedParameters) : original.namedParameters);
   }
-  
+
   static const InvocationParameters emptry = InvocationParameters();
 
   factory InvocationParameters.only(item) => InvocationParameters(fixedParameters: [item]);
@@ -34,6 +34,10 @@ class InvocationParameters {
   T sixth<T>() => fixed<T>(5);
 
   T seventh<T>() => fixed<T>(6);
+
+  T octave<T>() => fixed<T>(7);
+
+  T ninth<T>() => fixed<T>(8);
 
   T last<T>() => fixed<T>(fixedParameters.length - 1);
   T penultimate<T>() => fixed<T>(fixedParameters.length - 2);

@@ -199,11 +199,12 @@ class ThreadIsolatorClient with IThreadInvoker, IThreadManager, IThreadManagerCl
 
   @override
   void closeThread() {
-    Future.delayed(Duration.zero).whenComplete(() {
+    Future.delayed(Duration.zero).whenComplete(() async {
       for (final item in _connectionstList) {
         item.closeConnection();
       }
       _serverConnection.closeConnection();
+      await streamManager.close();
 
       Future.delayed(Duration(milliseconds: 20)).whenComplete(() {
         containErrorLog(
@@ -220,6 +221,8 @@ class ThreadIsolatorClient with IThreadInvoker, IThreadManager, IThreadManagerCl
     final uninitializedConnection = ThreadIsolatorClientConnection(clientMannager: this, channel: newTip, threadID: -1);
 
     _connectionstList.add(uninitializedConnection);
+    uninitializedConnection.done.then((x) => _connectionstList.remove(x));
+
     newTip.wasInitialized.then((_) => _initializeChannel(uninitializedConnection));
 
     return newTip.serder;
@@ -230,6 +233,7 @@ class ThreadIsolatorClient with IThreadInvoker, IThreadManager, IThreadManagerCl
     final newClient = ThreadIsolatorClientConnection(clientMannager: this, channel: channel, threadID: -1);
 
     _connectionstList.add(newClient);
+    newClient.done.then((x) => _connectionstList.remove(x));
 
     await _initializeChannel(newClient);
 

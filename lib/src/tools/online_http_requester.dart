@@ -19,9 +19,10 @@ class OnlineHttpRequester with IHttpRequester {
   OnlineHttpRequester({required this.defaultTimeout, this.initialUrl = ''});
 
   @override
-  Future<T> executeRequest<T>({
+  Future<ResponseHttpRequest<T>> executeRequest<T>({
     required HttpMethodType type,
     required String url,
+    bool badStatusCodeIsNegativeResult = true,
     Duration? timeout,
     Object? content,
     Map<String, String>? headers,
@@ -67,12 +68,21 @@ class OnlineHttpRequester with IHttpRequester {
       );
     }
 
+    if (badStatusCodeIsNegativeResult && response.statusCode >= 400) {
+      final error = tryToInterpretError(codeError: response.statusCode, content: response.body, url: url);
+      if (T == NegativeResult) {
+        return ResponseHttpRequest<T>(content: error as T, codeResult: response.statusCode, url: url);
+      } else {
+        throw error;
+      }
+    }
+
     if (T == Uint8List || T == List<int>) {
-      return response.bodyBytes as T;
+      return ResponseHttpRequest<T>(content: response.bodyBytes as T, codeResult: response.statusCode, url: url);
     } else if (T == String || T == dynamic) {
-      return response.body as T;
+      return ResponseHttpRequest<T>(content: response.body as T, codeResult: response.statusCode, url: url);
     } else if (T.toString() == 'void') {
-      return '' as T;
+      return ResponseHttpRequest<T>(content: '' as T, codeResult: response.statusCode, url: url);
     } else {
       throw NegativeResult(
         identifier: NegativeResultCodes.wrongType,
@@ -83,9 +93,9 @@ class OnlineHttpRequester with IHttpRequester {
 
   Uri _makeUrl(String url) {
     if (initialUrl.isEmpty) {
-      return initialUrl.last == '/' ? Uri.parse('$initialUrl$url') : Uri.parse('$initialUrl/$url');
-    } else {
       return Uri.parse(url);
+    } else {
+      return initialUrl.last == '/' ? Uri.parse('$initialUrl$url') : Uri.parse('$initialUrl/$url');
     }
   }
 

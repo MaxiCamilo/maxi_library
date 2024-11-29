@@ -7,9 +7,10 @@ enum HttpMethodType { postMethod, getMethod, deleteMethod, putMethod, anyMethod,
 mixin IHttpRequester {
   bool get isActive;
 
-  Future<T> executeRequest<T>({
+  Future<ResponseHttpRequest<T>> executeRequest<T>({
     required HttpMethodType type,
     required String url,
+    bool badStatusCodeIsNegativeResult = true,
     Duration? timeout,
     Object? content,
     Map<String, String>? headers,
@@ -22,7 +23,7 @@ mixin IHttpRequester {
     bool disableIfNoOneListens = true,
     Map<String, String>? headers,
     Encoding? encoding,
-     Duration? timeout,
+    Duration? timeout,
   });
 
   void close();
@@ -36,6 +37,7 @@ mixin IHttpRequester {
     Encoding? encoding,
     int? maxSize,
     T Function(String)? buildFunction,
+    bool badStatusCodeIsNegativeResult = true,
   }) async {
     if (buildFunction != null) {
       ReflectionManager.getReflectionEntity(T); //<--- check that it exists before executing the request
@@ -49,12 +51,13 @@ mixin IHttpRequester {
       encoding: encoding,
       headers: headers,
       maxSize: maxSize,
+      badStatusCodeIsNegativeResult: badStatusCodeIsNegativeResult,
     );
 
     if (buildFunction == null) {
-      return ReflectionManager.getReflectionEntity(T).interpretationFromJson(rawJson: result, tryToCorrectNames: true) as T;
+      return ReflectionManager.getReflectionEntity(T).interpretationFromJson(rawJson: result.content, tryToCorrectNames: true) as T;
     } else {
-      return buildFunction(result);
+      return buildFunction(result.content);
     }
   }
 
@@ -67,6 +70,7 @@ mixin IHttpRequester {
     Encoding? encoding,
     int? maxSize,
     List<T> Function(String)? buildFunction,
+    bool badStatusCodeIsNegativeResult = true,
   }) async {
     if (buildFunction != null) {
       ReflectionManager.getReflectionEntity(T); //<--- check that it exists before executing the request
@@ -80,12 +84,54 @@ mixin IHttpRequester {
       encoding: encoding,
       headers: headers,
       maxSize: maxSize,
+      badStatusCodeIsNegativeResult: badStatusCodeIsNegativeResult,
     );
 
     if (buildFunction == null) {
-      return ReflectionManager.getReflectionEntity(T).interpretJsonAslist<T>(rawText: result, tryToCorrectNames: true);
+      return ReflectionManager.getReflectionEntity(T).interpretJsonAslist<T>(rawText: result.content, tryToCorrectNames: true);
     } else {
-      return buildFunction(result);
+      return buildFunction(result.content);
     }
+  }
+
+  Future<Map<String, dynamic>> executeRequestReceivingJsonObject({
+    required HttpMethodType type,
+    required String url,
+    Duration? timeout,
+    Object? content,
+    Map<String, String>? headers,
+    Encoding? encoding,
+    int? maxSize,
+    bool badStatusCodeIsNegativeResult = true,
+  }) async {
+    final rawContent = await executeRequest<String>(
+      type: type,
+      url: url,
+      badStatusCodeIsNegativeResult: badStatusCodeIsNegativeResult,
+      content: content,
+      encoding: encoding,
+      headers: headers,
+      maxSize: maxSize,
+      timeout: timeout,
+    );
+
+    final rawJson = volatile(detail: tr('Expected return of a json object in request %1', [url]), function: () => json.decode(rawContent.content));
+    return volatile(detail: tr('Expected json object in request %1', [url]), function: () => rawJson as Map<String, dynamic>);
+  }
+
+  NegativeResult tryToInterpretError({required String content, required int codeError, required String url}) {
+    if (!content.startsWith('{') || !content.endsWith('}')) {
+      throw NegativeResult(
+        identifier: NegativeResultCodes.wrongType,
+        message: tr('The server %1 responded to a request with an error, but did not send a result in json', [url]),
+      );
+    }
+
+    final rawJson = volatile(
+      detail: tr('The server %1 responded to a request with an error, but it sent a corrupt json', [url]),
+      function: () => json.decode(content) as Map<String, dynamic>,
+    );
+
+    return NegativeResult.interpret(values: rawJson, checkTypeFlag: true);
   }
 }

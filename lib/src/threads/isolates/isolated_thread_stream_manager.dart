@@ -39,6 +39,16 @@ class IsolatedThreadStreamManager {
     });
   }
 
+  Future<void> close() async {
+    _connectedStreams.values.iterar((x) => x.close());
+    _connectedStreams.clear();
+
+    _createdStreams.values.iterar((x) => x.cancel());
+    _createdStreams.clear();
+
+    await Future.delayed(Duration.zero);
+  }
+
   Future<Stream<R>> createSharedStreamOnEntity<T extends Object, R>({
     required InvocationParameters parameters,
     required FutureOr<Stream<R>> Function(T, InvocationContext) function,

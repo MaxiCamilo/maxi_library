@@ -189,6 +189,7 @@ class ThreadIsolatorClientConnection with IThreadInvoker, IThreadInvokeInstance,
     messageProcessor.close();
     externalFunctionExecutor.close();
     externalFunctionalRequester.close();
+    streamManager.close();
     _doneCompleter.completeIfIncomplete(this);
   }
 
