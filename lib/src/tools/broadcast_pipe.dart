@@ -21,7 +21,9 @@ class BroadcastPipe<R, S> with IPipe<R, S> {
 
   BroadcastPipe({required this.closeIfNoOneListens, required this.closeConnectedPipesIfFinished});
 
-  void joinPipe(IPipe<R, S> pipe) {
+  
+
+  void connectPipe(IPipe<R, S> pipe) {
     checkProgrammingFailure(thatChecks: tr('Brodcast pipe is close'), result: () => _isActive);
     pipe.stream.listen(
       _receiver.add,
@@ -30,6 +32,21 @@ class BroadcastPipe<R, S> with IPipe<R, S> {
 
     pipe.done.whenComplete(() => _reactPipeClose(pipe));
     _otherPipes.add(pipe);
+  }
+
+  void joinStream(Stream<R> receive) {
+    final compelteter = Completer();
+
+    final subscription = stream.listen(
+      _receiver.add,
+      onError: _receiver.addError,
+      onDone: () => compelteter.completeIfIncomplete(),
+    );
+
+    Future.any([compelteter.future, done]).whenComplete(() {
+      subscription.cancel();
+      compelteter.completeIfIncomplete();
+    });
   }
 
   void _reactPipeClose(IPipe<R, S> pipe) {
@@ -42,6 +59,8 @@ class BroadcastPipe<R, S> with IPipe<R, S> {
   @override
   void add(S event) {
     checkProgrammingFailure(thatChecks: tr('Brodcast pipe is close'), result: () => _isActive);
+
+    
     for (final pipe in _otherPipes) {
       pipe.add(event);
     }

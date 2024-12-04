@@ -72,6 +72,7 @@ class FakeThreadClient with IThreadInvoker, IThreadManager, IThreadManagerClient
 
   @override
   Future<IPipe<S, R>> createPipe<R, S>({InvocationParameters parameters = InvocationParameters.emptry, required FutureOr<void> Function(InvocationContext context, IPipe<R, S> pipe) function}) async {
+    //CREO QUE ESTÁ MAL
     final internalPipe = BroadcastPipe<R, S>(closeIfNoOneListens: false, closeConnectedPipesIfFinished: true);
 
     scheduleMicrotask(() => function(InvocationContext.fromParametes(thread: this, applicant: this, parametres: parameters), internalPipe));

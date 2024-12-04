@@ -99,6 +99,13 @@ class OnlineHttpRequester with IHttpRequester {
     }
   }
 
+  Uri _makeWebSocketUrl(String url) {
+    final ws = initialUrl.startsWith('https://') || url.startsWith('https://') ? 'wss' : 'ws';
+    final completeRoute = _makeUrl(url);
+
+    return Uri.parse('$ws://${completeRoute.authority}${completeRoute.path}');
+  }
+
   Never _throwTimeout(String url) {
     throw NegativeResult(
       identifier: NegativeResultCodes.timeout,
@@ -114,7 +121,7 @@ class OnlineHttpRequester with IHttpRequester {
     Encoding? encoding,
     Duration? timeout,
   }) async {
-    final newSocket = await OnlineWebSocket.connect(url: _makeUrl(url), disableIfNoOneListens: disableIfNoOneListens, timeout: timeout ?? defaultTimeout);
+    final newSocket = await OnlineWebSocket.connect(url: _makeWebSocketUrl(url), disableIfNoOneListens: disableIfNoOneListens, timeout: timeout ?? defaultTimeout);
     activePipes.add(newSocket);
     return newSocket;
   }

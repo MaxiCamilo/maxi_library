@@ -31,7 +31,7 @@ mixin ThreadManager {
 
   static Future<IThreadInvokeInstance> getEntityInstance<T extends Object>() => volatileAsync(detail: tr('entity %1 was not mounted'), function: () async => (await instance.getEntityInstance<T>())!);
 
-  static Future<R> callEntityFunction<T extends Object, R>({InvocationParameters parameters = InvocationParameters.emptry, required Future<R> Function(T serv, InvocationParameters para) function}) =>
+  static Future<R> callEntityFunction<T extends Object, R>({InvocationParameters parameters = InvocationParameters.emptry, required FutureOr<R> Function(T serv, InvocationParameters para) function}) =>
       instance.callEntityFunction<T, R>(function: function, parameters: parameters);
   static Future<Stream<R>> callEntityStream<T extends Object, R>(
           {InvocationParameters parameters = InvocationParameters.emptry, required FutureOr<Stream<R>> Function(T serv, InvocationParameters para) function}) =>

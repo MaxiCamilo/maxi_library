@@ -3,12 +3,14 @@ import 'dart:async';
 import 'package:maxi_library/maxi_library.dart';
 
 class Semaphore {
-  final _waitingList = <(Completer, Future Function())>[];
-  final _waitingStreamList = <(StreamController, Future<Stream> Function())>[];
+  final _waitingList = <(Completer, FutureOr Function())>[];
+  final _waitingStreamList = <(StreamController, FutureOr<Stream> Function())>[];
+
+  bool get isActive => _isActive;
 
   bool _isActive = false;
 
-  Future<T> execute<T>({required Future<T> Function() function}) {
+  Future<T> execute<T>({required FutureOr<T> Function() function}) {
     final waiter = Completer<T>();
     _waitingList.add((waiter, function));
 
@@ -20,7 +22,7 @@ class Semaphore {
     return waiter.future;
   }
 
-  Stream<T> executeStream<T>({required Future<Stream<T>> Function() function}) {
+  Stream<T> executeStream<T>({required FutureOr<Stream<T>> Function() function}) {
     final controller = StreamController<T>();
     _waitingStreamList.add((controller, function));
 
