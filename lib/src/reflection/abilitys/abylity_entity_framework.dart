@@ -100,6 +100,7 @@ mixin AbylityEntityFramework on ITypeClassReflection, IEntityFramework {
     bool primaryKeyMustBePresent = true,
     bool essentialKeysMustBePresent = true,
   }) {
+    initialized();
     if (enableCustomInterpretation && _customInterpretation != null) {
       return _customInterpretation.performInterpretation(value: value, declaration: this);
     }

@@ -49,24 +49,7 @@ class TranslatableText with ICustomSerialization {
 
   @override
   String toString() {
-    if (isFixed) {
-      return message;
-    }
-
-    String formated = message;
-
-    for (int i = 0; i < textParts.length; i++) {
-      final part = textParts[i];
-      late final String textGenerated;
-      if (part is TranslatableText) {
-        textGenerated = LanguageManager.translateText(part);
-      } else {
-        textGenerated = part.toString();
-      }
-
-      formated = formated.replaceAll('%${i + 1}', textGenerated);
-    }
-    return formated;
+    return LanguageManager.translateText(this);
   }
 
   @override
@@ -93,6 +76,7 @@ class TranslatableText with ICustomSerialization {
 
   @override
   int get hashCode => Object.hash(
+        runtimeType.toString(),
         tokenId,
         message,
         _getListPart(0),
@@ -118,7 +102,7 @@ class TranslatableText with ICustomSerialization {
 
   @override
   bool operator ==(Object other) {
-    if (other is! TranslatableText) {
+    if (other is! TranslatableText || other.runtimeType != runtimeType) {
       return false;
     }
 

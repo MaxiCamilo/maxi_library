@@ -128,8 +128,8 @@ class ThreadIsolatorServer with IThreadInvoker, IThreadManager, IThreadManagerSe
     final id = _lasiId;
     _lasiId += 1;
 
-    final channel = await creator.mountIsolate(name: name, threadID: id);
-    final newConntection = ThreadIsolatorServerConnection(channel: channel, server: this, threadID: id, entityTye: null);
+    final (isolate, channel) = await creator.mountIsolate(name: name, threadID: id);
+    final newConntection = ThreadIsolatorServerConnection(channel: channel, server: this, threadID: id, entityTye: null, isolate: isolate);
 
     newConntection.done.then(_closeConnection);
 
@@ -192,5 +192,25 @@ class ThreadIsolatorServer with IThreadInvoker, IThreadManager, IThreadManagerSe
   Future<IPipe<S, R>> createPipe<R, S>({InvocationParameters parameters = InvocationParameters.emptry, required FutureOr<void> Function(InvocationContext, IPipe<R, S>) function}) async {
     final pipe = FakePipe<R, S>();
     return pipe.callFunction(parameters: InvocationContext.fromParametes(thread: this, applicant: this, parametres: parameters), function: function);
+  }
+
+  @override
+  Future<void> closeAllThread() async {
+    for (final item in _clientList) {
+      item.requestEndOfThread();
+    }
+
+    _lasiId = 1;
+  }
+
+  @override
+  void killAllThread() {
+    for (final item in _clientList) {
+      item.killIsolates();
+    }
+
+    _clientList.clear();
+
+    _lasiId = 1;
   }
 }

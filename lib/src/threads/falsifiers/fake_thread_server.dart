@@ -164,4 +164,20 @@ class FakeThreadServer with IThreadInvoker, IThreadManager, IThreadManagerServer
 
     return result;
   }
+
+  @override
+  Future<void> closeAllThread() async {
+    for (final item in _clients) {
+      item.requestEndOfThread();
+    }
+    _clients.clear();
+  }
+
+  @override
+  void killAllThread() {
+    for (final item in _clients) {
+      item.requestEndOfThread();
+    }
+    _clients.clear();
+  }
 }

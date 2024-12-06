@@ -12,14 +12,38 @@ class LanguageOperatorBasic with IOperatorLanguage {
   @override
   Stream get notifyLanguageChange => _streamController.stream;
 
-  
   @override
   Future<void> changeLanguage(String newPrefixLanguage) async {
     log('[LanguageOperatorBasic] WARNING! A language operator has not been assigned, so only English text will be displayed');
   }
 
   @override
+  String translateString(String text) {
+    return text;
+  }
+
+  @override
   String translateText(TranslatableText text) {
-    return text.toString();
+    String formated = LanguageManager.translateString(text.message);
+
+    if (text.isFixed) {
+      return formated;
+    }
+
+    for (int i = 0; i < text.textParts.length; i++) {
+      final part = text.textParts[i];
+      late final String textGenerated;
+      if (part is AlreadyTranslatedText) {
+        textGenerated = part.toString();
+      }
+      if (part is TranslatableText) {
+        textGenerated = translateText(part);
+      } else {
+        textGenerated = part.toString();
+      }
+
+      formated = formated.replaceAll('%${i + 1}', textGenerated);
+    }
+    return formated;
   }
 }

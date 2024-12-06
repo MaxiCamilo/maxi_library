@@ -3,7 +3,11 @@ import 'package:maxi_library/maxi_library.dart';
 mixin IThreadManagerServer on IThreadInvoker, IThreadManager {
   void addThreadInitializer({required IThreadInitializer initializer});
 
-  Future<IThreadInvokeInstance> makeNewThread({required List<IThreadInitializer> initializers, required String name });
+  Future<IThreadInvokeInstance> makeNewThread({required List<IThreadInitializer> initializers, required String name});
+
+  void closeAllThread();
+
+  void killAllThread();
 
   //Future<dynamic> getRawConnectionAccordingToEntity<T>();
 

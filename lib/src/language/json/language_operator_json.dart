@@ -45,4 +45,10 @@ class LanguageOperatorJson with StartableFunctionality, IOperatorLanguage {
       return text.toString();
     }
   }
+  
+  @override
+  String translateString(String text) {
+    // TODO: implement translateString
+    throw UnimplementedError();
+  }
 }

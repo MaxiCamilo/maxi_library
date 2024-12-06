@@ -25,10 +25,14 @@ class IsolateInitializer {
 
   const IsolateInitializer({required this.initializers});
 
-  Future<ChannelIsolates> mountIsolate({required String name, required int threadID}) async {
+  Future<(Isolate, ChannelIsolates)> mountIsolate({required String name, required int threadID}) async {
     final channel = ChannelIsolates.createInitialChannelManually();
     final completer = Completer<_IsolateInitializerFinalized>();
-    scheduleMicrotask(() => Isolate.spawn(_prepareThread, _IsolateInitializerContext(initializers: initializers, sender: channel.serder, threadID: threadID), debugName: name, errorsAreFatal: false));
+    late final Isolate isolate;
+
+    scheduleMicrotask(() async {
+      isolate = await Isolate.spawn(_prepareThread, _IsolateInitializerContext(initializers: initializers, sender: channel.serder, threadID: threadID), debugName: name, errorsAreFatal: false);
+    });
 
     final subscription = channel.stream.whereType<_IsolateInitializerFinalized>().listen((x) {
       completer.complete(x);
@@ -40,7 +44,7 @@ class IsolateInitializer {
       throw result.error;
     }
 
-    return channel;
+    return (isolate, channel);
   }
 
   static Future<void> _prepareThread(_IsolateInitializerContext context) async {

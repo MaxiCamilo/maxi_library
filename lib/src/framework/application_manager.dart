@@ -47,4 +47,6 @@ mixin IApplicationManager on StartableFunctionality, IThreadInitializer {
 
     DirectoryUtilities.changeFixedCurrentPatch(await getCurrentDirectory());
   }
+
+  void closeAllThreads();
 }

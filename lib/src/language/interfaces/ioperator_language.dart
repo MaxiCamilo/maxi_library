@@ -5,6 +5,8 @@ mixin IOperatorLanguage {
 
   String translateText(TranslatableText text);
 
+  String translateString(String text);
+
   Future<void> changeLanguage(String newPrefixLanguage);
 
   Stream get notifyLanguageChange;

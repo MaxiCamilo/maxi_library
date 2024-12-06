@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:maxi_library/maxi_library.dart';
 import 'package:meta/meta.dart';
 
@@ -21,6 +23,15 @@ mixin StartableFunctionality {
   T checkFirstIfInitialized<T>(T Function() function) {
     checkInitialize();
     return function();
+  }
+
+  Future<T> executeWhenInitialized<T>(FutureOr<T> Function() function) async {
+    if (isInitialized) {
+      return await function();
+    }
+
+    await initialize();
+    return await function();
   }
 
   Future<void> initialize() async {

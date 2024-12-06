@@ -257,4 +257,14 @@ mixin ConverterUtilities {
         );
     }
   }
+
+  static dynamic interpretJson({required String text, TranslatableText? extra}) {
+    return volatile(detail: extra == null ? tr('The content is not valid json') : tr('The content is not valid json %1', [extra]), function: () => json.decode(text));
+  }
+
+  static Map<String, dynamic> interpretToObjectJson({required String text, TranslatableText? extra}) {
+    return volatile(
+        detail: extra == null ? tr('Expected a json object, but received a json listing or value') : tr('Expected a json object, but received a json listing or value %1', [extra]),
+        function: () => interpretJson(text: text, extra: extra) as Map<String, dynamic>);
+  }
 }

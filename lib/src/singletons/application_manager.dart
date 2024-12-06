@@ -11,7 +11,7 @@ mixin ApplicationManager {
     return _instance!;
   }
 
-  static Future<void> changeInstance({required IApplicationManager newInstance, required bool initialize}) async {
+  static Future<T> changeInstance<T extends IApplicationManager>({required T newInstance, required bool initialize}) async {
     if (_instance != null) {
       throw NegativeResult(identifier: NegativeResultCodes.contextInvalidFunctionality, message: tr('An application operator has already been initialized'));
     }
@@ -28,5 +28,7 @@ mixin ApplicationManager {
     if (initialize) {
       await newInstance.initialize();
     }
+
+    return _instance as T;
   }
 }

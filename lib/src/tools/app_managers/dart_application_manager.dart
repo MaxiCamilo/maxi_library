@@ -81,4 +81,13 @@ class DartApplicationManager with StartableFunctionality, IThreadInitializer, IA
   IFileOperator makeFileOperator({required String address, required bool isLocal}) {
     return FileOperatorNative(isLocal: isLocal, rawRoute: address);
   }
+
+  @override
+  void closeAllThreads() {
+    if (ThreadManager.instance is IThreadManagerServer) {
+       (ThreadManager.instance as IThreadManagerServer).closeAllThread();
+    } else {
+       ThreadManager.instance.callFunctionOnTheServer(function: (x) => (ThreadManager.instance as IThreadManagerServer).closeAllThread());
+    }
+  }
 }

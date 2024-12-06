@@ -15,6 +15,7 @@ import 'package:maxi_library/src/threads/standars/thread_messages_processor.dart
 class ThreadIsolatorServerConnection with IThreadInvoker, IThreadInvokeInstance, IThreadIsolador {
   final ThreadIsolatorServer server;
   final ChannelIsolates channel;
+  final Isolate isolate;
 
   final _doneCompleter = Completer<IThreadInvokeInstance>();
 
@@ -42,7 +43,7 @@ class ThreadIsolatorServerConnection with IThreadInvoker, IThreadInvokeInstance,
   @override
   Future<IThreadInvokeInstance> get done => _doneCompleter.future;
 
-  ThreadIsolatorServerConnection({required this.server, required this.channel, required this.threadID, Type? entityTye}) {
+  ThreadIsolatorServerConnection({required this.server, required this.channel, required this.isolate, required this.threadID, Type? entityTye}) {
     _entityType = entityTye;
 
     channel.done.whenComplete(closeConnection);
@@ -218,5 +219,11 @@ class ThreadIsolatorServerConnection with IThreadInvoker, IThreadInvokeInstance,
   @override
   Future<IPipe<S, R>> createPipe<R, S>({InvocationParameters parameters = InvocationParameters.emptry, required FutureOr<void> Function(InvocationContext p1, IPipe<R, S> p2) function}) {
     return server.pipelineManager.createPipeline(parameters: parameters, function: function, sender: this);
+  }
+
+  
+  void killIsolates() {
+    isolate.kill(priority: Isolate.immediate);
+    scheduleMicrotask(()=> declareClosed());
   }
 }

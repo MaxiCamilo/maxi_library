@@ -10,3 +10,4 @@ export 'package:maxi_library/src/language/translators/translator_via_ollama.dart
 export 'package:maxi_library/src/language/builders/translated_text_builder_json.dart';
 
 export 'package:maxi_library/src/language/automatic_translation_generator.dart';
+export 'package:maxi_library/src/language/already_translated_text.dart';

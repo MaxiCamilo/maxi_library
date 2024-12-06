@@ -5,6 +5,8 @@ class PointerDefineAfter<T> {
 
   T? _item;
 
+  bool get defined => _item != null;
+
   PointerDefineAfter({this.onlyDefinedOnce = true});
 
   T get value {
