@@ -149,7 +149,7 @@ class ThreadIsolatorServer with IThreadInvoker, IThreadManager, IThreadManagerSe
       }
     }
 
-    final name = entity is ThreadService ? entity.serviceName : entity.runtimeType.toString();
+    final name = entity is IThreadService ? entity.serviceName : entity.runtimeType.toString();
     final newConntection = await makeNewThread(initializers: [], name: name);
     newConntection.changeEntityType(T);
 

@@ -4,7 +4,7 @@ import 'package:maxi_library/maxi_library.dart';
 
 import 'first_service.dart';
 
-class SecondService with StartableFunctionality, ThreadService {
+class SecondService with StartableFunctionality, IThreadService {
   @override
   Future<void> initializeFunctionality() async {}
 

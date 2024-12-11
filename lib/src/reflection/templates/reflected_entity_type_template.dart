@@ -534,4 +534,57 @@ abstract class ReflectedEntityTypeTemplate with IReflectionType, IDeclarationRef
 
     return true;
   }
+
+  @override
+  int generateHashCode({required dynamic item, required bool addName}) {
+    final readableFields = fields.where((x) => !x.onlyRead).toList(growable: false);
+
+    checkProgrammingFailure(thatChecks: tr('Class %1 has at least one readable field'), result: () => readableFields.isNotEmpty);
+
+    final values = fields.map((x) {
+      final value = x.getValue(instance: item);
+      if (ReflectionUtilities.isPrimitive(value.runtimeType) != null) {
+        return value.hashCode;
+      }
+
+      final isEntity = ReflectionManager.tryGetReflectionEntity(value.runtimeType);
+      if (isEntity != null) {
+        return isEntity.generateHashCode(item: value, addName: addName);
+      }
+
+      if (value is List) {
+        if (value.isEmpty) {
+          return 0;
+        }
+        final listSubValue = <int>[];
+        for (final subValue in value) {
+          final isEntity = ReflectionManager.tryGetReflectionEntity(subValue);
+          if (isEntity == null) {
+            return subValue.hashCode;
+          } else {
+            return isEntity.generateHashCode(item: subValue, addName: addName);
+          }
+        }
+
+        return Object.hashAll(listSubValue);
+      }
+
+      return value.hashCode;
+    }).toList();
+
+    if (addName) {
+      values.add(name.hashCode);
+    }
+
+    return Object.hashAll(values);
+  }
+/*
+  static dynamic _getValueFieldByPosition({required dynamic item, required int position, required List<IFieldReflection> readableFields}) {
+    if (position >= readableFields.length) {
+      return null;
+    }
+
+    return readableFields[position].getValue(instance: item);
+  }
+  */
 }

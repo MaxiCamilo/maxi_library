@@ -5,7 +5,7 @@ import 'package:maxi_library/maxi_library.dart';
 
 import 'second_service.dart';
 
-class FirstService with StartableFunctionality, ThreadService {
+class FirstService with StartableFunctionality,   IThreadService {
   final bool isMustFail;
 
   FirstService({required this.isMustFail});

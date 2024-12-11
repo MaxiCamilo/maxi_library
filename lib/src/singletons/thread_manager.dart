@@ -47,7 +47,7 @@ mixin ThreadManager {
 
   static Future<StreamSubscription<R>> callEntityStreamDirectly<T extends Object, R>({
     InvocationParameters parameters = InvocationParameters.emptry,
-    required Future<Stream<R>> Function(T serv, InvocationParameters para) function,
+    required FutureOr<Stream<R>> Function(T serv, InvocationParameters para) function,
     bool cancelOnError = false,
     void Function(R)? onListen,
     void Function()? onDone,

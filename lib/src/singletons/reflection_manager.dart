@@ -173,6 +173,14 @@ class ReflectionManager with IThreadInitializer {
     instance._entities.addAll(entities);
   }
 
+  static ITypeEntityReflection? tryGetReflectionEntity(Type type) {
+    if (_lastRequestedEntity != null && _lastRequestedEntity!.type == type) {
+      return _lastRequestedEntity!;
+    }
+
+    return getEntities().selectItem((x) => x.type == type);
+  }
+
   static ITypeEntityReflection getReflectionEntity(Type type) {
     if (_lastRequestedEntity != null && _lastRequestedEntity!.type == type) {
       return _lastRequestedEntity!;
@@ -207,8 +215,15 @@ class ReflectionManager with IThreadInitializer {
     return item;
   }
 
-  static ITypeEntityReflection? tryGetReflectionEntity(Type type) {
-    return instance._entities.selectItem((x) => x.type == type);
+  static bool compareByReflectedHashCode(Object first, Object second, [bool includeName = false]) {
+    final reflectedFirst = getReflectionEntity(first.runtimeType);
+    if (!reflectedFirst.isCompatible(second)) {
+      return false;
+    }
+
+    final reflectedSecond = getReflectionEntity(second.runtimeType);
+
+    return reflectedFirst.generateHashCode(item: first, addName: includeName) == reflectedSecond.generateHashCode(item: second, addName: includeName);
   }
 
   @override

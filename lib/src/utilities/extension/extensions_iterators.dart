@@ -36,6 +36,16 @@ extension IteratorExtension<T> on Iterable<T> {
     return null;
   }
 
+  T selectRequiredItem(bool Function(T x) funcion, [TranslatableText? errorText]) {
+    for (final item in this) {
+      if (funcion(item)) {
+        return item;
+      }
+    }
+
+    throw NegativeResult(identifier: NegativeResultCodes.nonExistent, message: errorText ?? tr('The item does not exists'));
+  }
+
   Future<T?> selectItemAsync(Future<bool> Function(T x) funcion) async {
     for (final item in this) {
       if (await funcion(item)) {

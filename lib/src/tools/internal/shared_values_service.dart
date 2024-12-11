@@ -3,7 +3,7 @@ import 'dart:collection';
 
 import 'package:maxi_library/maxi_library.dart';
 
-class SharedValuesService with StartableFunctionality, ThreadService {
+class SharedValuesService with StartableFunctionality, IThreadService {
   @override
   String get serviceName => 'Shared Values';
 

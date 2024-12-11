@@ -17,6 +17,8 @@ mixin ITypeClassReflection on IReflectionType, IDeclarationReflector {
 
   bool get isAbstract;
 
+  int generateHashCode({required dynamic item, required bool addName});
+
   bool areSame({required dynamic first, required dynamic second});
 
   dynamic buildEntity({
