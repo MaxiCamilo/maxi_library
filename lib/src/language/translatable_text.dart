@@ -3,6 +3,8 @@ import 'dart:convert';
 import 'package:maxi_library/maxi_library.dart';
 
 class TranslatableText with ICustomSerialization {
+  static const empty = AlreadyTranslatedText(message: '');
+
   final String tokenId;
   final String message;
   final List textParts;
@@ -10,8 +12,6 @@ class TranslatableText with ICustomSerialization {
   bool get isFixed => textParts.isEmpty;
   bool get isNotEmpty => message.isNotEmpty;
   bool get isEmpty => message.isEmpty;
-
-  static const TranslatableText empty = TranslatableText(message: '');
 
   const TranslatableText({required this.message, this.tokenId = '', this.textParts = const []});
 
@@ -55,7 +55,6 @@ class TranslatableText with ICustomSerialization {
   @override
   Map<String, dynamic> serialize() {
     final list = [];
-
     for (final item in textParts) {
       if (item is TranslatableText) {
         list.add(item.serialize());
@@ -98,7 +97,7 @@ class TranslatableText with ICustomSerialization {
         _getListPart(16),
       );
 
-  Object? _getListPart(int i) => textParts.length >= i ? null : textParts[i].hashCode;
+  Object? _getListPart(int i) => textParts.length <= i ? 0 : textParts[i].hashCode;
 
   @override
   bool operator ==(Object other) {

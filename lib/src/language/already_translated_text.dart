@@ -1,7 +1,7 @@
 import 'package:maxi_library/maxi_library.dart';
 
 class AlreadyTranslatedText extends TranslatableText {
-  AlreadyTranslatedText({required super.message, super.textParts, super.tokenId});
+  const AlreadyTranslatedText({required super.message, super.textParts, super.tokenId});
 
   factory AlreadyTranslatedText.translate({required TranslatableText text}) {
     return AlreadyTranslatedText(message: text.toString());

@@ -8,6 +8,7 @@ StreamState<S, R> checkStreamState<S, R>() => const StreamCheckActive();
 StreamState<S, R> partialError<S, R>(ex) => StreamStatePartialError(partialError: partialError);
 StreamState<S, R> streamResult<S, R>(R result) => StreamStateResult(result: result);
 StreamState<TranslatableText, R> streamTextStatus<R>(String part, [List parts = const []]) => StreamStateItem(item: tr(part, parts));
+StreamState<TranslatableText, R> streamTranslateText<R>(TranslatableText text) => StreamStateItem(item: text);
 
 Stream<StreamState<S, R>> connectFunctionalStream<S, R, SR>(Stream<StreamState<S, SR>> other, [void Function(SR x)? sendResult]) async* {
   late final SR result;
@@ -51,7 +52,7 @@ Future<R> waitFunctionalStream<S, R>({
         onDoneOrCanceled(null);
       }
 
-      if (R == dynamic || R.toString() == 'void') {
+      if (R == dynamic || R.toString() == 'void' || R.toString() == 'Null') {
         completer.complete();
       } else {
         completer.completeError(NegativeResult(
@@ -82,7 +83,7 @@ Future<R> waitFunctionalStream<S, R>({
       }
 
       if (!completer.isCompleted) {
-        if (R == dynamic || R.toString() == 'void') {
+        if (R == dynamic || R.toString() == 'void' || R.toString() == 'Null') {
           completer.complete();
         } else {
           completer.completeError(NegativeResult(

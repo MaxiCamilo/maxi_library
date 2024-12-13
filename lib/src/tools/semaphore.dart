@@ -34,7 +34,7 @@ class Semaphore {
     return controller.stream;
   }
 
-  Future<T?> executeIfStopped<T>({required Future<T> Function() function}) async {
+  Future<T?> executeIfStopped<T>({required FutureOr<T> Function() function}) async {
     if (!_isActive) {
       return await execute(function: function);
     } else {
