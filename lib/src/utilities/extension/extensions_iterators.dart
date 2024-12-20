@@ -92,8 +92,16 @@ extension IteratorExtension<T> on Iterable<T> {
       return 0;
     }
 
-    final dio = reduce((curr, next) => funcion(curr) > funcion(next) ? curr : next);
-    return funcion(dio);
+    int max = 0;
+
+    for (final candidate in this) {
+      final result = funcion(candidate);
+      if (result > max) {
+        max = result;
+      }
+    }
+
+    return max;
   }
 
   int minimumOfIdentifier(int Function(T x) funcion) {
@@ -101,8 +109,18 @@ extension IteratorExtension<T> on Iterable<T> {
       return 0;
     }
 
-    final dio = reduce((curr, next) => funcion(curr) < funcion(next) ? curr : next);
-    return funcion(dio);
+    int? min;
+
+    for (final candidate in this) {
+      final result = funcion(candidate);
+      if (min == null) {
+        min = result;
+      } else if (result < min) {
+        min = result;
+      }
+    }
+
+    return min ?? 0;
   }
 
   T minimumOf(num Function(T x) funcion) {
@@ -208,6 +226,18 @@ extension IteratorExtension<T> on Iterable<T> {
   List<T> orderByIdentifier() => ReflectionManager.orderListByIdentifier<T>(list: this);
 
   Map<int, T> mapByIdentifier() => ReflectionManager.mapByIdentifier(list: this).cast<int, T>();
+
+  Iterable<R> mapWithPosition<R>(R Function(T e, int i) toElement) {
+    final list = <R>[];
+
+    int i = 0;
+    for (final item in this) {
+      list.add(toElement(item, i));
+      i += 1;
+    }
+
+    return list;
+  }
 }
 
 extension MapEntryListExtension<T, R> on Iterable<MapEntry<T, R>> {
@@ -215,6 +245,26 @@ extension MapEntryListExtension<T, R> on Iterable<MapEntry<T, R>> {
 }
 
 extension ListrExtension<T> on List<T> {
+  List<T> extractFrom(int from, [int? amount]) {
+    if (isEmpty || from >= length) {
+      return [];
+    }
+
+    final lista = <T>[];
+    amount ??= length - from;
+    int va = 0;
+
+    for (int i = from; i < length; i++) {
+      if (va >= amount) {
+        break;
+      }
+
+      lista.add(this[i]);
+      va = va + 1;
+    }
+    return lista;
+  }
+
   bool startWith({required Iterable<T> compare, int from = 0}) {
     if (isEmpty) {
       return false;

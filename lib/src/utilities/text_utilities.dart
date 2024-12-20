@@ -130,4 +130,70 @@ mixin TextUtilities {
 
     return camelCase;
   }
+
+  static String formatDate(
+    DateTime date, {
+    bool putWeekNames = true,
+    bool useShortNames = true,
+    bool putDateNames = true,
+    bool putYears = true,
+    bool putTime = true,
+    bool putSeconds = true,
+    String dateSeparator = '/',
+    String timeSeparator = ':',
+  }) {
+    final buffer = StringBuffer();
+
+    if (date.isUtc) {
+      date = date.toLocal();
+    }
+    //Monday Tuesday Wednesday Thursday Friday Saturday Sunday
+    if (putDateNames) {
+      if (putWeekNames) {
+        switch (date.weekday) {
+          case DateTime.monday:
+            buffer.write(useShortNames ? tr('Mon') : tr('Monday'));
+            break;
+          case DateTime.tuesday:
+            buffer.write(useShortNames ? tr('Tue') : tr('Tuesday'));
+            break;
+          case DateTime.wednesday:
+            buffer.write(useShortNames ? tr('Wed') : tr('Wednesday'));
+            break;
+          case DateTime.thursday:
+            buffer.write(useShortNames ? tr('Thu') : tr('Thursday'));
+            break;
+          case DateTime.friday:
+            buffer.write(useShortNames ? tr('Fri') : tr('Friday'));
+            break;
+          case DateTime.saturday:
+            buffer.write(useShortNames ? tr('Sat') : tr('Saturday'));
+            break;
+          case DateTime.sunday:
+            buffer.write(useShortNames ? tr('Sun') : tr('Sunday'));
+            break;
+        }
+
+        buffer.write(' ');
+      }
+
+      buffer.write('${zeroFill(value: date.day, quantityZeros: 2)}$dateSeparator${zeroFill(value: date.month, quantityZeros: 2)}');
+      if (putYears) {
+        buffer.write('$dateSeparator${date.year}');
+      }
+
+      if (putTime) {
+        buffer.write(' ');
+      }
+    }
+
+    if (putTime) {
+      buffer.write('${zeroFill(value: date.hour, quantityZeros: 2)}$timeSeparator${zeroFill(value: date.minute, quantityZeros: 2)}');
+      if (putSeconds) {
+        buffer.write('$timeSeparator${zeroFill(value: date.second, quantityZeros: 2)}');
+      }
+    }
+
+    return buffer.toString();
+  }
 }

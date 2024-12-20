@@ -10,6 +10,7 @@ class Semaphore {
 
   bool _isActive = false;
 
+
   Future<T> execute<T>({required FutureOr<T> Function() function}) {
     final waiter = Completer<T>();
     _waitingList.add((waiter, function));
@@ -41,6 +42,7 @@ class Semaphore {
       return null;
     }
   }
+
 
   void cancel() {
     _waitingList.iterar((x) => x.$1.completeErrorIfIncomplete(NegativeResult(identifier: NegativeResultCodes.functionalityCancelled, message: tr('The task was canceled'))));

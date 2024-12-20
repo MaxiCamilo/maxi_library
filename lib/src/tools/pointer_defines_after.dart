@@ -37,4 +37,15 @@ class PointerDefineAfter<T> {
 
     _item = item;
   }
+
+  void dispose() {
+    if (_item != null) {
+      /*
+      try {
+        (_item as dynamic).dispose();
+      } catch (_) {}
+      */
+      _item = null;
+    }
+  }
 }
