@@ -26,6 +26,12 @@ class QueuingSemaphore<T> {
     return _waiter!.future;
   }
 
+  void executeIfNotActive() async {
+    if (!isActive) {
+      execute();
+    }
+  }
+
   Future<T> reExecute() async {
     if (!isActive) {
       return execute();

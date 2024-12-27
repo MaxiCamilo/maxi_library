@@ -231,6 +231,12 @@ class ReflectionManager with IThreadInitializer {
     _instance = this;
   }
 
+  static String serialzeEntityToJson({required dynamic value, bool setTypeValue = true}) {
+    checkProgrammingFailure(thatChecks: tr('Value must not be  null'), result: () => value != null);
+    final valueOperator = getReflectionEntity(value.runtimeType);
+    return valueOperator.serializeToJson(value: value, setTypeValue: setTypeValue);
+  }
+
   static String serializeListToJson({required dynamic value, bool setTypeValue = true}) {
     if (value == null) {
       return 'null';
@@ -297,8 +303,12 @@ class ReflectionManager with IThreadInitializer {
     return map;
   }
 
-  static List<T> orderListByIdentifier<T>({required Iterable<T> list}) {
-    return mapByIdentifier(list: list).values.cast<T>().toList();
+  static List<T> orderListByIdentifier<T>({required Iterable<T> list, bool reverse = false}) {
+    if (reverse) {
+      return mapByIdentifier(list: list).values.cast<T>().toList().reversed.toList();
+    } else {
+      return mapByIdentifier(list: list).values.cast<T>().toList();
+    }
   }
 
   static bool areSame({required dynamic first, required dynamic second, List annotations = const []}) {

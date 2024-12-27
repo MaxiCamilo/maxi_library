@@ -223,7 +223,7 @@ extension IteratorExtension<T> on Iterable<T> {
     }
   }
 
-  List<T> orderByIdentifier() => ReflectionManager.orderListByIdentifier<T>(list: this);
+  List<T> orderByIdentifier({bool reverse = false}) => ReflectionManager.orderListByIdentifier<T>(list: this, reverse: reverse);
 
   Map<int, T> mapByIdentifier() => ReflectionManager.mapByIdentifier(list: this).cast<int, T>();
 
