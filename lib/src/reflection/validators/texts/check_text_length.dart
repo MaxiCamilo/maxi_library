@@ -15,14 +15,15 @@ class CheckTextLength extends ValueValidator {
   });
 
   @override
-  String get formalName => tr('Length of the text').toString();
+  TranslatableText get formalName => const TranslatableText(message: 'Length of the text');
 
   @override
-  NegativeResult? performValidation({required String name, required item, required parentEntity}) {
+  NegativeResult? performValidation({required TranslatableText formalName, required String name, required item, required parentEntity}) {
     if (item is! String) {
       return NegativeResultValue(
         message: tr('The property %1 only accepts text value', [name]),
-        name: tr(name),
+        formalName: formalName,
+        name: name,
         value: item,
       );
     }
@@ -30,7 +31,8 @@ class CheckTextLength extends ValueValidator {
     if (minimum > 0 && item.isEmpty) {
       return NegativeResultValue(
         message: tr('The property %1 does not accept empty texts', [name]),
-        name: tr(name),
+        formalName: formalName,
+        name: name,
         value: item,
       );
     }
@@ -38,7 +40,8 @@ class CheckTextLength extends ValueValidator {
     if (item.length < minimum) {
       return NegativeResultValue(
         message: tr('The property %1 requires at least %2 characters', [name, minimum]),
-        name: tr(name),
+        formalName: formalName,
+        name: name,
         value: item,
       );
     }
@@ -46,7 +49,8 @@ class CheckTextLength extends ValueValidator {
     if (item.length > maximum) {
       return NegativeResultValue(
         message: tr('The property %1 only accepts text with a maximum of %2 characters', [name, maximum]),
-        name: tr(name),
+        formalName: formalName,
+        name: name,
         value: item,
       );
     }
@@ -57,7 +61,8 @@ class CheckTextLength extends ValueValidator {
       if (maximumLines != null && maximumLines! < lines) {
         return NegativeResultValue(
           message: tr('The property %1 only accepts text with a maximum of %2 lines', [name, maximumLines!]),
-          name: tr(name),
+          formalName: formalName,
+          name: name,
           value: item,
         );
       }
@@ -65,7 +70,8 @@ class CheckTextLength extends ValueValidator {
       if (minimumLines != null && minimumLines! > lines) {
         return NegativeResultValue(
           message: tr('The property %1 requires at least %2 lines', [name, minimumLines!]),
-          name: tr(name),
+          formalName: formalName,
+          name: name,
           value: item,
         );
       }

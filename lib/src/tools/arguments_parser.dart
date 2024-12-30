@@ -63,7 +63,7 @@ class ArgumentsParser {
       return null;
     }
 
-    return value.convertQuickly.toInt(propertyName: tr('', [key]));
+    return GeneralConverter(value).toInt(propertyName: tr('', [key]));
   }
 
   

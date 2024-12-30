@@ -9,14 +9,15 @@ class CheckIp extends ValueValidator {
   const CheckIp({this.verificationType = CheckIpType.both, this.acceptLocalhost = true});
 
   @override
-  String get formalName => tr('Valid IP checker').toString();
+  TranslatableText get formalName => const TranslatableText(message: 'Valid IP checker');
 
   @override
-  NegativeResult? performValidation({required String name, required item, required parentEntity}) {
+  NegativeResult? performValidation({required TranslatableText formalName, required String name, required item, required parentEntity}) {
     if (item is! String) {
       throw NegativeResultValue(
         message: tr('The property %1 only accepts text value', [name]),
-        name: tr(name),
+        formalName: formalName,
+        name: name,
         value: item,
       );
     }
@@ -25,7 +26,8 @@ class CheckIp extends ValueValidator {
       if (!acceptLocalhost) {
         throw NegativeResultValue(
           message: tr('The property %1 only accepts ip addresses, not the textual value "localhost"', [name]),
-          name: tr(name),
+          formalName: formalName,
+          name: name,
           value: item,
         );
       }
@@ -34,9 +36,9 @@ class CheckIp extends ValueValidator {
     }
 
     return switch (verificationType) {
-      CheckIpType.both => _validate(name, item),
-      CheckIpType.onlyIpv4 => _validateIpv4(name, item),
-      CheckIpType.onlyIpv6 => _validateIpv6(name, item),
+      CheckIpType.both => _validate(name, formalName, item),
+      CheckIpType.onlyIpv4 => _validateIpv4(name, formalName, item),
+      CheckIpType.onlyIpv6 => _validateIpv6(name, formalName, item),
     };
   }
 
@@ -51,11 +53,12 @@ class CheckIp extends ValueValidator {
     return ipv6RegExp.hasMatch(value);
   }
 
-  NegativeResult? _validate(String name, String item) {
+  NegativeResult? _validate(String name, TranslatableText formalName, String item) {
     if (!isIpv4(item) && !isIpv6(item)) {
       throw NegativeResultValue(
         message: tr('The property %1 is not a Ip Address valid', [name]),
-        name: tr(name),
+        formalName: formalName,
+        name: name,
         value: item,
       );
     }
@@ -63,11 +66,12 @@ class CheckIp extends ValueValidator {
     return null;
   }
 
-  NegativeResult? _validateIpv4(String name, String item) {
+  NegativeResult? _validateIpv4(String name, TranslatableText formalName, String item) {
     if (!isIpv4(item)) {
       throw NegativeResultValue(
         message: tr('The property %1 is not a Ipv4 Address valid', [name]),
-        name: tr(name),
+        formalName: formalName,
+        name: name,
         value: item,
       );
     }
@@ -75,11 +79,12 @@ class CheckIp extends ValueValidator {
     return null;
   }
 
-  NegativeResult? _validateIpv6(String name, String item) {
+  NegativeResult? _validateIpv6(String name, TranslatableText formalName, String item) {
     if (!isIpv4(item)) {
       throw NegativeResultValue(
         message: tr('The property %1 is not a Ipv6 Address valid', [name]),
-        name: tr(name),
+        formalName: formalName,
+        name: name,
         value: item,
       );
     }

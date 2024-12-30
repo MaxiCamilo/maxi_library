@@ -210,7 +210,8 @@ extension IteratorExtension<T> on Iterable<T> {
         throw NegativeResultValue(
           message: rn.message,
           identifier: rn.identifier,
-          name: tr('Item located at %1', [i + 1]),
+          name: (i + 1).toString(),
+          formalName: tr('Item located at %1', [i + 1]),
           cause: rn.cause,
         );
       } catch (ex) {

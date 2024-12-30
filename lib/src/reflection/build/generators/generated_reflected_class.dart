@@ -21,6 +21,10 @@ abstract class GeneratedReflectedClass<T> {
 
   const GeneratedReflectedClass();
 
+  static Iterable<MethodDetected> _filterMethods(ClassDetected classInstance) {
+    return classInstance.methods.where((x) => !x.isPrivate).where((x) => x.name != '==');
+  }
+
   static (String, String) makeScript({required ClassDetected classInstance}) {
     final className = '_${classInstance.name}';
     final buffer = StringBuffer('/*----------------------------------   Class ${classInstance.name}   ----------------------------------*/\n\n\n');
@@ -39,7 +43,9 @@ abstract class GeneratedReflectedClass<T> {
 
     buffer.writeln('/*${classInstance.name.toUpperCase()} METHODS*/\n');
 
-    for (final method in classInstance.methods.where((x) => !x.isPrivate)) {
+    final methods = _filterMethods(classInstance);
+
+    for (final method in methods) {
       if (classInstance.isAbstract && (method.type == MethodDetectedType.buildMethod || method.type == MethodDetectedType.factoryMethod)) {
         continue;
       }

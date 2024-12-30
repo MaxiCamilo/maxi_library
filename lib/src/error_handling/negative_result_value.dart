@@ -1,24 +1,27 @@
 import 'package:maxi_library/maxi_library.dart';
 
 class NegativeResultValue extends NegativeResult {
-  TranslatableText name;
+  TranslatableText formalName;
+  String name;
   dynamic value;
 
   NegativeResultValue({
     required super.message,
     required this.name,
+    required this.formalName,
     super.identifier = NegativeResultCodes.invalidProperty,
     super.cause,
     super.whenWasIt,
     this.value,
   });
 
-  factory NegativeResultValue.fromNegativeResult({required TranslatableText name, required NegativeResult nr, dynamic value}) {
+  factory NegativeResultValue.fromNegativeResult({required String name, required TranslatableText formalName, required NegativeResult nr, dynamic value}) {
     if (nr is NegativeResultValue) {
       return nr;
     }
 
     return NegativeResultValue(
+      formalName: formalName,
       message: nr.message,
       name: name,
       identifier: nr.identifier,
@@ -29,11 +32,13 @@ class NegativeResultValue extends NegativeResult {
   }
 
   factory NegativeResultValue.fromException({
-    required TranslatableText name,
+    required String name,
+    required TranslatableText formalName,
     required dynamic ex,
     dynamic value,
   }) {
     return NegativeResultValue.fromNegativeResult(
+      formalName: formalName,
       name: name,
       value: value,
       nr: NegativeResult.searchNegativity(item: ex, actionDescription: tr('Vefify value named %1', [name])),
@@ -43,7 +48,7 @@ class NegativeResultValue extends NegativeResult {
   @override
   Map<String, dynamic> serialize() {
     final map = super.serialize();
-    
+
     map['\$type'] = 'error.value';
     map['name'] = name.toString();
 
@@ -56,7 +61,8 @@ class NegativeResultValue extends NegativeResult {
 
   static NegativeResultValue searchNegativity({
     required dynamic error,
-    required TranslatableText propertyName,
+    required String name,
+    required TranslatableText formalName,
     dynamic value,
     NegativeResultCodes codeDescription = NegativeResultCodes.externalFault,
   }) {
@@ -65,7 +71,8 @@ class NegativeResultValue extends NegativeResult {
     } else if (error is NegativeResult) {
       return NegativeResultValue(
         identifier: error.identifier,
-        name: propertyName,
+        formalName: formalName,
+        name: name,
         message: error.message,
         cause: error.cause,
         whenWasIt: error.whenWasIt,
@@ -74,8 +81,9 @@ class NegativeResultValue extends NegativeResult {
     } else {
       return NegativeResultValue(
         identifier: codeDescription,
-        name: propertyName,
-        message: tr('The validation for property %1 failed with the following error: "%2"', [propertyName, error.toString()]),
+        formalName: formalName,
+        name: name,
+        message: tr('The validation for property %1 failed with the following error: "%2"', [formalName, error.toString()]),
         cause: error,
         value: value,
       );

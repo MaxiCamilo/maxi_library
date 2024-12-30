@@ -10,11 +10,11 @@ mixin IDeclarationReflector {
   bool get isStatic;
   TranslatableText get description;
 
-  NegativeResult? verifyValue({required dynamic value, required dynamic parentEntity}) {
+  NegativeResultValue? verifyValue({required dynamic value, required dynamic parentEntity}) {
     for (final val in validators) {
-      final negative = val.performValidation(name: name, item: value, parentEntity: parentEntity);
+      final negative = val.performValidation(name: name, formalName: formalName, item: value, parentEntity: parentEntity);
       if (negative != null) {
-        return NegativeResultValue.fromNegativeResult(name: formalName, nr: negative);
+        return NegativeResultValue.fromNegativeResult(name: name, formalName: formalName, nr: negative);
       }
     }
 
@@ -24,7 +24,8 @@ mixin IDeclarationReflector {
       } catch (ex) {
         final nr = NegativeResultValue.searchNegativity(
           error: ex,
-          propertyName: formalName,
+          formalName: formalName,
+          name: name,
           value: value,
         );
         return nr;
@@ -32,6 +33,33 @@ mixin IDeclarationReflector {
     }
 
     return null;
+  }
+
+  List<NegativeResultValue> listErrors({required dynamic value, required dynamic parentEntity}) {
+    final list = <NegativeResultValue>[];
+
+    for (final val in validators) {
+      final negative = val.performValidation(name: name, formalName: formalName, item: value, parentEntity: parentEntity);
+      if (negative != null) {
+        list.add(NegativeResultValue.fromNegativeResult(name: name, formalName: formalName, nr: negative));
+      }
+    }
+
+    if (value is IPostVerification) {
+      try {
+        value.postVerification();
+      } catch (ex) {
+        final nr = NegativeResultValue.searchNegativity(
+          error: ex,
+          name: name,
+          formalName: formalName,
+          value: value,
+        );
+        list.add(nr);
+      }
+    }
+
+    return list;
   }
 
   void verifyValueDirectly({required dynamic value, required dynamic parentEntity}) {

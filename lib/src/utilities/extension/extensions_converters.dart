@@ -30,7 +30,8 @@ class GeneralConverter {
         function: () => ConverterUtilities.toEnum(optionsList: optionsList, value: item) as T,
       );
 }
-
+/*
 extension ExtensionConverters on Object {
   GeneralConverter get convertQuickly => GeneralConverter(this);
 }
+*/

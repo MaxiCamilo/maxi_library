@@ -238,7 +238,7 @@ mixin HexadecimalUtilities {
   }
 
   static int passBinaryLiteralToNumber(Iterable<int> datos) {
-    return datos.map((x) => TextUtilities.zeroFill(value: x.toRadixString(16), quantityZeros: 2)).join().convertQuickly.toInt(propertyName: tr('Convert Hexadecimal to literal decimal (integer)'));
+    return GeneralConverter(datos.map((x) => TextUtilities.zeroFill(value: x.toRadixString(16), quantityZeros: 2)).join()).toInt(propertyName: tr('Convert Hexadecimal to literal decimal (integer)'));
   }
 
   static int passLiteralHexEquivalentNumeric(String numero) {

@@ -28,9 +28,12 @@ class NegativeResult implements Exception, CustomSerialization, ICustomSerializa
     }
 
     return NegativeResult(
-      message: TranslatableText.interpretFromJson(text: volatileProperty(propertyName: tr('message'), function: () => values['message']!)),
-      identifier: NegativeResultCodes.values[volatileProperty(propertyName: tr('identifier'), function: () => (values['identifier'] ?? values['idError'])! as int)],
-      whenWasIt: DateTime.fromMillisecondsSinceEpoch(volatileProperty(propertyName: tr('whenWasIt'), function: () => values['whenWasIt']! as int), isUtc: true).toLocal(),
+      message: TranslatableText.interpretFromJson(text: volatileProperty(propertyName: 'message', formalName: const TranslatableText(message: 'Error message'), function: () => values['message']!)),
+      identifier:
+          NegativeResultCodes.values[volatileProperty(propertyName: 'identifier', formalName: const TranslatableText(message: 'Error Identifier'), function: () => (values['identifier'] ?? values['idError'])! as int)],
+      whenWasIt:
+          DateTime.fromMillisecondsSinceEpoch(volatileProperty(propertyName: 'whenWasIt', formalName: const TranslatableText(message: 'Error date and time'), function: () => values['whenWasIt']! as int), isUtc: true)
+              .toLocal(),
     );
   }
 
@@ -49,10 +52,7 @@ class NegativeResult implements Exception, CustomSerialization, ICustomSerializa
     if (item is SocketException) {
       return NegativeResult(
           identifier: NegativeResultCodes.systemFailure, message: tr('A connection error occurred, Socket error %1: %2', [item.osError?.errorCode, item.message]), stackTrace: stackTrace?.toString() ?? '');
-    } 
-    
-    
-    else {
+    } else {
       return NegativeResult(identifier: codeDescription, message: tr('The functionality %1 failed: %2', [actionDescription, item.toString()]), stackTrace: stackTrace?.toString() ?? '');
     }
   }

@@ -31,7 +31,7 @@ class TranslatableText with ICustomSerialization {
   factory TranslatableText.interpret({required Map<String, dynamic> map}) {
     final textParts = [];
 
-    for (final item in volatileProperty(propertyName: tr('Text Parts'), function: () => map['textParts'] as List)) {
+    for (final item in volatileProperty(formalName: tr('Text Parts'), propertyName: 'textParts', function: () => map['textParts'] as List)) {
       final text = item.toString();
       if (text.startsWith('{')) {
         textParts.add(TranslatableText.interpretFromJson(text: text));
@@ -41,8 +41,8 @@ class TranslatableText with ICustomSerialization {
     }
 
     return TranslatableText(
-      tokenId: volatileProperty(propertyName: tr('Token Id'), function: () => map['tokenId'].toString()),
-      message: volatileProperty(propertyName: tr('message'), function: () => map['message'].toString()),
+      tokenId: volatileProperty(formalName: tr('Message Identifier Token'), propertyName: 'tokenId', function: () => map['tokenId'].toString()),
+      message: volatileProperty(formalName: tr('Text message'), propertyName: 'message', function: () => map['message'].toString()),
       textParts: textParts,
     );
   }

@@ -3,7 +3,7 @@ import 'package:maxi_library/maxi_library.dart';
 class NegativeResultEntity extends NegativeResultValue {
   final List<NegativeResultValue> invalidProperties;
 
-  NegativeResultEntity({required super.message, required super.name, required this.invalidProperties});
+  NegativeResultEntity({required super.message, required super.formalName, required super.name, required this.invalidProperties});
 
   @override
   Map<String, dynamic> serialize() {
@@ -20,7 +20,7 @@ class NegativeResultEntity extends NegativeResultValue {
     final buffer = StringBuffer();
     buffer.writeln(message);
     for (final error in invalidProperties) {
-      buffer.writeln('-> ${error.name} : ${error.message} [Value: ${error.value}]');
+      buffer.writeln('-> ${error.formalName.toString()} : ${error.message} [Value: ${error.value}]');
     }
 
     return buffer.toString();

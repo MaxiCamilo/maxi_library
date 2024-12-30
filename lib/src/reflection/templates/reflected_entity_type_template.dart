@@ -296,7 +296,7 @@ abstract class ReflectedEntityTypeTemplate with IReflectionType, IDeclarationRef
   }
 
   @override
-  NegativeResult? verifyValue({required dynamic value, required dynamic parentEntity}) {
+  NegativeResultValue? verifyValue({required dynamic value, required dynamic parentEntity}) {
     initialized();
     final errorList = <NegativeResultValue>[];
 
@@ -306,7 +306,7 @@ abstract class ReflectedEntityTypeTemplate with IReflectionType, IDeclarationRef
         if (error is NegativeResultValue) {
           errorList.add(error);
         } else {
-          errorList.add(NegativeResultValue.fromNegativeResult(name: field.formalName, nr: error));
+          errorList.add(NegativeResultValue.fromNegativeResult(name: field.name, formalName: field.formalName, nr: error));
         }
       }
     }
@@ -314,12 +314,32 @@ abstract class ReflectedEntityTypeTemplate with IReflectionType, IDeclarationRef
     if (errorList.isNotEmpty) {
       return NegativeResultEntity(
         message: tr('Entity %1 contains %2 invalid %3', [formalName, errorList.length, errorList.length == 1 ? tr('property') : tr('properties')]),
-        name: tr(name),
+        name: name,
+        formalName: formalName,
         invalidProperties: errorList,
       );
     }
 
     return super.verifyValue(value: value, parentEntity: parentEntity);
+  }
+
+  @override
+  List<NegativeResultValue> listErrors({required dynamic value, required dynamic parentEntity}) {
+    initialized();
+    final errorList = <NegativeResultValue>[];
+
+    for (final field in modificableFields) {
+      final error = field.checkValueIsCorrect(instance: value);
+      if (error != null) {
+        if (error is NegativeResultValue) {
+          errorList.add(error);
+        } else {
+          errorList.add(NegativeResultValue.fromNegativeResult(name: field.name, formalName: field.formalName, nr: error));
+        }
+      }
+    }
+
+    return [...errorList, ...super.listErrors(value: value, parentEntity: parentEntity)];
   }
 
   @override
@@ -345,8 +365,9 @@ abstract class ReflectedEntityTypeTemplate with IReflectionType, IDeclarationRef
       if (value == null) {
         if (prop.isRequired || (prop.isEssentialKey && essentialKeysMustBePresent) || (prop.isPrimaryKey && primaryKeyMustBePresent)) {
           errorList.add(NegativeResultValue(
+            name: name,
             message: tr('Entity "%1" needs the value of "%2", but its value was not defined', [formalName, prop.formalName]),
-            name: tr(name),
+            formalName: formalName,
           ));
         }
 
@@ -359,7 +380,8 @@ abstract class ReflectedEntityTypeTemplate with IReflectionType, IDeclarationRef
         errorList.add(NegativeResultValue.searchNegativity(
           error: ex,
           value: value,
-          propertyName: formalName,
+          name: name,
+          formalName: formalName,
         ));
       }
     }
@@ -368,12 +390,13 @@ abstract class ReflectedEntityTypeTemplate with IReflectionType, IDeclarationRef
 
     if (verify) {
       for (final val in validators) {
-        final error = val.performValidation(name: formalName.toString(), item: newItem, parentEntity: null);
+        final error = val.performValidation(name: name, formalName: formalName, item: newItem, parentEntity: null);
         if (error != null) {
           throw NegativeResultEntity(
-            message: tr('The entity %1 is invalid', [name]),
-            name: tr(name),
-            invalidProperties: [NegativeResultValue.searchNegativity(error: error, propertyName: tr(val.formalName))],
+            message: tr('The entity %1 is invalid', [formalName]),
+            name: name,
+            formalName: formalName,
+            invalidProperties: [NegativeResultValue.searchNegativity(error: error, formalName: val.formalName, name: name)],
           );
         }
       }
@@ -385,20 +408,23 @@ abstract class ReflectedEntityTypeTemplate with IReflectionType, IDeclarationRef
       } catch (ex) {
         throw NegativeResultEntity(
           message: tr('The entity %1 is invalid', [name]),
-          name: tr(name),
-          invalidProperties: [NegativeResultValue.searchNegativity(error: ex, propertyName: formalName)],
+          formalName: formalName,
+          name: name,
+          invalidProperties: [NegativeResultValue.searchNegativity(error: ex, name: name, formalName: formalName)],
         );
       }
     }
 
     if (hasPrimaryKey && !acceptZeroIdentifier && getPrimaryKey(instance: newItem) <= 0) {
       throw NegativeResultEntity(
-        message: tr('The entity %1 is invalid', [name]),
-        name: tr(name),
+        message: tr('The entity %1 is invalid', [formalName]),
+        formalName: formalName,
+        name: name,
         invalidProperties: [
           NegativeResultValue.searchNegativity(
             error: NegativeResult(identifier: NegativeResultCodes.invalidProperty, message: tr('The primary key (%2) for entity %1 needs to be defined', [primaryKey.formalName, formalName])),
-            propertyName: primaryKey.formalName,
+            formalName: primaryKey.formalName,
+            name: name,
           )
         ],
       );
@@ -411,8 +437,9 @@ abstract class ReflectedEntityTypeTemplate with IReflectionType, IDeclarationRef
     if (errorList.isNotEmpty) {
       throw NegativeResultEntity(
         message: tr('The entity %1 contains %2 invalid %3', [name, errorList.length, errorList.length == 1 ? tr('property') : tr('properties')]),
-        name: tr(name),
+        formalName: formalName,
         invalidProperties: errorList,
+        name: name,
       );
     }
   }
@@ -479,7 +506,7 @@ abstract class ReflectedEntityTypeTemplate with IReflectionType, IDeclarationRef
       int i = 1;
       for (final item in value) {
         final digestedValue = volatileFactory(
-          errorFactory: (x) => NegativeResultValue.fromException(ex: x, value: item, name: tr('Validate item N° %1', [i])),
+          errorFactory: (x) => NegativeResultValue.fromException(ex: x, value: item, formalName: tr('Validate item N° %1', [i]), name: name),
           function: () => interpret(
             value: item,
             tryToCorrectNames: tryToCorrectNames,
