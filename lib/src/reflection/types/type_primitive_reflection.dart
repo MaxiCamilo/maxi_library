@@ -52,7 +52,7 @@ class TypePrimitiveReflection with IReflectionType, IValueGenerator, IPrimitiveV
   @override
   serializeToMap(item) {
     if (item is DateTime) {
-      return item.millisecondsSinceEpoch;
+      return item.toUtc().millisecondsSinceEpoch;
     }
     return ReflectionUtilities.primitiveClone(item);
   }

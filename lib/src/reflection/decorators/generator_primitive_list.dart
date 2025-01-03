@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:maxi_library/maxi_library.dart';
 
-class GeneratorPrimitiveList<T> with IValueGenerator, IReflectionType, IPrimitiveValueGenerator {
+class GeneratorPrimitiveList<T> with IValueGenerator, IReflectionType, IPrimitiveValueGenerator, IMapValueGenerator {
   @override
   List get annotations => [];
 
@@ -101,5 +101,15 @@ class GeneratorPrimitiveList<T> with IValueGenerator, IReflectionType, IPrimitiv
     } else {
       return <T>[reflector.convertObject(reflector)];
     }
+  }
+
+  @override
+  convertToMapValue(value) {
+    return value;
+  }
+
+  @override
+  interpretFromMapValue(value) {
+    convertObject(value);
   }
 }

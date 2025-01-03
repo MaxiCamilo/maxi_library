@@ -37,5 +37,6 @@ export 'package:maxi_library/src/reflection/validators/numbers/check_number_rang
 export 'package:maxi_library/src/reflection/validators/numbers/check_ip_port.dart';
 export 'package:maxi_library/src/reflection/validators/texts/check_text_length.dart';
 export 'package:maxi_library/src/reflection/validators/texts/check_ip.dart';
+export 'package:maxi_library/src/reflection/validators/check_list.dart';
 
 export 'package:maxi_library/src/reflection/build/reflector_generator.dart';

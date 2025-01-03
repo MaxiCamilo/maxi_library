@@ -57,7 +57,7 @@ class SharedValuesService with StartableFunctionality, IThreadService {
     _streamEvent.add((name, value));
   }
 
-  Future<void> setErrorEvent({required String name, required dynamic value}) async {
-    _streamEvent.addError((name, value));
+  Future<void> setErrorEvent({required String name, required dynamic value, StackTrace? stackTrace}) async {
+    _streamEvent.addError((name, value), stackTrace);
   }
 }

@@ -12,6 +12,12 @@ mixin IValueGenerator {
   bool isTypeCompatible(Type type);
 }
 
+mixin IMapValueGenerator on IValueGenerator {
+  dynamic convertToMapValue(dynamic value);
+
+  dynamic interpretFromMapValue(dynamic value);
+}
+
 mixin IPrimitiveValueGenerator on IValueGenerator {
   PrimitiesType get primitiveType;
 

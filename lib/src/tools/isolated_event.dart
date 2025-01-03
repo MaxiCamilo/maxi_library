@@ -4,7 +4,7 @@ import 'dart:developer';
 import 'package:maxi_library/maxi_library.dart';
 import 'package:maxi_library/src/tools/internal/shared_values_service.dart';
 
-class IsolatedEvent<T extends Object> with StartableFunctionality {
+class IsolatedEvent<T> with StartableFunctionality implements StreamSink<T> {
   static bool _serviceInitialized = false;
 
   final String name;
@@ -25,14 +25,14 @@ class IsolatedEvent<T extends Object> with StartableFunctionality {
     );
   }
 
-  static Future<void> sendEventError({required String name, required dynamic value}) async {
+  static Future<void> sendEventError({required String name, required dynamic value, StackTrace? stackTrace}) async {
     if (!_serviceInitialized) {
       await _mountService();
     }
 
     await ThreadManager.callEntityFunction<SharedValuesService, void>(
-      parameters: InvocationParameters.list([name, value]),
-      function: (serv, para) => serv.setErrorEvent(name: para.firts<String>(), value: para.second()),
+      parameters: InvocationParameters.list([name, value, stackTrace]),
+      function: (serv, para) => serv.setErrorEvent(name: para.firts<String>(), value: para.second(), stackTrace: para.third()),
     );
   }
 
@@ -54,16 +54,15 @@ class IsolatedEvent<T extends Object> with StartableFunctionality {
 
     final subscription = await ThreadManager.callEntityStream<SharedValuesService, dynamic>(
       parameters: InvocationParameters.only(name),
-      function: (serv, para) => serv.getModValueStream(name: para.firts<String>()),
+      function: (serv, para) => serv.getEvent(name: para.firts<String>()),
     );
     _subscription = subscription.listen(_dataChanged, onError: _dataError);
 
     _controller = StreamController<T>.broadcast();
   }
 
-  
-
-  void close() {
+  @override
+  Future<void> close() async {
     if (!isInitialized) {
       return;
     }
@@ -89,5 +88,40 @@ class IsolatedEvent<T extends Object> with StartableFunctionality {
   static Future<void> _mountService() async {
     await ThreadManager.mountEntity<SharedValuesService>(entity: SharedValuesService());
     _serviceInitialized = true;
+  }
+
+  @override
+  Future get done => throw UnimplementedError();
+
+  @override
+  void add(T event) {
+    initialize().then((_) {
+      sendEvent(name: name, value: event);
+    });
+  }
+
+  @override
+  void addError(Object error, [StackTrace? stackTrace]) {
+    initialize().then((_) {
+      sendEventError(name: name, value: error, stackTrace: stackTrace);
+    });
+  }
+
+  @override
+  Future addStream(Stream<T> stream) async {
+    final compelteter = Completer();
+
+    final subscription = stream.listen(
+      (x) => add(x),
+      onError: (x, y) => addError(x, y),
+      onDone: () => compelteter.completeIfIncomplete(),
+    );
+
+    final future = done.whenComplete(() => compelteter.completeIfIncomplete());
+
+    await compelteter.future;
+
+    subscription.cancel();
+    future.ignore();
   }
 }
