@@ -267,4 +267,10 @@ mixin ConverterUtilities {
         detail: extra == null ? tr('Expected a json object, but received a json listing or value') : tr('Expected a json object, but received a json listing or value %1', [extra]),
         function: () => interpretJson(text: text, extra: extra) as Map<String, dynamic>);
   }
+
+  static List<Map<String, dynamic>> interpretToObjectListJson({required String text, TranslatableText? extra}) {
+    return volatile(
+        detail: extra == null ? tr('Expected a list of json objects, but received a json list with an unknown value or a single value') : tr('Expected a json object, but received a json listing or value %1', [extra]),
+        function: () => (interpretJson(text: text, extra: extra) as List).cast<Map<String, dynamic>>()).toList();
+  }
 }

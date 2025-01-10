@@ -81,7 +81,12 @@ class OnlineHttpRequester with IHttpRequester {
       return ResponseHttpRequest<T>(content: response.bodyBytes as T, codeResult: response.statusCode, url: url);
     } else if (T == String || T == dynamic) {
       return ResponseHttpRequest<T>(content: response.body as T, codeResult: response.statusCode, url: url);
-    } else if (T.toString() == 'void') {
+    } 
+    else if(T == Map<String,dynamic>){
+      return ResponseHttpRequest<T>(content: ConverterUtilities.interpretToObjectJson(text: response.body,extra: tr('from the server')) as T, codeResult: response.statusCode, url: url);
+    }
+    
+    else if (T.toString() == 'void') {
       return ResponseHttpRequest<T>(content: '' as T, codeResult: response.statusCode, url: url);
     } else {
       throw NegativeResult(

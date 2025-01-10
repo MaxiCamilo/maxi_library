@@ -285,6 +285,11 @@ class ReflectionManager with IThreadInitializer {
     return getReflectionEntity(item.runtimeType).getPrimaryKey(instance: item);
   }
 
+  static List<int> toIdentifierList<T>(Iterable<T> list, {Type? entityType, bool growable = true}) {
+    final reflector = getReflectionEntity(entityType ?? T);
+    return list.map((x) => reflector.getPrimaryKey(instance: x)).toList(growable: growable);
+  }
+
   static SplayTreeMap<int, dynamic> mapByIdentifier({required Iterable list}) {
     final map = SplayTreeMap<int, dynamic>();
     ITypeEntityReflection? reflector;
@@ -387,5 +392,25 @@ class ReflectionManager with IThreadInitializer {
     }
 
     return newList;
+  }
+
+  static List<T> interpretJsonList<T>({
+    required String rawText,
+    required bool tryToCorrectNames,
+    bool enableCustomInterpretation = true,
+    bool verify = true,
+    bool acceptZeroIdentifier = true,
+    bool primaryKeyMustBePresent = true,
+    bool essentialKeysMustBePresent = true,
+  }) {
+    return ReflectionManager.getReflectionEntity(T).interpretJsonAslist<T>(
+      rawText: rawText,
+      tryToCorrectNames: tryToCorrectNames,
+      enableCustomInterpretation: enableCustomInterpretation,
+      verify: verify,
+      acceptZeroIdentifier: acceptZeroIdentifier,
+      primaryKeyMustBePresent: primaryKeyMustBePresent,
+      essentialKeysMustBePresent: essentialKeysMustBePresent,
+    );
   }
 }

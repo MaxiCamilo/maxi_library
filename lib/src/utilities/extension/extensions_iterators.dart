@@ -228,16 +228,30 @@ extension IteratorExtension<T> on Iterable<T> {
 
   Map<int, T> mapByIdentifier() => ReflectionManager.mapByIdentifier(list: this).cast<int, T>();
 
-  Iterable<R> mapWithPosition<R>(R Function(T e, int i) toElement) {
-    final list = <R>[];
-
+  Iterable<R> mapWithPosition<R>(R Function(T e, int i) toElement) sync* {
     int i = 0;
     for (final item in this) {
-      list.add(toElement(item, i));
+      yield toElement(item, i);
       i += 1;
     }
+  }
 
-    return list;
+  Iterable<T> extractFromIdentifier(int from, [int? amount]) sync* {
+    int va = 0;
+    final map = mapByIdentifier();
+
+    for (final item in map.entries) {
+      final id = item.key;
+      if (id < from) {
+        continue;
+      }
+      yield item.value;
+      from = id;
+      va += 1;
+      if (amount != null && va >= amount) {
+        break;
+      }
+    }
   }
 }
 
