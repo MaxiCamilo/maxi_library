@@ -318,4 +318,39 @@ class FileOperatorNative with IFileOperator, StartableFunctionality {
     routeSplit.removeLast();
     return FileOperatorNative(isLocal: isLocal, rawRoute: routeSplit.join('/'));
   }
+
+  @override
+  Future<void> add({required Uint8List content, bool secured = false}) async {
+    await initialize();
+
+    if (secured) {
+      await createAsFile(secured: secured);
+    }
+
+    await volatileAsync(
+        detail: tr('Could not write to file %1', [route]),
+        function: () => File(route).writeAsBytes(
+              content,
+              flush: true,
+              mode: FileMode.append,
+            ));
+  }
+
+  @override
+  Future<void> addText({required String content, Encoding? encoder, bool secured = false}) async {
+    await initialize();
+
+    if (secured) {
+      await createAsFile(secured: secured);
+    }
+
+    await volatileAsync(
+        detail: tr('Could not write to file %1', [route]),
+        function: () => File(route).writeAsString(
+              content,
+              flush: true,
+              mode: FileMode.append,
+              encoding: encoder ?? utf8,
+            ));
+  }
 }

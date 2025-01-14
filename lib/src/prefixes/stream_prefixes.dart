@@ -37,6 +37,10 @@ Stream<StreamState<S, R>> connectFunctionalStream<S, R, SR>(Stream<StreamState<S
   }
 }
 
+Stream<S> getOnlyStreamItems<S, R>(Stream<StreamState<S, R>> stream) {
+  return stream.whereType<StreamStateItem<S, R>>().map((x) => x.item);
+}
+
 Future<R> waitFunctionalStream<S, R>({
   required Stream<StreamState<S, R>> stream,
   void Function(S x)? onData,

@@ -118,4 +118,16 @@ class FileOperatorMask with IFileOperator, StartableFunctionality {
     routeSplit.removeLast();
     return FileOperatorMask(isLocal: false, rawRoute: routeSplit.join('/'));
   }
+
+  @override
+  Future<void> add({required Uint8List content, bool secured = false}) async {
+    await initialize();
+    await _masked.add(content: content, secured: secured);
+  }
+
+  @override
+  Future<void> addText({required String content, Encoding? encoder, bool secured = false}) async {
+    await initialize();
+    await _masked.addText(content: content, secured: secured, encoder: encoder);
+  }
 }

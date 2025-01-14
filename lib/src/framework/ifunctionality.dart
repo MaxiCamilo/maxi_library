@@ -22,6 +22,23 @@ mixin IFunctionalityService<S extends Object, R> implements IFunctionality<Futur
   }
 }
 
+mixin IFunctionalityStreamService<S extends Object, T extends StreamState> implements IFunctionality<Stream<T>> {
+  @protected
+  Stream<T> runInService(S service, InvocationParameters parameters);
+
+  
+
+  @override
+  Stream<T> runFunctionality() async* {
+    yield* await ThreadManager.callEntityStream<S, T>(parameters: InvocationParameters.only(this), function: _executeFunctionalityInService<S, T>);
+  }
+
+  static Stream<T> _executeFunctionalityInService<S extends Object, T extends StreamState>(S service, InvocationParameters parameters) {
+    final functionality = parameters.firts<IFunctionalityStreamService<S, T>>();
+    return functionality.runInService(service, parameters);
+  }
+}
+
 extension IFunctionalityFuture<F> on IFunctionality<Future<F>> {
   Future<F> executeInService<S extends Object>() async {
     return ThreadManager.callEntityFunction<S, F>(parameters: InvocationParameters.only(this), function: _executeInService<S, F>);
