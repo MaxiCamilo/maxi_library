@@ -394,6 +394,26 @@ class ReflectionManager with IThreadInitializer {
     return newList;
   }
 
+  static T interpretJson<T>({
+    required String rawText,
+    required bool tryToCorrectNames,
+    bool enableCustomInterpretation = true,
+    bool verify = true,
+    bool acceptZeroIdentifier = true,
+    bool primaryKeyMustBePresent = true,
+    bool essentialKeysMustBePresent = true,
+  }) {
+    return ReflectionManager.getReflectionEntity(T).interpretationFromJson(
+      rawJson: rawText,
+      tryToCorrectNames: tryToCorrectNames,
+      enableCustomInterpretation: enableCustomInterpretation,
+      verify: verify,
+      acceptZeroIdentifier: acceptZeroIdentifier,
+      primaryKeyMustBePresent: primaryKeyMustBePresent,
+      essentialKeysMustBePresent: essentialKeysMustBePresent,
+    ) as T;
+  }
+
   static List<T> interpretJsonList<T>({
     required String rawText,
     required bool tryToCorrectNames,

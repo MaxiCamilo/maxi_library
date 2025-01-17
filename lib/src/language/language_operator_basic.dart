@@ -32,7 +32,7 @@ class LanguageOperatorBasic with IOperatorLanguage {
 
     for (int i = 0; i < text.textParts.length; i++) {
       final part = text.textParts[i];
-      late final String textGenerated;
+      late String textGenerated;
       if (part is AlreadyTranslatedText) {
         textGenerated = part.toString();
       }

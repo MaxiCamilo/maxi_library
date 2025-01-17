@@ -124,6 +124,6 @@ class IsolatedValue<T extends Object> with StartableFunctionality {
 
     _streamChanged.close();
 
-    declareDeinitialized();
+    dispose();
   }
 }

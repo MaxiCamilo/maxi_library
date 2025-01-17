@@ -3,11 +3,14 @@ import 'dart:async';
 import 'package:maxi_library/maxi_library.dart';
 import 'package:meta/meta.dart';
 
-mixin StartableFunctionality {
+mixin StartableFunctionality implements IDisposable {
   @protected
   Future<void> initializeFunctionality();
   bool _isInitialized = false;
   bool get isInitialized => _isInitialized;
+
+  @override
+  bool get wasDiscarded => !_isInitialized;
 
   Semaphore? _semaphore;
 
@@ -45,13 +48,32 @@ mixin StartableFunctionality {
       if (_isInitialized) {
         return;
       }
-      await initializeFunctionality();
+      try {
+        await initializeFunctionality();
+        reactWhenInitializedFinishes();
+        _semaphore = null;
+      } catch (ex, st) {
+        reactWhenItFails(ex, st);
+        reactWhenInitializedFinishes();
+        _semaphore = null;
+        rethrow;
+      }
       _isInitialized = true;
       _semaphore = null;
     });
   }
 
-  void declareDeinitialized() {
-    _isInitialized = false;
+  @override
+  void dispose() {
+    if (_isInitialized) {
+      performObjectDiscard();
+      _isInitialized = false;
+    }
   }
+
+  @override
+  void performObjectDiscard() {}
+
+  void reactWhenItFails(dynamic error, StackTrace trace) {}
+  void reactWhenInitializedFinishes() {}
 }

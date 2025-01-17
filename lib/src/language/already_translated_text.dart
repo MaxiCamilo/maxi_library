@@ -7,6 +7,10 @@ class AlreadyTranslatedText extends TranslatableText {
     return AlreadyTranslatedText(message: text.toString());
   }
 
+  factory AlreadyTranslatedText.interpretFromJson({required String text}) {
+    return AlreadyTranslatedText.translate(text: TranslatableText.interpretFromJson(text: text));
+  }
+
   @override
   String toString() {
     if (textParts.isEmpty) {

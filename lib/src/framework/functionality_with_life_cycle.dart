@@ -9,12 +9,8 @@ mixin FunctionalityWithLifeCycle on StartableFunctionality {
 
   Completer? _onDone;
 
-  bool _isDispose = false;
-
   @protected
   Future<void> afterInitializingFunctionality();
-
-  void dispose() => declareDeinitialized();
 
   Future get done {
     _onDone ??= Completer();
@@ -47,13 +43,12 @@ mixin FunctionalityWithLifeCycle on StartableFunctionality {
   }
 
   @override
-  void declareDeinitialized() {
+  void performObjectDiscard() {
     if (!isInitialized) {
       return;
     }
-    super.declareDeinitialized();
+    super.performObjectDiscard();
     _removeJoinedObjects();
-    _isDispose = true;
   }
 
   StreamController<R> createEventController<R>({required bool isBroadcast}) {
@@ -69,6 +64,10 @@ mixin FunctionalityWithLifeCycle on StartableFunctionality {
     newController.done.whenComplete(() => _streamControllers.remove(newController));
 
     return newController;
+  }
+
+  void joinSubscription(StreamSubscription subscription) {
+    _streamSubscriptions.add(subscription);
   }
 
   StreamSubscription<R> joinEvent<R>({
@@ -115,7 +114,7 @@ mixin FunctionalityWithLifeCycle on StartableFunctionality {
       parameters: parameters,
     );
 
-    if (_isDispose) {
+    if (wasDiscarded) {
       subscription.cancel();
     } else {
       _streamSubscriptions.add(subscription);

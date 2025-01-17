@@ -32,6 +32,11 @@ class TranslatableText with ICustomSerialization {
     final textParts = [];
 
     for (final item in volatileProperty(formalName: tr('Text Parts'), propertyName: 'textParts', function: () => map['textParts'] as List)) {
+      if (item is Map<String, dynamic>) {
+        textParts.add(TranslatableText.interpret(map: item));
+        continue;
+      }
+
       final text = item.toString();
       if (text.startsWith('{')) {
         textParts.add(TranslatableText.interpretFromJson(text: text));
@@ -105,7 +110,7 @@ class TranslatableText with ICustomSerialization {
       return false;
     }
 
-    if (message != other.message || tokenId != other.tokenId || textParts.length != other.textParts.length) {
+    if (tokenId != other.tokenId || textParts.length != other.textParts.length || message != other.message) {
       return false;
     }
 

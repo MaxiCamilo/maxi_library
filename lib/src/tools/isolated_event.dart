@@ -11,6 +11,7 @@ class IsolatedEvent<T> with StartableFunctionality implements StreamSink<T> {
 
   late StreamController<T> _controller;
   StreamSubscription? _subscription;
+  Completer<IsolatedEvent<T>>? _doneCompleter;
 
   IsolatedEvent({required this.name});
 
@@ -46,6 +47,17 @@ class IsolatedEvent<T> with StartableFunctionality implements StreamSink<T> {
     return _controller.stream;
   }
 
+  Future<StreamSubscription<T>> createStreamDirect({required void Function(T) onData, Function? onError, void Function()? onDone, bool? cancelOnError}) async {
+    final stream = await streamAsync;
+    return stream.listen(onData, cancelOnError: cancelOnError, onDone: onDone, onError: onError);
+  }
+
+
+  Future<StreamSubscription<T>> createStreamDirectWhere({required bool Function(T) whereFunction,required void Function(T) onData, Function? onError, void Function()? onDone, bool? cancelOnError}) async {
+    final stream = await streamAsync;
+    return stream.where(whereFunction).listen(onData, cancelOnError: cancelOnError, onDone: onDone, onError: onError);
+  }
+
   @override
   Future<void> initializeFunctionality() async {
     if (!_serviceInitialized) {
@@ -69,7 +81,16 @@ class IsolatedEvent<T> with StartableFunctionality implements StreamSink<T> {
     _subscription?.cancel();
     _controller.close();
 
-    declareDeinitialized();
+    dispose();
+  }
+
+  @override
+  void dispose() {
+    if (_doneCompleter != null) {
+      _doneCompleter!.completeIfIncomplete(this);
+      _doneCompleter = null;
+    }
+    super.dispose();
   }
 
   void _dataChanged(dynamic newValue) {
@@ -91,7 +112,10 @@ class IsolatedEvent<T> with StartableFunctionality implements StreamSink<T> {
   }
 
   @override
-  Future get done => throw UnimplementedError();
+  Future get done {
+    _doneCompleter ??= Completer<IsolatedEvent<T>>();
+    return _doneCompleter!.future;
+  }
 
   @override
   void add(T event) {
