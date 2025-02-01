@@ -1,8 +1,6 @@
-import 'dart:collection';
-
 mixin IBundleTranslatedText { 
 
   String get prefixLanguage;
 
-  Future<SplayTreeMap<String, String>> readTranslatedText();
+  Future<Map<String, String>> readTranslatedText();
 }

@@ -14,6 +14,9 @@ class FileOperatorNative with IFileOperator, StartableFunctionality {
   @override
   late final String route;
 
+  @override
+  String get directAddress => checkFirstIfInitialized(()=> route);
+
   FileOperatorNative({required this.isLocal, required this.rawRoute});
 
   @override

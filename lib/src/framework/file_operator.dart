@@ -4,6 +4,7 @@ import 'dart:typed_data';
 mixin IFileOperator {
   bool get isLocal;
   String get route;
+  String get directAddress;
 
   Future<bool> existsFile();
   Future<bool> existsDirectory();

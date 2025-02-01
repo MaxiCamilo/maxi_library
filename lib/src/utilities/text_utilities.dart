@@ -152,25 +152,25 @@ mixin TextUtilities {
       if (putWeekNames) {
         switch (date.weekday) {
           case DateTime.monday:
-            buffer.write(useShortNames ? tr('Mon') : tr('Monday'));
+            buffer.write(useShortNames ? const TranslatableText(message: 'Mon').toString() : const TranslatableText(message: 'Monday').toString());
             break;
           case DateTime.tuesday:
-            buffer.write(useShortNames ? tr('Tue') : tr('Tuesday'));
+            buffer.write(useShortNames ? const TranslatableText(message: 'Tue').toString() : const TranslatableText(message: 'Tuesday').toString());
             break;
           case DateTime.wednesday:
-            buffer.write(useShortNames ? tr('Wed') : tr('Wednesday'));
+            buffer.write(useShortNames ? const TranslatableText(message: 'Wed').toString() : const TranslatableText(message: 'Wednesday').toString());
             break;
           case DateTime.thursday:
-            buffer.write(useShortNames ? tr('Thu') : tr('Thursday'));
+            buffer.write(useShortNames ? const TranslatableText(message: 'Thu').toString() : const TranslatableText(message: 'Thursday').toString());
             break;
           case DateTime.friday:
-            buffer.write(useShortNames ? tr('Fri') : tr('Friday'));
+            buffer.write(useShortNames ? const TranslatableText(message: 'Fri').toString() : const TranslatableText(message: 'Friday').toString());
             break;
           case DateTime.saturday:
-            buffer.write(useShortNames ? tr('Sat') : tr('Saturday'));
+            buffer.write(useShortNames ? const TranslatableText(message: 'Sat').toString() : const TranslatableText(message: 'Saturday').toString());
             break;
           case DateTime.sunday:
-            buffer.write(useShortNames ? tr('Sun') : tr('Sunday'));
+            buffer.write(useShortNames ? const TranslatableText(message: 'Sun').toString() : const TranslatableText(message: 'Sunday').toString());
             break;
         }
 

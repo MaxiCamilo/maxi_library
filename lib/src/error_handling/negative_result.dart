@@ -53,9 +53,11 @@ class NegativeResult implements Exception, CustomSerialization, ICustomSerializa
     }
     if (item is SocketException) {
       return NegativeResult(
-          identifier: NegativeResultCodes.systemFailure, message: tr('A connection error occurred, Socket error %1: %2', [item.osError?.errorCode, item.message]), stackTrace: stackTrace?.toString() ?? '');
+          identifier: NegativeResultCodes.systemFailure,
+          message: TranslatableText(message: 'A connection error occurred, Socket error %1: %2', textParts: [item.osError?.errorCode, item.message]),
+          stackTrace: stackTrace?.toString() ?? '');
     } else {
-      return NegativeResult(identifier: codeDescription, message: tr('The functionality %1 failed: %2', [actionDescription, item.toString()]), stackTrace: stackTrace?.toString() ?? '');
+      return NegativeResult(identifier: codeDescription, message: TranslatableText(message: 'The functionality %1 failed: %2', textParts: [actionDescription, item.toString()]), stackTrace: stackTrace?.toString() ?? '');
     }
   }
 

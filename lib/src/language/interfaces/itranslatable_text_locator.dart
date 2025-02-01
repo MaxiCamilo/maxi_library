@@ -1,3 +1,3 @@
 mixin ITranslatableTextLocator {
-  Future<List<String>> searchTranslatableText();
+  Future<Set<String>> searchTranslatableText();
 }

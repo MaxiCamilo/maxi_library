@@ -15,6 +15,9 @@ class FileOperatorMask with IFileOperator, StartableFunctionality {
   @override
   String get route => isInitialized ? _masked.route : rawRoute;
 
+  @override
+  String get directAddress => _masked.directAddress;
+
   FileOperatorMask({required this.isLocal, required this.rawRoute});
 
   @override

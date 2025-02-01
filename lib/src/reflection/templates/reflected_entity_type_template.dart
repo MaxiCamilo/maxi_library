@@ -313,7 +313,8 @@ abstract class ReflectedEntityTypeTemplate with IReflectionType, IDeclarationRef
 
     if (errorList.isNotEmpty) {
       return NegativeResultEntity(
-        message: tr('Entity %1 contains %2 invalid %3', [formalName, errorList.length, errorList.length == 1 ? tr('property') : tr('properties')]),
+        message: TranslatableText(
+            message: 'Entity %1 contains %2 invalid %3', textParts: [formalName, errorList.length, errorList.length == 1 ? const TranslatableText(message: 'property') : const TranslatableText(message: 'properties')]),
         name: name,
         formalName: formalName,
         invalidProperties: errorList,
