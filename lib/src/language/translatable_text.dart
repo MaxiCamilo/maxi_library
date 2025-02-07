@@ -21,6 +21,9 @@ class TranslatableText with ICustomSerialization {
 
   factory TranslatableText.interpretFromJson({required dynamic text}) {
     if (text is String) {
+      if (text.isEmpty) {
+        return const AlreadyTranslatedText(message: '');
+      }
       return volatile(detail: tr('The translatable text cannot be interpreted (it must be JSON)'), function: () => TranslatableText.interpret(map: json.decode(text)));
     } else if (text is Map<String, dynamic>) {
       return TranslatableText.interpret(map: text);

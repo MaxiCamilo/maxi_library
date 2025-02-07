@@ -6,6 +6,7 @@ import 'package:meta/meta.dart';
 mixin FunctionalityWithLifeCycle on StartableFunctionality {
   final _streamControllers = <StreamController>[];
   final _streamSubscriptions = <StreamSubscription>[];
+  final _waiters = <Completer>[];
 
   Completer? _onDone;
 
@@ -38,6 +39,17 @@ mixin FunctionalityWithLifeCycle on StartableFunctionality {
     _streamControllers.clear();
     _streamSubscriptions.clear();
 
+    _waiters.iterar((x) {
+      x.completeErrorIfIncomplete(
+        NegativeResult(
+          identifier: NegativeResultCodes.functionalityCancelled,
+          message: const TranslatableText(message: 'The functionality was canceled'),
+        ),
+      );
+    });
+
+    _waiters.clear();
+
     _onDone?.completeIfIncomplete(this);
     _onDone = null;
   }
@@ -66,8 +78,18 @@ mixin FunctionalityWithLifeCycle on StartableFunctionality {
     return newController;
   }
 
-  void joinSubscription(StreamSubscription subscription) {
+  StreamSubscription<T> joinSubscription<T>(StreamSubscription<T> subscription) {
     _streamSubscriptions.add(subscription);
+    return subscription;
+  }
+
+  Completer<R> joinWaiter<R>([Completer<R>? waiter]) {
+    waiter ??= Completer<R>();
+    checkProgrammingFailure(thatChecks: const TranslatableText(message: 'The waiter was already completed'), result: () => !waiter!.isCompleted);
+
+    _waiters.add(waiter);
+    waiter.future.whenComplete(() => _waiters.remove(waiter));
+    return waiter;
   }
 
   StreamSubscription<R> joinEvent<R>({

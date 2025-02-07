@@ -45,7 +45,8 @@ mixin IApplicationManager on StartableFunctionality, IThreadInitializer {
       ThreadManager.instance = serverThreadsFactory.createServer(threadInitializer: []);
     }
 
-    DirectoryUtilities.changeFixedCurrentPatch(await getCurrentDirectory());
+    final directory = await getCurrentDirectory();
+    DirectoryUtilities.changeFixedCurrentPatch(directory);
   }
 
   void closeAllThreads();

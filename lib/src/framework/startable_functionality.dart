@@ -8,6 +8,7 @@ mixin StartableFunctionality implements IDisposable {
   Future<void> initializeFunctionality();
   bool _isInitialized = false;
   bool get isInitialized => _isInitialized;
+  bool get itIsInitializing => _semaphore != null && _semaphore!.isActive;
 
   @override
   bool get wasDiscarded => !_isInitialized;

@@ -111,7 +111,7 @@ class LanguageOperatorJson with StartableFunctionality, IOperatorLanguage {
 
     final candidate = _translatedTextsMaps[text];
     if (candidate == null) {
-      log('There is no translatable candidate for text $text');
+      log('There is no translatable candidate for text: "$text"');
       _translatedTextsMaps[text] = text;
       final bundle = bundles.selectItem((x) => x.prefixLanguage == prefixLanguage);
       if (bundle != null) {
