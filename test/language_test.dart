@@ -39,7 +39,7 @@ void main() {
        LanguageOperatorDirectory(selectedPrefix: 'es', translatedFileAddress: '/home/maxiro/Proyectos/maxi_proyectos/maxi_library/lang'),
       );
 
-      containErrorLog(detail: tr(''), function: () => 'jejeje'.convertQuickly.toInt(propertyName: tr('pepe')));
+      containErrorLog(detail: Oration(message:''), function: () => 'jejeje'.convertQuickly.toInt(propertyName: Oration(message:'pepe')));
     });*/
   });
 }

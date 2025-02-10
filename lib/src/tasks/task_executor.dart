@@ -139,7 +139,7 @@ class TaskExecutor with ITaskExecutor {
     career.linkStream(task.notifyCanceledTask);
     career.setTimeout(duration: task.howLongWaitRetry);
 
-    await containErrorLogAsync(detail: tr('waiting for task retry N° %1', [task.identifier]), function: () => career.waitOptionalItem());
+    await containErrorLogAsync(detail: Oration(message: 'waiting for task retry N° %1', textParts: [task.identifier]), function: () => career.waitOptionalItem());
     persistentTasks.remove(task);
 
     if (task.state == FunctionalTaskStates.failed || task.state == FunctionalTaskStates.awaiting) {

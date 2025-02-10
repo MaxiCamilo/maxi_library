@@ -29,8 +29,8 @@ class FieldDetected {
   });
 
   factory FieldDetected.fromFieldAnalizer({required VariableDeclaration declaration}) {
-    final parentList = volatile(detail:  tr('Parent of variable %1 is "VariableDeclarationList"', [declaration.toString()]), function: () => declaration.parent as VariableDeclarationList);
-    final parent = volatile(detail:  tr('Parent of variable %1 is "VariableDeclaration"', [parentList.toString()]), function: () => parentList.parent as FieldDeclaration);
+    final parentList = volatile(detail: Oration(message: 'Parent of variable %1 is "VariableDeclarationList"', textParts: [declaration.toString()]), function: () => declaration.parent as VariableDeclarationList);
+    final parent = volatile(detail: Oration(message: 'Parent of variable %1 is "VariableDeclaration"', textParts: [parentList.toString()]), function: () => parentList.parent as FieldDeclaration);
 
     return FieldDetected(
       annotations: parent.metadata.map((x) => AnnotationDetected.fromAnalizer(anotation: x)).toList(),

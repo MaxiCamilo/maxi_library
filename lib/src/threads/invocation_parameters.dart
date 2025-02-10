@@ -58,28 +58,29 @@ class InvocationParameters {
 
     throw throw NegativeResult(
       identifier: NegativeResultCodes.implementationFailure,
-      message: tr('There is no %1 type in the listing of invoction', [T]),
+      message: Oration(message: 'There is no %1 type in the listing of invoction', textParts: [T]),
     );
   }
 
   T fixed<T>([int location = 0]) {
-    checkProgrammingFailure(thatChecks: tr('The fixed parameter that is desired is zero or greater (%1 >= 0)', [location]), result: () => location >= 0);
-    checkProgrammingFailure(thatChecks: tr('The fixed parameter that is desired is less than the amount listed (%1 < %2)', [location, fixedParameters.length]), result: () => location < fixedParameters.length);
+    checkProgrammingFailure(thatChecks: Oration(message: 'The fixed parameter that is desired is zero or greater (%1 >= 0)', textParts: [location]), result: () => location >= 0);
+    checkProgrammingFailure(
+        thatChecks: Oration(message: 'The fixed parameter that is desired is less than the amount listed (%1 < %2)', textParts: [location, fixedParameters.length]), result: () => location < fixedParameters.length);
 
     final item = fixedParameters[location];
     return programmingFailure(
-      reasonFailure: tr('The item N° %1 is not %2, but it is %3', [location, T, item.runtimeType]),
+      reasonFailure: Oration(message: 'The item N° %1 is not %2, but it is %3', textParts: [location, T, item.runtimeType]),
       function: () => item as T,
     );
   }
 
   T named<T>(String name) {
-    checkProgrammingFailure(thatChecks: tr('The list is not empty'), result: () => namedParameters.isNotEmpty);
+    checkProgrammingFailure(thatChecks: Oration(message: 'The list is not empty'), result: () => namedParameters.isNotEmpty);
 
     final item = namedParameters[name];
-    checkProgrammingFailure(thatChecks: tr('The listing constains an item called "%1"', [name]), result: () => item != null);
+    checkProgrammingFailure(thatChecks: Oration(message: 'The listing constains an item called "%1"', textParts: [name]), result: () => item != null);
     return programmingFailure(
-      reasonFailure: tr('The item called  "%1"  is not %2, but it is %3', [name, T, item.runtimeType]),
+      reasonFailure: Oration(message: 'The item called  "%1"  is not %2, but it is %3', textParts: [name, T, item.runtimeType]),
       function: () => item as T,
     );
   }
@@ -95,7 +96,7 @@ class InvocationParameters {
     }
 
     return programmingFailure(
-      reasonFailure: tr('The item called %1 is not %2, but it is %3', [name, T, item.runtimeType]),
+      reasonFailure: Oration(message: 'The item called %1 is not %2, but it is %3', textParts: [name, T, item.runtimeType]),
       function: () => item as T,
     );
   }

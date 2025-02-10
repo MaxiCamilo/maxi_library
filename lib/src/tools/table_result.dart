@@ -26,7 +26,7 @@ class TableResult extends Iterable<Map<String, dynamic>> {
       if (item.length != columnsName.length) {
         throw NegativeResult(
           identifier: NegativeResultCodes.invalidProperty,
-          message: tr('Row %1 has %2 values, but it should have %3 values', [i, item.length, columnsName.length]),
+          message: Oration(message: 'Row %1 has %2 values, but it should have %3 values', textParts: [i, item.length, columnsName.length]),
         );
       }
       i += 1;
@@ -60,7 +60,7 @@ class TableResult extends Iterable<Map<String, dynamic>> {
     if (position < 0 || position > length) {
       throw NegativeResult(
         identifier: NegativeResultCodes.invalidFunctionality,
-        message: tr('The table has %1 rows, but an attempt was made to get the %2 position (starting from zero)', [length, position]),
+        message: Oration(message: 'The table has %1 rows, but an attempt was made to get the %2 position (starting from zero)', textParts: [length, position]),
       );
     }
 
@@ -98,7 +98,7 @@ class TableResult extends Iterable<Map<String, dynamic>> {
     if (position == null) {
       throw NegativeResult(
         identifier: NegativeResultCodes.nonExistent,
-        message: tr('The table does not contain the column %1', [columnName]),
+        message: Oration(message: 'The table does not contain the column %1', textParts: [columnName]),
       );
     }
 
@@ -116,7 +116,7 @@ class TableResult extends Iterable<Map<String, dynamic>> {
     if (position < 0 || position > length) {
       throw NegativeResult(
         identifier: NegativeResultCodes.invalidFunctionality,
-        message: tr('The table has %1 columns, but an attempt was made to get the %2 position (starting from zero)', [columnsName.length, position]),
+        message: Oration(message: 'The table has %1 columns, but an attempt was made to get the %2 position (starting from zero)', textParts: [columnsName.length, position]),
       );
     }
 
@@ -139,7 +139,7 @@ class TableResult extends Iterable<Map<String, dynamic>> {
       } else {
         throw NegativeResult(
           identifier: NegativeResultCodes.contextInvalidFunctionality,
-          message: tr('An attempt was made to add a row, but column %1 is missing', [name]),
+          message: Oration(message: 'An attempt was made to add a row, but column %1 is missing', textParts: [name]),
         );
       }
     }
@@ -153,7 +153,7 @@ class TableResult extends Iterable<Map<String, dynamic>> {
     if (list.length != columnsName.length) {
       throw NegativeResult(
         identifier: NegativeResultCodes.invalidValue,
-        message: tr('Cannot add an invalid list, the list contains %1 values, but the table have %2 columns', [list.length, columnsName.length]),
+        message: Oration(message: 'Cannot add an invalid list, the list contains %1 values, but the table have %2 columns', textParts: [list.length, columnsName.length]),
       );
     }
 
@@ -166,7 +166,7 @@ class TableResult extends Iterable<Map<String, dynamic>> {
     if (positionColumn < 0 || positionColumn > length) {
       throw NegativeResult(
         identifier: NegativeResultCodes.invalidFunctionality,
-        message: tr('The table has %1 columns, but an attempt was made to get the %2 position (starting from zero)', [columnsName.length, positionColumn]),
+        message: Oration(message: 'The table has %1 columns, but an attempt was made to get the %2 position (starting from zero)', textParts: [columnsName.length, positionColumn]),
       );
     }
 
@@ -180,7 +180,7 @@ class TableResult extends Iterable<Map<String, dynamic>> {
     if (position == null) {
       throw NegativeResult(
         identifier: NegativeResultCodes.nonExistent,
-        message: tr('The table does not contain the column %1', [columnName]),
+        message: Oration(message: 'The table does not contain the column %1', textParts: [columnName]),
       );
     }
 

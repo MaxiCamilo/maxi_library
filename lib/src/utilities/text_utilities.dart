@@ -152,25 +152,25 @@ mixin TextUtilities {
       if (putWeekNames) {
         switch (date.weekday) {
           case DateTime.monday:
-            buffer.write(useShortNames ? const TranslatableText(message: 'Mon').toString() : const TranslatableText(message: 'Monday').toString());
+            buffer.write(useShortNames ? const Oration(message: 'Mon').toString() : const Oration(message: 'Monday').toString());
             break;
           case DateTime.tuesday:
-            buffer.write(useShortNames ? const TranslatableText(message: 'Tue').toString() : const TranslatableText(message: 'Tuesday').toString());
+            buffer.write(useShortNames ? const Oration(message: 'Tue').toString() : const Oration(message: 'Tuesday').toString());
             break;
           case DateTime.wednesday:
-            buffer.write(useShortNames ? const TranslatableText(message: 'Wed').toString() : const TranslatableText(message: 'Wednesday').toString());
+            buffer.write(useShortNames ? const Oration(message: 'Wed').toString() : const Oration(message: 'Wednesday').toString());
             break;
           case DateTime.thursday:
-            buffer.write(useShortNames ? const TranslatableText(message: 'Thu').toString() : const TranslatableText(message: 'Thursday').toString());
+            buffer.write(useShortNames ? const Oration(message: 'Thu').toString() : const Oration(message: 'Thursday').toString());
             break;
           case DateTime.friday:
-            buffer.write(useShortNames ? const TranslatableText(message: 'Fri').toString() : const TranslatableText(message: 'Friday').toString());
+            buffer.write(useShortNames ? const Oration(message: 'Fri').toString() : const Oration(message: 'Friday').toString());
             break;
           case DateTime.saturday:
-            buffer.write(useShortNames ? const TranslatableText(message: 'Sat').toString() : const TranslatableText(message: 'Saturday').toString());
+            buffer.write(useShortNames ? const Oration(message: 'Sat').toString() : const Oration(message: 'Saturday').toString());
             break;
           case DateTime.sunday:
-            buffer.write(useShortNames ? const TranslatableText(message: 'Sun').toString() : const TranslatableText(message: 'Sunday').toString());
+            buffer.write(useShortNames ? const Oration(message: 'Sun').toString() : const Oration(message: 'Sunday').toString());
             break;
         }
 

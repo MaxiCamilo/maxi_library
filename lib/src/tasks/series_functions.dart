@@ -35,7 +35,7 @@ class SeriesFunctions with IFunctionalControllerForTask {
         _results.add(result);
         _position += 1;
       } catch (ex) {
-        final nr = NegativeResult.searchNegativity(item: ex, actionDescription: tr('Module number %1', [_position + 1]));
+        final nr = NegativeResult.searchNegativity(item: ex, actionDescription: Oration(message: 'Module number %1', textParts:[_position + 1]));
         throw nr;
       }
     }
@@ -63,7 +63,7 @@ class SeriesFunctions with IFunctionalControllerForTask {
     if (_isCanceled) {
       throw NegativeResult(
         identifier: NegativeResultCodes.functionalityCancelled,
-        message: tr('The functionality was canceled'),
+        message: Oration(message: 'The functionality was canceled'),
       );
     }
   }

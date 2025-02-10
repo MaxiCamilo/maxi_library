@@ -36,14 +36,14 @@ extension IteratorExtension<T> on Iterable<T> {
     return null;
   }
 
-  T selectRequiredItem(bool Function(T x) funcion, [TranslatableText? errorText]) {
+  T selectRequiredItem(bool Function(T x) funcion, [Oration? errorText]) {
     for (final item in this) {
       if (funcion(item)) {
         return item;
       }
     }
 
-    throw NegativeResult(identifier: NegativeResultCodes.nonExistent, message: errorText ?? tr('The item does not exists'));
+    throw NegativeResult(identifier: NegativeResultCodes.nonExistent, message: errorText ?? Oration(message: 'The item does not exists'));
   }
 
   Future<T?> selectItemAsync(Future<bool> Function(T x) funcion) async {
@@ -135,7 +135,7 @@ extension IteratorExtension<T> on Iterable<T> {
 
   T directObtaining(
     bool Function(T x) filtro, {
-    TranslatableText? ifNotExists,
+    Oration? ifNotExists,
   }) {
     for (final item in this) {
       if (filtro(item)) {
@@ -145,7 +145,7 @@ extension IteratorExtension<T> on Iterable<T> {
 
     throw NegativeResult(
       identifier: NegativeResultCodes.nonExistent,
-      message: ifNotExists ?? tr('Item not found'),
+      message: ifNotExists ?? Oration(message: 'Item not found'),
     );
   }
 
@@ -211,13 +211,13 @@ extension IteratorExtension<T> on Iterable<T> {
           message: rn.message,
           identifier: rn.identifier,
           name: (i + 1).toString(),
-          formalName: tr('Item located at %1', [i + 1]),
+          formalName: Oration(message: 'Item located at %1', textParts: [i + 1]),
           cause: rn.cause,
         );
       } catch (ex) {
         throw NegativeResult(
           identifier: NegativeResultCodes.nonStandardError,
-          message: tr('In the list, an item located at position %1 caused an error: %2', [i + 1, ex.toString()]),
+          message: Oration(message: 'In the list, an item located at position %1 caused an error: %2', textParts: [i + 1, ex.toString()]),
           cause: ex,
         );
       }

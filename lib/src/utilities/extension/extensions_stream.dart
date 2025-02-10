@@ -57,7 +57,7 @@ extension IteratorStream<T> on Stream<T> {
         waiter.completeError(
           NegativeResult(
             identifier: NegativeResultCodes.functionalityCancelled,
-            message: tr('The stream was expected to return an item, but the stream was closed'),
+            message: Oration(message: 'The stream was expected to return an item, but the stream was closed'),
           ),
         );
       },
@@ -115,6 +115,4 @@ extension IteratorStream<T> on Stream<T> {
       }
     }
   }
-
-  
 }

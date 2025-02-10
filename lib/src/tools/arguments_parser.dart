@@ -44,13 +44,13 @@ class ArgumentsParser {
     if (list.isEmpty) {
       throw NegativeResult(
         identifier: NegativeResultCodes.invalidProperty,
-        message: tr('The argument %1 is missing a value', [key]),
+        message: Oration(message: 'The argument %1 is missing a value', textParts: [key]),
       );
     }
     if (list.length > 1) {
       throw NegativeResult(
         identifier: NegativeResultCodes.invalidProperty,
-        message: tr('Argument %1 only takes one value', [key]),
+        message: Oration(message: 'Argument %1 only takes one value', textParts: [key]),
       );
     }
 
@@ -63,8 +63,6 @@ class ArgumentsParser {
       return null;
     }
 
-    return GeneralConverter(value).toInt(propertyName: tr('', [key]));
+    return GeneralConverter(value).toInt(propertyName: Oration(message: '', textParts: [key]));
   }
-
-  
 }

@@ -10,13 +10,13 @@ class CheckNumberRange extends ValueValidator {
   });
 
   @override
-  TranslatableText get formalName => const TranslatableText(message: 'Numerical limit');
+  Oration get formalName => const Oration(message: 'Numerical limit');
 
   @override
-  NegativeResult? performValidation({required TranslatableText formalName, required String name, required item, required parentEntity}) {
+  NegativeResult? performValidation({required Oration formalName, required String name, required item, required parentEntity}) {
     if (item is! num) {
       return NegativeResultValue(
-        message: tr('The property %1 only accepts numbers', [name]),
+        message: Oration(message: 'The property %1 only accepts numbers', textParts:[name]),
         formalName: formalName,
         name: name,
         value: item,
@@ -25,7 +25,7 @@ class CheckNumberRange extends ValueValidator {
 
     if (item < minimum) {
       return NegativeResultValue(
-        message: tr('The property %1 is constrained to numeric values of %2 or more', [name, minimum]),
+        message: Oration(message: 'The property %1 is constrained to numeric values of %2 or more', textParts:[name, minimum]),
         formalName: formalName,
         name: name,
         value: item,
@@ -34,7 +34,7 @@ class CheckNumberRange extends ValueValidator {
 
     if (item > maximum) {
       return NegativeResultValue(
-        message: tr('The property %1 is constrained to numeric values not exceeding %2', [name, maximum]),
+        message: Oration(message: 'The property %1 is constrained to numeric values not exceeding %2',textParts: [name, maximum]),
         formalName: formalName,
         name: name,
         value: item,

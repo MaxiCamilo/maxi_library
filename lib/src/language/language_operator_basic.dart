@@ -23,7 +23,7 @@ class LanguageOperatorBasic with IOperatorLanguage {
   }
 
   @override
-  String translateText(TranslatableText text) {
+  String translateText(Oration text) {
     String formated = LanguageManager.translateString(text.message);
 
     if (text.isFixed) {
@@ -33,10 +33,10 @@ class LanguageOperatorBasic with IOperatorLanguage {
     for (int i = 0; i < text.textParts.length; i++) {
       final part = text.textParts[i];
       late String textGenerated;
-      if (part is AlreadyTranslatedText) {
+      if (part is TranslatedOration) {
         textGenerated = part.toString();
       }
-      if (part is TranslatableText) {
+      if (part is Oration) {
         textGenerated = translateText(part);
       } else {
         textGenerated = part.toString();

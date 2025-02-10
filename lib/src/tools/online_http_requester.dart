@@ -30,7 +30,7 @@ class OnlineHttpRequester with IHttpRequester {
     int? maxSize,
   }) async {
     if (type == HttpMethodType.anyMethod || type == HttpMethodType.webSocket) {
-      throw NegativeResult(identifier: NegativeResultCodes.incorrectFormat, message: tr('Incorrect method type, It can\'t be anyMethod or webSocket'));
+      throw NegativeResult(identifier: NegativeResultCodes.incorrectFormat, message: Oration(message: 'Incorrect method type, It can\'t be anyMethod or webSocket'));
     }
 
     _activeRequest += 1;
@@ -61,10 +61,10 @@ class OnlineHttpRequester with IHttpRequester {
       activeRequests.remove(future);
     }
 
-    if (maxSize != null && volatile(detail: tr('The response from %1 did not return the body size', [url]), function: () => response.contentLength!) > maxSize) {
+    if (maxSize != null && volatile(detail: Oration(message: 'The response from %1 did not return the body size', textParts: [url]), function: () => response.contentLength!) > maxSize) {
       throw NegativeResult(
         identifier: NegativeResultCodes.resultInvalid,
-        message: tr('The request for %1 would return information of size %2 bytes, but the maximum supported is %3', [url, response.contentLength!, maxSize]),
+        message: Oration(message: 'The request for %1 would return information of size %2 bytes, but the maximum supported is %3', textParts: [url, response.contentLength!, maxSize]),
       );
     }
 
@@ -81,17 +81,14 @@ class OnlineHttpRequester with IHttpRequester {
       return ResponseHttpRequest<T>(content: response.bodyBytes as T, codeResult: response.statusCode, url: url);
     } else if (T == String || T == dynamic) {
       return ResponseHttpRequest<T>(content: response.body as T, codeResult: response.statusCode, url: url);
-    } 
-    else if(T == Map<String,dynamic>){
-      return ResponseHttpRequest<T>(content: ConverterUtilities.interpretToObjectJson(text: response.body,extra: tr('from the server')) as T, codeResult: response.statusCode, url: url);
-    }
-    
-    else if (T.toString() == 'void') {
+    } else if (T == Map<String, dynamic>) {
+      return ResponseHttpRequest<T>(content: ConverterUtilities.interpretToObjectJson(text: response.body, extra: Oration(message: 'from the server')) as T, codeResult: response.statusCode, url: url);
+    } else if (T.toString() == 'void') {
       return ResponseHttpRequest<T>(content: '' as T, codeResult: response.statusCode, url: url);
     } else {
       throw NegativeResult(
         identifier: NegativeResultCodes.wrongType,
-        message: tr('This type of request only returns string or Uint8List'),
+        message: Oration(message: 'This type of request only returns string or Uint8List'),
       );
     }
   }
@@ -114,7 +111,7 @@ class OnlineHttpRequester with IHttpRequester {
   Never _throwTimeout(String url) {
     throw NegativeResult(
       identifier: NegativeResultCodes.timeout,
-      message: tr('Waited too long for the response from url %1', [url]),
+      message: Oration(message: 'Waited too long for the response from url %1', textParts: [url]),
     );
   }
 

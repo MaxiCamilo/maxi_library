@@ -37,7 +37,7 @@ class ThreadIsolatorServer with IThreadInvoker, IThreadManager, IThreadManagerSe
 
   @override
   Future<void> setEntity(newEnity) {
-    throw NegativeResult(identifier: NegativeResultCodes.implementationFailure, message: tr('This is a server thread, cannot define an entity in it'));
+    throw NegativeResult(identifier: NegativeResultCodes.implementationFailure, message: Oration(message: 'This is a server thread, cannot define an entity in it'));
   }
 
   @override
@@ -60,7 +60,7 @@ class ThreadIsolatorServer with IThreadInvoker, IThreadManager, IThreadManagerSe
     if (connector == null) {
       throw NegativeResult(
         identifier: NegativeResultCodes.contextInvalidFunctionality,
-        message: tr('There is no thread that manages the entity %1', [T]),
+        message: Oration(message: 'There is no thread that manages the entity %1', textParts: [T]),
       );
     }
 
@@ -75,7 +75,7 @@ class ThreadIsolatorServer with IThreadInvoker, IThreadManager, IThreadManagerSe
     if (connector == null) {
       throw NegativeResult(
         identifier: NegativeResultCodes.contextInvalidFunctionality,
-        message: tr('There is no thread that manages the entity %1', [T]),
+        message: Oration(message: 'There is no thread that manages the entity %1', textParts: [T]),
       );
     }
 
@@ -145,7 +145,7 @@ class ThreadIsolatorServer with IThreadInvoker, IThreadManager, IThreadManagerSe
       if (ifExistsOmit) {
         return actualConnection;
       } else {
-        throw NegativeResult(identifier: NegativeResultCodes.contextInvalidFunctionality, message: tr('Thread with entity %1 has already been mounted', [T]));
+        throw NegativeResult(identifier: NegativeResultCodes.contextInvalidFunctionality, message: Oration(message: 'Thread with entity %1 has already been mounted', textParts: [T]));
       }
     }
 
@@ -181,7 +181,7 @@ class ThreadIsolatorServer with IThreadInvoker, IThreadManager, IThreadManagerSe
     if (connector == null) {
       throw NegativeResult(
         identifier: NegativeResultCodes.contextInvalidFunctionality,
-        message: tr('There is no thread that manages the entity %1', [T]),
+        message: Oration(message: 'There is no thread that manages the entity %1', textParts: [T]),
       );
     }
 

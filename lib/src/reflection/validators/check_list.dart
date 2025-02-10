@@ -8,13 +8,13 @@ class CheckList extends ValueValidator {
   const CheckList({this.maximumLength, this.minimumLength, this.validatos = const []});
 
   @override
-  TranslatableText get formalName => const TranslatableText(message: 'Listing validator');
+  Oration get formalName => const Oration(message: 'Listing validator');
 
   @override
-  NegativeResult? performValidation({required String name, required TranslatableText formalName, required item, required parentEntity}) {
+  NegativeResult? performValidation({required String name, required Oration formalName, required item, required parentEntity}) {
     if (item is! Iterable) {
       return NegativeResultValue(
-        message: tr('The property %1 only accepts list', [name]),
+        message: Oration(message: 'The property %1 only accepts list',textParts: [name]),
         formalName: formalName,
         name: name,
         value: item,
@@ -23,7 +23,7 @@ class CheckList extends ValueValidator {
 
     if (maximumLength != null && maximumLength! < item.length) {
       return NegativeResultValue(
-        message: tr('The list of property %1 has %2 items, but a maximum of %3 items is accepted', [name, item.length, maximumLength!]),
+        message: Oration(message: 'The list of property %1 has %2 items, but a maximum of %3 items is accepted',textParts: [name, item.length, maximumLength!]),
         formalName: formalName,
         name: name,
         value: item,
@@ -32,7 +32,7 @@ class CheckList extends ValueValidator {
 
     if (minimumLength != null && minimumLength! > item.length) {
       return NegativeResultValue(
-        message: tr('The list of property %1 has %2 items, but at least %3 items are required', [name, item.length, minimumLength!]),
+        message: Oration(message: 'The list of property %1 has %2 items, but at least %3 items are required',textParts: [name, item.length, minimumLength!]),
         formalName: formalName,
         name: name,
         value: item,

@@ -17,13 +17,13 @@ class IsolatedThreadPipelineManager {
   IsolatedThreadPipelineManager({required this.thread});
 
   DestinationIsolatedThreadStream getDestinationStream(int id) => volatile(
-      detail: tr('Origin Pipe is not found (ID %1)', [id]),
+      detail: Oration(message: 'Origin Pipe is not found (ID %1)', textParts: [id]),
       function: () => _destinationStreams.selectItem(
             (x) => x.destinationID == id,
           )!);
 
   OriginIsolatedThreadStream getOriginStream(int id) => volatile(
-      detail: tr('Origin Pipe is not found (ID %1)', [id]),
+      detail: Oration(message: 'Origin Pipe is not found (ID %1)', textParts: [id]),
       function: () => _originStreams.selectItem(
             (x) => x.originID == id,
           )!);
@@ -89,7 +89,7 @@ class IsolatedThreadPipelineManager {
   }
 
   static Future<void> _createEntityPipelineInThread<T extends Object, R, S>(InvocationContext context, IPipe<R, S> pipe) async {
-    final entity = await volatileAsync(detail: tr('Thread does not have entity %1', [T]), function: () async => (await context.thread.getEntity<T>())!);
+    final entity = await volatileAsync(detail: Oration(message: 'Thread does not have entity %1', textParts: [T]), function: () async => (await context.thread.getEntity<T>())!);
     final function = context.named<FutureOr<void> Function(T, InvocationContext, IPipe<R, S>)>('_#EF()#_');
     return await function(entity, context, pipe);
   }

@@ -5,10 +5,10 @@ mixin IDeclarationReflector {
   List<ValueValidator> get validators;
 
   String get name;
-  TranslatableText get formalName;
+  Oration get formalName;
   IReflectionType get reflectedType;
   bool get isStatic;
-  TranslatableText get description;
+  Oration get description;
 
   NegativeResultValue? verifyValue({required dynamic value, required dynamic parentEntity}) {
     for (final val in validators) {

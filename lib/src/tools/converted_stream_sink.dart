@@ -19,7 +19,7 @@ class ConvertedStreamSink<I, O> implements StreamSink<I> {
     if (event is O) {
       origin.add(event);
     } else {
-      throw NegativeResult(identifier: NegativeResultCodes.implementationFailure, message: tr('item of type %1 is not compatible with type %2', [I, O]));
+      throw NegativeResult(identifier: NegativeResultCodes.implementationFailure, message: Oration(message: 'item of type %1 is not compatible with type %2',textParts: [I, O]));
     }
   }
 

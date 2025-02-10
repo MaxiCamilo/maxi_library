@@ -29,7 +29,7 @@ class EntityFile<T> with StartableFunctionality {
     if (_item == null) {
       throw NegativeResult(
         identifier: NegativeResultCodes.uninitializedFunctionality,
-        message: tr('File not uploaded'),
+        message: Oration(message: 'File not uploaded'),
       );
     } else {
       return _item!;

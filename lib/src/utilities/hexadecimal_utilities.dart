@@ -33,14 +33,14 @@ mixin HexadecimalUtilities {
     if (numero > uint32MaxValue) {
       throw NegativeResult(
         identifier: NegativeResultCodes.wrongType,
-        message: tr('It is not possible to convert the number value to a 32-bit binary, because it exceeds its maximum (%1)', [numero]),
+        message: Oration(message: 'It is not possible to convert the number value to a 32-bit binary, because it exceeds its maximum (%1)', textParts: [numero]),
       );
     }
 
     if (numero < 0) {
       throw NegativeResult(
         identifier: NegativeResultCodes.wrongType,
-        message: tr('It is not possible to convert the number value to a 32-bit binary, because it is negative'),
+        message: const Oration(message: 'It is not possible to convert the number value to a 32-bit binary, because it is negative'),
       );
     }
 
@@ -58,14 +58,14 @@ mixin HexadecimalUtilities {
     if (numero > uint8MaxValue) {
       throw NegativeResult(
         identifier: NegativeResultCodes.wrongType,
-        message: tr('It is not possible to convert the number value to a 8-bit binary, because it exceeds its maximum (%1)', [numero]),
+        message: Oration(message: 'It is not possible to convert the number value to a 8-bit binary, because it exceeds its maximum (%1)', textParts: [numero]),
       );
     }
 
     if (numero < 0) {
       throw NegativeResult(
         identifier: NegativeResultCodes.wrongType,
-        message: tr('It is not possible to convert the number value to a 8-bit binary, because it is negative'),
+        message: Oration(message: 'It is not possible to convert the number value to a 8-bit binary, because it is negative'),
       );
     }
 
@@ -76,14 +76,14 @@ mixin HexadecimalUtilities {
     if (numero > uint16MaxValue) {
       throw NegativeResult(
         identifier: NegativeResultCodes.wrongType,
-        message: tr('It is not possible to convert the number value to a 16-bit binary, because it exceeds its maximum (%1)', [numero]),
+        message: Oration(message: 'It is not possible to convert the number value to a 16-bit binary, because it exceeds its maximum (%1)', textParts: [numero]),
       );
     }
 
     if (numero < 0) {
       throw NegativeResult(
         identifier: NegativeResultCodes.wrongType,
-        message: tr('It is not possible to convert the number value to a 16-bit binary, because it is negative'),
+        message: Oration(message: 'It is not possible to convert the number value to a 16-bit binary, because it is negative'),
       );
     }
 
@@ -165,7 +165,7 @@ mixin HexadecimalUtilities {
 
   static bool getBit({required int number, required int position}) {
     if (position > 7) {
-      throw NegativeResult(identifier: NegativeResultCodes.wrongType, message: tr('A 1-byte number must be between 0 and 7.'));
+      throw NegativeResult(identifier: NegativeResultCodes.wrongType, message: Oration(message: 'A 1-byte number must be between 0 and 7.'));
     }
 
     //Si es 7, con saber si es impar ya da el resultado
@@ -185,7 +185,7 @@ mixin HexadecimalUtilities {
       }
     }
 
-    throw NegativeResult(identifier: NegativeResultCodes.abnormalOperation, message: tr('This functionality should not be here'));
+    throw NegativeResult(identifier: NegativeResultCodes.abnormalOperation, message: Oration(message: 'This functionality should not be here'));
   }
 
   static List<bool> convertByteToBinary(int numero) {
@@ -207,7 +207,7 @@ mixin HexadecimalUtilities {
 
   static int generateByteFromBinary(List<bool> dato) {
     if (dato.length != 8) {
-      throw NegativeResult(identifier: NegativeResultCodes.wrongType, message: tr('A 1-byte number must be 8 bites.'));
+      throw NegativeResult(identifier: NegativeResultCodes.wrongType, message: Oration(message: 'A 1-byte number must be 8 bites.'));
     }
 
     int dio = 0;
@@ -223,7 +223,7 @@ mixin HexadecimalUtilities {
 
   static int changeBitFromByte({required int number, required int position, required bool value}) {
     if (position > 7) {
-      throw NegativeResult(identifier: NegativeResultCodes.wrongType, message: tr('A 1-byte number must be between 0 and 7'));
+      throw NegativeResult(identifier: NegativeResultCodes.wrongType, message: Oration(message: 'A 1-byte number must be between 0 and 7'));
     }
 
     var serializado = convertByteToBinary(number);
@@ -238,12 +238,12 @@ mixin HexadecimalUtilities {
   }
 
   static int passBinaryLiteralToNumber(Iterable<int> datos) {
-    return GeneralConverter(datos.map((x) => TextUtilities.zeroFill(value: x.toRadixString(16), quantityZeros: 2)).join()).toInt(propertyName: tr('Convert Hexadecimal to literal decimal (integer)'));
+    return GeneralConverter(datos.map((x) => TextUtilities.zeroFill(value: x.toRadixString(16), quantityZeros: 2)).join()).toInt(propertyName: Oration(message: 'Convert Hexadecimal to literal decimal (integer)'));
   }
 
   static int passLiteralHexEquivalentNumeric(String numero) {
     if (numero.length > 2) {
-      throw NegativeResult(identifier: NegativeResultCodes.wrongType, message: tr('The number %1 has 2 digits', []));
+      throw NegativeResult(identifier: NegativeResultCodes.wrongType, message: const Oration(message: 'The number %1 has 2 digits'));
     } else if (numero.length == 2) {
       for (final item in _referencesTable.entries) {
         int maximo = 0;
@@ -254,17 +254,17 @@ mixin HexadecimalUtilities {
               return maximo + otroItem.key;
             }
           }
-          throw NegativeResult(identifier: NegativeResultCodes.wrongType, message: tr('The number %1 is not hexadecimal valid number', []));
+          throw NegativeResult(identifier: NegativeResultCodes.wrongType, message: const Oration(message: 'The number %1 is not hexadecimal valid number'));
         }
       }
-      throw NegativeResult(identifier: NegativeResultCodes.wrongType, message: tr('The number %1 is not hexadecimal valid number', []));
+      throw NegativeResult(identifier: NegativeResultCodes.wrongType, message: const Oration(message: 'The number %1 is not hexadecimal valid number'));
     } else if (numero.length == 1) {
       for (final item in _referencesTable.entries) {
         if (item.value == numero) {
           return item.key;
         }
       }
-      throw NegativeResult(identifier: NegativeResultCodes.wrongType, message: tr('The number %1 is not hexadecimal valid number', []));
+      throw NegativeResult(identifier: NegativeResultCodes.wrongType, message: const Oration(message: 'The number %1 is not hexadecimal valid number'));
     } else {
       return 0;
     }

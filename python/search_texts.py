@@ -4,7 +4,7 @@ import json
 import sys
 
 def buscar_textos_en_archivos(directorio, archivo_salida):
-    # Patrones para tr() y tr()
+    # Patrones para Oration(message:) y Oration(message:)
     patron_tr = r'tr\((.*?)\)'
     patron_trc = r'trc\((.*?)\)'
 
@@ -18,13 +18,13 @@ def buscar_textos_en_archivos(directorio, archivo_salida):
                 with open(ruta_archivo, 'r', encoding='utf-8') as f:
                     contenido = f.read()
 
-                    # Buscar tr()
+                    # Buscar Oration(message:)
                     coincidencias_tr = re.findall(patron_tr, contenido)
                     for coincidencia in coincidencias_tr:
                         texto = coincidencia.strip().strip("'\"")
                         resultados[texto] = ""
 
-                    # Buscar tr()
+                    # Buscar Oration(message:)
                     coincidencias_trc = re.findall(patron_trc, contenido)
                     for coincidencia in coincidencias_trc:
                         # Extraer solo el texto entre comillas simples

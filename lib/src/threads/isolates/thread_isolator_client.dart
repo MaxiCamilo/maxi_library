@@ -56,7 +56,7 @@ class ThreadIsolatorClient with IThreadInvoker, IThreadManager, IThreadManagerCl
     }
 
     return volatile(
-      detail: tr('Thread %1 does not handle entity %2, it handles entity %3', [threadID, T, _entity.runtimeType]),
+      detail: Oration(message: 'Thread %1 does not handle entity %2, it handles entity %3', textParts: [threadID, T, _entity.runtimeType]),
       function: () => _entity as T,
     );
   }
@@ -79,7 +79,7 @@ class ThreadIsolatorClient with IThreadInvoker, IThreadManager, IThreadManagerCl
 
     final newConnection = await getEntityInstance<T>();
     if (newConnection == null) {
-      throw NegativeResult(identifier: NegativeResultCodes.contextInvalidFunctionality, message: tr('There is no thread that manages the entity %1', [T]));
+      throw NegativeResult(identifier: NegativeResultCodes.contextInvalidFunctionality, message: Oration(message: 'There is no thread that manages the entity %1', textParts: [T]));
     }
 
     return newConnection.callEntityFunction<T, R>(function: function, parameters: parameters);
@@ -98,7 +98,7 @@ class ThreadIsolatorClient with IThreadInvoker, IThreadManager, IThreadManagerCl
 
     final newConnection = await getEntityInstance<T>();
     if (newConnection == null) {
-      throw NegativeResult(identifier: NegativeResultCodes.contextInvalidFunctionality, message: tr('There is no thread that manages the entity %1', [T]));
+      throw NegativeResult(identifier: NegativeResultCodes.contextInvalidFunctionality, message: Oration(message: 'There is no thread that manages the entity %1', textParts: [T]));
     }
 
     return newConnection.callEntityStream<T, R>(function: function, parameters: parameters);
@@ -136,7 +136,7 @@ class ThreadIsolatorClient with IThreadInvoker, IThreadManager, IThreadManagerCl
   }
 
   static Future<SendPort?> _getEntityInstance<T extends Object>(InvocationContext context) async {
-    final server = volatile(detail: tr('Thread is not ThreadIsolatorServer'), function: () => context.thread as ThreadIsolatorServer);
+    final server = volatile(detail: Oration(message: 'Thread is not ThreadIsolatorServer'), function: () => context.thread as ThreadIsolatorServer);
 
     final connection = await server.getEntityInstance<T>();
     if (connection == null) {
@@ -165,7 +165,7 @@ class ThreadIsolatorClient with IThreadInvoker, IThreadManager, IThreadManagerCl
   static Future<SendPort?> _getIDInstance(InvocationContext context) async {
     final id = context.firts<int>();
 
-    final server = volatile(detail: tr('Thread is not ThreadIsolatorServer'), function: () => context.thread as ThreadIsolatorServer);
+    final server = volatile(detail: Oration(message: 'Thread is not ThreadIsolatorServer'), function: () => context.thread as ThreadIsolatorServer);
 
     final connection = await server.getIDInstance(id: id);
     if (connection == null) {
@@ -190,7 +190,7 @@ class ThreadIsolatorClient with IThreadInvoker, IThreadManager, IThreadManagerCl
     final entity = context.firts<T>();
     final ifExistsOmit = context.second<bool>();
 
-    final server = volatile(detail: tr('Thread is not ThreadIsolatorServer'), function: () => context.thread as ThreadIsolatorServer);
+    final server = volatile(detail: Oration(message: 'Thread is not ThreadIsolatorServer'), function: () => context.thread as ThreadIsolatorServer);
 
     final connection = await server.mountEntity<T>(entity: entity, ifExistsOmit: ifExistsOmit);
 
@@ -208,7 +208,7 @@ class ThreadIsolatorClient with IThreadInvoker, IThreadManager, IThreadManagerCl
 
       Future.delayed(Duration(milliseconds: 20)).whenComplete(() {
         containErrorLog(
-          detail: tr('[IsolateInitializer] FAILED!: The negative result cannot be sent to the other isolator.'),
+          detail: Oration(message: '[IsolateInitializer] FAILED!: The negative result cannot be sent to the other isolator.'),
           function: () => Isolate.exit(),
         );
       });
@@ -270,7 +270,7 @@ class ThreadIsolatorClient with IThreadInvoker, IThreadManager, IThreadManagerCl
     if (connector == null) {
       throw NegativeResult(
         identifier: NegativeResultCodes.contextInvalidFunctionality,
-        message: tr('There is no thread that manages the entity %1', [T]),
+        message: Oration(message: 'There is no thread that manages the entity %1', textParts:[T]),
       );
     }
 

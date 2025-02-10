@@ -18,7 +18,7 @@ mixin DirectoryUtilities {
 
   static String get currentPath {
     if (_fixedCurrentPath == null) {
-      throw NegativeResult(identifier: NegativeResultCodes.implementationFailure, message: tr('Application operator not initialized, need to know local path'));
+      throw NegativeResult(identifier: NegativeResultCodes.implementationFailure, message: Oration(message: 'Application operator not initialized, need to know local path'));
     }
 
     return _fixedCurrentPath!;
@@ -99,9 +99,9 @@ mixin DirectoryUtilities {
     }
 
     final carpeta = Directory(direction);
-    checkProgrammingFailure(thatChecks: tr('Temporary folder not found'), result: () => !carpeta.existsSync());
+    checkProgrammingFailure(thatChecks: Oration(message:'Temporary folder not found'), result: () => !carpeta.existsSync());
 
-    await volatileAsync(detail: tr('Something went wrong while creating directory %1', [direction]), function: () => carpeta.create());
+    await volatileAsync(detail: Oration(message:'Something went wrong while creating directory %1', [direction]), function: () => carpeta.create());
 
     late final T dio;
     try {

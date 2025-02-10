@@ -5,7 +5,7 @@ mixin LanguageManager {
 
   static IOperatorLanguage get instance => _instance;
 
-  static String translateText(TranslatableText text) => _instance.translateText(text);
+  static String translateText(Oration text) => _instance.translateText(text);
 
   static String translateString(String text) => _instance.translateString(text);
 

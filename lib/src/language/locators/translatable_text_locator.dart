@@ -36,7 +36,7 @@ class TranslatableTextLocator with ITranslatableTextLocator {
 
           final trRegex = RegExp(r"tr\(\s*'(.*?)'\s*\)");
           final trcRegex = RegExp(r"trc\(\s*'(.*?)'");
-          final messageRegex = RegExp(r"TranslatableText\(\s*message:\s*'([^']*)'", dotAll: true);
+          final messageRegex = RegExp(r"Oration\(\s*message:\s*'([^']*)'", dotAll: true);
 
           for (var match in trRegex.allMatches(contents)) {
             texts.add(match.group(1)!);

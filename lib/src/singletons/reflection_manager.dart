@@ -49,7 +49,7 @@ class ReflectionManager with IThreadInitializer {
     if (exists == null) {
       throw NegativeResult(
         identifier: NegativeResultCodes.nonExistent,
-        message: tr('There is no value reflector adapter for type %1', [type]),
+        message: Oration(message: 'There is no value reflector adapter for type %1', textParts: [type]),
       );
     }
 
@@ -86,7 +86,7 @@ class ReflectionManager with IThreadInitializer {
     if (exists == null) {
       throw NegativeResult(
         identifier: NegativeResultCodes.nonExistent,
-        message: tr('There is no primitive reflector adapter for type %1', [type]),
+        message: Oration(message: 'There is no primitive reflector adapter for type %1', textParts: [type]),
       );
     }
 
@@ -190,7 +190,7 @@ class ReflectionManager with IThreadInitializer {
     if (item == null) {
       throw NegativeResult(
         identifier: NegativeResultCodes.nonExistent,
-        message: tr('There is no entity reflector for type %1', [type]),
+        message: Oration(message: 'There is no entity reflector for type %1', textParts: [type]),
       );
     }
 
@@ -207,7 +207,7 @@ class ReflectionManager with IThreadInitializer {
     if (item == null) {
       throw NegativeResult(
         identifier: NegativeResultCodes.nonExistent,
-        message: tr('An entity named %1 was not found', [name]),
+        message: Oration(message: 'An entity named %1 was not found', textParts: [name]),
       );
     }
 
@@ -232,7 +232,7 @@ class ReflectionManager with IThreadInitializer {
   }
 
   static String serialzeEntityToJson({required dynamic value, bool setTypeValue = true}) {
-    checkProgrammingFailure(thatChecks: tr('Value must not be  null'), result: () => value != null);
+    checkProgrammingFailure(thatChecks: Oration(message: 'Value must not be  null'), result: () => value != null);
     final valueOperator = getReflectionEntity(value.runtimeType);
     return valueOperator.serializeToJson(value: value, setTypeValue: setTypeValue);
   }
@@ -266,7 +266,8 @@ class ReflectionManager with IThreadInitializer {
         } else if (customSer is Map<String, dynamic>) {
           jsonList.add(json.encode(customSer));
         } else {
-          throw NegativeResult(identifier: NegativeResultCodes.wrongType, message: tr('Custom serialization returned an object of type %1, but it is not convertible to json', [customSer.runtimeType]));
+          throw NegativeResult(
+              identifier: NegativeResultCodes.wrongType, message: Oration(message: 'Custom serialization returned an object of type %1, but it is not convertible to json', textParts: [customSer.runtimeType]));
         }
       } else {
         if (lastType == null || item.runtimeType != lastType) {
@@ -338,19 +339,19 @@ class ReflectionManager with IThreadInitializer {
     } else {
       throw NegativeResult(
         identifier: NegativeResultCodes.implementationFailure,
-        message: tr('It is not possible to dynamically compare type %1', [reflectedType.type]),
+        message: Oration(message: 'It is not possible to dynamically compare type %1', textParts: [reflectedType.type]),
       );
     }
   }
 
   static Object tryToInterpretFromUnknownJson({required String rawJson, required bool tryToCorrectNames}) {
     if (!rawJson.startsWith('{') || !rawJson.endsWith('}')) {
-      throw NegativeResult(identifier: NegativeResultCodes.wrongType, message: tr('The JSON Objects must be enclosed in {}'));
+      throw NegativeResult(identifier: NegativeResultCodes.wrongType, message: Oration(message: 'The JSON Objects must be enclosed in {}'));
     }
 
-    final mapValues = volatile(detail: tr('The value received is not a valid json object'), function: () => json.encode(rawJson) as Map<String, dynamic>);
+    final mapValues = volatile(detail: Oration(message: 'The value received is not a valid json object'), function: () => json.encode(rawJson) as Map<String, dynamic>);
 
-    final typeName = volatile(detail: tr('Json does not have the type signature'), function: () => mapValues['\$type']! as String);
+    final typeName = volatile(detail: Oration(message: 'Json does not have the type signature'), function: () => mapValues['\$type']! as String);
 
     if (typeName == 'error' || typeName.startsWith('error.')) {
       return NegativeResult.interpret(values: mapValues, checkTypeFlag: false);
@@ -361,12 +362,12 @@ class ReflectionManager with IThreadInitializer {
 
   static List<Object> tryToInterpretFromUnknownJsonList({required String rawJson, required bool tryToCorrectNames}) {
     if (!rawJson.startsWith('[') || !rawJson.endsWith(']')) {
-      throw NegativeResult(identifier: NegativeResultCodes.wrongType, message: tr('The JSON List must be enclosed in []'));
+      throw NegativeResult(identifier: NegativeResultCodes.wrongType, message: Oration(message: 'The JSON List must be enclosed in []'));
     }
 
     final newList = <Object>[];
 
-    final rawList = volatile(detail: tr('The value received is not a valid json object'), function: () => json.encode(rawJson) as List);
+    final rawList = volatile(detail: Oration(message: 'The value received is not a valid json object'), function: () => json.encode(rawJson) as List);
 
     for (final value in rawList) {
       if (value.startsWith('{') && value.endsWith('}')) {

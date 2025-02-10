@@ -131,7 +131,7 @@ class ThreadIsolatorServerConnection with IThreadInvoker, IThreadInvokeInstance,
   static Future<R> _callEntityFunctionInThread<T extends Object, R>(InvocationContext context) async {
     final function = context.named<FutureOr<R> Function(T, InvocationContext)>('#_E()_#');
 
-    final entity = await volatileAsync<T>(detail: tr('Thread does not handle entity of type %1', [T]), function: () async => (await context.thread.getEntity<T>()) as T);
+    final entity = await volatileAsync<T>(detail: Oration(message: 'Thread does not handle entity of type %1',textParts: [T]), function: () async => (await context.thread.getEntity<T>()) as T);
     return function(entity, context);
   }
 
@@ -188,7 +188,7 @@ class ThreadIsolatorServerConnection with IThreadInvoker, IThreadInvokeInstance,
   }
 
   static Future<SendPort> _getConnectionSendPortOnThread(InvocationContext context) async {
-    final client = volatile(detail: tr('Thread is not ThreadIsolatorClient'), function: () => context.thread as ThreadIsolatorClient);
+    final client = volatile(detail: Oration(message: 'Thread is not ThreadIsolatorClient'), function: () => context.thread as ThreadIsolatorClient);
 
     return client.getConnectionSendPort();
   }
@@ -221,9 +221,8 @@ class ThreadIsolatorServerConnection with IThreadInvoker, IThreadInvokeInstance,
     return server.pipelineManager.createPipeline(parameters: parameters, function: function, sender: this);
   }
 
-  
   void killIsolates() {
     isolate.kill(priority: Isolate.immediate);
-    scheduleMicrotask(()=> declareClosed());
+    scheduleMicrotask(() => declareClosed());
   }
 }

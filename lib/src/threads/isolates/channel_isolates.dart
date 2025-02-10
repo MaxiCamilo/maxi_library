@@ -40,14 +40,14 @@ class ChannelIsolates with IPipe {
     if (_serder == null) {
       throw NegativeResult(
         identifier: NegativeResultCodes.implementationFailure,
-        message: tr('Its not possible to pass the object to the thread, because the transmission channel was not initialized'),
+        message: Oration(message: 'Its not possible to pass the object to the thread, because the transmission channel was not initialized'),
       );
     }
 
     if (_isFinalized) {
       throw NegativeResult(
         identifier: NegativeResultCodes.statusFunctionalityInvalid,
-        message: tr('Its not possible to pass the object to the thread, because the transmission channel closed'),
+        message: Oration(message: 'Its not possible to pass the object to the thread, because the transmission channel closed'),
       );
     }
   }
@@ -86,13 +86,13 @@ class ChannelIsolates with IPipe {
       },
       onError: (x) {
         if (!waiterSender.isCompleted) {
-          waiterSender.completeError(NegativeResult(identifier: NegativeResultCodes.implementationFailure, message: tr('No sender was received from the isolator.')));
+          waiterSender.completeError(NegativeResult(identifier: NegativeResultCodes.implementationFailure, message: Oration(message: 'No sender was received from the isolator.')));
         }
         subscription.cancel();
       },
       onDone: () {
         if (!waiterSender.isCompleted) {
-          waiterSender.completeError(NegativeResult(identifier: NegativeResultCodes.implementationFailure, message: tr('No sender was received from the isolator.')));
+          waiterSender.completeError(NegativeResult(identifier: NegativeResultCodes.implementationFailure, message: Oration(message: 'No sender was received from the isolator.')));
         }
         subscription.cancel();
       },
@@ -109,7 +109,7 @@ class ChannelIsolates with IPipe {
       } else {
         throw NegativeResult(
           identifier: NegativeResultCodes.implementationFailure,
-          message: tr('It was expected that the isolator would return a "Sendport", but it returned a %1', [sender.runtimeType]),
+          message: Oration(message: 'It was expected that the isolator would return a "Sendport", but it returned a %1',textParts: [sender.runtimeType]),
         );
       }
     } catch (_) {
@@ -124,7 +124,7 @@ class ChannelIsolates with IPipe {
     if (_serder != null) {
       throw NegativeResult(
         identifier: NegativeResultCodes.implementationFailure,
-        message: tr('Transmission has already been initialized'),
+        message: Oration(message: 'Transmission has already been initialized'),
       );
     }
 
@@ -157,7 +157,7 @@ class ChannelIsolates with IPipe {
     } catch (ex) {
       throw NegativeResult(
         identifier: NegativeResultCodes.implementationFailure,
-        message: tr('Its not possible to pass the object to the thread, because the object has some non-passable value through the channel'),
+        message: Oration(message: 'Its not possible to pass the object to the thread, because the object has some non-passable value through the channel'),
         cause: ex,
       );
     }
@@ -165,7 +165,7 @@ class ChannelIsolates with IPipe {
 
   @override
   void addError(Object error, [StackTrace? stackTrace]) {
-    final rn = NegativeResult.searchNegativity(item: error, actionDescription: tr('wire current'));
+    final rn = NegativeResult.searchNegativity(item: error, actionDescription: Oration(message: 'wire current'));
     add(rn);
   }
 

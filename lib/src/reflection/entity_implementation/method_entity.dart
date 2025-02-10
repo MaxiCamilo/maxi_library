@@ -5,7 +5,7 @@ class MethodEntity<T, R> extends ReflectedMethodTemplate {
   final GeneratedReflectedMethod<T, R> method;
 
   @override
-  late final TranslatableText description;
+  late final Oration description;
 
   MethodEntity._({
     required this.method,
@@ -15,7 +15,7 @@ class MethodEntity<T, R> extends ReflectedMethodTemplate {
     required super.name,
     required super.namedParametes,
     required super.reflectedType,
-  }){
+  }) {
     description = Description.searchDescription(annotations: annotations);
   }
 

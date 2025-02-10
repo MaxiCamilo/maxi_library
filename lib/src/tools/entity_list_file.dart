@@ -25,35 +25,35 @@ class EntityListFile<T> extends EntityList<T> {
   }
 
   @override
-  Stream<StreamState<TranslatableText, void>> add({required List<T> list}) async* {
+  Stream<StreamState<Oration, void>> add({required List<T> list}) async* {
     final original = this.list;
     yield* super.add(list: list);
     await _updateOrDisponse(before: original);
   }
 
   @override
-  Stream<StreamState<TranslatableText, void>> modify({required List<T> list}) async* {
+  Stream<StreamState<Oration, void>> modify({required List<T> list}) async* {
     final original = this.list;
     yield* super.modify(list: list);
     await _updateOrDisponse(before: original);
   }
 
   @override
-  Stream<StreamState<TranslatableText, void>> assign({required List<T> list}) async* {
+  Stream<StreamState<Oration, void>> assign({required List<T> list}) async* {
     final original = this.list;
     yield* super.assign(list: list);
     await _updateOrDisponse(before: original);
   }
 
   @override
-  Stream<StreamState<TranslatableText, void>> deleteAll() async* {
+  Stream<StreamState<Oration, void>> deleteAll() async* {
     final original = list;
     yield* super.deleteAll();
     await _updateOrDisponse(before: original);
   }
 
   @override
-  Stream<StreamState<TranslatableText, void>> delete({required List<int> listIDs}) async* {
+  Stream<StreamState<Oration, void>> delete({required List<int> listIDs}) async* {
     final original = list;
     yield* super.delete(listIDs: listIDs);
     await _updateOrDisponse(before: original);
@@ -74,7 +74,7 @@ class EntityListFile<T> extends EntityList<T> {
     if (jsonContent.length > maxSize) {
       throw NegativeResult(
         identifier: NegativeResultCodes.invalidValue,
-        message: tr('JSON Result is too big (It supports up to %1 bytes, but the generated JSON is %2 bytes)', [maxSize, jsonContent.length]),
+        message: Oration(message: 'JSON Result is too big (It supports up to %1 bytes, but the generated JSON is %2 bytes)',textParts: [maxSize, jsonContent.length]),
       );
     }
 

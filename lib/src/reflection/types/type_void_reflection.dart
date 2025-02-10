@@ -7,7 +7,7 @@ class TypeVoidReflection with IReflectionType {
   List get annotations => [];
 
   @override
-  TranslatableText get description => tr('Hello darkness my old friend');
+  Oration get description => Oration(message: 'Hello darkness my old friend');
 
   @override
   cloneObject(originalItem) {
@@ -39,7 +39,7 @@ class TypeVoidReflection with IReflectionType {
 
   @override
   serializeToMap(item) {
-    throw NegativeResult(identifier: NegativeResultCodes.implementationFailure, message: tr('It is not safe to assign an object of type %1, as it is an void type', [type]));
+    throw NegativeResult(identifier: NegativeResultCodes.implementationFailure, message: Oration(message: 'It is not safe to assign an object of type %1, as it is an void type', textParts: [type]));
   }
 
   @override

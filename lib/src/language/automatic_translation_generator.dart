@@ -14,15 +14,15 @@ class AutomaticTranslationGenerator {
   const AutomaticTranslationGenerator({required this.prefix, required this.locator, required this.translator, required this.builder});
 
   Future<void> start() async {
-    log('-> ${tr('Searching texts')}');
+    log('-> ${Oration(message: 'Searching texts')}');
     final texts = await locator.searchTranslatableText();
 
-    log('└-> ${tr('%1 translatable texts were found', [texts.length])}');
+    log('└-> ${Oration(message: '%1 translatable texts were found', textParts:[texts.length])}');
     if (texts.isEmpty) {
       return;
     }
 
-    log('-> ${tr('Translating %1 texts', [texts.length])}');
+    log('-> ${Oration(message: 'Translating %1 texts', textParts:[texts.length])}');
 
     final translatingTexts = <String, String>{};
     int i = 1;
@@ -34,10 +34,10 @@ class AutomaticTranslationGenerator {
       i += 1;
     }
 
-    log('-> ${tr('Building a package of translations')}');
+    log('-> ${Oration(message: 'Building a package of translations')}');
 
     await builder.generate(prefix: prefix, mapTexts: translatingTexts);
 
-    log('-> ${tr('Completed Construction')}');
+    log('-> ${Oration(message: 'Completed Construction')}');
   }
 }

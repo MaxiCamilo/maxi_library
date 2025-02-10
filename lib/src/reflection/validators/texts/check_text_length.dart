@@ -15,13 +15,13 @@ class CheckTextLength extends ValueValidator {
   });
 
   @override
-  TranslatableText get formalName => const TranslatableText(message: 'Length of the text');
+  Oration get formalName => const Oration(message: 'Length of the text');
 
   @override
-  NegativeResult? performValidation({required TranslatableText formalName, required String name, required item, required parentEntity}) {
+  NegativeResult? performValidation({required Oration formalName, required String name, required item, required parentEntity}) {
     if (item is! String) {
       return NegativeResultValue(
-        message: tr('The property %1 only accepts text value', [name]),
+        message: Oration(message: 'The property %1 only accepts text value', textParts: [name]),
         formalName: formalName,
         name: name,
         value: item,
@@ -30,7 +30,7 @@ class CheckTextLength extends ValueValidator {
 
     if (minimum > 0 && item.isEmpty) {
       return NegativeResultValue(
-        message: tr('The property %1 does not accept empty texts', [name]),
+        message: Oration(message: 'The property %1 does not accept empty texts', textParts: [name]),
         formalName: formalName,
         name: name,
         value: item,
@@ -39,7 +39,7 @@ class CheckTextLength extends ValueValidator {
 
     if (item.length < minimum) {
       return NegativeResultValue(
-        message: tr('The property %1 requires at least %2 characters', [name, minimum]),
+        message: Oration(message: 'The property %1 requires at least %2 characters', textParts: [name, minimum]),
         formalName: formalName,
         name: name,
         value: item,
@@ -48,7 +48,7 @@ class CheckTextLength extends ValueValidator {
 
     if (item.length > maximum) {
       return NegativeResultValue(
-        message: tr('The property %1 only accepts text with a maximum of %2 characters', [name, maximum]),
+        message: Oration(message: 'The property %1 only accepts text with a maximum of %2 characters', textParts: [name, maximum]),
         formalName: formalName,
         name: name,
         value: item,
@@ -60,7 +60,7 @@ class CheckTextLength extends ValueValidator {
 
       if (maximumLines != null && maximumLines! < lines) {
         return NegativeResultValue(
-          message: tr('The property %1 only accepts text with a maximum of %2 lines', [name, maximumLines!]),
+          message: Oration(message: 'The property %1 only accepts text with a maximum of %2 lines', textParts: [name, maximumLines!]),
           formalName: formalName,
           name: name,
           value: item,
@@ -69,7 +69,7 @@ class CheckTextLength extends ValueValidator {
 
       if (minimumLines != null && minimumLines! > lines) {
         return NegativeResultValue(
-          message: tr('The property %1 requires at least %2 lines', [name, minimumLines!]),
+          message: Oration(message: 'The property %1 requires at least %2 lines', textParts: [name, minimumLines!]),
           formalName: formalName,
           name: name,
           value: item,

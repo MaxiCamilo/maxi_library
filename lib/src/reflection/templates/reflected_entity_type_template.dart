@@ -19,7 +19,7 @@ abstract class ReflectedEntityTypeTemplate with IReflectionType, IDeclarationRef
   final String name;
 
   @override
-  late final TranslatableText formalName;
+  late final Oration formalName;
 
   @override
   late final List<ValueValidator> validators;
@@ -28,7 +28,7 @@ abstract class ReflectedEntityTypeTemplate with IReflectionType, IDeclarationRef
   late final CustomSerialization? custorSerialization;
 
   @override
-  late final TranslatableText description;
+  late final Oration description;
 
   bool _initialized = false;
 
@@ -39,7 +39,7 @@ abstract class ReflectedEntityTypeTemplate with IReflectionType, IDeclarationRef
     customBuilder = annotations.selectByType<ClassBuilderReflection>();
     custorSerialization = annotations.selectByType<CustomSerialization>();
 
-    formalName = FormalName.searchFormalName(realName: tr(name), annotations: annotations);
+    formalName = FormalName.searchFormalName(realName: Oration(message: name), annotations: annotations);
   }
 
   late final List<IFieldReflection> modificableFields;
@@ -62,7 +62,7 @@ abstract class ReflectedEntityTypeTemplate with IReflectionType, IDeclarationRef
   @override
   void initialized() {
     if (!_initialized) {
-      addToErrorDescription(additionalDetails: tr('Initialized reflector of %1', [formalName]), function: initializeReflector);
+      addToErrorDescription(additionalDetails: Oration(message: 'Initialized reflector of %1', textParts: [formalName]), function: initializeReflector);
       _initialized = true;
 
       modificableFields = fields.where((x) => !x.isStatic && !x.onlyRead).where((x) => x.reflectedType is! TypeUnknownReflection).toList();
@@ -89,11 +89,11 @@ abstract class ReflectedEntityTypeTemplate with IReflectionType, IDeclarationRef
     }
 
     if (isAbstract) {
-      throw NegativeResult(identifier: NegativeResultCodes.invalidFunctionality, message: tr('The entity %1 is abstract, cannot create an object', [formalName]));
+      throw NegativeResult(identifier: NegativeResultCodes.invalidFunctionality, message: Oration(message: 'The entity %1 is abstract, cannot create an object', textParts: [formalName]));
     }
 
     if (selectedBuild == '' && !hasDefaultConstructor) {
-      throw NegativeResult(identifier: NegativeResultCodes.invalidFunctionality, message: tr('The entity %1 does not have a default constructor', [formalName]));
+      throw NegativeResult(identifier: NegativeResultCodes.invalidFunctionality, message: Oration(message: 'The entity %1 does not have a default constructor', textParts: [formalName]));
     }
 
     if (selectedBuild.isEmpty && fixedParametersValues.isEmpty && namedParametersValues.isEmpty) {
@@ -104,7 +104,7 @@ abstract class ReflectedEntityTypeTemplate with IReflectionType, IDeclarationRef
     if (constructor == null) {
       throw NegativeResult(
         identifier: NegativeResultCodes.nonExistent,
-        message: tr('The entity %1 does not have the contructor "%2"', [selectedBuild, name]),
+        message: Oration(message: 'The entity %1 does not have the contructor "%2"', textParts: [selectedBuild, name]),
       );
     }
 
@@ -124,7 +124,7 @@ abstract class ReflectedEntityTypeTemplate with IReflectionType, IDeclarationRef
     if (method == null) {
       throw NegativeResult(
         identifier: NegativeResultCodes.nonExistent,
-        message: tr('The entity %1 does not have the method "%2"', [formalName, name]),
+        message: Oration(message: 'The entity %1 does not have the method "%2"', textParts: [formalName, name]),
       );
     }
 
@@ -139,18 +139,18 @@ abstract class ReflectedEntityTypeTemplate with IReflectionType, IDeclarationRef
       if (fields.any((x) => x.name == name)) {
         throw NegativeResult(
           identifier: NegativeResultCodes.nonExistent,
-          message: tr('The field %1 of class %2 is read-only, it cannot be modified', [name, formalName]),
+          message: Oration(message: 'The field %1 of class %2 is read-only, it cannot be modified', textParts: [name, formalName]),
         );
       } else {
         throw NegativeResult(
           identifier: NegativeResultCodes.nonExistent,
-          message: tr('The entity %1 does not have the field %2', [formalName, name]),
+          message: Oration(message: 'The entity %1 does not have the field %2', textParts: [formalName, name]),
         );
       }
     }
 
     volatile(
-      detail: tr('The field %1 of class %2 did not accept the value change', [name, formalName]),
+      detail: Oration(message: 'The field %1 of class %2 did not accept the value change', textParts: [name, formalName]),
       function: () => field.setValue(instance: instance, newValue: newValue),
     );
   }
@@ -206,7 +206,7 @@ abstract class ReflectedEntityTypeTemplate with IReflectionType, IDeclarationRef
     if (field == null) {
       throw NegativeResult(
         identifier: NegativeResultCodes.nonExistent,
-        message: tr('The entity %1 does not have the field "%2"', [formalName, name]),
+        message: Oration(message: 'The entity %1 does not have the field "%2"', textParts: [formalName, name]),
       );
     }
 
@@ -270,7 +270,7 @@ abstract class ReflectedEntityTypeTemplate with IReflectionType, IDeclarationRef
     if (property == null) {
       throw NegativeResult(
         identifier: NegativeResultCodes.nonExistent,
-        message: tr('The entity %1 does not have the property "%2"', [formalName, name]),
+        message: Oration(message: 'The entity %1 does not have the property "%2"', textParts: [formalName, name]),
       );
     }
 
@@ -288,7 +288,7 @@ abstract class ReflectedEntityTypeTemplate with IReflectionType, IDeclarationRef
     if (property == null) {
       throw NegativeResult(
         identifier: NegativeResultCodes.nonExistent,
-        message: tr('The entity %1 does not have the modifiable property %2', [formalName, name]),
+        message: Oration(message: 'The entity %1 does not have the modifiable property %2', textParts: [formalName, name]),
       );
     }
 
@@ -313,8 +313,7 @@ abstract class ReflectedEntityTypeTemplate with IReflectionType, IDeclarationRef
 
     if (errorList.isNotEmpty) {
       return NegativeResultEntity(
-        message: TranslatableText(
-            message: 'Entity %1 contains %2 invalid %3', textParts: [formalName, errorList.length, errorList.length == 1 ? const TranslatableText(message: 'property') : const TranslatableText(message: 'properties')]),
+        message: Oration(message: 'Entity %1 contains %2 invalid %3', textParts: [formalName, errorList.length, errorList.length == 1 ? const Oration(message: 'property') : const Oration(message: 'properties')]),
         name: name,
         formalName: formalName,
         invalidProperties: errorList,
@@ -367,7 +366,7 @@ abstract class ReflectedEntityTypeTemplate with IReflectionType, IDeclarationRef
         if (prop.isRequired || (prop.isEssentialKey && essentialKeysMustBePresent) || (prop.isPrimaryKey && primaryKeyMustBePresent)) {
           errorList.add(NegativeResultValue(
             name: name,
-            message: tr('Entity "%1" needs the value of "%2", but its value was not defined', [formalName, prop.formalName]),
+            message: Oration(message: 'Entity "%1" needs the value of "%2", but its value was not defined', textParts: [formalName, prop.formalName]),
             formalName: formalName,
           ));
         }
@@ -394,7 +393,7 @@ abstract class ReflectedEntityTypeTemplate with IReflectionType, IDeclarationRef
         final error = val.performValidation(name: name, formalName: formalName, item: newItem, parentEntity: null);
         if (error != null) {
           throw NegativeResultEntity(
-            message: tr('The entity %1 is invalid', [formalName]),
+            message: Oration(message: 'The entity %1 is invalid', textParts: [formalName]),
             name: name,
             formalName: formalName,
             invalidProperties: [NegativeResultValue.searchNegativity(error: error, formalName: val.formalName, name: name)],
@@ -408,7 +407,7 @@ abstract class ReflectedEntityTypeTemplate with IReflectionType, IDeclarationRef
         newItem.performAdditionalVerification();
       } catch (ex) {
         throw NegativeResultEntity(
-          message: tr('The entity %1 is invalid', [name]),
+          message: Oration(message: 'The entity %1 is invalid', textParts: [name]),
           formalName: formalName,
           name: name,
           invalidProperties: [NegativeResultValue.searchNegativity(error: ex, name: name, formalName: formalName)],
@@ -418,12 +417,12 @@ abstract class ReflectedEntityTypeTemplate with IReflectionType, IDeclarationRef
 
     if (hasPrimaryKey && !acceptZeroIdentifier && getPrimaryKey(instance: newItem) <= 0) {
       throw NegativeResultEntity(
-        message: tr('The entity %1 is invalid', [formalName]),
+        message: Oration(message: 'The entity %1 is invalid', textParts: [formalName]),
         formalName: formalName,
         name: name,
         invalidProperties: [
           NegativeResultValue.searchNegativity(
-            error: NegativeResult(identifier: NegativeResultCodes.invalidProperty, message: tr('The primary key (%2) for entity %1 needs to be defined', [primaryKey.formalName, formalName])),
+            error: NegativeResult(identifier: NegativeResultCodes.invalidProperty, message: Oration(message: 'The primary key (%2) for entity %1 needs to be defined', textParts: [primaryKey.formalName, formalName])),
             formalName: primaryKey.formalName,
             name: name,
           )
@@ -437,7 +436,7 @@ abstract class ReflectedEntityTypeTemplate with IReflectionType, IDeclarationRef
   void _throwErrorIfThereErrorInList(List<NegativeResultValue> errorList) {
     if (errorList.isNotEmpty) {
       throw NegativeResultEntity(
-        message: tr('The entity %1 contains %2 invalid %3', [name, errorList.length, errorList.length == 1 ? tr('property') : tr('properties')]),
+        message: Oration(message: 'The entity %1 contains %2 invalid %3', textParts: [name, errorList.length, errorList.length == 1 ? Oration(message: 'property') : Oration(message: 'properties')]),
         formalName: formalName,
         invalidProperties: errorList,
         name: name,
@@ -457,14 +456,14 @@ abstract class ReflectedEntityTypeTemplate with IReflectionType, IDeclarationRef
   }) {
     initialized();
     final mapJson = volatile(
-      detail: tr('The textual content was expected to be valid JSON'),
+      detail: Oration(message: 'The textual content was expected to be valid JSON'),
       function: () => json.decode(rawJson),
     );
 
     if (mapJson is! Map<String, dynamic>) {
       throw NegativeResult(
         identifier: NegativeResultCodes.wrongType,
-        message: tr('To create a %1 entity from a JSON, the JSON data must be in object format, not an array or a simple value', [formalName]),
+        message: Oration(message: 'To create a %1 entity from a JSON, the JSON data must be in object format, not an array or a simple value', textParts: [formalName]),
       );
     }
 
@@ -497,7 +496,7 @@ abstract class ReflectedEntityTypeTemplate with IReflectionType, IDeclarationRef
   }) {
     initialized();
     checkProgrammingFailure(
-      thatChecks: tr('The type %1 is compatible with reflector %2', [T, name]),
+      thatChecks: Oration(message: 'The type %1 is compatible with reflector %2', textParts: [T, name]),
       result: () => isTypeCompatible(T),
     );
 
@@ -507,7 +506,7 @@ abstract class ReflectedEntityTypeTemplate with IReflectionType, IDeclarationRef
       int i = 1;
       for (final item in value) {
         final digestedValue = volatileFactory(
-          errorFactory: (x) => NegativeResultValue.fromException(ex: x, value: item, formalName: tr('Validate item N° %1', [i]), name: name),
+          errorFactory: (x) => NegativeResultValue.fromException(ex: x, value: item, formalName: Oration(message: 'Validate item N° %1', textParts: [i]), name: name),
           function: () => interpret(
             value: item,
             tryToCorrectNames: tryToCorrectNames,
@@ -519,7 +518,7 @@ abstract class ReflectedEntityTypeTemplate with IReflectionType, IDeclarationRef
           ),
         );
         i += 1;
-        checkProgrammingFailure(thatChecks: tr('The generated value N° %1 is type %2', [i, T]), result: () => digestedValue is T);
+        checkProgrammingFailure(thatChecks: Oration(message: 'The generated value N° %1 is type %2', textParts: [i, T]), result: () => digestedValue is T);
         newList.add(digestedValue);
       }
     } else {
@@ -567,7 +566,7 @@ abstract class ReflectedEntityTypeTemplate with IReflectionType, IDeclarationRef
   int generateHashCode({required dynamic item, required bool addName}) {
     final readableFields = fields.where((x) => !x.onlyRead).toList(growable: false);
 
-    checkProgrammingFailure(thatChecks: tr('Class %1 has at least one readable field'), result: () => readableFields.isNotEmpty);
+    checkProgrammingFailure(thatChecks: Oration(message: 'Class %1 has at least one readable field'), result: () => readableFields.isNotEmpty);
 
     final values = fields.map((x) {
       final value = x.getValue(instance: item);

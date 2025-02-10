@@ -55,7 +55,7 @@ class OriginIsolatedThreadStream<R, S> with IPipe<R, S> {
     final id = context.firts<int>();
     final item = context.second<S>();
 
-    final thread = volatile(detail: tr('Thread is not Isolator'), function: () => context.thread as IThreadIsolador);
+    final thread = volatile(detail: Oration(message: 'Thread is not Isolator'), function: () => context.thread as IThreadIsolador);
     thread.pipelineManager.getDestinationStream(id).receiveItem(item);
   }
 
@@ -69,7 +69,7 @@ class OriginIsolatedThreadStream<R, S> with IPipe<R, S> {
     final error = context.second<Object>();
     final stackTrace = context.third<StackTrace?>();
 
-    final thread = volatile(detail: tr('Thread is not Isolator'), function: () => context.thread as IThreadIsolador);
+    final thread = volatile(detail: Oration(message: 'Thread is not Isolator'), function: () => context.thread as IThreadIsolador);
     thread.pipelineManager.getDestinationStream(id).receiveError(error, stackTrace);
   }
 
@@ -91,7 +91,7 @@ class OriginIsolatedThreadStream<R, S> with IPipe<R, S> {
   static Future _declareClosed(InvocationContext context) async {
     final id = context.firts<int>();
 
-    final thread = volatile(detail: tr('Thread is not Isolator'), function: () => context.thread as IThreadIsolador);
+    final thread = volatile(detail: Oration(message: 'Thread is not Isolator'), function: () => context.thread as IThreadIsolador);
 
     thread.pipelineManager.getDestinationStream(id).declareClosed();
   }

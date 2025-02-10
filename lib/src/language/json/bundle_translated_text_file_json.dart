@@ -16,12 +16,12 @@ class BundleTranslatedTextFileJson with IBundleTranslatedText {
   @override
   Future<Map<String, String>> readTranslatedText() async {
     final content = await file.readTextual();
-    final jsonContent = volatile(detail: tr('Processing JSON content from file %1', [file.route]), function: () => json.decode(content));
+    final jsonContent = volatile(detail: Oration(message: 'Processing JSON content from file %1', textParts: [file.route]), function: () => json.decode(content));
 
     if (jsonContent is Map<String, dynamic>) {
       return Map<String, String>.of(jsonContent.map((x, y) => MapEntry(x, y.toString())));
     } else {
-      throw NegativeResult(identifier: NegativeResultCodes.wrongType, message: tr('The data in file %1 is not formatted as a JSON object', [file.route]));
+      throw NegativeResult(identifier: NegativeResultCodes.wrongType, message: Oration(message: 'The data in file %1 is not formatted as a JSON object', textParts: [file.route]));
     }
   }
 }

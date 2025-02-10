@@ -61,7 +61,7 @@ class IsolatedThreadStreamManager {
   static Future<Stream<R>> _createStreamInEntityThread<T extends Object, R>(InvocationContext context) async {
     final function = context.named<FutureOr<Stream<R>> Function(T, InvocationContext)>('_#EFS()#_');
 
-    final entity = await volatileAsync<T>(detail: tr('Thread does not handle entity of type %1', [T]), function: () async => (await context.thread.getEntity<T>()) as T);
+    final entity = await volatileAsync<T>(detail: Oration(message: 'Thread does not handle entity of type %1', textParts: [T]), function: () async => (await context.thread.getEntity<T>()) as T);
 
     return await function(entity, context);
   }

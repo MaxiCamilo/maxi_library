@@ -16,7 +16,7 @@ class TypeEnumeratorReflector with IReflectionType, IValueGenerator, IPrimitiveV
   PrimitiesType get primitiveType => PrimitiesType.isInt;
 
   @override
-  TranslatableText get description => Description.searchDescription(annotations: annotations);
+  Oration get description => Description.searchDescription(annotations: annotations);
 
   const TypeEnumeratorReflector({required this.optionsList, required this.annotations, required this.type, required this.name});
 
@@ -37,7 +37,7 @@ class TypeEnumeratorReflector with IReflectionType, IValueGenerator, IPrimitiveV
 
     throw NegativeResult(
       identifier: NegativeResultCodes.invalidValue,
-      message: tr('The value of type "%1" is not a valid option for the enumerator "%2"', [originalItem.runtimeType, type]),
+      message: Oration(message: 'The value of type "%1" is not a valid option for the enumerator "%2"', textParts: [originalItem.runtimeType, type]),
     );
   }
 
@@ -68,17 +68,17 @@ class TypeEnumeratorReflector with IReflectionType, IValueGenerator, IPrimitiveV
 
     throw NegativeResult(
       identifier: NegativeResultCodes.invalidValue,
-      message: tr('The value of type  "%1" is not a valid option for the enumerator "%2"', [item.runtimeType, type]),
+      message: Oration(message: 'The value of type  "%1" is not a valid option for the enumerator "%2"', textParts: [item.runtimeType, type]),
     );
   }
 
   dynamic castNumber(num number) {
-    checkProgrammingFailure(thatChecks: tr('The value is zero or positive'), result: () => number >= 0);
+    checkProgrammingFailure(thatChecks: Oration(message: 'The value is zero or positive'), result: () => number >= 0);
 
     if (number >= optionsList.length) {
       throw NegativeResult(
         identifier: NegativeResultCodes.invalidValue,
-        message: tr('The numeric value exceeds the available options (Only %1 options are available, starting from 0)', [optionsList.length]),
+        message: Oration(message: 'The numeric value exceeds the available options (Only %1 options are available, starting from 0)', textParts: [optionsList.length]),
       );
     }
 
@@ -96,7 +96,7 @@ class TypeEnumeratorReflector with IReflectionType, IValueGenerator, IPrimitiveV
     if (selectedItem != null) {
       return selectedItem.value;
     } else {
-      throw NegativeResult(identifier: NegativeResultCodes.invalidValue, message: tr('The option named "%1" cannot be found', [text]));
+      throw NegativeResult(identifier: NegativeResultCodes.invalidValue, message: Oration(message: 'The option named "%1" cannot be found', textParts: [text]));
     }
   }
 

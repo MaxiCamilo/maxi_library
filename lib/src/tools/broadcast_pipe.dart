@@ -21,10 +21,8 @@ class BroadcastPipe<R, S> with IPipe<R, S> {
 
   BroadcastPipe({required this.closeIfNoOneListens, required this.closeConnectedPipesIfFinished});
 
-  
-
   void connectPipe(IPipe<R, S> pipe) {
-    checkProgrammingFailure(thatChecks: tr('Brodcast pipe is close'), result: () => _isActive);
+    checkProgrammingFailure(thatChecks: Oration(message: 'Brodcast pipe is close'), result: () => _isActive);
     pipe.stream.listen(
       _receiver.add,
       onError: _receiver.addError,
@@ -58,9 +56,8 @@ class BroadcastPipe<R, S> with IPipe<R, S> {
 
   @override
   void add(S event) {
-    checkProgrammingFailure(thatChecks: tr('Brodcast pipe is close'), result: () => _isActive);
+    checkProgrammingFailure(thatChecks: Oration(message: 'Brodcast pipe is close'), result: () => _isActive);
 
-    
     for (final pipe in _otherPipes) {
       pipe.add(event);
     }
@@ -68,7 +65,7 @@ class BroadcastPipe<R, S> with IPipe<R, S> {
 
   @override
   void addError(Object error, [StackTrace? stackTrace]) {
-    checkProgrammingFailure(thatChecks: tr('Brodcast pipe is close'), result: () => _isActive);
+    checkProgrammingFailure(thatChecks: Oration(message: 'Brodcast pipe is close'), result: () => _isActive);
     for (final pipe in _otherPipes) {
       pipe.addError(error, stackTrace);
     }

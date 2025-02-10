@@ -40,7 +40,7 @@ class DartApplicationInitializer with StartableFunctionality {
         await initialize();
         break;
       } catch (ex) {
-        final nr = NegativeResult.searchNegativity(item: ex, actionDescription: tr('Initiated the application'));
+        final nr = NegativeResult.searchNegativity(item: ex, actionDescription: Oration(message: 'Initiated the application'));
         nr.printConsole();
         await Future.delayed(waitForReExecution);
       }

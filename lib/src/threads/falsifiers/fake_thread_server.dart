@@ -105,7 +105,7 @@ class FakeThreadServer with IThreadInvoker, IThreadManager, IThreadManagerServer
       if (ifExistsOmit) {
         return exists;
       } else {
-        throw NegativeResult(identifier: NegativeResultCodes.contextInvalidFunctionality, message: tr('Entity thread %1 has already been mounted', [T]));
+        throw NegativeResult(identifier: NegativeResultCodes.contextInvalidFunctionality, message: Oration(message: 'Entity thread %1 has already been mounted', textParts: [T]));
       }
     }
 
@@ -158,7 +158,7 @@ class FakeThreadServer with IThreadInvoker, IThreadManager, IThreadManagerServer
     if (result == null) {
       throw NegativeResult(
         identifier: NegativeResultCodes.contextInvalidFunctionality,
-        message: tr('Instance thread %1 has not been mounted', [T]),
+        message: Oration(message: 'Instance thread %1 has not been mounted', textParts: [T]),
       );
     }
 

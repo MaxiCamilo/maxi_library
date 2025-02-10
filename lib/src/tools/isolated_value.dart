@@ -30,7 +30,7 @@ class IsolatedValue<T extends Object> with StartableFunctionality {
     if (!synchronized) {
       throw NegativeResult(
         identifier: NegativeResultCodes.contextInvalidFunctionality,
-        message: tr('Isolated pointer is not synchronized'),
+        message: Oration(message: 'Isolated pointer is not synchronized'),
       );
     }
 
@@ -39,7 +39,7 @@ class IsolatedValue<T extends Object> with StartableFunctionality {
     } else {
       throw NegativeResult(
         identifier: NegativeResultCodes.contextInvalidFunctionality,
-        message: tr('The value of the service must be obtained first'),
+        message: Oration(message: 'The value of the service must be obtained first'),
       );
     }
   }

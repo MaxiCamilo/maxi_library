@@ -19,7 +19,7 @@ mixin StartableFunctionality implements IDisposable {
     if (!_isInitialized) {
       throw NegativeResult(
         identifier: NegativeResultCodes.uninitializedFunctionality,
-        message: tr('The functionality is uninitialized and cannot be used'),
+        message: Oration(message: 'The functionality is uninitialized and cannot be used'),
       );
     }
   }

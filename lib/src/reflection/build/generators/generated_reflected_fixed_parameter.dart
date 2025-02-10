@@ -40,7 +40,7 @@ class GeneratedReflectedFixedParameter<T> {
       } else {
         throw NegativeResult(
           identifier: NegativeResultCodes.nonExistent,
-          message: tr('The parameter at position %1 (%2) needs a value', [position, name]),
+          message: Oration(message: 'The parameter at position %1 (%2) needs a value', textParts: [position, name]),
         );
       }
     }
@@ -53,7 +53,7 @@ class GeneratedReflectedFixedParameter<T> {
       } else {
         throw NegativeResult(
           identifier: NegativeResultCodes.nullValue,
-          message: tr('The parameter at position %1 (%2) cannot be null', [position, name]),
+          message: Oration(message: 'The parameter at position %1 (%2) cannot be null', textParts: [position, name]),
         );
       }
     } else if (value is T) {
@@ -61,9 +61,9 @@ class GeneratedReflectedFixedParameter<T> {
     } else {
       throw NegativeResult(
         identifier: NegativeResultCodes.wrongType,
-        message: tr(
-          'The parameter at position %1 is expected to be of type %2, but the value provided (%3) is not compatible',
-          [position, T, value.runtimeType],
+        message: Oration(
+          message: 'The parameter at position %1 is expected to be of type %2, but the value provided (%3) is not compatible',
+          textParts: [position, T, value.runtimeType],
         ),
       );
     }

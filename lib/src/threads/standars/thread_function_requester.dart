@@ -31,7 +31,7 @@ class ThreadFunctionRequester {
     final newId = await _waitingId!
             .future /*.timeout(
       const Duration(seconds: 30),
-      onTimeout: () => throw NegativeResult(identifier: NegativeResultCodes.implementationFailure, message: tr('The thread took too long to confirm a feature')),
+      onTimeout: () => throw NegativeResult(identifier: NegativeResultCodes.implementationFailure, message: Oration(message:'The thread took too long to confirm a feature')),
     )*/
         ;
 
@@ -72,7 +72,7 @@ class ThreadFunctionRequester {
 
   void close() {
     for (final item in _mapFunctions.values) {
-      item.completeErrorIfIncomplete(NegativeResult(identifier: NegativeResultCodes.functionalityCancelled, message: tr('The function was cancelled')));
+      item.completeErrorIfIncomplete(NegativeResult(identifier: NegativeResultCodes.functionalityCancelled, message: Oration(message: 'The function was cancelled')));
     }
 
     _mapFunctions.clear();

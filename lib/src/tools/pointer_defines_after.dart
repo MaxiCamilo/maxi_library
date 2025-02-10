@@ -13,7 +13,7 @@ class PointerDefineAfter<T> {
     if (_item == null) {
       throw NegativeResult(
         identifier: NegativeResultCodes.contextInvalidFunctionality,
-        message: tr('A value has not yet been defined in this variable'),
+        message: Oration(message: 'A value has not yet been defined in this variable'),
       );
     } else {
       return _item!;
@@ -27,7 +27,7 @@ class PointerDefineAfter<T> {
       }
       throw NegativeResult(
         identifier: NegativeResultCodes.contextInvalidFunctionality,
-        message: tr('A value has already been defined in this variable'),
+        message: Oration(message: 'A value has already been defined in this variable'),
       );
     }
 

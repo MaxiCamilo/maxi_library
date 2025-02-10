@@ -79,7 +79,7 @@ mixin IEntityReader<T> {
     if (item == null) {
       throw NegativeResult(
         identifier: NegativeResultCodes.nonExistent,
-        message: tr('The item with identifier number %1 could not be found', [id]),
+        message: Oration(message: 'The item with identifier number %1 could not be found', textParts: [id]),
       );
     } else {
       return item;

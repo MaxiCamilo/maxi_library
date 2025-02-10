@@ -92,7 +92,7 @@ class ThreadIsolatorClientConnection with IThreadInvoker, IThreadInvokeInstance,
 
   static Future<R> _callEntityFunction<T extends Object, R>(InvocationContext context) async {
     final function = context.named<FutureOr<R> Function(T, InvocationContext)>('#_CE()_#');
-    final entity = await volatileAsync(detail: tr('Thread entity is null!'), function: () async => (await context.thread.getEntity<T>()) as T);
+    final entity = await volatileAsync(detail: Oration(message: 'Thread entity is null!'), function: () async => (await context.thread.getEntity<T>()) as T);
 
     return await function(entity, context);
   }

@@ -7,6 +7,6 @@ class ThreadInitializerTest with IThreadInitializer {
   Future<void> performInitializationInThread(IThreadManager channel) async {
     log('Hola maxi!');
 
-    //throw NegativeResult(identifier: NegativeResultCodes.abnormalOperation, message: tr(':('));
+    //throw NegativeResult(identifier: NegativeResultCodes.abnormalOperation, message: Oration(message:':('));
   }
 }

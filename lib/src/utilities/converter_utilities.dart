@@ -4,11 +4,11 @@ import 'dart:typed_data';
 import 'package:maxi_library/maxi_library.dart';
 
 mixin ConverterUtilities {
-  static int toInt({required dynamic value, TranslatableText propertyName = TranslatableText.empty, bool ifEmptyIsZero = false}) {
+  static int toInt({required dynamic value, Oration propertyName = Oration.empty, bool ifEmptyIsZero = false}) {
     if (value == null) {
       throw NegativeResult(
         identifier: NegativeResultCodes.nullValue,
-        message: tr('The value is null'),
+        message: Oration(message: 'The value is null'),
       );
     } else if (value is int) {
       return value;
@@ -20,8 +20,8 @@ mixin ConverterUtilities {
       }
       return volatileFactory(
         function: () => int.parse(value),
-        errorFactory: (x) =>
-            NegativeResult(identifier: NegativeResultCodes.incorrectFormat, message: tr('The property %1 must be an integer number, but non-numeric values ​​were found in the text', [propertyName]), cause: x),
+        errorFactory: (x) => NegativeResult(
+            identifier: NegativeResultCodes.incorrectFormat, message: Oration(message: 'The property %1 must be an integer number, but non-numeric values ​​were found in the text', textParts: [propertyName]), cause: x),
       );
     } else if (value is bool) {
       return value ? 1 : 0;
@@ -32,16 +32,17 @@ mixin ConverterUtilities {
     } else {
       throw NegativeResult(
         identifier: NegativeResultCodes.incorrectFormat,
-        message: propertyName.isNotEmpty ? tr('The property %1 has an unknown value, an integer number is expected', [propertyName]) : tr('Cannot transform value to integer number'),
+        message:
+            propertyName.isNotEmpty ? Oration(message: 'The property %1 has an unknown value, an integer number is expected', textParts: [propertyName]) : Oration(message: 'Cannot transform value to integer number'),
       );
     }
   }
 
-  static double toDouble({required dynamic value, TranslatableText propertyName = TranslatableText.empty, bool ifEmptyIsZero = false}) {
+  static double toDouble({required dynamic value, Oration propertyName = Oration.empty, bool ifEmptyIsZero = false}) {
     if (value == null) {
       throw NegativeResult(
         identifier: NegativeResultCodes.nullValue,
-        message: tr('The value is null'),
+        message: Oration(message: 'The value is null'),
       );
     } else if (value is int) {
       return value.toDouble();
@@ -55,7 +56,7 @@ mixin ConverterUtilities {
         function: () => double.parse(value),
         errorFactory: (x) => NegativeResult(
           identifier: NegativeResultCodes.incorrectFormat,
-          message: tr('The property %1 must be an decimal number, but non-numeric values ​​were found in the text', [propertyName]),
+          message: Oration(message: 'The property %1 must be an decimal number, but non-numeric values ​​were found in the text', textParts: [propertyName]),
           cause: x,
         ),
       );
@@ -68,16 +69,16 @@ mixin ConverterUtilities {
     } else {
       throw NegativeResult(
         identifier: NegativeResultCodes.incorrectFormat,
-        message: propertyName.isNotEmpty ? tr('The property %1 has an unknown value, an double number is expected', [propertyName]) : tr('Cannot transform value to integer number'),
+        message: propertyName.isNotEmpty ? Oration(message: 'The property %1 has an unknown value, an double number is expected', textParts: [propertyName]) : Oration(message: 'Cannot transform value to integer number'),
       );
     }
   }
 
-  static bool toBoolean({required dynamic value, TranslatableText propertyName = TranslatableText.empty}) {
+  static bool toBoolean({required dynamic value, Oration propertyName = Oration.empty}) {
     if (value == null) {
       throw NegativeResult(
         identifier: NegativeResultCodes.nullValue,
-        message: tr('A null value cannot be interpreted as a boolean in the property ', [propertyName]),
+        message: Oration(message: 'A null value cannot be interpreted as a boolean in the property ', textParts: [propertyName]),
       );
     } else if (value is bool) {
       return value;
@@ -100,11 +101,11 @@ mixin ConverterUtilities {
         '1' => true,
         _ => throw NegativeResult(
             identifier: NegativeResultCodes.incorrectFormat,
-            message: tr('The property %1 does not have a valid text to be transformed into a boolean option', [propertyName]),
+            message: Oration(message: 'The property %1 does not have a valid text to be transformed into a boolean option', textParts: [propertyName]),
           )
       };
     } else {
-      throw NegativeResult(identifier: NegativeResultCodes.wrongType, message: tr('The property %1 only accepts boolean values ​​or equivalent', [propertyName]));
+      throw NegativeResult(identifier: NegativeResultCodes.wrongType, message: Oration(message: 'The property %1 only accepts boolean values ​​or equivalent', textParts: [propertyName]));
     }
   }
 
@@ -119,7 +120,7 @@ mixin ConverterUtilities {
   static Enum toEnum({
     required List<Enum> optionsList,
     required dynamic value,
-    TranslatableText propertyName = TranslatableText.empty,
+    Oration propertyName = Oration.empty,
   }) {
     if (value is String) {
       final letra = value.toLowerCase();
@@ -130,7 +131,8 @@ mixin ConverterUtilities {
       }
       throw NegativeResult(
         identifier: NegativeResultCodes.invalidValue,
-        message: propertyName.isNotEmpty ? tr('The property %1 does not have the "%2" option', [propertyName, value]) : tr('Value does not have the "%1" option', [value]),
+        message:
+            propertyName.isNotEmpty ? Oration(message: 'The property %1 does not have the "%2" option', textParts: [propertyName, value]) : Oration(message: 'Value does not have the "%1" option', textParts: [value]),
       );
     } else if (value is num) {
       for (final item in optionsList) {
@@ -140,7 +142,8 @@ mixin ConverterUtilities {
       }
       throw NegativeResult(
         identifier: NegativeResultCodes.invalidValue,
-        message: propertyName.isNotEmpty ? tr('The property %1 does not have the N° %2 option', [propertyName, value]) : tr('Value does not have the N° %1 option', [value]),
+        message:
+            propertyName.isNotEmpty ? Oration(message: 'The property %1 does not have the N° %2 option', textParts: [propertyName, value]) : Oration(message: 'Value does not have the N° %1 option', textParts: [value]),
       );
     } else if (value is Enum) {
       if (optionsList.any((element) => value == element)) {
@@ -148,14 +151,17 @@ mixin ConverterUtilities {
       } else {
         throw NegativeResult(
           identifier: NegativeResultCodes.wrongType,
-          message: propertyName.isNotEmpty ? tr('The property %1 only accepts the type "Enum", not thing "%2" option', [propertyName, value]) : tr('Value does not have the N° "%1" option', [value]),
+          message: propertyName.isNotEmpty
+              ? Oration(message: 'The property %1 only accepts the type "Enum", not thing "%2" option', textParts: [propertyName, value])
+              : Oration(message: 'Value does not have the N° "%1" option', textParts: [value]),
         );
       }
     } else {
       throw NegativeResult(
         identifier: NegativeResultCodes.wrongType,
-        message:
-            propertyName.isNotEmpty ? tr('The property %1 only accepts the type enumerator, not %2', [propertyName, value.runtimeType]) : tr('The value only accepts the type enumerator, not "%1"', [value.runtimeType]),
+        message: propertyName.isNotEmpty
+            ? Oration(message: 'The property %1 only accepts the type enumerator, not %2', textParts: [propertyName, value.runtimeType])
+            : Oration(message: 'The value only accepts the type enumerator, not "%1"', textParts: [value.runtimeType]),
       );
     }
   }
@@ -163,12 +169,12 @@ mixin ConverterUtilities {
   static DateTime toDateTime({
     required dynamic value,
     bool isLocal = true,
-    TranslatableText propertyName = TranslatableText.empty,
+    Oration propertyName = Oration.empty,
   }) {
     if (value == null) {
       throw NegativeResult(
         identifier: NegativeResultCodes.nullValue,
-        message: tr('A null value cannot be interpreted as a boolean in the property %1', [propertyName]),
+        message: Oration(message: 'A null value cannot be interpreted as a boolean in the property %1', textParts: [propertyName]),
       );
     } else if (value is DateTime) {
       if (value.isUtc && isLocal) {
@@ -179,7 +185,7 @@ mixin ConverterUtilities {
       return value;
     } else if (value is num) {
       return volatile(
-        detail: tr('The property %1 does not have a valid number to be adapted to date', [propertyName]),
+        detail: Oration(message: 'The property %1 does not have a valid number to be adapted to date', textParts: [propertyName]),
         function: () {
           final datetime = DateTime.fromMillisecondsSinceEpoch(value.toInt(), isUtc: true);
           if (isLocal) {
@@ -195,35 +201,37 @@ mixin ConverterUtilities {
       } catch (ex) {
         throw NegativeResult(
           identifier: NegativeResultCodes.invalidValue,
-          message: propertyName.isNotEmpty ? tr('The property %1 does not have a valid textuan format to be adapted to date', [propertyName]) : tr('The value does not have a valid textan format to be adapted to date'),
+          message: propertyName.isNotEmpty
+              ? Oration(message: 'The property %1 does not have a valid textuan format to be adapted to date', textParts: [propertyName])
+              : Oration(message: 'The value does not have a valid textan format to be adapted to date'),
         );
       }
     } else {
       throw NegativeResult(
         identifier: NegativeResultCodes.wrongType,
         message: propertyName.isNotEmpty
-            ? tr('The property %1 only accepts the type date or equivalent, not %2', [propertyName, value.runtimeType])
-            : tr('The value only accepts the type date or equivalent, not %1', [value.runtimeType]),
+            ? Oration(message: 'The property %1 only accepts the type date or equivalent, not %2', textParts: [propertyName, value.runtimeType])
+            : Oration(message: 'The value only accepts the type date or equivalent, not %1', textParts: [value.runtimeType]),
       );
     }
   }
 
-  static Uint8List toBinary({required dynamic value, TranslatableText propertyName = TranslatableText.empty, Encoding encoder = utf8}) {
+  static Uint8List toBinary({required dynamic value, Oration propertyName = Oration.empty, Encoding encoder = utf8}) {
     if (value is Uint8List) {
       return value;
     } else if (value is List<int>) {
       return Uint8List.fromList(value);
     } else if (value is String) {
       return Uint8List.fromList(volatile(
-        detail: propertyName.isNotEmpty ? tr('Encoding property %1 with %2', [propertyName, encoder.name]) : tr('Encoding value with %1', [encoder.name]),
+        detail: propertyName.isNotEmpty ? Oration(message: 'Encoding property %1 with %2', textParts: [propertyName, encoder.name]) : Oration(message: 'Encoding value with %1', textParts: [encoder.name]),
         function: () => encoder.encode(value),
       ));
     } else {
       throw NegativeResult(
         identifier: NegativeResultCodes.wrongType,
         message: propertyName.isNotEmpty
-            ? tr('The property %1 only accepts the type binary or equivalent, not %2', [propertyName, value.runtimeType])
-            : tr('The value only accepts the type binary or equivalent, not %1', [value.runtimeType]),
+            ? Oration(message: 'The property %1 only accepts the type binary or equivalent, not %2', textParts: [propertyName, value.runtimeType])
+            : Oration(message: 'The value only accepts the type binary or equivalent, not %1', textParts: [value.runtimeType]),
       );
     }
   }
@@ -232,7 +240,7 @@ mixin ConverterUtilities {
     if (value == null) {
       throw NegativeResult(
         identifier: NegativeResultCodes.nullValue,
-        message: tr('A null value cannot be interpreted as a primitive value'),
+        message: Oration(message: 'A null value cannot be interpreted as a primitive value'),
       );
     }
 
@@ -253,24 +261,26 @@ mixin ConverterUtilities {
       default:
         throw NegativeResult(
           identifier: NegativeResultCodes.implementationFailure,
-          message: tr('[normalizePrimitive] The value is not a primitive type'),
+          message: Oration(message: '[normalizePrimitive] The value is not a primitive type'),
         );
     }
   }
 
-  static dynamic interpretJson({required String text, TranslatableText? extra}) {
-    return volatile(detail: extra == null ? tr('The content is not valid json') : tr('The content is not valid json %1', [extra]), function: () => json.decode(text));
+  static dynamic interpretJson({required String text, Oration? extra}) {
+    return volatile(detail: extra == null ? Oration(message: 'The content is not valid json') : Oration(message: 'The content is not valid json %1', textParts: [extra]), function: () => json.decode(text));
   }
 
-  static Map<String, dynamic> interpretToObjectJson({required String text, TranslatableText? extra}) {
+  static Map<String, dynamic> interpretToObjectJson({required String text, Oration? extra}) {
     return volatile(
-        detail: extra == null ? tr('Expected a json object, but received a json listing or value') : tr('Expected a json object, but received a json listing or value %1', [extra]),
+        detail: extra == null ? Oration(message: 'Expected a json object, but received a json listing or value') : Oration(message: 'Expected a json object, but received a json listing or value %1', textParts: [extra]),
         function: () => interpretJson(text: text, extra: extra) as Map<String, dynamic>);
   }
 
-  static List<Map<String, dynamic>> interpretToObjectListJson({required String text, TranslatableText? extra}) {
+  static List<Map<String, dynamic>> interpretToObjectListJson({required String text, Oration? extra}) {
     return volatile(
-        detail: extra == null ? tr('Expected a list of json objects, but received a json list with an unknown value or a single value') : tr('Expected a json object, but received a json listing or value %1', [extra]),
+        detail: extra == null
+            ? Oration(message: 'Expected a list of json objects, but received a json list with an unknown value or a single value')
+            : Oration(message: 'Expected a json object, but received a json listing or value %1', textParts: [extra]),
         function: () => (interpretJson(text: text, extra: extra) as List).cast<Map<String, dynamic>>()).toList();
   }
 }

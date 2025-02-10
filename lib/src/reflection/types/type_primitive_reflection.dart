@@ -14,10 +14,10 @@ class TypePrimitiveReflection with IReflectionType, IValueGenerator, IPrimitiveV
   String get name => type.toString();
 
   @override
-  TranslatableText get description => Description.searchDescription(annotations: annotations);
+  Oration get description => Description.searchDescription(annotations: annotations);
 
   TypePrimitiveReflection({required this.annotations, required this.type}) {
-    primitiveType = volatile(detail: tr('The type %1 is not primitive', [type]), function: () => ReflectionUtilities.isPrimitive(type)!);
+    primitiveType = volatile(detail: Oration(message: 'The type %1 is not primitive',textParts: [type]), function: () => ReflectionUtilities.isPrimitive(type)!);
   }
 
   @override

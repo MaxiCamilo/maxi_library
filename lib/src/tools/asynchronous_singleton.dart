@@ -24,7 +24,7 @@ class AsynchronousSingleton<T> {
     if (_value == null) {
       throw NegativeResult(
         identifier: NegativeResultCodes.uninitializedFunctionality,
-        message: tr('This value must be initialized asynchronously before it can be used'),
+        message: Oration(message: 'This value must be initialized asynchronously before it can be used'),
       );
     }
     return _value!;

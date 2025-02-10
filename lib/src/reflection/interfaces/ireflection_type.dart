@@ -7,7 +7,7 @@ mixin IReflectionType {
 
   String get name;
 
-  TranslatableText get description;
+  Oration get description;
 
   bool isCompatible(dynamic item);
 

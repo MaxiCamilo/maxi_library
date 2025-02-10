@@ -21,7 +21,7 @@ extension IteratorStreamController<T> on StreamController<T> {
     bool closeParentIfChildClose = false,
     bool sendToParent = true,
   }) {
-    checkProgrammingFailure(thatChecks: const TranslatableText(message: 'StreamController is active'), result: () => !isClosed);
+    checkProgrammingFailure(thatChecks: const Oration(message: 'StreamController is active'), result: () => !isClosed);
     final StreamController<T> child = isBroadcats ? StreamController<T>.broadcast() : StreamController<T>();
 
     stream.listen(
@@ -33,8 +33,6 @@ extension IteratorStreamController<T> on StreamController<T> {
         }
       },
     );
-
-    
 
     if (closeParentIfChildClose) {
       child.done.whenComplete(() {

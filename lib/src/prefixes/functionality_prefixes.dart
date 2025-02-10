@@ -26,21 +26,21 @@ T? containError<T>({
 }
 
 T? containErrorLog<T>({
-  required TranslatableText detail,
+  required Oration detail,
   required T Function() function,
-  void Function(TranslatableText, NegativeResult)? ifFails,
-  void Function(TranslatableText, dynamic)? ifUnknownFails,
+  void Function(Oration, NegativeResult)? ifFails,
+  void Function(Oration, dynamic)? ifUnknownFails,
 }) {
   return containError(
     function: function,
     ifFails: (x) {
-      log(tr('[X] Negative response was contained in "%1": %2', [detail, x]).toString());
+      log(Oration(message: '[X] Negative response was contained in "%1": %2', textParts: [detail, x]).toString());
       if (ifFails != null) {
         ifFails(detail, x);
       }
     },
     ifUnknownFails: (x) {
-      log(tr('[¡X!] Failure contained in: "%1": %2', [detail, x]).toString());
+      log(Oration(message: '[¡X!] Failure contained in: "%1": %2', textParts: [detail, x]).toString());
 
       if (ifUnknownFails != null) {
         ifUnknownFails(detail, x);
@@ -69,18 +69,18 @@ Future<T?> containErrorAsync<T>({
 }
 
 Future<T?> containErrorLogAsync<T>({
-  required TranslatableText detail,
+  required Oration detail,
   required Future<T> Function() function,
 }) {
   return containErrorAsync(
     function: function,
-    ifFails: (x) => log(tr('[X] Negative response contained in "%1": "%2"', [detail, x]).toString()),
-    ifUnknownFails: (x) => log(tr('[¡X!] Failure contained in "%1": "%2"', [detail, x]).toString()),
+    ifFails: (x) => log(Oration(message: '[X] Negative response contained in "%1": "%2"', textParts: [detail, x]).toString()),
+    ifUnknownFails: (x) => log(Oration(message: '[¡X!] Failure contained in "%1": "%2"', textParts: [detail, x]).toString()),
   );
 }
 
 T addToErrorDescription<T>({
-  required TranslatableText additionalDetails,
+  required Oration additionalDetails,
   required T Function() function,
   bool before = true,
   NegativeResultCodes ifIsUnknownError = NegativeResultCodes.implementationFailure,
@@ -88,14 +88,14 @@ T addToErrorDescription<T>({
   try {
     return function();
   } on NegativeResult catch (nr) {
-    nr.message = tr('%1%2', before ? [additionalDetails, nr.message] : [nr.message, additionalDetails]);
+    nr.message = Oration(message: '%1%2', textParts: before ? [additionalDetails, nr.message] : [nr.message, additionalDetails]);
 
     //before ? '${additionalDetails.toString()}${nr.message.toString()}' : '${nr.message.toString()}${additionalDetails.toString()}';
     rethrow;
   } catch (ex) {
     throw NegativeResult(
       identifier: ifIsUnknownError,
-      message: tr('%1: "%2"', [additionalDetails, ex]),
+      message: Oration(message: '%1: "%2"', textParts: [additionalDetails, ex]),
       cause: ex,
     );
   }
@@ -120,7 +120,7 @@ T volatileFactory<T>({
 }
 
 T volatile<T>({
-  required TranslatableText detail,
+  required Oration detail,
   required T Function() function,
   void Function(NegativeResult)? ifFails,
   void Function(dynamic)? ifUnknownFails,
@@ -160,7 +160,7 @@ T volatile<T>({
 }
 
 T volatileByFunctionality<T>({
-  required TranslatableText errorMessage,
+  required Oration errorMessage,
   required T Function() function,
 }) =>
     volatileFactory(
@@ -172,7 +172,7 @@ T volatileByFunctionality<T>({
     );
 
 Future<T> volatileAsync<T>({
-  required TranslatableText detail,
+  required Oration detail,
   required Future<T> Function() function,
   void Function(NegativeResult)? ifFails,
   void Function(dynamic)? ifUnknownFails,
@@ -195,7 +195,7 @@ Future<T> volatileAsync<T>({
     if (errorFactory == null) {
       rn = NegativeResult(
         identifier: NegativeResultCodes.nonStandardError,
-        message: tr('Something went wrong while the function was running "%1", the error was: %2', [detail, ex]),
+        message: Oration(message: 'Something went wrong while the function was running "%1", the error was: %2', textParts: [detail, ex]),
       );
     } else {
       rn = errorFactory(ex);
@@ -218,7 +218,7 @@ Future<T> volatileAsync<T>({
 }
 
 T cautious<T>({
-  required TranslatableText reasonFailure,
+  required Oration reasonFailure,
   required T Function() function,
   NegativeResultCodes codeReasonFailure = NegativeResultCodes.invalidFunctionality,
 }) =>
@@ -232,7 +232,7 @@ T cautious<T>({
     );
 
 T programmingFailure<T>({
-  required TranslatableText reasonFailure,
+  required Oration reasonFailure,
   required T Function() function,
 }) =>
     volatileFactory(
@@ -245,24 +245,24 @@ T programmingFailure<T>({
     );
 
 void checkProgrammingFailure<T>({
-  required TranslatableText thatChecks,
+  required Oration thatChecks,
   required bool Function() result,
 }) {
   final resultFunction = programmingFailure(
-    reasonFailure: tr('%1 fired an error', [thatChecks]),
+    reasonFailure: Oration(message: '%1 fired an error', textParts: [thatChecks]),
     function: result,
   );
 
   if (!resultFunction) {
     throw NegativeResult(
       identifier: NegativeResultCodes.implementationFailure,
-      message: tr('The checker "%1" tested negative', [thatChecks]),
+      message: Oration(message: 'The checker "%1" tested negative', textParts: [thatChecks]),
     );
   }
 }
 
 T volatileProperty<T>({
-  required TranslatableText formalName,
+  required Oration formalName,
   required String propertyName,
   required T Function() function,
   void Function(NegativeResultValue)? ifFails,
@@ -287,7 +287,7 @@ T volatileProperty<T>({
       rnp = NegativeResultValue(
         name: propertyName,
         formalName: formalName,
-        message: tr('An error occurred while executing the functionality in the property %1, the error was: %2', [propertyName, ex]),
+        message: Oration(message: 'An error occurred while executing the functionality in the property %1, the error was: %2', textParts: [propertyName, ex]),
         cause: ex,
       );
     } else {

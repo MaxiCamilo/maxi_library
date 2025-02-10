@@ -18,14 +18,14 @@ mixin GeneratedReflectedModifiableField<T, R> {
     if (!isStatic && entity == null) {
       throw NegativeResult(
         identifier: NegativeResultCodes.invalidValue,
-        message: tr('The field %1 of the entity %2 is not static, instance is required', [name, T]),
+        message: Oration(message: 'The field %1 of the entity %2 is not static, instance is required', textParts: [name, T]),
       );
     }
 
     if (!isStatic && entity is! T) {
       throw NegativeResult(
         identifier: NegativeResultCodes.wrongType,
-        message: tr('The %1 field of the %2 object requires a %2 instance or a compatible one', [name, T]),
+        message: Oration(message: 'The %1 field of the %2 object requires a %2 instance or a compatible one', textParts: [name, T]),
       );
     }
 
@@ -33,7 +33,7 @@ mixin GeneratedReflectedModifiableField<T, R> {
       if (!acceptNull) {
         throw NegativeResult(
           identifier: NegativeResultCodes.nullValue,
-          message: tr('The %1 field of the %2 object does not accept null values', [name, T]),
+          message: Oration(message: 'The %1 field of the %2 object does not accept null values', textParts: [name, T]),
         );
       }
     } else if (newValue is! R) {
@@ -41,7 +41,7 @@ mixin GeneratedReflectedModifiableField<T, R> {
       //if (isEnum == null || !isEnum.isCompatible(newValue)) {
       throw NegativeResult(
         identifier: NegativeResultCodes.wrongType,
-        message: tr('The %1 field of the %2 object does not accept %4 values, it only accept %3 values or their equivalents', [name, T, R, newValue.runtimeType]),
+        message: Oration(message: 'The %1 field of the %2 object does not accept %4 values, it only accept %3 values or their equivalents', textParts: [name, T, R, newValue.runtimeType]),
       );
       //}
     }
@@ -72,14 +72,14 @@ abstract class GeneratedReflectedField<T, R> {
     if (!isStatic && entity == null) {
       throw NegativeResult(
         identifier: NegativeResultCodes.invalidValue,
-        message: tr('The field %1 of the entity %2 is not static, instance is required', [name, T]),
+        message: Oration(message: 'The field %1 of the entity %2 is not static, instance is required', textParts: [name, T]),
       );
     }
 
     if (!isStatic && entity is! T) {
       throw NegativeResult(
         identifier: NegativeResultCodes.wrongType,
-        message: tr('The %1 field of the %2 object requires a %2 instance or a compatible one', [name, T]),
+        message: Oration(message: 'The %1 field of the %2 object requires a %2 instance or a compatible one', textParts: [name, T]),
       );
     }
 

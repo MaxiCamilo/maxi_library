@@ -6,7 +6,7 @@ class FixedParameter with IDeclarationReflector {
   final bool isOptional;
   final dynamic optionalValue;
   final Type type;
-  
+
   @override
   final String name;
 
@@ -20,13 +20,13 @@ class FixedParameter with IDeclarationReflector {
   late final IReflectionType reflectedType;
 
   @override
-  late final TranslatableText formalName;
+  late final Oration formalName;
 
   @override
   late final List<ValueValidator> validators;
 
   @override
-  late final TranslatableText description;
+  late final Oration description;
 
   FixedParameter({
     required this.position,
@@ -38,7 +38,7 @@ class FixedParameter with IDeclarationReflector {
   }) {
     description = Description.searchDescription(annotations: annotations);
     reflectedType = ReflectionManager.getReflectionType(type, annotations: annotations);
-    formalName = FormalName.searchFormalName(realName: tr(name), annotations: annotations);
+    formalName = FormalName.searchFormalName(realName: Oration(message: name), annotations: annotations);
     validators = annotations.whereType<ValueValidator>().toList();
   }
 }

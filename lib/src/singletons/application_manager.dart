@@ -5,7 +5,7 @@ mixin ApplicationManager {
 
   static IApplicationManager get instance {
     if (_instance == null) {
-      throw NegativeResult(identifier: NegativeResultCodes.implementationFailure, message: tr('Application operator not setter and initialized'));
+      throw NegativeResult(identifier: NegativeResultCodes.implementationFailure, message: Oration(message: 'Application operator not setter and initialized'));
     }
 
     return _instance!;
@@ -13,7 +13,7 @@ mixin ApplicationManager {
 
   static Future<T> changeInstance<T extends IApplicationManager>({required T newInstance, required bool initialize}) async {
     if (_instance != null) {
-      throw NegativeResult(identifier: NegativeResultCodes.contextInvalidFunctionality, message: tr('An application operator has already been initialized'));
+      throw NegativeResult(identifier: NegativeResultCodes.contextInvalidFunctionality, message: Oration(message: 'An application operator has already been initialized'));
     }
     _instance = newInstance;
 

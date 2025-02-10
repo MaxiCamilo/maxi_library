@@ -6,7 +6,7 @@ import 'package:maxi_library/maxi_library.dart';
 
 class NegativeResult implements Exception, CustomSerialization, ICustomSerialization {
   NegativeResultCodes identifier;
-  TranslatableText message;
+  Oration message;
   DateTime whenWasIt;
   dynamic cause;
   String stackTrace;
@@ -25,23 +25,21 @@ class NegativeResult implements Exception, CustomSerialization, ICustomSerializa
     if (checkTypeFlag && (!values.containsKey('\$type') || values['\$type'] is! String || !(values['\$type']! as String).startsWith('error'))) {
       throw NegativeResult(
         identifier: NegativeResultCodes.wrongType,
-        message: tr('Errors or negative results are invalid or do not have their type label'),
+        message: Oration(message: 'Errors or negative results are invalid or do not have their type label'),
       );
     }
 
     return NegativeResult(
-      message: TranslatableText.interpretFromJson(text: volatileProperty(propertyName: 'message', formalName: const TranslatableText(message: 'Error message'), function: () => values['message']!)),
-      identifier:
-          NegativeResultCodes.values[volatileProperty(propertyName: 'identifier', formalName: const TranslatableText(message: 'Error Identifier'), function: () => (values['identifier'] ?? values['idError'])! as int)],
+      message: Oration.interpretFromJson(text: volatileProperty(propertyName: 'message', formalName: const Oration(message: 'Error message'), function: () => values['message']!)),
+      identifier: NegativeResultCodes.values[volatileProperty(propertyName: 'identifier', formalName: const Oration(message: 'Error Identifier'), function: () => (values['identifier'] ?? values['idError'])! as int)],
       whenWasIt:
-          DateTime.fromMillisecondsSinceEpoch(volatileProperty(propertyName: 'whenWasIt', formalName: const TranslatableText(message: 'Error date and time'), function: () => values['whenWasIt']! as int), isUtc: true)
-              .toLocal(),
+          DateTime.fromMillisecondsSinceEpoch(volatileProperty(propertyName: 'whenWasIt', formalName: const Oration(message: 'Error date and time'), function: () => values['whenWasIt']! as int), isUtc: true).toLocal(),
     );
   }
 
   factory NegativeResult.searchNegativity({
     required dynamic item,
-    required TranslatableText actionDescription,
+    required Oration actionDescription,
     NegativeResultCodes codeDescription = NegativeResultCodes.externalFault,
     StackTrace? stackTrace,
   }) {
@@ -49,15 +47,15 @@ class NegativeResult implements Exception, CustomSerialization, ICustomSerializa
       return item;
     }
     if (item is ArgumentError) {
-      return NegativeResult(identifier: NegativeResultCodes.invalidValue, message: tr('Argument error: %1', [item.message]), stackTrace: stackTrace?.toString() ?? '');
+      return NegativeResult(identifier: NegativeResultCodes.invalidValue, message: Oration(message: 'Argument error: %1', textParts: [item.message]), stackTrace: stackTrace?.toString() ?? '');
     }
     if (item is SocketException) {
       return NegativeResult(
           identifier: NegativeResultCodes.systemFailure,
-          message: TranslatableText(message: 'A connection error occurred, Socket error %1: %2', textParts: [item.osError?.errorCode, item.message]),
+          message: Oration(message: 'A connection error occurred, Socket error %1: %2', textParts: [item.osError?.errorCode, item.message]),
           stackTrace: stackTrace?.toString() ?? '');
     } else {
-      return NegativeResult(identifier: codeDescription, message: TranslatableText(message: 'The functionality %1 failed: %2', textParts: [actionDescription, item.toString()]), stackTrace: stackTrace?.toString() ?? '');
+      return NegativeResult(identifier: codeDescription, message: Oration(message: 'The functionality %1 failed: %2', textParts: [actionDescription, item.toString()]), stackTrace: stackTrace?.toString() ?? '');
     }
   }
 

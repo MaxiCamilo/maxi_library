@@ -43,7 +43,7 @@ mixin FunctionalityWithLifeCycle on StartableFunctionality {
       x.completeErrorIfIncomplete(
         NegativeResult(
           identifier: NegativeResultCodes.functionalityCancelled,
-          message: const TranslatableText(message: 'The functionality was canceled'),
+          message: const Oration(message: 'The functionality was canceled'),
         ),
       );
     });
@@ -85,7 +85,7 @@ mixin FunctionalityWithLifeCycle on StartableFunctionality {
 
   Completer<R> joinWaiter<R>([Completer<R>? waiter]) {
     waiter ??= Completer<R>();
-    checkProgrammingFailure(thatChecks: const TranslatableText(message: 'The waiter was already completed'), result: () => !waiter!.isCompleted);
+    checkProgrammingFailure(thatChecks: const Oration(message: 'The waiter was already completed'), result: () => !waiter!.isCompleted);
 
     _waiters.add(waiter);
     waiter.future.whenComplete(() => _waiters.remove(waiter));

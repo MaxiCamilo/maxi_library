@@ -22,19 +22,18 @@ mixin ThreadManager {
     if (_instance != null) {
       throw NegativeResult(
         identifier: NegativeResultCodes.implementationFailure,
-        message: tr('[ThreadManager] Thread manager has already been initialized'),
+        message: Oration(message: '[ThreadManager] Thread manager has already been initialized'),
       );
     }
 
     _instance = newInvoker;
   }
 
-  static Future<IThreadInvokeInstance> getEntityInstance<T extends Object>() => volatileAsync(detail: tr('entity %1 was not mounted'), function: () async => (await instance.getEntityInstance<T>())!);
+  static Future<IThreadInvokeInstance> getEntityInstance<T extends Object>() => volatileAsync(detail: Oration(message: 'entity %1 was not mounted'), function: () async => (await instance.getEntityInstance<T>())!);
 
   static Future<R> callEntityFunction<T extends Object, R>({InvocationParameters parameters = InvocationParameters.emptry, required FutureOr<R> Function(T serv, InvocationParameters para) function}) =>
       instance.callEntityFunction<T, R>(function: function, parameters: parameters);
-  static Future<Stream<R>> callEntityStream<T extends Object, R>(
-          {InvocationParameters parameters = InvocationParameters.emptry, required FutureOr<Stream<R>> Function(T serv, InvocationParameters para) function}) =>
+  static Future<Stream<R>> callEntityStream<T extends Object, R>({InvocationParameters parameters = InvocationParameters.emptry, required FutureOr<Stream<R>> Function(T serv, InvocationParameters para) function}) =>
       instance.callEntityStream<T, R>(function: function, parameters: parameters);
 
   static Future<IThreadInvokeInstance> mountEntity<T extends Object>({required T entity, bool ifExistsOmit = true}) => instance.mountEntity<T>(entity: entity, ifExistsOmit: ifExistsOmit);

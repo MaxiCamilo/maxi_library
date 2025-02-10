@@ -29,12 +29,12 @@ class SharedValuesService with StartableFunctionality, IThreadService {
       if (result == null) {
         throw NegativeResult(
           identifier: NegativeResultCodes.nonExistent,
-          message: tr('Value %1 was not defined', [name]),
+          message: Oration(message: 'Value %1 was not defined',textParts: [name]),
         );
       } else {
         throw NegativeResult(
           identifier: NegativeResultCodes.wrongType,
-          message: tr('Value %1 is %2, but %3 was expected ', [name, result.runtimeType, T]),
+          message: Oration(message: 'Value %1 is %2, but %3 was expected ', textParts:[name, result.runtimeType, T]),
         );
       }
     }

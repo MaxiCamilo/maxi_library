@@ -32,7 +32,7 @@ mixin AbylityEntityFramework on ITypeClassReflection, IEntityFramework {
     if (!hasPrimaryKey) {
       throw NegativeResult(
         identifier: NegativeResultCodes.implementationFailure,
-        message: tr('The entity %1 does not have a primary key', [name]),
+        message: Oration(message: 'The entity %1 does not have a primary key', textParts: [name]),
       );
     }
     return _primaryKey!;
@@ -48,7 +48,7 @@ mixin AbylityEntityFramework on ITypeClassReflection, IEntityFramework {
     } else {
       throw NegativeResult(
         identifier: NegativeResultCodes.wrongType,
-        message: tr('Entity %1 was expected to return a number for its primary key %2, but returned a value of type %3 instead', [name, primaryKey.name, result.runtimeType]),
+        message: Oration(message: 'Entity %1 was expected to return a number for its primary key %2, but returned a value of type %3 instead', textParts: [name, primaryKey.name, result.runtimeType]),
       );
     }
   }
@@ -62,7 +62,7 @@ mixin AbylityEntityFramework on ITypeClassReflection, IEntityFramework {
     } else {
       throw NegativeResult(
         identifier: NegativeResultCodes.wrongType,
-        message: tr('The primary key %1 of the entity %2 cannot be modified', [primaryKey.name, name]),
+        message: Oration(message: 'The primary key %1 of the entity %2 cannot be modified', textParts: [primaryKey.name, name]),
       );
     }
   }
@@ -81,7 +81,7 @@ mixin AbylityEntityFramework on ITypeClassReflection, IEntityFramework {
     if (primaryList.length > 1) {
       throw NegativeResult(
         identifier: NegativeResultCodes.wrongType,
-        message: tr('The entity %1 has more than one primary key, but only one is allowed', [name]),
+        message: Oration(message: 'The entity %1 has more than one primary key, but only one is allowed', textParts: [name]),
       );
     } else if (primaryList.isNotEmpty) {
       _primaryKey = primaryList.first;
@@ -116,7 +116,7 @@ mixin AbylityEntityFramework on ITypeClassReflection, IEntityFramework {
     } else {
       throw NegativeResult(
         identifier: NegativeResultCodes.wrongType,
-        message: tr('For the interpretation of entity %1, a named map is needed', [formalName]),
+        message: Oration(message: 'For the interpretation of entity %1, a named map is needed', textParts: [formalName]),
       );
     }
   }

@@ -42,7 +42,7 @@ class EntityList<T> with IEntityWriter<T>, IEntityReader<T> {
 
     _uniqueProperties = reflector.fields.where((x) => x.annotations.selectByType<UniqueProperty>() != null).toList(growable: false);
 
-    checkProgrammingFailure(thatChecks: tr('Entity %1 has primary key', [T]), result: () => reflector.hasPrimaryKey);
+    checkProgrammingFailure(thatChecks: Oration(message: 'Entity %1 has primary key', textParts: [T]), result: () => reflector.hasPrimaryKey);
 
     if (initList != null) {
       for (final item in initList) {
@@ -281,11 +281,11 @@ class EntityList<T> with IEntityWriter<T>, IEntityReader<T> {
   }
 
   @override
-  Stream<StreamState<TranslatableText, void>> deleteAll() {
+  Stream<StreamState<Oration, void>> deleteAll() {
     return _blocker.blockStream(function: () async => _deleteAll());
   }
 
-  Stream<StreamState<TranslatableText, void>> _deleteAll() async* {
+  Stream<StreamState<Oration, void>> _deleteAll() async* {
     _mapList.clear();
     _notifyListChanged.add(null);
     _notifyTotalEliminations.add(null);
@@ -294,11 +294,11 @@ class EntityList<T> with IEntityWriter<T>, IEntityReader<T> {
   }
 
   @override
-  Stream<StreamState<TranslatableText, void>> add({required List<T> list}) {
+  Stream<StreamState<Oration, void>> add({required List<T> list}) {
     return _blocker.blockStream(function: () async => _add(list: list));
   }
 
-  Stream<StreamState<TranslatableText, void>> _add({required List<T> list}) async* {
+  Stream<StreamState<Oration, void>> _add({required List<T> list}) async* {
     try {
       final newMap = _defineIDZeros(list: list);
       newMap.values.iterar((x) => _checkUniqueProperties(item: x));
@@ -307,7 +307,7 @@ class EntityList<T> with IEntityWriter<T>, IEntityReader<T> {
         if (_mapList.containsKey(item.key)) {
           throw NegativeResult(
             identifier: NegativeResultCodes.contextInvalidFunctionality,
-            message: tr('There is already an item in the list with identifier number %1', [item.key]),
+            message: Oration(message: 'There is already an item in the list with identifier number %1', textParts: [item.key]),
           );
         }
       }
@@ -330,11 +330,11 @@ class EntityList<T> with IEntityWriter<T>, IEntityReader<T> {
   }
 
   @override
-  Stream<StreamState<TranslatableText, void>> assign({required List<T> list}) {
+  Stream<StreamState<Oration, void>> assign({required List<T> list}) {
     return _blocker.blockStream(function: () async => _assign(list: list));
   }
 
-  Stream<StreamState<TranslatableText, void>> _assign({required List<T> list}) async* {
+  Stream<StreamState<Oration, void>> _assign({required List<T> list}) async* {
     try {
       final newMap = _defineIDZeros(list: list);
       newMap.values.iterar((x) => _checkUniqueProperties(item: x));
@@ -349,11 +349,11 @@ class EntityList<T> with IEntityWriter<T>, IEntityReader<T> {
   }
 
   @override
-  Stream<StreamState<TranslatableText, void>> delete({required List<int> listIDs}) {
+  Stream<StreamState<Oration, void>> delete({required List<int> listIDs}) {
     return _blocker.blockStream(function: () async => _delete(listIDs: listIDs));
   }
 
-  Stream<StreamState<TranslatableText, void>> _delete({required List<int> listIDs}) async* {
+  Stream<StreamState<Oration, void>> _delete({required List<int> listIDs}) async* {
     listIDs.iterar((x) => _mapList.remove(x));
 
     _notifyListChanged.add(null);
@@ -363,11 +363,11 @@ class EntityList<T> with IEntityWriter<T>, IEntityReader<T> {
   }
 
   @override
-  Stream<StreamState<TranslatableText, void>> modify({required List<T> list}) {
+  Stream<StreamState<Oration, void>> modify({required List<T> list}) {
     return _blocker.blockStream(function: () async => _modify(list: list));
   }
 
-  Stream<StreamState<TranslatableText, void>> _modify({required List<T> list}) async* {
+  Stream<StreamState<Oration, void>> _modify({required List<T> list}) async* {
     try {
       final newMap = _defineIDZeros(list: list);
       newMap.values.iterar((x) => _checkUniqueProperties(item: x));
@@ -375,7 +375,7 @@ class EntityList<T> with IEntityWriter<T>, IEntityReader<T> {
         if (!_mapList.containsKey(item.key)) {
           throw NegativeResult(
             identifier: NegativeResultCodes.contextInvalidFunctionality,
-            message: tr('There is no item in the list with identifier %1', [item.key]),
+            message: Oration(message: 'There is no item in the list with identifier %1', textParts: [item.key]),
           );
         }
       }
@@ -423,9 +423,9 @@ class EntityList<T> with IEntityWriter<T>, IEntityReader<T> {
         if (value == valueCandidate) {
           throw NegativeResult(
             identifier: NegativeResultCodes.contextInvalidFunctionality,
-            message: tr(
-              'On the list, item %1 has the same value for property %2. Item %3 cannot be assigned because it is a unique property for each item',
-              [
+            message: Oration(
+              message: 'On the list, item %1 has the same value for property %2. Item %3 cannot be assigned because it is a unique property for each item',
+              textParts: [
                 candidate.key,
                 property.name,
                 reflector.getPrimaryKey(instance: item),

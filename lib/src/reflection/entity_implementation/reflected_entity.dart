@@ -64,7 +64,7 @@ class ReflectedEntity<T> extends ReflectedEntityTypeTemplate {
 
   @override
   buildEntityWithoutParameters() {
-    checkProgrammingFailure(thatChecks: tr('Entity %1 has a default construct', [name]), result: () => _defalutContruct != null);
+    checkProgrammingFailure(thatChecks: Oration(message: 'Entity %1 has a default construct', textParts: [name]), result: () => _defalutContruct != null);
     return _defalutContruct!.callMethod(instance: null, fixedParametersValues: const [], namedParametesValues: const {});
   }
 

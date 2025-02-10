@@ -10,7 +10,7 @@ class FieldEntity<T, R> with IDeclarationReflector, IGetterReflector, ISetterRef
   final List annotations;
 
   @override
-  final TranslatableText formalName;
+  final Oration formalName;
 
   @override
   final bool isRequired;
@@ -44,7 +44,7 @@ class FieldEntity<T, R> with IDeclarationReflector, IGetterReflector, ISetterRef
   late final CustomSerialization? customSerialization;
 
   @override
-  late final TranslatableText description;
+  late final Oration description;
 
   FieldEntity._({
     required this.field,
@@ -70,7 +70,7 @@ class FieldEntity<T, R> with IDeclarationReflector, IGetterReflector, ISetterRef
     return FieldEntity<T, R>._(
       field: field,
       annotations: field.annotations,
-      formalName: FormalName.searchFormalName(realName: tr(field.name), annotations: field.annotations),
+      formalName: FormalName.searchFormalName(realName: Oration(message: field.name), annotations: field.annotations),
       isRequired: field.annotations.any((x) => x is EssentialKey),
       isStatic: field.isStatic || field.isConst,
       name: field.name,
@@ -110,7 +110,7 @@ class FieldEntity<T, R> with IDeclarationReflector, IGetterReflector, ISetterRef
     } else {
       throw NegativeResult(
         identifier: NegativeResultCodes.invalidFunctionality,
-        message: tr('Field %1 is not modifiable', [name]),
+        message: Oration(message: 'Field %1 is not modifiable',textParts: [name]),
       );
     }
   }

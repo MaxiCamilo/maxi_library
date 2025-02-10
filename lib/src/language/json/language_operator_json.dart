@@ -67,7 +67,7 @@ class LanguageOperatorJson with StartableFunctionality, IOperatorLanguage {
   }
 
   @override
-  String translateText(TranslatableText text) {
+  String translateText(Oration text) {
     if (inEnglish) {
       return _makeNewText(text.message, text);
     }
@@ -81,7 +81,7 @@ class LanguageOperatorJson with StartableFunctionality, IOperatorLanguage {
     }
   }
 
-  String _makeNewText(String replacementText, TranslatableText text) {
+  String _makeNewText(String replacementText, Oration text) {
     if (text.isFixed) {
       return replacementText;
     }
@@ -89,10 +89,10 @@ class LanguageOperatorJson with StartableFunctionality, IOperatorLanguage {
     for (int i = 0; i < text.textParts.length; i++) {
       final part = text.textParts[i];
       late String textGenerated;
-      if (part is AlreadyTranslatedText) {
+      if (part is TranslatedOration) {
         textGenerated = part.toString();
       }
-      if (part is TranslatableText) {
+      if (part is Oration) {
         textGenerated = translateText(part);
       } else {
         textGenerated = part.toString();

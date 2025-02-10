@@ -35,7 +35,7 @@ class ReflectorGenerator {
 
     for (final path in castDirectories) {
       if (!Directory(path).existsSync()) {
-        throw NegativeResult(identifier: NegativeResultCodes.nonExistent, message: tr('Directory %1 does not exists', [path]));
+        throw NegativeResult(identifier: NegativeResultCodes.nonExistent, message: Oration(message: 'Directory %1 does not exists', textParts: [path]));
       }
     }
 
@@ -83,7 +83,7 @@ class ReflectorGenerator {
       if (enumNames.contains(name)) {
         throw NegativeResult(
           identifier: NegativeResultCodes.invalidFunctionality,
-          message: tr('Two enumerators with the same name were found ("%1")', [name]),
+          message: Oration(message: 'Two enumerators with the same name were found ("%1")', textParts: [name]),
         );
       } else {
         enumNames.add(name);
@@ -96,7 +96,7 @@ class ReflectorGenerator {
       if (classNames.contains(name)) {
         throw NegativeResult(
           identifier: NegativeResultCodes.invalidFunctionality,
-          message: tr('Two class with the same name were found ("%1")', [name]),
+          message: Oration(message: 'Two class with the same name were found ("%1")', textParts: [name]),
         );
       } else {
         classNames.add(name);

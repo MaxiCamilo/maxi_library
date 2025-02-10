@@ -114,7 +114,7 @@ class FileOperatorMask with IFileOperator, StartableFunctionality {
     if (routeSplit.length < 2) {
       throw NegativeResult(
         identifier: NegativeResultCodes.contextInvalidFunctionality,
-        message: tr('Cannot download more from the folder'),
+        message: Oration(message: 'Cannot download more from the folder'),
       );
     }
 

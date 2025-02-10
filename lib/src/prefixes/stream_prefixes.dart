@@ -7,8 +7,8 @@ StreamState<S, R> streamStatus<S, R>(S item) => StreamStateItem(item: item);
 StreamState<S, R> checkStreamState<S, R>() => const StreamCheckActive();
 StreamState<S, R> partialError<S, R>(ex) => StreamStatePartialError(partialError: partialError);
 StreamState<S, R> streamResult<S, R>(R result) => StreamStateResult(result: result);
-StreamState<TranslatableText, R> streamTextStatus<R>(String part, [List parts = const []]) => StreamStateItem(item: tr(part, parts));
-StreamState<TranslatableText, R> streamTranslateText<R>(TranslatableText text) => StreamStateItem(item: text);
+StreamState<Oration, R> streamTextStatus<R>(String part, [List parts = const []]) => StreamStateItem(item: Oration(message: part, textParts: parts));
+StreamState<Oration, R> streamTranslateText<R>(Oration text) => StreamStateItem(item: text);
 
 Stream<StreamState<S, R>> connectFunctionalStream<S, R, SR>(Stream<StreamState<S, SR>> other, [void Function(SR x)? sendResult]) async* {
   late final SR result;
@@ -32,7 +32,7 @@ Stream<StreamState<S, R>> connectFunctionalStream<S, R, SR>(Stream<StreamState<S
   } else if (!returnResult && sendResult != null) {
     throw NegativeResult(
       identifier: NegativeResultCodes.implementationFailure,
-      message: tr('The stateful process failed to produce the final output'),
+      message: Oration(message: 'The stateful process failed to produce the final output'),
     );
   }
 }
@@ -61,7 +61,7 @@ Future<R> waitFunctionalStream<S, R>({
       } else {
         completer.completeError(NegativeResult(
           identifier: NegativeResultCodes.implementationFailure,
-          message: tr('Functional stream has not returned a result'),
+          message: Oration(message: 'Functional stream has not returned a result'),
         ));
       }
     }
@@ -92,7 +92,7 @@ Future<R> waitFunctionalStream<S, R>({
         } else {
           completer.completeError(NegativeResult(
             identifier: NegativeResultCodes.implementationFailure,
-            message: tr('Functional stream has not returned a result'),
+            message: Oration(message: 'Functional stream has not returned a result'),
           ));
         }
       }

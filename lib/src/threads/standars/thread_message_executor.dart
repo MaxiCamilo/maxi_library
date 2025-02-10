@@ -59,7 +59,7 @@ class ThreadMessageExecutor {
   void cancelFunction({required int id}) {
     final instance = activeFunctions[id];
     if (instance != null) {
-      instance.completeErrorIfIncomplete(NegativeResult(identifier: NegativeResultCodes.functionalityCancelled, message: tr('The function was cancelled')));
+      instance.completeErrorIfIncomplete(NegativeResult(identifier: NegativeResultCodes.functionalityCancelled, message: Oration(message: 'The function was cancelled')));
     } else {
       log('[ThreadMessageExecutor] Function $id is not exists');
     }
@@ -72,7 +72,7 @@ class ThreadMessageExecutor {
 
     _isActive = false;
     for (final item in activeFunctions.values) {
-      item.completeErrorIfIncomplete(NegativeResult(identifier: NegativeResultCodes.functionalityCancelled, message: tr('The function was cancelled')));
+      item.completeErrorIfIncomplete(NegativeResult(identifier: NegativeResultCodes.functionalityCancelled, message: Oration(message: 'The function was cancelled')));
     }
 
     activeFunctions.clear();

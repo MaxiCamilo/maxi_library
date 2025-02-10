@@ -52,10 +52,21 @@ class IsolatedEvent<T> with StartableFunctionality implements StreamSink<T> {
     return stream.listen(onData, cancelOnError: cancelOnError, onDone: onDone, onError: onError);
   }
 
-
-  Future<StreamSubscription<T>> createStreamDirectWhere({required bool Function(T) whereFunction,required void Function(T) onData, Function? onError, void Function()? onDone, bool? cancelOnError}) async {
+  Future<StreamSubscription<T>> createStreamDirectWhere({
+    required bool Function(T) whereFunction,
+    required void Function(T) onData,
+    Function? onError,
+    FutureOr<void> Function()? doOnCancel,
+    void Function()? onDone,
+    bool? cancelOnError,
+  }) async {
     final stream = await streamAsync;
-    return stream.where(whereFunction).listen(onData, cancelOnError: cancelOnError, onDone: onDone, onError: onError);
+
+    if (doOnCancel != null) {
+      return stream.where(whereFunction).doOnCancel(doOnCancel).listen(onData, cancelOnError: cancelOnError, onDone: onDone, onError: onError);
+    } else {
+      return stream.where(whereFunction).listen(onData, cancelOnError: cancelOnError, onDone: onDone, onError: onError);
+    }
   }
 
   @override

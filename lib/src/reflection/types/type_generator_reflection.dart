@@ -51,7 +51,7 @@ class TypeGeneratorReflection with IReflectionType, IValueGenerator {
 
   @override
   serializeToMap(item) {
-    if(generator is IMapValueGenerator){
+    if (generator is IMapValueGenerator) {
       return (generator as IMapValueGenerator).convertToMapValue(item);
     }
     if (generator is IPrimitiveValueGenerator) {
@@ -64,5 +64,5 @@ class TypeGeneratorReflection with IReflectionType, IValueGenerator {
   }
 
   @override
-  TranslatableText get description => TranslatableText.empty;
+  Oration get description => Oration.empty;
 }

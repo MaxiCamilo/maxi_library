@@ -5,7 +5,7 @@ import 'package:maxi_library/maxi_library.dart';
 
 import 'second_service.dart';
 
-class FirstService with StartableFunctionality,   IThreadService {
+class FirstService with StartableFunctionality, IThreadService {
   final bool isMustFail;
 
   FirstService({required this.isMustFail});
@@ -18,7 +18,7 @@ class FirstService with StartableFunctionality,   IThreadService {
     log('¡Hi Susana!');
 
     if (isMustFail) {
-      throw NegativeResult(identifier: NegativeResultCodes.invalidFunctionality, message: tr('Hey! I must fail'));
+      throw NegativeResult(identifier: NegativeResultCodes.invalidFunctionality, message: Oration(message: 'Hey! I must fail'));
     }
   }
 

@@ -1,16 +1,16 @@
 import 'package:maxi_library/maxi_library.dart';
 
 class Description {
-  final TranslatableText text;
+  final Oration text;
 
   const Description(this.text);
 
-  static TranslatableText searchDescription({required List annotations, TranslatableText? alternative}) {
+  static Oration searchDescription({required List annotations, Oration? alternative}) {
     final formal = annotations.selectByType<Description>();
     if (formal != null) {
       return formal.text;
     }
 
-    return alternative ?? const TranslatableText(message: '');
+    return alternative ?? const Oration(message: '');
   }
 }

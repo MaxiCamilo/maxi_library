@@ -64,7 +64,7 @@ class FutureCareer<T> {
 
     final error = NegativeResult(
       identifier: NegativeResultCodes.statusFunctionalityInvalid,
-      message: tr('A response was expected, but a channel was closed'),
+      message: Oration(message: 'A response was expected, but a channel was closed'),
     );
 
     switch (closedChannelDoes) {
@@ -97,7 +97,7 @@ class FutureCareer<T> {
   void _declareTimeout() {
     final error = NegativeResult(
       identifier: NegativeResultCodes.timeout,
-      message: tr('Too long was waited for a reply'),
+      message: Oration(message: 'Too long was waited for a reply'),
     );
 
     _waitingItem?.completeErrorIfIncomplete(error);

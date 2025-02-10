@@ -3,7 +3,7 @@ import 'package:maxi_library/maxi_library.dart';
 mixin IOperatorLanguage {
   String get prefixLanguage;
 
-  String translateText(TranslatableText text);
+  String translateText(Oration text);
 
   String translateString(String text);
 

@@ -2,8 +2,8 @@ import 'dart:convert';
 
 import 'package:maxi_library/maxi_library.dart';
 
-class TranslatableText with ICustomSerialization {
-  static const empty = AlreadyTranslatedText(message: '');
+class Oration with ICustomSerialization {
+  static const empty = TranslatedOration(message: '');
 
   final String tokenId;
   final String message;
@@ -13,44 +13,44 @@ class TranslatableText with ICustomSerialization {
   bool get isNotEmpty => message.isNotEmpty;
   bool get isEmpty => message.isEmpty;
 
-  const TranslatableText({required this.message, this.tokenId = '', this.textParts = const []});
+  const Oration({required this.message, this.tokenId = '', this.textParts = const []});
 
-  factory TranslatableText.changeMessage({required TranslatableText original, required String text}) {
-    return TranslatableText(message: text, textParts: original.textParts, tokenId: original.tokenId);
+  factory Oration.changeMessage({required Oration original, required String text}) {
+    return Oration(message: text, textParts: original.textParts, tokenId: original.tokenId);
   }
 
-  factory TranslatableText.interpretFromJson({required dynamic text}) {
+  factory Oration.interpretFromJson({required dynamic text}) {
     if (text is String) {
       if (text.isEmpty) {
-        return const AlreadyTranslatedText(message: '');
+        return const TranslatedOration(message: '');
       }
-      return volatile(detail: tr('The translatable text cannot be interpreted (it must be JSON)'), function: () => TranslatableText.interpret(map: json.decode(text)));
+      return volatile(detail: Oration(message: 'The translatable text cannot be interpreted (it must be JSON)'), function: () => Oration.interpret(map: json.decode(text)));
     } else if (text is Map<String, dynamic>) {
-      return TranslatableText.interpret(map: text);
+      return Oration.interpret(map: text);
     } else {
-      throw NegativeResult(identifier: NegativeResultCodes.wrongType, message: tr('The format of the translatable text is not correct'));
+      throw NegativeResult(identifier: NegativeResultCodes.wrongType, message: Oration(message: 'The format of the translatable text is not correct'));
     }
   }
-  factory TranslatableText.interpret({required Map<String, dynamic> map}) {
+  factory Oration.interpret({required Map<String, dynamic> map}) {
     final textParts = [];
 
-    for (final item in volatileProperty(formalName: tr('Text Parts'), propertyName: 'textParts', function: () => map['textParts'] as List)) {
+    for (final item in volatileProperty(formalName: Oration(message: 'Text Parts'), propertyName: 'textParts', function: () => map['textParts'] as List)) {
       if (item is Map<String, dynamic>) {
-        textParts.add(TranslatableText.interpret(map: item));
+        textParts.add(Oration.interpret(map: item));
         continue;
       }
 
       final text = item.toString();
       if (text.startsWith('{')) {
-        textParts.add(TranslatableText.interpretFromJson(text: text));
+        textParts.add(Oration.interpretFromJson(text: text));
       } else {
         textParts.add(text);
       }
     }
 
-    return TranslatableText(
-      tokenId: volatileProperty(formalName: tr('Message Identifier Token'), propertyName: 'tokenId', function: () => map['tokenId'].toString()),
-      message: volatileProperty(formalName: tr('Text message'), propertyName: 'message', function: () => map['message'].toString()),
+    return Oration(
+      tokenId: volatileProperty(formalName: Oration(message: 'Message Identifier Token'), propertyName: 'tokenId', function: () => map['tokenId'].toString()),
+      message: volatileProperty(formalName: Oration(message: 'Text message'), propertyName: 'message', function: () => map['message'].toString()),
       textParts: textParts,
     );
   }
@@ -64,7 +64,7 @@ class TranslatableText with ICustomSerialization {
   Map<String, dynamic> serialize() {
     final list = [];
     for (final item in textParts) {
-      if (item is TranslatableText) {
+      if (item is Oration) {
         list.add(item.serialize());
       } else {
         list.add(item.toString());
@@ -75,7 +75,7 @@ class TranslatableText with ICustomSerialization {
       'message': message,
       'tokenId': tokenId,
       'textParts': list,
-      '\$type': 'TranslatableText',
+      '\$type': 'Oration',
     };
   }
 
@@ -109,7 +109,7 @@ class TranslatableText with ICustomSerialization {
 
   @override
   bool operator ==(Object other) {
-    if (other is! TranslatableText || other.runtimeType != runtimeType) {
+    if (other is! Oration || other.runtimeType != runtimeType) {
       return false;
     }
 

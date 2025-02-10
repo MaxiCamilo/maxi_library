@@ -49,8 +49,6 @@ class OnlineWebSocket with IPipe {
     } else {
       channel.sink.add(ReflectionManager.getReflectionEntity(event.runtimeType).serializeToJson(value: event));
     }
-
-    
   }
 
   @override
@@ -59,7 +57,7 @@ class OnlineWebSocket with IPipe {
       return;
     }
 
-    final rn = NegativeResult.searchNegativity(item: error, actionDescription: tr('Server error'));
+    final rn = NegativeResult.searchNegativity(item: error, actionDescription: Oration(message: 'Server error'));
     channel.sink.add(rn.serializeToJson());
   }
 
@@ -107,7 +105,7 @@ class OnlineWebSocket with IPipe {
 
   @override
   Stream get stream {
-    checkProgrammingFailure(thatChecks: tr('Pipe is active'), result: () => isActive);
+    checkProgrammingFailure(thatChecks: Oration(message: 'Pipe is active'), result: () => isActive);
     _numberOfClients += 1;
 
     if (disableIfNoOneListens) {

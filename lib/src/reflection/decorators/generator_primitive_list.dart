@@ -16,7 +16,7 @@ class GeneratorPrimitiveList<T> with IValueGenerator, IReflectionType, IPrimitiv
   PrimitiesType get primitiveType => PrimitiesType.isString;
 
   @override
-  TranslatableText get description => Description.searchDescription(annotations: annotations);
+  Oration get description => Description.searchDescription(annotations: annotations);
 
   const GeneratorPrimitiveList();
 
@@ -25,7 +25,7 @@ class GeneratorPrimitiveList<T> with IValueGenerator, IReflectionType, IPrimitiv
     if (originalItem is Iterable) {
       final newList = <T>[];
       for (final item in originalItem) {
-        final reflector = volatile(detail: tr('Item at list is primitive', [item.runtimeType]), function: () => ReflectionUtilities.isPrimitive(item.runtimeType)!);
+        final reflector = volatile(detail: Oration(message: 'Item at list is primitive', textParts: [item.runtimeType]), function: () => ReflectionUtilities.isPrimitive(item.runtimeType)!);
         newList.add(ReflectionUtilities.convertSpecificPrimitive(type: reflector, value: item));
       }
       return newList;
@@ -41,13 +41,13 @@ class GeneratorPrimitiveList<T> with IValueGenerator, IReflectionType, IPrimitiv
     if (originalItem is Iterable) {
       return cloneObject(originalItem);
     } else if (originalItem is String && originalItem.isNotEmpty && originalItem.first == '[' && originalItem.last == ']') {
-      final jsonValue = volatile(detail: tr('Text value is a json list'), function: () => json.decode(originalItem) as List);
+      final jsonValue = volatile(detail: Oration(message: 'Text value is a json list'), function: () => json.decode(originalItem) as List);
       return cloneObject(jsonValue);
     } else if (originalItem is T) {
       return <T>[originalItem];
     }
 
-    throw NegativeResult(identifier: NegativeResultCodes.implementationFailure, message: tr('Cannot cast type %1 to a primitive list'));
+    throw NegativeResult(identifier: NegativeResultCodes.implementationFailure, message: Oration(message: 'Cannot cast type %1 to a primitive list'));
   }
 
   @override

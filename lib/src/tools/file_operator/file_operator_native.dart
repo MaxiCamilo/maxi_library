@@ -15,7 +15,7 @@ class FileOperatorNative with IFileOperator, StartableFunctionality {
   late final String route;
 
   @override
-  String get directAddress => checkFirstIfInitialized(()=> route);
+  String get directAddress => checkFirstIfInitialized(() => route);
 
   FileOperatorNative({required this.isLocal, required this.rawRoute});
 
@@ -58,7 +58,7 @@ class FileOperatorNative with IFileOperator, StartableFunctionality {
     if (!await file.exists()) {
       throw NegativeResult(
         identifier: NegativeResultCodes.nonExistent,
-        message: tr('The file located at %1 could not be copied because it does not exist', [route]),
+        message: Oration(message: 'The file located at %1 could not be copied because it does not exist', textParts: [route]),
       );
     }
 
@@ -68,7 +68,7 @@ class FileOperatorNative with IFileOperator, StartableFunctionality {
 
     final newRoute = '$destinationFolder/${DirectoryUtilities.extractFileName(route: route, includeExtension: true)}';
 
-    await volatileAsync(detail: tr('Copying file located at %1 to folder %2', [route, destinationFolder]), function: () => file.copy(newRoute));
+    await volatileAsync(detail: Oration(message: 'Copying file located at %1 to folder %2', textParts: [route, destinationFolder]), function: () => file.copy(newRoute));
     return newRoute;
   }
 
@@ -87,7 +87,7 @@ class FileOperatorNative with IFileOperator, StartableFunctionality {
       if (await existsDirectory()) {
         throw NegativeResult(
           identifier: NegativeResultCodes.contextInvalidFunctionality,
-          message: tr('The name "%1" already has a folder at that address', [name]),
+          message: Oration(message: 'The name "%1" already has a folder at that address', textParts: [name]),
         );
       }
 
@@ -100,7 +100,7 @@ class FileOperatorNative with IFileOperator, StartableFunctionality {
 
     final instancia = File(route);
     if (!await instancia.exists()) {
-      await volatileAsync(detail: tr('Creating file located at %1', [route]), function: () => instancia.create());
+      await volatileAsync(detail: Oration(message: 'Creating file located at %1', textParts: [route]), function: () => instancia.create());
     }
 
     return;
@@ -113,7 +113,7 @@ class FileOperatorNative with IFileOperator, StartableFunctionality {
 
     final partido = route.replaceAll('\\', '/').split('/');
 
-    checkProgrammingFailure(thatChecks: tr('The route %1 is not root', [partido]), result: () => partido.length > 1);
+    checkProgrammingFailure(thatChecks: Oration(message: 'The route %1 is not root', textParts: [partido]), result: () => partido.length > 1);
 
     if (partido.last == '') {
       partido.removeLast();
@@ -124,12 +124,12 @@ class FileOperatorNative with IFileOperator, StartableFunctionality {
     for (int i = 1; i < partido.length; i++) {
       final parte = partido[i];
 
-      checkProgrammingFailure(thatChecks: tr('Part %1 of %2 is not empty', [parte, route]), result: () => parte.isNotEmpty);
+      checkProgrammingFailure(thatChecks: Oration(message: 'Part %1 of %2 is not empty', textParts: [parte, route]), result: () => parte.isNotEmpty);
       buffer.write('/$parte');
       final total = buffer.toString();
       final carpeta = Directory(total);
       if (!await carpeta.exists()) {
-        await volatileAsync(detail: tr('Create folder located at %1', [total]), function: () => carpeta.create());
+        await volatileAsync(detail: Oration(message: 'Create folder located at %1', textParts: [total]), function: () => carpeta.create());
       }
     }
 
@@ -149,7 +149,7 @@ class FileOperatorNative with IFileOperator, StartableFunctionality {
       if (await existsDirectory()) {
         throw NegativeResult(
           identifier: NegativeResultCodes.contextInvalidFunctionality,
-          message: tr('The name "%1" already has a file at that address', [name]),
+          message: Oration(message: 'The name "%1" already has a file at that address', textParts: [name]),
         );
       }
 
@@ -162,7 +162,7 @@ class FileOperatorNative with IFileOperator, StartableFunctionality {
 
     final folder = Directory(route);
     if (!await folder.exists()) {
-      await volatileAsync(detail: tr('Creating file located at %1', [route]), function: () => folder.create());
+      await volatileAsync(detail: Oration(message: 'Creating file located at %1', textParts: [route]), function: () => folder.create());
     }
   }
 
@@ -195,21 +195,21 @@ class FileOperatorNative with IFileOperator, StartableFunctionality {
     if (!await file.exists()) {
       throw NegativeResult(
         identifier: NegativeResultCodes.nonExistent,
-        message: tr('The file located at %1 cannot be read because it does not exist', [route]),
+        message: Oration(message: 'The file located at %1 cannot be read because it does not exist', textParts: [route]),
       );
     }
 
     if (maxSize != null && await file.length() > maxSize) {
       throw NegativeResult(
         identifier: NegativeResultCodes.invalidFunctionality,
-        message: tr(
-          'The file located at %1 cannot be read because its size exceeds the allowed limit (%2 kb > %3 kb) ',
-          [route, (await file.length() ~/ 1024), (maxSize ~/ 1024)],
+        message: Oration(
+          message: 'The file located at %1 cannot be read because its size exceeds the allowed limit (%2 kb > %3 kb) ',
+          textParts: [route, (await file.length() ~/ 1024), (maxSize ~/ 1024)],
         ),
       );
     }
 
-    return await volatileAsync(detail: tr('Reading file located at %1', [route]), function: () => file.readAsBytes());
+    return await volatileAsync(detail: Oration(message: 'Reading file located at %1', textParts: [route]), function: () => file.readAsBytes());
   }
 
   @override
@@ -221,21 +221,21 @@ class FileOperatorNative with IFileOperator, StartableFunctionality {
     if (!await file.exists()) {
       throw NegativeResult(
         identifier: NegativeResultCodes.nonExistent,
-        message: tr('The file located at %1 cannot be read because it does not exist', [route]),
+        message: Oration(message: 'The file located at %1 cannot be read because it does not exist', textParts: [route]),
       );
     }
 
     if (maxSize != null && await file.length() > maxSize) {
       throw NegativeResult(
         identifier: NegativeResultCodes.invalidFunctionality,
-        message: tr(
-          'The file located at %1 cannot be read because its size exceeds the allowed limit (%2 kb > %3 kb) ',
-          [route, (await file.length() ~/ 1024), (maxSize ~/ 1024)],
+        message: Oration(
+          message: 'The file located at %1 cannot be read because its size exceeds the allowed limit (%2 kb > %3 kb) ',
+          textParts: [route, (await file.length() ~/ 1024), (maxSize ~/ 1024)],
         ),
       );
     }
 
-    return await volatileAsync(detail: tr('Reading file located at %1', [route]), function: () => file.readAsString(encoding: encoder ?? utf8));
+    return await volatileAsync(detail: Oration(message: 'Reading file located at %1', textParts: [route]), function: () => file.readAsString(encoding: encoder ?? utf8));
   }
 
   @override
@@ -246,7 +246,7 @@ class FileOperatorNative with IFileOperator, StartableFunctionality {
       await createAsFile(secured: secured);
     }
 
-    await volatileAsync(detail: tr('Could not write to file %1', [route]), function: () => File(route).writeAsBytes(content, flush: true));
+    await volatileAsync(detail: Oration(message: 'Could not write to file %1', textParts: [route]), function: () => File(route).writeAsBytes(content, flush: true));
   }
 
   @override
@@ -257,7 +257,7 @@ class FileOperatorNative with IFileOperator, StartableFunctionality {
       await createAsFile(secured: secured);
     }
 
-    await volatileAsync(detail: tr('Could not write to file %1', [route]), function: () => File(route).writeAsString(content, flush: true, mode: mode, encoding: encoder ?? utf8));
+    await volatileAsync(detail: Oration(message: 'Could not write to file %1', textParts: [route]), function: () => File(route).writeAsString(content, flush: true, mode: mode, encoding: encoder ?? utf8));
   }
 
   @override
@@ -281,11 +281,11 @@ class FileOperatorNative with IFileOperator, StartableFunctionality {
     if (!await file.exists()) {
       throw NegativeResult(
         identifier: NegativeResultCodes.nonExistent,
-        message: tr('The file located at %1 not exist', [route]),
+        message: Oration(message: 'The file located at %1 not exist', textParts: [route]),
       );
     }
 
-    final lector = await volatileAsync(detail: tr('Opening file located in %1', [route]), function: () => file.open(mode: FileMode.read));
+    final lector = await volatileAsync(detail: Oration(message: 'Opening file located in %1', textParts: [route]), function: () => file.open(mode: FileMode.read));
 
     try {
       await lector.setPosition(from);
@@ -300,7 +300,7 @@ class FileOperatorNative with IFileOperator, StartableFunctionality {
       }
 
       return await volatileAsync(
-        detail: tr('Reading file %1, from part %2, trying to read %3 bytes', [route, from, amount]),
+        detail: Oration(message: 'Reading file %1, from part %2, trying to read %3 bytes', textParts: [route, from, amount]),
         function: () => lector.read(amount),
       );
     } finally {
@@ -314,7 +314,7 @@ class FileOperatorNative with IFileOperator, StartableFunctionality {
     if (routeSplit.length < 2) {
       throw NegativeResult(
         identifier: NegativeResultCodes.contextInvalidFunctionality,
-        message: tr('Cannot download more from the folder'),
+        message: Oration(message: 'Cannot download more from the folder'),
       );
     }
 
@@ -331,7 +331,7 @@ class FileOperatorNative with IFileOperator, StartableFunctionality {
     }
 
     await volatileAsync(
-        detail: tr('Could not write to file %1', [route]),
+        detail: Oration(message: 'Could not write to file %1', textParts: [route]),
         function: () => File(route).writeAsBytes(
               content,
               flush: true,
@@ -348,7 +348,7 @@ class FileOperatorNative with IFileOperator, StartableFunctionality {
     }
 
     await volatileAsync(
-        detail: tr('Could not write to file %1', [route]),
+        detail: Oration(message: 'Could not write to file %1', textParts: [route]),
         function: () => File(route).writeAsString(
               content,
               flush: true,

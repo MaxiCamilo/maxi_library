@@ -43,7 +43,7 @@ mixin IEntityFramework {
     bool primaryKeyMustBePresent = true,
     bool essentialKeysMustBePresent = true,
   }) {
-    final jsonContent = volatile(detail: tr('The text is not valid json'), function: () => json.decode(rawText));
+    final jsonContent = volatile(detail: Oration(message: 'The text is not valid json'), function: () => json.decode(rawText));
     return interpretAslist<T>(
       value: jsonContent,
       tryToCorrectNames: tryToCorrectNames,

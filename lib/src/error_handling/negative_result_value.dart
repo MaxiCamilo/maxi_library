@@ -1,7 +1,7 @@
 import 'package:maxi_library/maxi_library.dart';
 
 class NegativeResultValue extends NegativeResult {
-  TranslatableText formalName;
+  Oration formalName;
   String name;
   dynamic value;
 
@@ -15,7 +15,7 @@ class NegativeResultValue extends NegativeResult {
     this.value,
   });
 
-  factory NegativeResultValue.fromNegativeResult({required String name, required TranslatableText formalName, required NegativeResult nr, dynamic value}) {
+  factory NegativeResultValue.fromNegativeResult({required String name, required Oration formalName, required NegativeResult nr, dynamic value}) {
     if (nr is NegativeResultValue) {
       return nr;
     }
@@ -33,7 +33,7 @@ class NegativeResultValue extends NegativeResult {
 
   factory NegativeResultValue.fromException({
     required String name,
-    required TranslatableText formalName,
+    required Oration formalName,
     required dynamic ex,
     dynamic value,
   }) {
@@ -41,7 +41,7 @@ class NegativeResultValue extends NegativeResult {
       formalName: formalName,
       name: name,
       value: value,
-      nr: NegativeResult.searchNegativity(item: ex, actionDescription: tr('Vefify value named %1', [name])),
+      nr: NegativeResult.searchNegativity(item: ex, actionDescription: Oration(message: 'Vefify value named %1', textParts: [name])),
     );
   }
 
@@ -62,7 +62,7 @@ class NegativeResultValue extends NegativeResult {
   static NegativeResultValue searchNegativity({
     required dynamic error,
     required String name,
-    required TranslatableText formalName,
+    required Oration formalName,
     dynamic value,
     NegativeResultCodes codeDescription = NegativeResultCodes.externalFault,
   }) {
@@ -83,7 +83,7 @@ class NegativeResultValue extends NegativeResult {
         identifier: codeDescription,
         formalName: formalName,
         name: name,
-        message: tr('The validation for property %1 failed with the following error: "%2"', [formalName, error.toString()]),
+        message: Oration(message: 'The validation for property %1 failed with the following error: "%2"', textParts: [formalName, error.toString()]),
         cause: error,
         value: value,
       );

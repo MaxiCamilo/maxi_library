@@ -24,7 +24,7 @@ class DestinationIsolatedThreadStream<R, S> with IPipe<R, S>, StartableFunctiona
 
   @override
   Future<void> initializeFunctionality() async {
-    volatile(detail: tr('Invocator was not defined'), function: () => sender.isServer);
+    volatile(detail: Oration(message: 'Invocator was not defined'), function: () => sender.isServer);
 
     _onDone = Completer<IPipe<R, S>>();
     _receive = StreamController<R>.broadcast();
@@ -62,7 +62,7 @@ class DestinationIsolatedThreadStream<R, S> with IPipe<R, S>, StartableFunctiona
     final id = context.firts<int>();
     final item = context.second<S>();
 
-    final thread = volatile(detail: tr('Thread is not Isolator'), function: () => context.thread as IThreadIsolador);
+    final thread = volatile(detail: Oration(message: 'Thread is not Isolator'), function: () => context.thread as IThreadIsolador);
     thread.pipelineManager.getOriginStream(id).receiveItem(item);
   }
 
@@ -76,7 +76,7 @@ class DestinationIsolatedThreadStream<R, S> with IPipe<R, S>, StartableFunctiona
     final error = context.second<Object>();
     final stackTrace = context.third()<StackTrace?>();
 
-    final thread = volatile(detail: tr('Thread is not Isolator'), function: () => context.thread as IThreadIsolador);
+    final thread = volatile(detail: Oration(message: 'Thread is not Isolator'), function: () => context.thread as IThreadIsolador);
     thread.pipelineManager.getOriginStream(id).receiveError(error, stackTrace);
   }
 
@@ -98,7 +98,7 @@ class DestinationIsolatedThreadStream<R, S> with IPipe<R, S>, StartableFunctiona
   static Future _declareClosed(InvocationContext context) async {
     final id = context.firts<int>();
 
-    final thread = volatile(detail: tr('Thread is not Isolator'), function: () => context.thread as IThreadIsolador);
+    final thread = volatile(detail: Oration(message: 'Thread is not Isolator'), function: () => context.thread as IThreadIsolador);
 
     thread.pipelineManager.getOriginStream(id).declareClosed();
   }

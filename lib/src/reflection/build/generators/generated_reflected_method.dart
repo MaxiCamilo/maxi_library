@@ -21,14 +21,14 @@ abstract class GeneratedReflectedMethod<T, R> {
     if (!isStatic && entity == null) {
       throw NegativeResult(
         identifier: NegativeResultCodes.invalidValue,
-        message: tr('The method %1 of the entity %2 is not static, instance is required', [name, T]),
+        message: Oration(message: 'The method %1 of the entity %2 is not static, instance is required', textParts: [name, T]),
       );
     }
 
     if (!isStatic && entity is! T) {
       throw NegativeResult(
         identifier: NegativeResultCodes.wrongType,
-        message: tr('The %1 method of the %2 object requires a %2 instance or a compatible one', [name, T]),
+        message: Oration(message: 'The %1 method of the %2 object requires a %2 instance or a compatible one', textParts: [name, T]),
       );
     }
 
