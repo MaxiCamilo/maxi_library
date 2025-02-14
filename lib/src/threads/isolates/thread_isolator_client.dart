@@ -63,7 +63,28 @@ class ThreadIsolatorClient with IThreadInvoker, IThreadManager, IThreadManagerCl
 
   @override
   Future<R> callBackgroundFunction<R>({InvocationParameters parameters = InvocationParameters.emptry, required FutureOr<R> Function(InvocationContext para) function}) {
-    return _serverConnection.callBackgroundFunction(function: function, parameters: parameters);
+    final newParameters = InvocationParameters.list([function, parameters]);
+    return _serverConnection.callFunction(parameters: newParameters, function: _callBackgroundFunction<R>);
+  }
+
+  static Future<R> _callBackgroundFunction<R>(InvocationParameters parameters) {
+    final function = parameters.firts<FutureOr<R> Function(InvocationContext)>();
+    final functionParameters = parameters.second<InvocationParameters>();
+
+    return ThreadManager.callBackgroundFunction(function: function, parameters: functionParameters);
+  }
+
+  @override
+  Future<Stream<R>> callBackgroundStream<R>({required InvocationParameters parameters, required FutureOr<Stream<R>> Function(InvocationContext p1) function}) {
+    final newParameters = InvocationParameters.list([function, parameters]);
+    return _serverConnection.callStream(parameters: newParameters, function: _callBackgroundStream<R>);
+  }
+
+  static Future<Stream<R>> _callBackgroundStream<R>(InvocationParameters parameters) {
+    final function = parameters.firts<FutureOr<Stream<R>> Function(InvocationContext)>();
+    final functionParameters = parameters.second<InvocationParameters>();
+
+    return ThreadManager.callBackgroundStream(function: function, parameters: functionParameters);
   }
 
   @override
@@ -270,7 +291,7 @@ class ThreadIsolatorClient with IThreadInvoker, IThreadManager, IThreadManagerCl
     if (connector == null) {
       throw NegativeResult(
         identifier: NegativeResultCodes.contextInvalidFunctionality,
-        message: Oration(message: 'There is no thread that manages the entity %1', textParts:[T]),
+        message: Oration(message: 'There is no thread that manages the entity %1', textParts: [T]),
       );
     }
 

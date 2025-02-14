@@ -434,4 +434,34 @@ class ReflectionManager with IThreadInitializer {
       essentialKeysMustBePresent: essentialKeysMustBePresent,
     );
   }
+
+  static void verifyEntity(Object item) {
+    final reflector = getReflectionEntity(item.runtimeType);
+    reflector.verifyValueDirectly(value: item, parentEntity: null);
+  }
+
+  static void verifyListDirectly(Iterable list) {
+    Type? type;
+    late ITypeEntityReflection reflector;
+    int i = 1;
+
+    for (final item in list) {
+      if (type == null || type != item.runtimeType) {
+        type = item.runtimeType;
+        reflector = getReflectionEntity(type);
+      }
+
+      try {
+        reflector.verifyValueDirectly(value: item, parentEntity: null);
+      } catch (ex) {
+        final rn = NegativeResult.searchNegativity(item: ex, actionDescription: const Oration(message: 'Verifying listing content'));
+        throw NegativeResultValue(
+          message: rn.message,
+          name: 'Item $i',
+          formalName: Oration(message: 'Item of the list number %1', textParts: [i]),
+        );
+      }
+      i += 1;
+    }
+  }
 }

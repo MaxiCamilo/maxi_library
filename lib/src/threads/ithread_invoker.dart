@@ -20,11 +20,12 @@ mixin IThreadInvoker {
   Future<Stream<R>> callStream<R>({required InvocationParameters parameters, required FutureOr<Stream<R>> Function(InvocationContext p1) function});
 
   Future<R> callEntityFunction<T extends Object, R>({InvocationParameters parameters = InvocationParameters.emptry, required FutureOr<R> Function(T, InvocationContext) function});
-  Future<Stream<R>> callEntityStream<T extends Object, R>(
-      {InvocationParameters parameters = InvocationParameters.emptry, required FutureOr<Stream<R>> Function(T, InvocationContext) function});
+  Future<Stream<R>> callEntityStream<T extends Object, R>({InvocationParameters parameters = InvocationParameters.emptry, required FutureOr<Stream<R>> Function(T, InvocationContext) function});
 
   Future<R> callFunctionOnTheServer<R>({InvocationParameters parameters = InvocationParameters.emptry, required FutureOr<R> Function(InvocationContext) function});
+
   Future<R> callBackgroundFunction<R>({InvocationParameters parameters = InvocationParameters.emptry, required FutureOr<R> Function(InvocationContext para) function});
+  Future<Stream<R>> callBackgroundStream<R>({required InvocationParameters parameters, required FutureOr<Stream<R>> Function(InvocationContext p1) function});
 
   Future<IPipe<S, R>> createPipe<R, S>({InvocationParameters parameters = InvocationParameters.emptry, required FutureOr<void> Function(InvocationContext context, IPipe<R, S> pipe) function});
   Future<IPipe<S, R>> createEntityPipe<T extends Object, R, S>(

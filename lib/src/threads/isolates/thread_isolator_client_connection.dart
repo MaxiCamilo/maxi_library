@@ -78,6 +78,11 @@ class ThreadIsolatorClientConnection with IThreadInvoker, IThreadInvokeInstance,
   }
 
   @override
+  Future<Stream<R>> callBackgroundStream<R>({required InvocationParameters parameters, required FutureOr<Stream<R>> Function(InvocationContext p1) function}) {
+    return clientMannager.callBackgroundStream<R>(parameters: parameters, function: function);
+  }
+
+  @override
   Future<R> callEntityFunction<T extends Object, R>({InvocationParameters parameters = InvocationParameters.emptry, required FutureOr<R> Function(T p1, InvocationContext p2) function}) {
     if (entityType == T) {
       parameters = InvocationParameters.clone(parameters)..namedParameters['#_CE()_#'] = function;
@@ -209,4 +214,6 @@ class ThreadIsolatorClientConnection with IThreadInvoker, IThreadInvokeInstance,
   Future<IPipe<S, R>> createPipe<R, S>({InvocationParameters parameters = InvocationParameters.emptry, required FutureOr<void> Function(InvocationContext p1, IPipe<R, S> p2) function}) {
     return clientMannager.pipelineManager.createPipeline(parameters: parameters, function: function, sender: this);
   }
+  
+  
 }

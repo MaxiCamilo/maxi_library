@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 
 import 'package:maxi_library/maxi_library.dart';
 import 'package:maxi_library/src/framework/stream_state_internal.dart';
@@ -7,7 +8,7 @@ StreamState<S, R> streamStatus<S, R>(S item) => StreamStateItem(item: item);
 StreamState<S, R> checkStreamState<S, R>() => const StreamCheckActive();
 StreamState<S, R> partialError<S, R>(ex) => StreamStatePartialError(partialError: partialError);
 StreamState<S, R> streamResult<S, R>(R result) => StreamStateResult(result: result);
-StreamState<Oration, R> streamTextStatus<R>(String part, [List parts = const []]) => StreamStateItem(item: Oration(message: part, textParts: parts));
+StreamState<Oration, R> streamTextStatus<R>(Oration oration) => StreamStateItem(item: oration);
 StreamState<Oration, R> streamTranslateText<R>(Oration text) => StreamStateItem(item: text);
 
 Stream<StreamState<S, R>> connectFunctionalStream<S, R, SR>(Stream<StreamState<S, SR>> other, [void Function(SR x)? sendResult]) async* {
@@ -24,6 +25,8 @@ Stream<StreamState<S, R>> connectFunctionalStream<S, R, SR>(Stream<StreamState<S
       yield StreamStatePartialError<S, R>(partialError: item.partialError);
     } else if (item is StreamCheckActive<S, SR>) {
       yield StreamCheckActive<S, R>();
+    } else {
+      log('[connectFunctionalStream] Unkown item steam');
     }
   }
 

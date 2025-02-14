@@ -120,6 +120,11 @@ class ThreadIsolatorServerConnection with IThreadInvoker, IThreadInvokeInstance,
   }
 
   @override
+  Future<Stream<R>> callBackgroundStream<R>({required InvocationParameters parameters, required FutureOr<Stream<R>> Function(InvocationContext p1) function}) {
+    return server.callBackgroundStream<R>(parameters: parameters, function: function);
+  }
+
+  @override
   Future<R> callEntityFunction<T extends Object, R>({InvocationParameters parameters = InvocationParameters.emptry, required FutureOr<R> Function(T p1, InvocationContext p2) function}) {
     if (T == _entityType) {
       parameters = InvocationParameters.clone(parameters)..namedParameters['#_E()_#'] = function;

@@ -42,6 +42,10 @@ class TypeUnknownReflection with IReflectionType {
 
   @override
   serializeToMap(item) {
+    if (item is ICustomSerialization) {
+      return item.serialize();
+    }
+
     throw NegativeResult(identifier: NegativeResultCodes.implementationFailure, message: Oration(message: 'It is not safe to assign an object of type %1, as it is an unknown and unreflected type', textParts: [type]));
   }
 

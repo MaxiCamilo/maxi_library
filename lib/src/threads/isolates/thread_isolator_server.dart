@@ -7,6 +7,7 @@ import 'package:maxi_library/src/threads/isolates/isolate_initializer.dart';
 import 'package:maxi_library/src/threads/isolates/isolated_thread_pipeline_manager.dart';
 import 'package:maxi_library/src/threads/isolates/isolated_thread_stream_manager.dart';
 import 'package:maxi_library/src/threads/isolates/ithread_isolador.dart';
+import 'package:maxi_library/src/threads/isolates/thread_isolator_background_manager.dart';
 import 'package:maxi_library/src/threads/isolates/thread_isolator_server_connection.dart';
 
 class ThreadIsolatorServer with IThreadInvoker, IThreadManager, IThreadManagerServer, IThreadIsolador {
@@ -30,9 +31,12 @@ class ThreadIsolatorServer with IThreadInvoker, IThreadManager, IThreadManagerSe
   @override
   late final IsolatedThreadStreamManager streamManager;
 
+  late final ThreadIsolatorBackgroundManager backgroundManager;
+
   ThreadIsolatorServer() {
     pipelineManager = IsolatedThreadPipelineManager(thread: this);
     streamManager = IsolatedThreadStreamManager(manager: this);
+    backgroundManager = ThreadIsolatorBackgroundManager(manager: this);
   }
 
   @override
@@ -49,8 +53,12 @@ class ThreadIsolatorServer with IThreadInvoker, IThreadManager, IThreadManagerSe
 
   @override
   Future<R> callBackgroundFunction<R>({InvocationParameters parameters = InvocationParameters.emptry, required FutureOr<R> Function(InvocationContext para) function}) {
-    // TODO: implement callBackgroundFunction
-    throw UnimplementedError();
+    return backgroundManager.callBackgroundFunction<R>(function: function, parameters: parameters);
+  }
+
+  @override
+  Future<Stream<R>> callBackgroundStream<R>({required InvocationParameters parameters, required FutureOr<Stream<R>> Function(InvocationContext p1) function}) {
+    return backgroundManager.callBackgroundStream<R>(function: function, parameters: parameters);
   }
 
   @override

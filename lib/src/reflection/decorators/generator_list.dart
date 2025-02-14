@@ -63,7 +63,7 @@ class GeneratorList<T> with IValueGenerator, IReflectionType, IPrimitiveValueGen
 
   @override
   serializeToMap(item) {
-    if (item! is Iterable) {
+    if (item is! Iterable) {
       throw NegativeResult(
         identifier: NegativeResultCodes.wrongType,
         message: Oration(message: 'A list of type %1 was expected (The object is %2)', textParts: [T, item.runtimeType]),
@@ -82,11 +82,11 @@ class GeneratorList<T> with IValueGenerator, IReflectionType, IPrimitiveValueGen
     }
   }
 
-  List<T> _serializeListSameType(Iterable list) {
+  List<Map<String,dynamic>> _serializeListSameType(Iterable list) {
     final typeOperator = ReflectionManager.getReflectionType(T, annotations: []);
     int i = 1;
 
-    final newList = <T>[];
+    final newList = <Map<String,dynamic>>[];
 
     for (final item in list) {
       final newItem = addToErrorDescription(
@@ -100,12 +100,12 @@ class GeneratorList<T> with IValueGenerator, IReflectionType, IPrimitiveValueGen
     return newList;
   }
 
-  List<T> _serializeListDifferentTypes(Iterable list) {
+  List<Map<String,dynamic>> _serializeListDifferentTypes(Iterable list) {
     int i = 1;
 
     IReflectionType? typeOperator;
 
-    final newList = <T>[];
+    final newList = <Map<String,dynamic>>[];
 
     for (final item in list) {
       if (typeOperator == null || typeOperator.type != item.runtimeType) {

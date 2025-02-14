@@ -196,4 +196,9 @@ mixin TextUtilities {
 
     return buffer.toString();
   }
+
+  static bool checkContainsOnlyNumbers(String str) {
+    final numericRegex = RegExp(r'^-?\d+$');
+    return numericRegex.hasMatch(str);
+  }
 }

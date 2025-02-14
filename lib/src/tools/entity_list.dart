@@ -289,7 +289,7 @@ class EntityList<T> with IEntityWriter<T>, IEntityReader<T> {
     _mapList.clear();
     _notifyListChanged.add(null);
     _notifyTotalEliminations.add(null);
-    yield streamTextStatus('All items were removed from the list');
+    yield streamTextStatus(const Oration(message: 'All items were removed from the list'));
     _updateLastPrimaryKey();
   }
 
@@ -320,7 +320,7 @@ class EntityList<T> with IEntityWriter<T>, IEntityReader<T> {
     _updateLastPrimaryKey();
     _notifyListChanged.add(null);
     _notifyAssignedItems.add(list.map((x) => reflector.getPrimaryKey(instance: x)).toList(growable: false));
-    yield streamTextStatus('%1 items have been added to the list', [list.length]);
+    yield streamTextStatus(Oration(message: '%1 items have been added to the list', textParts: [list.length]));
   }
 
   int _getNewId() {
@@ -345,7 +345,7 @@ class EntityList<T> with IEntityWriter<T>, IEntityReader<T> {
     }
     _notifyListChanged.add(null);
     _notifyAssignedItems.add(list.map((x) => reflector.getPrimaryKey(instance: x)).toList(growable: false));
-    yield streamTextStatus('%1 items have been assigned to the list', [list.length]);
+    yield streamTextStatus(Oration(message: '%1 items have been assigned to the list', textParts: [list.length]));
   }
 
   @override
@@ -358,7 +358,7 @@ class EntityList<T> with IEntityWriter<T>, IEntityReader<T> {
 
     _notifyListChanged.add(null);
     _notifyDeletedItems.add(listIDs);
-    yield streamTextStatus('%1 items were deleted in the list', [listIDs.length]);
+    yield streamTextStatus(Oration(message: '%1 items were deleted in the list', textParts: [listIDs.length]));
     _updateLastPrimaryKey();
   }
 
@@ -387,7 +387,7 @@ class EntityList<T> with IEntityWriter<T>, IEntityReader<T> {
 
     _notifyListChanged.add(null);
     _notifyAssignedItems.add(list.map((x) => reflector.getPrimaryKey(instance: x)).toList(growable: false));
-    yield streamTextStatus('%1 items were modified in the list', [list.length]);
+    yield streamTextStatus(Oration(message: '%1 items were modified in the list', textParts: [list.length]));
   }
 
   @override
