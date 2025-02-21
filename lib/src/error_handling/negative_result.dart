@@ -29,9 +29,13 @@ class NegativeResult implements Exception, CustomSerialization, ICustomSerializa
       );
     }
 
+    if (values.containsKey('\$type') && values['\$type'] is String && (values['\$type']! as String) == NegativeResultValue.labelType) {
+      return NegativeResultValue.interpret(values: values, checkTypeFlag: false);
+    }
+
     return NegativeResult(
       message: Oration.interpretFromJson(text: volatileProperty(propertyName: 'message', formalName: const Oration(message: 'Error message'), function: () => values['message']!)),
-      identifier: NegativeResultCodes.values[volatileProperty(propertyName: 'identifier', formalName: const Oration(message: 'Error Identifier'), function: () => (values['identifier'] ?? values['idError'])! as int)],
+      identifier: volatileProperty(propertyName: 'identifier', formalName: const Oration(message: 'Error Identifier'), function: () => NegativeResultCodes.values[((values['identifier'] ?? values['idError'])! as int)]),
       whenWasIt:
           DateTime.fromMillisecondsSinceEpoch(volatileProperty(propertyName: 'whenWasIt', formalName: const Oration(message: 'Error date and time'), function: () => values['whenWasIt']! as int), isUtc: true).toLocal(),
     );

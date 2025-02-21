@@ -36,6 +36,22 @@ mixin IEntityReader<T> {
     return (await select(minimun: minimun, maximum: maximum, limit: limit, certainIds: certainIds, conditions: conditions, reverse: reverse).toList()).expand((x) => x).toList(growable: growable);
   }
 
+  Future<List<T>> selectAsFirstList({
+    int? minimun,
+    int? maximum,
+    int? limit,
+    List<int> certainIds = const [],
+    List<IConditionQuery> conditions = const [],
+    bool reverse = false,
+    bool growable = true,
+  }) async {
+    await for (final list in select(minimun: minimun, maximum: maximum, limit: limit, certainIds: certainIds, conditions: conditions, reverse: reverse)) {
+      return list;
+    }
+
+    return [];
+  }
+
   Future<List<int>> selectIDsAsList({
     int? minimun,
     int? maximum,

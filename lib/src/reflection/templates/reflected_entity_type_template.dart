@@ -312,7 +312,7 @@ abstract class ReflectedEntityTypeTemplate with IReflectionType, IDeclarationRef
     }
 
     if (errorList.isNotEmpty) {
-      return NegativeResultEntity(
+      return NegativeResultValue(
         message: Oration(message: 'Entity %1 contains %2 invalid %3', textParts: [formalName, errorList.length, errorList.length == 1 ? const Oration(message: 'property') : const Oration(message: 'properties')]),
         name: name,
         formalName: formalName,
@@ -392,7 +392,7 @@ abstract class ReflectedEntityTypeTemplate with IReflectionType, IDeclarationRef
       for (final val in validators) {
         final error = val.performValidation(name: name, formalName: formalName, item: newItem, parentEntity: null);
         if (error != null) {
-          throw NegativeResultEntity(
+          throw NegativeResultValue(
             message: Oration(message: 'The entity %1 is invalid', textParts: [formalName]),
             name: name,
             formalName: formalName,
@@ -406,7 +406,7 @@ abstract class ReflectedEntityTypeTemplate with IReflectionType, IDeclarationRef
       try {
         newItem.performAdditionalVerification();
       } catch (ex) {
-        throw NegativeResultEntity(
+        throw NegativeResultValue(
           message: Oration(message: 'The entity %1 is invalid', textParts: [name]),
           formalName: formalName,
           name: name,
@@ -416,7 +416,7 @@ abstract class ReflectedEntityTypeTemplate with IReflectionType, IDeclarationRef
     }
 
     if (hasPrimaryKey && !acceptZeroIdentifier && getPrimaryKey(instance: newItem) <= 0) {
-      throw NegativeResultEntity(
+      throw NegativeResultValue(
         message: Oration(message: 'The entity %1 is invalid', textParts: [formalName]),
         formalName: formalName,
         name: name,
@@ -435,7 +435,7 @@ abstract class ReflectedEntityTypeTemplate with IReflectionType, IDeclarationRef
 
   void _throwErrorIfThereErrorInList(List<NegativeResultValue> errorList) {
     if (errorList.isNotEmpty) {
-      throw NegativeResultEntity(
+      throw NegativeResultValue(
         message: Oration(message: 'The entity %1 contains %2 invalid %3', textParts: [name, errorList.length, errorList.length == 1 ? Oration(message: 'property') : Oration(message: 'properties')]),
         formalName: formalName,
         invalidProperties: errorList,

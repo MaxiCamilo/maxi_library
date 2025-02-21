@@ -112,6 +112,47 @@ extension ExtensionsString on String {
     return before + newText + after;
   }
 
+  Iterable<String> divideByLength({required int length}) sync* {
+    final buffer = StringBuffer();
+
+    for (int i = 0; i < this.length; i++) {
+      buffer.write(this[i]);
+      if (buffer.length >= length) {
+        yield buffer.toString();
+        buffer.clear();
+      }
+    }
+
+    if (buffer.isNotEmpty) {
+      yield buffer.toString();
+    }
+  }
+
+  Iterable<String> divideByLengthWithChar({required int limit, List<String> characters = const [',', '.']}) sync* {
+    if (length > limit) {
+      //HACER ESTO! QUE AL SUPERAR LOS 90 CARACTERES, SE PARTA SEGUN COMA O PUNTO
+      final slit = '';
+    } else {
+      yield this;
+    }
+  }
+
+  List<(String, String)> splitWithComaOrPoint(String input) {
+    RegExp regex = RegExp(r'([^.,]+)([.,]?)');
+    List<(String, String)> fragments = [];
+
+    for (var match in regex.allMatches(input)) {
+      String fragment = match.group(1)!.trim();
+      String? separator = match.group(2);
+
+      if (fragment.isNotEmpty) {
+        fragments.add((fragment, separator ?? ''));
+      }
+    }
+
+    return fragments;
+  }
+
   Iterable<String> asIterable({int start = 0, int? end, bool inverse = false}) sync* {
     end ??= length - 1;
 

@@ -2,6 +2,7 @@ export 'package:maxi_library/src/framework/startable_functionality.dart';
 export 'package:maxi_library/src/framework/ithread_service.dart';
 export 'package:maxi_library/src/framework/needs_additional_verification.dart';
 export 'package:maxi_library/src/framework/ifunctionality.dart';
+export 'package:maxi_library/src/framework/ifunctionality_stream.dart';
 export 'package:maxi_library/src/framework/stream_state.dart';
 export 'package:maxi_library/src/framework/ipipe.dart';
 export 'package:maxi_library/src/framework/idisposable.dart';

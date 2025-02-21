@@ -455,11 +455,37 @@ class ReflectionManager with IThreadInitializer {
         reflector.verifyValueDirectly(value: item, parentEntity: null);
       } catch (ex) {
         final rn = NegativeResult.searchNegativity(item: ex, actionDescription: const Oration(message: 'Verifying listing content'));
-        throw NegativeResultValue(
-          message: rn.message,
-          name: 'Item $i',
-          formalName: Oration(message: 'Item of the list number %1', textParts: [i]),
-        );
+
+        late final int id;
+        late final Oration idName;
+
+        try {
+          id = getIdentifier(item);
+          idName = reflector.primaryKey.formalName;
+        } catch (_) {
+          id = 0;
+          idName = Oration.empty;
+        }
+
+        if (id == 0) {
+          throw NegativeResultValue(
+            message: Oration(message: 'Item of the list number %1: %2', textParts: [i, rn.message]),
+            name: 'Item $i',
+            formalName: Oration(message: 'Item of the list number %1', textParts: [i]),
+            invalidProperties: (rn is NegativeResultValue) ? rn.invalidProperties : [],
+            value: (rn is NegativeResultValue) ? rn.value : null,
+            whenWasIt: rn.whenWasIt,
+          );
+        } else {
+          throw NegativeResultValue(
+            message: Oration(message: 'Item of the list number %1 (%2 %3): %4', textParts: [i, idName, id, rn.message]),
+            name: 'Item $i',
+            formalName: Oration(message: 'Item of the list number %1', textParts: [i]),
+            invalidProperties: (rn is NegativeResultValue) ? rn.invalidProperties : [],
+            value: (rn is NegativeResultValue) ? rn.value : null,
+            whenWasIt: rn.whenWasIt,
+          );
+        }
       }
       i += 1;
     }

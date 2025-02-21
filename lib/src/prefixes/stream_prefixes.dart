@@ -8,8 +8,7 @@ StreamState<S, R> streamStatus<S, R>(S item) => StreamStateItem(item: item);
 StreamState<S, R> checkStreamState<S, R>() => const StreamCheckActive();
 StreamState<S, R> partialError<S, R>(ex) => StreamStatePartialError(partialError: partialError);
 StreamState<S, R> streamResult<S, R>(R result) => StreamStateResult(result: result);
-StreamState<Oration, R> streamTextStatus<R>(Oration oration) => StreamStateItem(item: oration);
-StreamState<Oration, R> streamTranslateText<R>(Oration text) => StreamStateItem(item: text);
+StreamState<Oration, R> streamTextStatus<R>(Oration oration) => StreamStateItem<Oration, R>(item: oration);
 
 Stream<StreamState<S, R>> connectFunctionalStream<S, R, SR>(Stream<StreamState<S, SR>> other, [void Function(SR x)? sendResult]) async* {
   late final SR result;

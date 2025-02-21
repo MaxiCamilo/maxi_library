@@ -10,6 +10,8 @@ class Semaphore {
 
   bool _isActive = false;
 
+  int get pendingLength => _waitingList.length + _waitingStreamList.length;
+
   Future<T> execute<T>({required FutureOr<T> Function() function}) {
     final waiter = Completer<T>();
     _waitingList.add((waiter, function));

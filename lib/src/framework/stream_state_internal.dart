@@ -46,6 +46,7 @@ class StreamStateResult<S, R> implements StreamState<S, R>, ICustomSerialization
 
 class StreamStatePartialError<S, R> implements StreamState<S, R>, ICustomSerialization {
   final dynamic partialError;
+  
   const StreamStatePartialError({required this.partialError});
 
   @override

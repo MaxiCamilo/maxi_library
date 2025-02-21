@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:developer';
 
 import 'package:maxi_library/maxi_library.dart';
@@ -50,7 +51,7 @@ T? containErrorLog<T>({
 }
 
 Future<T?> containErrorAsync<T>({
-  required Future<T> Function() function,
+  required FutureOr<T> Function() function,
   void Function(NegativeResult)? ifFails,
   void Function(dynamic)? ifUnknownFails,
 }) async {
@@ -70,7 +71,7 @@ Future<T?> containErrorAsync<T>({
 
 Future<T?> containErrorLogAsync<T>({
   required Oration detail,
-  required Future<T> Function() function,
+  required FutureOr<T> Function() function,
 }) {
   return containErrorAsync(
     function: function,

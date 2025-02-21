@@ -7,11 +7,16 @@ class CheckTextLength extends ValueValidator {
   final int? maximumLines;
   final int? minimumLines;
 
+  final int? maximumLengthByLine;
+  final int? minimumLengthByLine;
+
   const CheckTextLength({
     this.minimum = double.negativeInfinity,
     this.maximum = double.infinity,
     this.maximumLines,
     this.minimumLines,
+    this.maximumLengthByLine,
+    this.minimumLengthByLine,
   });
 
   @override
@@ -74,6 +79,39 @@ class CheckTextLength extends ValueValidator {
           name: name,
           value: item,
         );
+      }
+    }
+
+    if (maximumLengthByLine != null || minimumLengthByLine != null) {
+      final textSplit = item.split('\n');
+
+      int i = 1;
+      for (final text in textSplit) {
+        if (maximumLengthByLine != null && text.length > maximumLengthByLine!) {
+          return NegativeResultValue(
+            message: Oration(
+              message: 'Line %1 of property %2 is %3 characters long, but a maximum of %4 characters is accepted',
+              textParts: [i, name, text.length, maximumLengthByLine!],
+            ),
+            formalName: formalName,
+            name: name,
+            value: item,
+          );
+        }
+
+        if (minimumLengthByLine != null && text.length < minimumLengthByLine!) {
+          return NegativeResultValue(
+            message: Oration(
+              message: 'Line %1 of property %2 is %3 characters long, but it needs to be at least %4 characters long',
+              textParts: [i, name, text.length, minimumLengthByLine!],
+            ),
+            formalName: formalName,
+            name: name,
+            value: item,
+          );
+        }
+
+        i += 1;
       }
     }
 

@@ -6,11 +6,13 @@ class CompareSimilarText with IConditionQuery {
   final String similarText;
   final bool shieldValue;
   final String selectedTable;
+  final bool differentiateUppercaseLetters;
 
   const CompareSimilarText({
     required this.fieldName,
     required this.similarText,
     this.shieldValue = true,
     this.selectedTable = '',
+    this.differentiateUppercaseLetters = false,
   });
 }

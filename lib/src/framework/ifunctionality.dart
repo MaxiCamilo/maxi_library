@@ -42,6 +42,8 @@ mixin IFunctionalityService<S extends Object, R> implements IFunctionality<Futur
   }
 }
 
+
+
 mixin IFunctionalityStreamService<S extends Object, T extends StreamState> implements IFunctionality<Stream<T>> {
   @protected
   Stream<T> runInService(S service, InvocationParameters parameters);
@@ -83,7 +85,7 @@ extension IFunctionalityFuture<F> on IFunctionality<Future<F>> {
   }
 }
 
-extension IFunctionalityStream<T> on IFunctionality<Stream<T>> {
+extension IFunctionalityStreamExtension<T> on IFunctionality<Stream<T>> {
   Future<Stream<T>> runStreamInBackgrond() async {
     return ThreadManager.callBackgroundStream(function: _runStreamInBackgroud<T>, parameters: InvocationParameters.only(this));
   }

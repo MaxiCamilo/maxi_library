@@ -48,6 +48,8 @@ class GeneratorList<T> with IValueGenerator, IReflectionType, IPrimitiveValueGen
       return newList;
     } else if (originalItem is T) {
       return [originalItem];
+    } else if (originalItem is String) {
+      return interpretPrimitiveValue(originalItem);
     }
 
     throw NegativeResult(
@@ -82,11 +84,11 @@ class GeneratorList<T> with IValueGenerator, IReflectionType, IPrimitiveValueGen
     }
   }
 
-  List<Map<String,dynamic>> _serializeListSameType(Iterable list) {
+  List<Map<String, dynamic>> _serializeListSameType(Iterable list) {
     final typeOperator = ReflectionManager.getReflectionType(T, annotations: []);
     int i = 1;
 
-    final newList = <Map<String,dynamic>>[];
+    final newList = <Map<String, dynamic>>[];
 
     for (final item in list) {
       final newItem = addToErrorDescription(
@@ -100,12 +102,12 @@ class GeneratorList<T> with IValueGenerator, IReflectionType, IPrimitiveValueGen
     return newList;
   }
 
-  List<Map<String,dynamic>> _serializeListDifferentTypes(Iterable list) {
+  List<Map<String, dynamic>> _serializeListDifferentTypes(Iterable list) {
     int i = 1;
 
     IReflectionType? typeOperator;
 
-    final newList = <Map<String,dynamic>>[];
+    final newList = <Map<String, dynamic>>[];
 
     for (final item in list) {
       if (typeOperator == null || typeOperator.type != item.runtimeType) {
@@ -189,17 +191,48 @@ class GeneratorList<T> with IValueGenerator, IReflectionType, IPrimitiveValueGen
 
   @override
   interpretPrimitiveValue(value) {
+    if (T == NegativeResult || T == NegativeResultValue) {
+      return _parseNegativeResult(value);
+    }
+
     final jsonValue = json.decode(value);
     final reflector = ReflectionManager.getReflectionEntity(T);
 
     if (jsonValue is Iterable) {
       final list = <T>[];
       for (final item in jsonValue) {
-        list.add(reflector.interpretationFromJson(rawJson: item, tryToCorrectNames: true));
+        if (item is String) {
+          list.add(reflector.interpretationFromJson(rawJson: item, tryToCorrectNames: true));
+        } else if (item is Map<String, dynamic>) {
+          list.add(reflector.interpret(value: item, tryToCorrectNames: true));
+        } else {
+          throw NegativeResult(identifier: NegativeResultCodes.invalidValue, message: const Oration(message: 'Item list must be a String or Map Value'));
+        }
       }
       return list;
     } else {
       return [reflector.interpretationFromJson(rawJson: jsonValue, tryToCorrectNames: true)];
+    }
+  }
+
+  List<T> _parseNegativeResult(dynamic value) {
+    late final dynamic rawContent;
+    if (value is String) {
+      final jsonValue = ConverterUtilities.interpretJson(text: value);
+      rawContent = jsonValue;
+    } else {
+      rawContent = value;
+    }
+
+    if (rawContent is Map<String, dynamic>) {
+      return [NegativeResult.interpret(values: rawContent, checkTypeFlag: true) as T];
+    } else if (rawContent is List) {
+      return rawContent.map((x) => NegativeResult.interpret(values: x, checkTypeFlag: true) as T).toList();
+    } else {
+      throw NegativeResult(
+        identifier: NegativeResultCodes.implementationFailure,
+        message: const Oration(message: 'Negative result can only be interpreted from an object or list'),
+      );
     }
   }
 }

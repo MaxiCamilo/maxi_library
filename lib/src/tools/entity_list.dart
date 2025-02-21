@@ -100,6 +100,7 @@ class EntityList<T> with IEntityWriter<T>, IEntityReader<T> {
               limit: limit,
               maximum: maximum,
               minimun: minimun,
+              reverse: reverse,
             ));
   }
 
@@ -210,7 +211,11 @@ class EntityList<T> with IEntityWriter<T>, IEntityReader<T> {
     } else if (condition is CompareSimilarText) {
       final value = reflector.getProperty(name: condition.fieldName, instance: item).toString();
 
-      return value.contains(condition.similarText);
+      if (condition.differentiateUppercaseLetters) {
+        return value.contains(condition.similarText);
+      } else {
+        return value.toLowerCase().contains(condition.similarText.toLowerCase());
+      }
     } else if (condition is CompareMultipleComparisons) {
       final result = condition.conditions.map((x) => conditionIsAccepted(condition: x, item: item)).toList();
 
