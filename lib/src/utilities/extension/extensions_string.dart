@@ -128,29 +128,56 @@ extension ExtensionsString on String {
     }
   }
 
-  Iterable<String> divideByLengthWithChar({required int limit, List<String> characters = const [',', '.']}) sync* {
+  Iterable<String> divideByLengthWithChar({required int limit, List<String> characters = const ['\n', '\\\n', '.', ',', ' ']}) sync* {
     if (length > limit) {
-      //HACER ESTO! QUE AL SUPERAR LOS 90 CARACTERES, SE PARTA SEGUN COMA O PUNTO
-      final slit = '';
+      if (characters.isEmpty) {
+        yield* divideByLength(length: limit);
+        return;
+      }
+
+      final separators = characters.toList();
+      final firstSeparator = separators.removeAt(0);
+
+      final slit = split(firstSeparator);
+      final buffer = StringBuffer();
+
+      for (int i = 0; i < slit.length; i++) {
+        final item = slit[i];
+        if (item.length > limit) {
+          yield* item.divideByLengthWithChar(limit: limit, characters: separators);
+        } else if (buffer.length + (i != slit.length - 1 ? 1 : 0) + item.length > limit) {
+          final cutLength = limit - (buffer.length + (i == slit.length - 1 ? 1 : 0));
+
+          if (cutLength > 0) {
+            final firstPart = item.extractFrom(since: 0, amount: cutLength);
+            final secondPart = item.extractFrom(since: cutLength).trimLeft();
+            buffer.write(firstPart);
+            yield buffer.toString();
+            buffer.clear();
+            buffer.write(secondPart);
+          } else {
+            yield buffer.toString();
+            buffer.clear();
+            buffer.write(item);
+          }
+
+          if (i != slit.length - 1) {
+            buffer.write(firstSeparator);
+          }
+        } else {
+          buffer.write(item);
+          if (i != slit.length - 1) {
+            buffer.write(firstSeparator);
+          }
+        }
+      }
+
+      if (buffer.isNotEmpty) {
+        yield buffer.toString();
+      }
     } else {
       yield this;
     }
-  }
-
-  List<(String, String)> splitWithComaOrPoint(String input) {
-    RegExp regex = RegExp(r'([^.,]+)([.,]?)');
-    List<(String, String)> fragments = [];
-
-    for (var match in regex.allMatches(input)) {
-      String fragment = match.group(1)!.trim();
-      String? separator = match.group(2);
-
-      if (fragment.isNotEmpty) {
-        fragments.add((fragment, separator ?? ''));
-      }
-    }
-
-    return fragments;
   }
 
   Iterable<String> asIterable({int start = 0, int? end, bool inverse = false}) sync* {

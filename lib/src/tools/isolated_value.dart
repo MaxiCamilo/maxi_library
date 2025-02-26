@@ -65,6 +65,7 @@ class IsolatedValue<T extends Object> with StartableFunctionality {
     );
     _gettingValue = true;
     _item = item;
+    await Future.delayed(Duration.zero);
   }
 
   @override

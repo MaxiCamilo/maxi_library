@@ -188,6 +188,7 @@ class ReflectionManager with IThreadInitializer {
 
     final item = getEntities().selectItem((x) => x.type == type);
     if (item == null) {
+      print('mal!');
       throw NegativeResult(
         identifier: NegativeResultCodes.nonExistent,
         message: Oration(message: 'There is no entity reflector for type %1', textParts: [type]),
