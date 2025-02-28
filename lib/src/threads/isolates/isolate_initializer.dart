@@ -34,7 +34,7 @@ class IsolateInitializer {
       isolate = await Isolate.spawn(_prepareThread, _IsolateInitializerContext(initializers: initializers, sender: channel.serder, threadID: threadID), debugName: name, errorsAreFatal: false);
     });
 
-    final subscription = channel.stream.whereType<_IsolateInitializerFinalized>().listen((x) {
+    final subscription = channel.receiver.whereType<_IsolateInitializerFinalized>().listen((x) {
       completer.complete(x);
     });
     final result = await completer.future;

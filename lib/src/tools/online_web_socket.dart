@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:maxi_library/maxi_library.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
-class OnlineWebSocket with IPipe {
+class OnlineWebSocket with IChannel {
   final Uri url;
   final WebSocketChannel channel;
   final bool disableIfNoOneListens;
@@ -104,7 +104,7 @@ class OnlineWebSocket with IPipe {
   }
 
   @override
-  Stream get stream {
+  Stream get receiver {
     checkProgrammingFailure(thatChecks: Oration(message: 'Pipe is active'), result: () => isActive);
     _numberOfClients += 1;
 

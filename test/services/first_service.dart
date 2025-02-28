@@ -47,11 +47,11 @@ class FirstService with StartableFunctionality, IThreadService {
   }
 
   Future<void> createPipeInSecondService() async {
-    final newPipe = await ThreadManager.createEntityPipe<SecondService, int, String>(
+    final newPipe = await ThreadManager.createEntityChannel<SecondService, int, String>(
       function: (entity, context, pipe) => entity.usePipe(pipe),
     );
 
-    newPipe.stream.listen((x) => log('Thread sent "$x"'));
+    newPipe.receiver.listen((x) => log('Thread sent "$x"'));
 
     await Future.delayed(Duration(seconds: 3));
     newPipe.add(1);
@@ -67,6 +67,6 @@ class FirstService with StartableFunctionality, IThreadService {
 
     await newPipe.done;
 
-    await Future.delayed(Duration(seconds: 30));
+    await Future.delayed(Duration(seconds: 5));
   }
 }

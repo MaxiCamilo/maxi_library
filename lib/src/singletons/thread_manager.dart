@@ -65,9 +65,9 @@ mixin ThreadManager {
   static Future<Stream<R>> callBackgroundStream<R>({InvocationParameters parameters = InvocationParameters.emptry, required FutureOr<Stream<R>> Function(InvocationContext para) function}) =>
       instance.callBackgroundStream<R>(function: function, parameters: parameters);
 
-  static Future<IPipe<S, R>> createEntityPipe<T extends Object, R, S>({
+  static Future<IChannel<S, R>> createEntityChannel<T extends Object, R, S>({
     InvocationParameters parameters = InvocationParameters.emptry,
-    required FutureOr<void> Function(T entity, InvocationContext context, IPipe<R, S> pipe) function,
+    required FutureOr<void> Function(T entity, InvocationContext context, IChannel<R, S> channel) function,
   }) =>
-      instance.createEntityPipe<T, R, S>(function: function, parameters: parameters);
+      instance.createEntityChannel<T, R, S>(function: function, parameters: parameters);
 }

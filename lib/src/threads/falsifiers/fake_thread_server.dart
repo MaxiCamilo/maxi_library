@@ -54,28 +54,9 @@ class FakeThreadServer with IThreadInvoker, IThreadManager, IThreadManagerServer
     log('[FakeThreadServer] ¡This thread server cannot be closed!');
   }
 
-  @override
-  Future<IPipe<S, R>> createPipe<R, S>({InvocationParameters parameters = InvocationParameters.emptry, required FutureOr<void> Function(InvocationContext context, IPipe<R, S> pipe) function}) async {
-    //CREO QUE ESTÁ MAL
-    final internalPipe = BroadcastPipe<R, S>(closeIfNoOneListens: false, closeConnectedPipesIfFinished: true);
-
-    scheduleMicrotask(() => function(InvocationContext.fromParametes(thread: this, applicant: this, parametres: parameters), internalPipe));
-
-    final externalPipe = BroadcastPipe<S, R>(closeIfNoOneListens: false, closeConnectedPipesIfFinished: false);
-    externalPipe.joinCrossPipe(pipe: internalPipe, closeThisPipeIfFinish: true);
-
-    return externalPipe;
-  }
-
   void closeClient(FakeThreadClient client) {
     _clients.remove(client);
     client.declareClosed();
-  }
-
-  @override
-  Future<IPipe<S, R>> createEntityPipe<T extends Object, R, S>(
-      {InvocationParameters parameters = InvocationParameters.emptry, required FutureOr<void> Function(T entity, InvocationContext context, IPipe<R, S> pipe) function}) {
-    return getClientByEntity<T>().createEntityPipe<T, R, S>(function: function, parameters: parameters);
   }
 
   @override
@@ -184,5 +165,27 @@ class FakeThreadServer with IThreadInvoker, IThreadManager, IThreadManagerServer
       item.requestEndOfThread();
     }
     _clients.clear();
+  }
+
+  @override
+  Future<IChannel<S, R>> createChannel<R, S>({InvocationParameters parameters = InvocationParameters.emptry, required FutureOr<void> Function(InvocationContext context, IChannel<R, S> channel) function}) async {
+    final master = MasterChannel<R, S>(closeIfEveryoneClosed: true);
+
+    scheduleMicrotask(() async {
+      try {
+        await function(InvocationContext.fromParametes(thread: this, applicant: this, parametres: parameters), master);
+      } catch (ex, st) {
+        master.addErrorIfActive(ex, st);
+        master.close();
+      }
+    });
+
+    return master.createSlave();
+  }
+
+  @override
+  Future<IChannel<S, R>> createEntityChannel<T extends Object, R, S>(
+      {InvocationParameters parameters = InvocationParameters.emptry, required FutureOr<void> Function(T entity, InvocationContext context, IChannel<R, S> channel) function}) {
+    return getClientByEntity<T>().createEntityChannel<T, R, S>(function: function, parameters: parameters);
   }
 }

@@ -18,7 +18,7 @@ mixin IHttpRequester {
     int? maxSize,
   });
 
-  Future<IPipe> executeWebSocket({
+  Future<IChannel> executeWebSocket({
     required String url,
     bool disableIfNoOneListens = true,
     Map<String, String>? headers,

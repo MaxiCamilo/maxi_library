@@ -38,9 +38,9 @@ class SecondService with StartableFunctionality, IThreadService {
     await callFromFirstService();
   }
 
-  Future<void> usePipe(IPipe<int, String> pipe) async {
+  Future<void> usePipe(IChannel<int, String> pipe) async {
     pipe.add('Waiting number');
-    await for (final number in pipe.stream) {
+    await for (final number in pipe.receiver) {
       if (number == 5) {
         pipe.add('Oh no! It\'s five, that\'s bad');
         break;
@@ -49,6 +49,9 @@ class SecondService with StartableFunctionality, IThreadService {
       pipe.add('You sent #$number');
       await Future.delayed(Duration(seconds: 3));
     }
+
+    pipe.add('Now kill you!');
+    await Future.delayed(Duration(seconds: 3));
 
     pipe.add('Good bye!');
     pipe.close();

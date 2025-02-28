@@ -2,9 +2,8 @@ import 'dart:async';
 import 'dart:developer';
 
 import 'package:maxi_library/maxi_library.dart';
-import 'package:maxi_library/src/threads/falsifiers/fake_pipe.dart';
 import 'package:maxi_library/src/threads/isolates/isolate_initializer.dart';
-import 'package:maxi_library/src/threads/isolates/isolated_thread_pipeline_manager.dart';
+import 'package:maxi_library/src/threads/isolates/isolate_thread_channel_manager.dart';
 import 'package:maxi_library/src/threads/isolates/isolated_thread_stream_manager.dart';
 import 'package:maxi_library/src/threads/isolates/ithread_isolador.dart';
 import 'package:maxi_library/src/threads/isolates/thread_isolator_background_manager.dart';
@@ -26,7 +25,7 @@ class ThreadIsolatorServer with IThreadInvoker, IThreadManager, IThreadManagerSe
   final _clientList = <ThreadIsolatorServerConnection>[];
 
   @override
-  late final IsolatedThreadPipelineManager pipelineManager;
+  late final IsolateThreadChannelManager channelsManager;
 
   @override
   late final IsolatedThreadStreamManager streamManager;
@@ -34,7 +33,7 @@ class ThreadIsolatorServer with IThreadInvoker, IThreadManager, IThreadManagerSe
   late final ThreadIsolatorBackgroundManager backgroundManager;
 
   ThreadIsolatorServer() {
-    pipelineManager = IsolatedThreadPipelineManager(thread: this);
+    channelsManager = IsolateThreadChannelManager(thread: this);
     streamManager = IsolatedThreadStreamManager(manager: this);
     backgroundManager = ThreadIsolatorBackgroundManager(manager: this);
   }
@@ -178,7 +177,7 @@ class ThreadIsolatorServer with IThreadInvoker, IThreadManager, IThreadManagerSe
   void _closeConnection(IThreadInvokeInstance value) {
     _clientList.remove(value);
   }
-
+/*
   @override
   Future<IPipe<S, R>> createEntityPipe<T extends Object, R, S>({
     InvocationParameters parameters = InvocationParameters.emptry,
@@ -200,7 +199,7 @@ class ThreadIsolatorServer with IThreadInvoker, IThreadManager, IThreadManagerSe
   Future<IPipe<S, R>> createPipe<R, S>({InvocationParameters parameters = InvocationParameters.emptry, required FutureOr<void> Function(InvocationContext, IPipe<R, S>) function}) async {
     final pipe = FakePipe<R, S>();
     return pipe.callFunction(parameters: InvocationContext.fromParametes(thread: this, applicant: this, parametres: parameters), function: function);
-  }
+  }*/
 
   @override
   Future<void> closeAllThread() async {
@@ -220,5 +219,36 @@ class ThreadIsolatorServer with IThreadInvoker, IThreadManager, IThreadManagerSe
     _clientList.clear();
 
     _lasiId = 1;
+  }
+
+  @override
+  Future<IChannel<S, R>> createChannel<R, S>({InvocationParameters parameters = InvocationParameters.emptry, required FutureOr<void> Function(InvocationContext context, IChannel<R, S> channel) function}) async {
+    final master = MasterChannel<R, S>(closeIfEveryoneClosed: true);
+
+    scheduleMicrotask(() async {
+      try {
+        await function(InvocationContext.fromParametes(thread: this, applicant: this, parametres: parameters), master);
+      } catch (ex, st) {
+        master.addErrorIfActive(ex, st);
+        master.close();
+      }
+    });
+
+    return master.createSlave();
+  }
+
+  @override
+  Future<IChannel<S, R>> createEntityChannel<T extends Object, R, S>(
+      {InvocationParameters parameters = InvocationParameters.emptry, required FutureOr<void> Function(T entity, InvocationContext context, IChannel<R, S> channel) function}) async {
+    final connector = _clientList.selectItem((x) => x.entityType == T);
+
+    if (connector == null) {
+      throw NegativeResult(
+        identifier: NegativeResultCodes.contextInvalidFunctionality,
+        message: Oration(message: 'There is no thread that manages the entity %1', textParts: [T]),
+      );
+    }
+
+    return connector.createEntityChannel<T, R, S>(function: function, parameters: parameters);
   }
 }

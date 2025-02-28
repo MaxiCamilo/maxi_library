@@ -1,130 +1,132 @@
 import 'dart:async';
-import 'dart:developer';
 
 import 'package:maxi_library/maxi_library.dart';
 import 'package:maxi_library/src/tools/internal/shared_values_service.dart';
 
-class IsolatedValue<T extends Object> with StartableFunctionality {
-  static bool _serviceInitialized = false;
-
+class IsolatedValue<T extends Object> with StartableFunctionality, FunctionalityWithLifeCycle, IChannel<T, T> {
   final String name;
-  final bool synchronized;
 
-  late T _item;
-  late StreamController<T> _streamChanged;
+  T? _actualItem;
 
-  StreamSubscription? _subscription;
+  late IChannel<T, T> _channel;
+  late StreamController<T> _receiverController;
 
-  Stream<T> get changed => _streamChanged.stream;
+  Completer? _waiterDone;
 
-  bool _gettingValue = false;
+  @override
+  bool get isActive => isInitialized;
 
-  IsolatedValue({
-    required this.name,
-    required this.synchronized,
-  });
+  @override
+  Stream<T> get receiver => checkFirstIfInitialized(() => _receiverController.stream);
 
-  T get localValue {
-    checkInitialize();
+  bool get isDefined => _actualItem != null;
 
-    if (!synchronized) {
-      throw NegativeResult(
-        identifier: NegativeResultCodes.contextInvalidFunctionality,
-        message: Oration(message: 'Isolated pointer is not synchronized'),
-      );
-    }
+  IsolatedValue({required this.name});
 
-    if (_gettingValue) {
-      return _item;
-    } else {
-      throw NegativeResult(
-        identifier: NegativeResultCodes.contextInvalidFunctionality,
-        message: Oration(message: 'The value of the service must be obtained first'),
-      );
-    }
-  }
-
-  Future<T> get value async {
-    if (synchronized) {
-      await initialize();
-      return _item;
-    } else {
-      return await ThreadManager.callEntityFunction<SharedValuesService, T>(
+  static Future<T?> getValueFromThread<T>({required String name}) => ThreadManager.callEntityFunction<SharedValuesService, T?>(
         parameters: InvocationParameters.only(name),
-        function: (serv, para) => serv.getValue<T>(name: para.firts<String>()),
+        function: _getValueStatic<T>,
       );
-    }
+
+  static Future<void> changeValueFromThread<T>({required String name, required T? value}) => ThreadManager.callEntityFunction<SharedValuesService, void>(
+        parameters: InvocationParameters.list([name, value]),
+        function: (serv, para) => serv.changeValue(valueName: para.firts<String>(), value: para.second<T?>()),
+      );
+
+  @override
+  Future<void> afterInitializingFunctionality() async {
+    await SharedValuesService.mountService();
+    _actualItem = null;
+    _channel = await joinAsyncObject(
+      () => ThreadManager.createEntityChannel<SharedValuesService, T, T>(
+        parameters: InvocationParameters.only(name),
+        function: _createChannel<T>,
+      ),
+    );
+
+    _channel.receiver.listen((x) {
+      _actualItem = x;
+      _receiverController.addIfActive(x);
+    });
+
+    _actualItem = await ThreadManager.callEntityFunction<SharedValuesService, T?>(
+      parameters: InvocationParameters.only(name),
+      function: _getValueStatic<T>,
+    );
+//
+    _receiverController = createEventController<T>(isBroadcast: true);
   }
 
-  Future<void> changeValue({required T item}) async {
+  Future<void> changeValue(T value) async {
     await initialize();
-    await Future.delayed(Duration.zero);
-    await ThreadManager.callEntityFunction<SharedValuesService, void>(
-      parameters: InvocationParameters.list([name, item]),
-      function: (serv, para) => serv.setValue(name: para.firts<String>(), value: para.second()),
-    );
-    _gettingValue = true;
-    _item = item;
-    await Future.delayed(Duration.zero);
+
+    _channel.add(value);
+    _actualItem = value;
+  }
+
+  T get syncValue {
+    return checkFirstIfInitialized(() {
+      if (_actualItem == null) {
+        throw NegativeResult(
+          identifier: NegativeResultCodes.nullValue,
+          message: Oration(message: 'A value to the shared variable %1 was not yet defined', textParts: [name]),
+        );
+      } else {
+        return _actualItem!;
+      }
+    });
+  }
+
+  Future<T> get asyncValue async {
+    await initialize();
+    if (_actualItem == null) {
+      throw NegativeResult(
+        identifier: NegativeResultCodes.nullValue,
+        message: Oration(message: 'A value to the shared variable %1 was not yet defined', textParts: [name]),
+      );
+    } else {
+      return _actualItem!;
+    }
   }
 
   @override
-  Future<void> initializeFunctionality() async {
-    _streamChanged = StreamController<T>.broadcast();
-
-    if (!_serviceInitialized) {
-      await _mountService();
-      _serviceInitialized = true;
-    }
-
-    final subscription = await ThreadManager.callEntityStream<SharedValuesService, dynamic>(
-      parameters: InvocationParameters.only(name),
-      function: (serv, para) => serv.getModValueStream(name: para.firts<String>()),
-    );
-    _subscription = subscription.listen(_dataChanged);
-
-    if (synchronized) {
-      final value = await ThreadManager.callEntityFunction<SharedValuesService, T?>(
-        parameters: InvocationParameters.only(name),
-        function: _getOptionalValue<T>, //(serv, para) => serv.getOptionalValue<T>(name: para.firts<String>()),
-      );
-
-      if (value != null) {
-        _item = value;
-        _gettingValue = true;
-      }
-    }
+  void add(T event) {
+    changeValue(event);
   }
 
-  static Future<T?> _getOptionalValue<T>(SharedValuesService serv, InvocationParameters para) async {
-    return serv.getOptionalValue<T>(name: para.firts<String>());
+  @override
+  Future addStream(Stream<T> stream) async {
+    await initialize();
+    return await super.addStream(stream);
   }
 
-  Future<void> _mountService() async {
-    await ThreadManager.mountEntity<SharedValuesService>(entity: SharedValuesService());
-    _serviceInitialized = true;
-  }
+  @override
+  void addError(Object error, [StackTrace? stackTrace]) {}
 
-  void _dataChanged(dynamic newValue) {
-    if (newValue is! T) {
-      log('[IsolatedValue] Cannot accept value of type $T');
-      return;
-    }
-
-    if (synchronized) {
-      _item = newValue;
-      _gettingValue = true;
-    }
-
-    _streamChanged.add(newValue);
-  }
-
-  void discard() {
-    _subscription?.cancel();
-    _subscription = null;
-
-    _streamChanged.close();
-
+  @override
+  Future close() async {
     dispose();
+  }
+
+  @override
+  Future get done {
+    _waiterDone ??= Completer();
+    return _waiterDone!.future;
+  }
+
+  @override
+  void dispose() {
+    _actualItem = null;
+    _waiterDone?.completeIfIncomplete();
+    _waiterDone = null;
+    super.dispose();
+  }
+
+  static FutureOr<void> _createChannel<T>(SharedValuesService entity, InvocationContext context, IChannel<T, T> channel) async {
+    await entity.indexChannelOfValues<T>(valueName: context.firts<String>(), channel: channel);
+  }
+
+  static FutureOr<T?> _getValueStatic<T>(SharedValuesService entity, InvocationParameters context) {
+    return entity.getValue(context.firts());
   }
 }

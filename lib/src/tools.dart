@@ -15,11 +15,13 @@ export 'package:maxi_library/src/tools/pointer_defines_after.dart';
 export 'package:maxi_library/src/tools/isolated_value.dart';
 export 'package:maxi_library/src/tools/isolated_function.dart';
 export 'package:maxi_library/src/tools/isolated_module_pointer.dart';
-export 'package:maxi_library/src/tools/stream_pipe.dart';
-export 'package:maxi_library/src/tools/broadcast_pipe.dart';
 export 'package:maxi_library/src/tools/converted_stream_sink.dart';
 export 'package:maxi_library/src/tools/response_http_request.dart';
 export 'package:maxi_library/src/tools/isolated_event.dart';
+
+export 'package:maxi_library/src/tools/channels/channel_connector.dart';
+export 'package:maxi_library/src/tools/channels/master_channel.dart';
+export 'package:maxi_library/src/tools/channels/slave_channel.dart';
 
 export 'package:maxi_library/src/tools/online_http_requester.dart';
 export 'package:maxi_library/src/tools/online_web_socket.dart';

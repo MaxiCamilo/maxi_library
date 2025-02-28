@@ -2,8 +2,7 @@ import 'dart:async';
 import 'dart:isolate';
 
 import 'package:maxi_library/maxi_library.dart';
-import 'package:maxi_library/src/threads/falsifiers/fake_pipe.dart';
-import 'package:maxi_library/src/threads/isolates/isolated_thread_pipeline_manager.dart';
+import 'package:maxi_library/src/threads/isolates/isolate_thread_channel_manager.dart';
 import 'package:maxi_library/src/threads/isolates/isolated_thread_stream_manager.dart';
 import 'package:maxi_library/src/threads/isolates/ithread_isolador.dart';
 import 'package:maxi_library/src/threads/isolates/thread_isolator_client_connection.dart';
@@ -25,7 +24,7 @@ class ThreadIsolatorClient with IThreadInvoker, IThreadManager, IThreadManagerCl
   bool get isServer => false;
 
   @override
-  late final IsolatedThreadPipelineManager pipelineManager;
+  late final IsolateThreadChannelManager channelsManager;
 
   @override
   late final IsolatedThreadStreamManager streamManager;
@@ -36,7 +35,7 @@ class ThreadIsolatorClient with IThreadInvoker, IThreadManager, IThreadManagerCl
   ThreadIsolatorClient({required this.threadID, required ChannelIsolates serverChannel}) {
     _serverConnection = ThreadIsolatorClientConnection(clientMannager: this, channel: serverChannel, threadID: 0);
     (_serverConnection as ThreadIsolatorClientConnection).initialize(threadID: 0, entityType: null);
-    pipelineManager = IsolatedThreadPipelineManager(thread: this);
+    channelsManager = IsolateThreadChannelManager(thread: this);
     streamManager = IsolatedThreadStreamManager(manager: this);
   }
 
@@ -227,6 +226,8 @@ class ThreadIsolatorClient with IThreadInvoker, IThreadManager, IThreadManagerCl
       _serverConnection.closeConnection();
       await streamManager.close();
 
+      channelsManager.closeAll();
+
       Future.delayed(Duration(milliseconds: 20)).whenComplete(() {
         containErrorLog(
           detail: Oration(message: '[IsolateInitializer] FAILED!: The negative result cannot be sent to the other isolator.'),
@@ -276,25 +277,49 @@ class ThreadIsolatorClient with IThreadInvoker, IThreadManager, IThreadManagerCl
   }
 
   @override
-  Future<IPipe<S, R>> createPipe<R, S>({InvocationParameters parameters = InvocationParameters.emptry, required FutureOr<void> Function(InvocationContext p1, IPipe<R, S> p2) function}) async {
-    final pipe = FakePipe<R, S>();
-    return pipe.callFunction(parameters: InvocationContext.fromParametes(thread: this, applicant: this, parametres: parameters), function: function);
+  Future<IChannel<S, R>> createChannel<R, S>({InvocationParameters parameters = InvocationParameters.emptry, required FutureOr<void> Function(InvocationContext context, IChannel<R, S> channel) function}) async {
+    final master = MasterChannel<R, S>(closeIfEveryoneClosed: true);
+
+    scheduleMicrotask(() async {
+      try {
+        await function(InvocationContext.fromParametes(thread: this, applicant: this, parametres: parameters), master);
+      } catch (ex, st) {
+        master.addErrorIfActive(ex, st);
+        master.close();
+      }
+    });
+
+    return master.createSlave();
   }
 
   @override
-  Future<IPipe<S, R>> createEntityPipe<T extends Object, R, S>({
-    InvocationParameters parameters = InvocationParameters.emptry,
-    required FutureOr<void> Function(T p1, InvocationContext p2, IPipe<R, S> p3) function,
-  }) async {
-    final connector = await getEntityInstance<T>();
+  Future<IChannel<S, R>> createEntityChannel<T extends Object, R, S>(
+      {InvocationParameters parameters = InvocationParameters.emptry, required FutureOr<void> Function(T entity, InvocationContext context, IChannel<R, S> channel) function}) async {
+    if (T == entityType) {
+      final master = MasterChannel<R, S>(closeIfEveryoneClosed: true);
 
-    if (connector == null) {
-      throw NegativeResult(
-        identifier: NegativeResultCodes.contextInvalidFunctionality,
-        message: Oration(message: 'There is no thread that manages the entity %1', textParts: [T]),
-      );
+      scheduleMicrotask(() async {
+        try {
+          await function(_entity, InvocationContext.fromParametes(thread: this, applicant: this, parametres: parameters), master);
+        } catch (ex, st) {
+          master.addErrorIfActive(ex, st);
+          master.close();
+        }
+      });
+
+      return master.createSlave();
     }
 
-    return pipelineManager.createEntityPipeline<T, R, S>(parameters: parameters, function: function, sender: connector);
+    final actualConnection = _connectionstList.selectItem((x) => x.entityType == T);
+    if (actualConnection != null) {
+      return await actualConnection.createEntityChannel<T, R, S>(function: function, parameters: parameters);
+    }
+
+    final newConnection = await getEntityInstance<T>();
+    if (newConnection == null) {
+      throw NegativeResult(identifier: NegativeResultCodes.contextInvalidFunctionality, message: Oration(message: 'There is no thread that manages the entity %1', textParts: [T]));
+    }
+
+    return await newConnection.createEntityChannel<T, R, S>(function: function, parameters: parameters);
   }
 }

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 
 import 'package:maxi_library/maxi_library.dart';
 import 'package:meta/meta.dart';
@@ -7,6 +8,7 @@ mixin FunctionalityWithLifeCycle on StartableFunctionality {
   final _streamControllers = <StreamController>[];
   final _streamSubscriptions = <StreamSubscription>[];
   final _waiters = <Completer>[];
+  final _otherActiveList = <Object>[];
 
   Completer? _onDone;
 
@@ -50,8 +52,28 @@ mixin FunctionalityWithLifeCycle on StartableFunctionality {
 
     _waiters.clear();
 
+    _otherActiveList.iterar((x) {
+      try {
+        (x as dynamic).dispose();
+      } catch (ex) {
+        log('[FunctionalityWithLifeCycle] Error stirring the united object: $ex');
+      }
+    });
+    _otherActiveList.clear();
+
     _onDone?.completeIfIncomplete(this);
     _onDone = null;
+  }
+
+  R joinObject<R extends Object>({required R item}) {
+    _otherActiveList.add(item);
+    return item;
+  }
+
+  Future<R> joinAsyncObject<R extends Object>( Future<R> Function() function) async {
+    final result = await function();
+    _otherActiveList.add(result);
+    return result;
   }
 
   @override

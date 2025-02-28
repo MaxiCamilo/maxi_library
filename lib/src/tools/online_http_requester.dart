@@ -11,7 +11,7 @@ class OnlineHttpRequester with IHttpRequester {
   int _activeRequest = 0;
 
   final activeRequests = <Future>[];
-  final activePipes = <IPipe>[];
+  final activePipes = <IChannel>[];
 
   @override
   bool get isActive => _activeRequest > 0;
@@ -116,7 +116,7 @@ class OnlineHttpRequester with IHttpRequester {
   }
 
   @override
-  Future<IPipe> executeWebSocket({
+  Future<IChannel> executeWebSocket({
     required String url,
     bool disableIfNoOneListens = true,
     Map<String, String>? headers,

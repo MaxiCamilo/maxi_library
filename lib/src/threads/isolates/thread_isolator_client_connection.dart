@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:maxi_library/maxi_library.dart';
-import 'package:maxi_library/src/threads/isolates/isolated_thread_pipeline_manager.dart';
+import 'package:maxi_library/src/threads/isolates/isolate_thread_channel_manager.dart';
 import 'package:maxi_library/src/threads/isolates/isolated_thread_stream_manager.dart';
 import 'package:maxi_library/src/threads/isolates/ithread_isolador.dart';
 import 'package:maxi_library/src/threads/isolates/thread_isolator_client.dart';
@@ -31,7 +31,7 @@ class ThreadIsolatorClientConnection with IThreadInvoker, IThreadInvokeInstance,
   late final IsolatedThreadStreamManager streamManager;
 
   @override
-  IsolatedThreadPipelineManager get pipelineManager => clientMannager.pipelineManager;
+  late final IsolateThreadChannelManager channelsManager;
 
   Future<ThreadIsolatorClientConnection> get onInitialize => _initializeCompleter.future;
 
@@ -43,6 +43,7 @@ class ThreadIsolatorClientConnection with IThreadInvoker, IThreadInvokeInstance,
 
   ThreadIsolatorClientConnection({required this.clientMannager, required this.channel, required this.threadID}) {
     streamManager = IsolatedThreadStreamManager(manager: this);
+    channelsManager = IsolateThreadChannelManager(thread: this);
 
     externalFunctionExecutor = ThreadMessageExecutor(
       thread: clientMannager,
@@ -59,7 +60,7 @@ class ThreadIsolatorClientConnection with IThreadInvoker, IThreadInvokeInstance,
     messageProcessor = ThreadMessagesProcessor(
       thread: clientMannager,
       sender: this,
-      streamMessage: channel.stream.whereType<IThreadMessage>(),
+      streamMessage: channel.receiver.whereType<IThreadMessage>(),
       executor: externalFunctionExecutor,
       requester: externalFunctionalRequester,
     );
@@ -195,25 +196,27 @@ class ThreadIsolatorClientConnection with IThreadInvoker, IThreadInvokeInstance,
     externalFunctionExecutor.close();
     externalFunctionalRequester.close();
     streamManager.close();
+    channelsManager.closeAll();
     _doneCompleter.completeIfIncomplete(this);
   }
 
   @override
-  Future<IPipe<S, R>> createEntityPipe<T extends Object, R, S>({
-    InvocationParameters parameters = InvocationParameters.emptry,
-    required FutureOr<void> Function(T p1, InvocationContext p2, IPipe<R, S> p3) function,
-  }) {
-    if (T == entityType) {
-      return clientMannager.pipelineManager.createEntityPipeline(parameters: parameters, function: function, sender: this);
-    } else {
-      return clientMannager.createEntityPipe<T, R, S>(function: function, parameters: parameters);
-    }
+  Future<IChannel<S, R>> createChannel<R, S>({InvocationParameters parameters = InvocationParameters.emptry, required FutureOr<void> Function(InvocationContext context, IChannel<R, S> channel) function}) async {
+    return channelsManager.createExternalChannel<R, S>(parameters: parameters, function: function);
   }
 
   @override
-  Future<IPipe<S, R>> createPipe<R, S>({InvocationParameters parameters = InvocationParameters.emptry, required FutureOr<void> Function(InvocationContext p1, IPipe<R, S> p2) function}) {
-    return clientMannager.pipelineManager.createPipeline(parameters: parameters, function: function, sender: this);
+  Future<IChannel<S, R>> createEntityChannel<T extends Object, R, S>(
+      {InvocationParameters parameters = InvocationParameters.emptry, required FutureOr<void> Function(T entity, InvocationContext context, IChannel<R, S> channel) function}) {
+    parameters = InvocationParameters.clone(parameters)..namedParameters['_#FCH()"_'] = function;
+    return channelsManager.createExternalChannel<R, S>(parameters: parameters, function: _executeEntityChannel<T, R, S>);
   }
-  
-  
+
+  static Future<void> _executeEntityChannel<T extends Object, R, S>(InvocationContext context, IChannel<R, S> channel) async {
+    final funcion = context.named<FutureOr<void> Function(T, InvocationContext, IChannel<R, S>)>('_#FCH()"_');
+    final entity = await volatileAsync(detail: Oration(message: 'Thread entity is null!'), function: () async => (await context.thread.getEntity<T>()) as T);
+
+    return await funcion(entity, context, channel);
+  }
 }
+// final funcion = context.named<FutureOr<void> Function(T, InvocationContext, IChannel<R, S>)>('_#FCH()"_');

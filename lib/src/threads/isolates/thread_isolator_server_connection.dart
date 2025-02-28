@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:isolate';
 
 import 'package:maxi_library/maxi_library.dart';
-import 'package:maxi_library/src/threads/isolates/isolated_thread_pipeline_manager.dart';
+import 'package:maxi_library/src/threads/isolates/isolate_thread_channel_manager.dart';
 import 'package:maxi_library/src/threads/isolates/isolated_thread_stream_manager.dart';
 import 'package:maxi_library/src/threads/isolates/ithread_isolador.dart';
 import 'package:maxi_library/src/threads/isolates/thread_isolator_client.dart';
@@ -27,7 +27,7 @@ class ThreadIsolatorServerConnection with IThreadInvoker, IThreadInvokeInstance,
   late final IsolatedThreadStreamManager streamManager;
 
   @override
-  IsolatedThreadPipelineManager get pipelineManager => server.pipelineManager;
+  late final IsolateThreadChannelManager channelsManager;
 
   @override
   final int threadID;
@@ -49,6 +49,7 @@ class ThreadIsolatorServerConnection with IThreadInvoker, IThreadInvokeInstance,
     channel.done.whenComplete(closeConnection);
 
     streamManager = IsolatedThreadStreamManager(manager: this);
+    channelsManager = IsolateThreadChannelManager(thread: this);
 
     externalFunctionExecutor = ThreadMessageExecutor(
       thread: server,
@@ -65,7 +66,7 @@ class ThreadIsolatorServerConnection with IThreadInvoker, IThreadInvokeInstance,
     messageProcessor = ThreadMessagesProcessor(
       thread: server,
       sender: this,
-      streamMessage: channel.stream.whereType<IThreadMessage>(),
+      streamMessage: channel.receiver.whereType<IThreadMessage>(),
       executor: externalFunctionExecutor,
       requester: externalFunctionalRequester,
     );
@@ -136,7 +137,7 @@ class ThreadIsolatorServerConnection with IThreadInvoker, IThreadInvokeInstance,
   static Future<R> _callEntityFunctionInThread<T extends Object, R>(InvocationContext context) async {
     final function = context.named<FutureOr<R> Function(T, InvocationContext)>('#_E()_#');
 
-    final entity = await volatileAsync<T>(detail: Oration(message: 'Thread does not handle entity of type %1',textParts: [T]), function: () async => (await context.thread.getEntity<T>()) as T);
+    final entity = await volatileAsync<T>(detail: Oration(message: 'Thread does not handle entity of type %1', textParts: [T]), function: () async => (await context.thread.getEntity<T>()) as T);
     return function(entity, context);
   }
 
@@ -207,8 +208,9 @@ class ThreadIsolatorServerConnection with IThreadInvoker, IThreadInvokeInstance,
     externalFunctionalRequester.close();
     _doneCompleter.completeIfIncomplete(this);
     streamManager.close();
+    channelsManager.closeAll();
   }
-
+/*
   @override
   Future<IPipe<S, R>> createEntityPipe<T extends Object, R, S>({
     InvocationParameters parameters = InvocationParameters.emptry,
@@ -224,10 +226,33 @@ class ThreadIsolatorServerConnection with IThreadInvoker, IThreadInvokeInstance,
   @override
   Future<IPipe<S, R>> createPipe<R, S>({InvocationParameters parameters = InvocationParameters.emptry, required FutureOr<void> Function(InvocationContext p1, IPipe<R, S> p2) function}) {
     return server.pipelineManager.createPipeline(parameters: parameters, function: function, sender: this);
-  }
+  }*/
 
   void killIsolates() {
     isolate.kill(priority: Isolate.immediate);
     scheduleMicrotask(() => declareClosed());
+  }
+
+  @override
+  Future<IChannel<S, R>> createChannel<R, S>({InvocationParameters parameters = InvocationParameters.emptry, required FutureOr<void> Function(InvocationContext context, IChannel<R, S> channel) function}) {
+    return channelsManager.createExternalChannel<R, S>(parameters: parameters, function: function);
+  }
+
+  @override
+  Future<IChannel<S, R>> createEntityChannel<T extends Object, R, S>(
+      {InvocationParameters parameters = InvocationParameters.emptry, required FutureOr<void> Function(T entity, InvocationContext context, IChannel<R, S> channel) function}) {
+    if (_entityType == T) {
+      parameters = InvocationParameters.clone(parameters)..namedParameters['#_E()_#'] = function;
+      return channelsManager.createExternalChannel<R, S>(parameters: parameters, function: _callEntityChannelInThread<T, R, S>);
+    } else {
+      return server.createEntityChannel<T, R, S>(function: function, parameters: parameters);
+    }
+  }
+
+  static Future<void> _callEntityChannelInThread<T extends Object, R, S>(InvocationContext context, IChannel<R, S> channel) async {
+    final function = context.named<FutureOr<void> Function(T, InvocationContext, IChannel<R, S>)>('#_E()_#');
+
+    final entity = await volatileAsync<T>(detail: Oration(message: 'Thread does not handle entity of type %1', textParts: [T]), function: () async => (await context.thread.getEntity<T>()) as T);
+    await function(entity, context, channel);
   }
 }

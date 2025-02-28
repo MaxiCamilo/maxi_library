@@ -4,7 +4,7 @@ import 'dart:isolate';
 
 import 'package:maxi_library/maxi_library.dart';
 
-class ChannelIsolates with IPipe {
+class ChannelIsolates with IChannel {
   final bool isDetination;
   final ReceivePort _receiver;
 
@@ -18,7 +18,7 @@ class ChannelIsolates with IPipe {
   final _dataReceivedNotifier = StreamController.broadcast();
 
   @override
-  Stream get stream => _dataReceivedNotifier.stream;
+  Stream get receiver => _dataReceivedNotifier.stream;
 
   @override
   bool get isActive => !_isFinalized;
@@ -77,7 +77,7 @@ class ChannelIsolates with IPipe {
     final waiterSender = Completer();
 
     late final StreamSubscription subscription;
-    subscription = channel.stream.listen(
+    subscription = channel.receiver.listen(
       (x) {
         if (!waiterSender.isCompleted) {
           waiterSender.complete(x);

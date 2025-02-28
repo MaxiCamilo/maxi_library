@@ -76,19 +76,6 @@ class FakeThreadClient with IThreadInvoker, IThreadManager, IThreadManagerClient
   }
 
   @override
-  Future<IPipe<S, R>> createPipe<R, S>({InvocationParameters parameters = InvocationParameters.emptry, required FutureOr<void> Function(InvocationContext context, IPipe<R, S> pipe) function}) async {
-    //CREO QUE ESTÁ MAL
-    final internalPipe = BroadcastPipe<R, S>(closeIfNoOneListens: false, closeConnectedPipesIfFinished: true);
-
-    scheduleMicrotask(() => function(InvocationContext.fromParametes(thread: this, applicant: this, parametres: parameters), internalPipe));
-
-    final externalPipe = BroadcastPipe<S, R>(closeIfNoOneListens: false, closeConnectedPipesIfFinished: false);
-    externalPipe.joinCrossPipe(pipe: internalPipe, closeThisPipeIfFinish: true);
-
-    return externalPipe;
-  }
-
-  @override
   Future<R> callEntityFunction<T extends Object, R>({InvocationParameters parameters = InvocationParameters.emptry, required FutureOr<R> Function(T p1, InvocationContext p2) function}) async {
     if (T == entityType) {
       return await function(_entity, InvocationContext.fromParametes(thread: serverConnection, applicant: this, parametres: parameters));
@@ -104,23 +91,6 @@ class FakeThreadClient with IThreadInvoker, IThreadManager, IThreadManagerClient
     } else {
       return serverConnection.callEntityStream<T, R>(function: function, parameters: parameters);
     }
-  }
-
-  @override
-  Future<IPipe<S, R>> createEntityPipe<T extends Object, R, S>(
-      {InvocationParameters parameters = InvocationParameters.emptry, required FutureOr<void> Function(T entity, InvocationContext context, IPipe<R, S> pipe) function}) async {
-    if (T != entityType) {
-      return await serverConnection.createEntityPipe<T, R, S>(function: function, parameters: parameters);
-    }
-
-    final internalPipe = BroadcastPipe<R, S>(closeIfNoOneListens: false, closeConnectedPipesIfFinished: true);
-
-    scheduleMicrotask(() => function(_entity, InvocationContext.fromParametes(thread: this, applicant: this, parametres: parameters), internalPipe));
-
-    final externalPipe = BroadcastPipe<S, R>(closeIfNoOneListens: false, closeConnectedPipesIfFinished: false);
-    externalPipe.joinCrossPipe(pipe: internalPipe, closeThisPipeIfFinish: true);
-
-    return externalPipe;
   }
 
   @override
@@ -159,5 +129,42 @@ class FakeThreadClient with IThreadInvoker, IThreadManager, IThreadManagerClient
   @override
   void requestEndOfThread() {
     closeConnection();
+  }
+
+  @override
+  Future<IChannel<S, R>> createChannel<R, S>({InvocationParameters parameters = InvocationParameters.emptry, required FutureOr<void> Function(InvocationContext context, IChannel<R, S> channel) function}) async {
+    final master = MasterChannel<R, S>(closeIfEveryoneClosed: true);
+
+    scheduleMicrotask(() async {
+      try {
+        await function(InvocationContext.fromParametes(thread: this, applicant: this, parametres: parameters), master);
+      } catch (ex, st) {
+        master.addErrorIfActive(ex, st);
+        master.close();
+      }
+    });
+
+    return master.createSlave();
+  }
+
+  @override
+  Future<IChannel<S, R>> createEntityChannel<T extends Object, R, S>(
+      {InvocationParameters parameters = InvocationParameters.emptry, required FutureOr<void> Function(T entity, InvocationContext context, IChannel<R, S> channel) function}) async {
+    if (T != entityType) {
+      return serverConnection.createEntityChannel<T, R, S>(function: function, parameters: parameters);
+    }
+
+    final master = MasterChannel<R, S>(closeIfEveryoneClosed: true);
+
+    scheduleMicrotask(() async {
+      try {
+        await function(_entity, InvocationContext.fromParametes(thread: this, applicant: this, parametres: parameters), master);
+      } catch (ex, st) {
+        master.addErrorIfActive(ex, st);
+        master.close();
+      }
+    });
+
+    return master.createSlave();
   }
 }

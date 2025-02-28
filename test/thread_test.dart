@@ -1,4 +1,3 @@
-/*
 @Timeout(Duration(minutes: 30))
 import 'dart:async';
 import 'dart:developer';
@@ -42,26 +41,6 @@ Stream<String> _makeTexts() async* {
   log('Now, I have finished');
 }
 
-Future<void> _testExternalTest(InvocationParameters parameters) async {
-  final pipe = parameters.firts<ThreadPipe<String, String>>();
-  await pipe.initialize();
-
-  pipe.stream.listen((x) {
-    print('Server sent $x');
-  });
-
-  Future.delayed(Duration(seconds: 17)).whenComplete(() => pipe.close());
-
-  for (int i = 0; i < 5; i++) {
-    if (pipe.isActive) {
-      pipe.addIfActive('Hi! Number $i');
-    }
-    await Future.delayed(Duration(seconds: 5));
-  }
-
-  await pipe.close();
-}
-
 void main() {
   group('Thread test', () {
     setUp(() {
@@ -71,16 +50,20 @@ void main() {
     test('Start and finalize thread', () async {
       final newThread = await (ThreadManager.instance as IThreadManagerServer).makeNewThread(initializers: [], name: 'Test thread');
 
-      newThread.callFunctionAsAnonymous(function: (p) async {
-        log('waiting to finish');
-        await Future.delayed(Duration(seconds: 10));
-        scheduleMicrotask(() async {
-          log('Bye!');
-          p.thread.closeThread();
-        });
+      newThread
+          .callFunction(
+              parameters: InvocationParameters.emptry,
+              function: (p) async {
+                log('waiting to finish');
+                await Future.delayed(Duration(seconds: 10));
+                scheduleMicrotask(() async {
+                  log('Bye!');
+                  p.thread.closeThread();
+                });
 
-        return 'juajuajua';
-      }).then((x) {
+                return 'juajuajua';
+              })
+          .then((x) {
         log('Function sent $x');
       });
 
@@ -90,9 +73,11 @@ void main() {
 
     test('Request the end of the thread', () async {
       final newThread = await (ThreadManager.instance as IThreadManagerServer).makeNewThread(initializers: [], name: 'Test thread');
-      newThread.callFunctionAsAnonymous(function: (p) async {
-        log('Hi maxi');
-      });
+      newThread.callFunction(
+          parameters: InvocationParameters.emptry,
+          function: (p) async {
+            log('Hi maxi');
+          });
 
       await Future.delayed(Duration(seconds: 5));
       log('We\'ll now kill the child process');
@@ -109,10 +94,12 @@ void main() {
       await ThreadManager.instance.callFunctionOnTheServer(function: (_) async => print('Hi from here!'));
 
       final newThread = await (ThreadManager.instance as IThreadManagerServer).makeNewThread(initializers: [], name: 'Test thread');
-      final received = await newThread.callFunctionAsAnonymous(function: (_) async {
-        log('Hi from client!');
-        return 'jejejeje';
-      });
+      final received = await newThread.callFunction(
+          parameters: InvocationParameters.emptry,
+          function: (_) async {
+            log('Hi from client!');
+            return 'jejejeje';
+          });
       print('Thred sent $received');
     });
 
@@ -120,19 +107,19 @@ void main() {
       ThreadManager.addThreadInitializer(initializer: ThreadInitializerTest());
       final newThread = await (ThreadManager.instance as IThreadManagerServer).makeNewThread(initializers: [], name: 'Test thread');
 
-      final textReceive = await newThread.callFunctionAsAnonymous(function: _greetUserMaxi);
+      final textReceive = await newThread.callFunction(function: _greetUserMaxi, parameters: InvocationParameters.emptry);
       log('The Thread sent "$textReceive"');
 
-      String greetingText = await newThread.callFunctionAsAnonymous(function: _greetUser, parameters: InvocationParameters.only('Peludo'));
+      String greetingText = await newThread.callFunction(function: _greetUser, parameters: InvocationParameters.only('Peludo'));
       log('The Thread sent "$greetingText"');
 
-      greetingText = await newThread.callFunctionAsAnonymous(function: _greetUser, parameters: InvocationParameters.only('Pelado'));
+      greetingText = await newThread.callFunction(function: _greetUser, parameters: InvocationParameters.only('Pelado'));
       log('The Thread sent "$greetingText"');
 
-      greetingText = await newThread.callFunctionAsAnonymous(function: _greetUser, parameters: InvocationParameters.only('Petizo'));
+      greetingText = await newThread.callFunction(function: _greetUser, parameters: InvocationParameters.only('Petizo'));
       log('The Thread sent "$greetingText"');
 
-      greetingText = await newThread.callFunctionAsAnonymous(function: _greetUser, parameters: InvocationParameters.only('Barbudo'));
+      greetingText = await newThread.callFunction(function: _greetUser, parameters: InvocationParameters.only('Barbudo'));
       log('The Thread sent "$greetingText"');
     });
 
@@ -140,38 +127,38 @@ void main() {
       final newThread = await (ThreadManager.instance as IThreadManagerServer).makeNewThread(initializers: [], name: 'Test thread');
 
       await Future.wait([
-        newThread.callFunctionAsAnonymous(function: _greetUser, parameters: InvocationParameters.only('First')).then((x) {
+        newThread.callFunction(function: _greetUser, parameters: InvocationParameters.only('First')).then((x) {
           log('Finished first: $x');
         }),
-        newThread.callFunctionAsAnonymous(function: _greetUser, parameters: InvocationParameters.only('Second')).then((x) {
+        newThread.callFunction(function: _greetUser, parameters: InvocationParameters.only('Second')).then((x) {
           log('Finished second: $x');
         }),
-        newThread.callFunctionAsAnonymous(function: _greetUser, parameters: InvocationParameters.only('Third')).then((x) {
+        newThread.callFunction(function: _greetUser, parameters: InvocationParameters.only('Third')).then((x) {
           log('Finished third: $x');
         }),
       ]);
 
       log('Function finished');
 
-      await newThread.callFunctionAsAnonymous(function: _greetUser, parameters: InvocationParameters.only('Fourth')).then((x) {
+      await newThread.callFunction(function: _greetUser, parameters: InvocationParameters.only('Fourth')).then((x) {
         log('Finished Fourth: $x');
       });
 
-      await newThread.callFunctionAsAnonymous(function: _greetUser, parameters: InvocationParameters.only('Fifth')).then((x) {
+      await newThread.callFunction(function: _greetUser, parameters: InvocationParameters.only('Fifth')).then((x) {
         log('Finished fifth: $x');
       });
 
       await Future.wait([
-        newThread.callFunctionAsAnonymous(function: _greetUser, parameters: InvocationParameters.only('Sixth')).then((x) {
+        newThread.callFunction(function: _greetUser, parameters: InvocationParameters.only('Sixth')).then((x) {
           log('Finished sixth: $x');
         }),
-        newThread.callFunctionAsAnonymous(function: _greetUser, parameters: InvocationParameters.only('Seventh')).then((x) {
+        newThread.callFunction(function: _greetUser, parameters: InvocationParameters.only('Seventh')).then((x) {
           log('Finished seventh: $x');
         }),
-        newThread.callFunctionAsAnonymous(function: _greetUser, parameters: InvocationParameters.only('Eighth')).then((x) {
+        newThread.callFunction(function: _greetUser, parameters: InvocationParameters.only('Eighth')).then((x) {
           log('Finished eighth: $x');
         }),
-        newThread.callFunctionAsAnonymous(function: _greetUser, parameters: InvocationParameters.only('Nineth')).then((x) {
+        newThread.callFunction(function: _greetUser, parameters: InvocationParameters.only('Nineth')).then((x) {
           log('Finished nineth: $x');
         }),
       ]);
@@ -180,7 +167,7 @@ void main() {
     test('check Streams', () async {
       final newThread = await (ThreadManager.instance as IThreadManagerServer).makeNewThread(initializers: [], name: 'Test thread');
 
-      final stream = await newThread.callStreamAsAnonymous<String>(function: (_) async => _makeTexts());
+      final stream = await newThread.callStream<String>(parameters: InvocationParameters.emptry, function: (_) async => _makeTexts());
       final waiter = Completer();
       // ignore: unused_local_variable
       final subcription = stream.listen(
@@ -261,24 +248,43 @@ void main() {
     });
 
     test('External Stream Test ', () async {
-      final pipe = ThreadManager.makePipe<String, String>();
       final newThread = await (ThreadManager.instance as IThreadManagerServer).makeNewThread(initializers: [], name: 'Test thread');
 
-      newThread.callFunctionAsAnonymous(function: _testExternalTest, parameters: InvocationParameters.only(pipe.cloner()));
-      await pipe.initialize();
+      final channel = await newThread.createChannel(function: _externalChannel);
+      channel.receiver.listen((x) => print('From Thread -> Main: Number $x'));
 
-      scheduleMicrotask(() async {
-        for (int i = 1; i < 3; i++) {
-          pipe.addIfActive('N° $i');
-          await Future.delayed(Duration(seconds: 7));
-        }
-      });
+      for (int i = 1; i < 21; i++) {
+        channel.addIfActive('Hi! I go for $i');
+        await Future.delayed(Duration(seconds: 1));
+      }
 
-      pipe.stream.listen((x) => print('Thread sent: $x'));
-      await pipe.done;
-      print('Finish');
-      //await Future.delayed(Duration(seconds: 90));
+      await channel.close();
+      await Future.delayed(Duration(seconds: 30));
+    });
+
+      test('External channel between 2 services', () async {
+      await ThreadManager.mountEntity(entity: FirstService(isMustFail: false));
+      await ThreadManager.mountEntity(entity: SecondService());
+
+      await ThreadManager.callEntityFunction<FirstService, void>(
+        function: (serv, para) => serv.createPipeInSecondService(),
+      );
     });
   });
 }
-*/
+
+Future<void> _externalChannel(InvocationContext context, IChannel<String, int> channel) async {
+  channel.receiver.listen((x) => print('From Main -> Thread: "$x"'));
+  channel.done.whenComplete(() => print('Good bye From thread'));
+
+  for (int i = 1; i < 30; i++) {
+    if (!channel.isActive) {
+      break;
+    }
+    channel.add(i);
+    await Future.delayed(Duration(seconds: 3));
+  }
+
+  await Future.delayed(Duration(seconds: 1));
+  channel.close();
+}

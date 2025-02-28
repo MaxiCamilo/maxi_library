@@ -4,21 +4,23 @@ import 'dart:developer';
 import 'package:maxi_library/maxi_library.dart';
 import 'package:maxi_library/src/tools/internal/shared_values_service.dart';
 
-class IsolatedEvent<T> with StartableFunctionality implements StreamSink<T> {
-  static bool _serviceInitialized = false;
-
+class IsolatedEvent<T> with StartableFunctionality, IChannel<T, T> {
   final String name;
 
   late StreamController<T> _controller;
   StreamSubscription? _subscription;
   Completer<IsolatedEvent<T>>? _doneCompleter;
 
+  @override
+  bool get isActive => isInitialized;
+
+  @override
+  Stream<T> get receiver => checkActivityBefore(() => _controller.stream);
+
   IsolatedEvent({required this.name});
 
   static Future<void> sendEvent({required String name, required dynamic value}) async {
-    if (!_serviceInitialized) {
-      await _mountService();
-    }
+    await SharedValuesService.mountService();
 
     await ThreadManager.callEntityFunction<SharedValuesService, void>(
       parameters: InvocationParameters.list([name, value]),
@@ -27,9 +29,7 @@ class IsolatedEvent<T> with StartableFunctionality implements StreamSink<T> {
   }
 
   static Future<void> sendEventError({required String name, required dynamic value, StackTrace? stackTrace}) async {
-    if (!_serviceInitialized) {
-      await _mountService();
-    }
+    await SharedValuesService.mountService();
 
     await ThreadManager.callEntityFunction<SharedValuesService, void>(
       parameters: InvocationParameters.list([name, value, stackTrace]),
@@ -37,18 +37,13 @@ class IsolatedEvent<T> with StartableFunctionality implements StreamSink<T> {
     );
   }
 
-  Stream<T> get stream {
-    checkInitialize();
-    return _controller.stream;
-  }
-
-  Future<Stream<T>> get streamAsync async {
+  Future<Stream<T>> get receiverAsync async {
     await initialize();
     return _controller.stream;
   }
 
   Future<StreamSubscription<T>> createStreamDirect({required void Function(T) onData, Function? onError, void Function()? onDone, bool? cancelOnError}) async {
-    final stream = await streamAsync;
+    final stream = await receiverAsync;
     return stream.listen(onData, cancelOnError: cancelOnError, onDone: onDone, onError: onError);
   }
 
@@ -60,7 +55,7 @@ class IsolatedEvent<T> with StartableFunctionality implements StreamSink<T> {
     void Function()? onDone,
     bool? cancelOnError,
   }) async {
-    final stream = await streamAsync;
+    final stream = await receiverAsync;
 
     if (doOnCancel != null) {
       return stream.where(whereFunction).doOnCancel(doOnCancel).listen(onData, cancelOnError: cancelOnError, onDone: onDone, onError: onError);
@@ -71,9 +66,7 @@ class IsolatedEvent<T> with StartableFunctionality implements StreamSink<T> {
 
   @override
   Future<void> initializeFunctionality() async {
-    if (!_serviceInitialized) {
-      await _mountService();
-    }
+    await SharedValuesService.mountService();
 
     final subscription = await ThreadManager.callEntityStream<SharedValuesService, dynamic>(
       parameters: InvocationParameters.only(name),
@@ -117,11 +110,6 @@ class IsolatedEvent<T> with StartableFunctionality implements StreamSink<T> {
     _controller.addError(error, trace);
   }
 
-  static Future<void> _mountService() async {
-    await ThreadManager.mountEntity<SharedValuesService>(entity: SharedValuesService());
-    _serviceInitialized = true;
-  }
-
   @override
   Future get done {
     _doneCompleter ??= Completer<IsolatedEvent<T>>();
@@ -136,27 +124,15 @@ class IsolatedEvent<T> with StartableFunctionality implements StreamSink<T> {
   }
 
   @override
+  Future addStream(Stream<T> stream) async {
+    await initialize();
+    return await super.addStream(stream);
+  }
+
+  @override
   void addError(Object error, [StackTrace? stackTrace]) {
     initialize().then((_) {
       sendEventError(name: name, value: error, stackTrace: stackTrace);
     });
-  }
-
-  @override
-  Future addStream(Stream<T> stream) async {
-    final compelteter = Completer();
-
-    final subscription = stream.listen(
-      (x) => add(x),
-      onError: (x, y) => addError(x, y),
-      onDone: () => compelteter.completeIfIncomplete(),
-    );
-
-    final future = done.whenComplete(() => compelteter.completeIfIncomplete());
-
-    await compelteter.future;
-
-    subscription.cancel();
-    future.ignore();
   }
 }
