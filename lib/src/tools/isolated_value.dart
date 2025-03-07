@@ -5,6 +5,7 @@ import 'package:maxi_library/src/tools/internal/shared_values_service.dart';
 
 class IsolatedValue<T extends Object> with StartableFunctionality, FunctionalityWithLifeCycle, IChannel<T, T> {
   final String name;
+  final T? defaultValue;
 
   T? _actualItem;
 
@@ -21,7 +22,7 @@ class IsolatedValue<T extends Object> with StartableFunctionality, Functionality
 
   bool get isDefined => _actualItem != null;
 
-  IsolatedValue({required this.name});
+  IsolatedValue({required this.name, this.defaultValue});
 
   static Future<T?> getValueFromThread<T>({required String name}) => ThreadManager.callEntityFunction<SharedValuesService, T?>(
         parameters: InvocationParameters.only(name),
@@ -53,6 +54,11 @@ class IsolatedValue<T extends Object> with StartableFunctionality, Functionality
       parameters: InvocationParameters.only(name),
       function: _getValueStatic<T>,
     );
+
+    if (_actualItem == null && defaultValue != null) {
+      _channel.add(defaultValue!);
+      _actualItem = defaultValue;
+    }
 //
     _receiverController = createEventController<T>(isBroadcast: true);
   }
@@ -62,6 +68,7 @@ class IsolatedValue<T extends Object> with StartableFunctionality, Functionality
 
     _channel.add(value);
     _actualItem = value;
+    await continueOtherFutures();
   }
 
   T get syncValue {
@@ -79,6 +86,12 @@ class IsolatedValue<T extends Object> with StartableFunctionality, Functionality
 
   Future<T> get asyncValue async {
     await initialize();
+
+    _actualItem = await ThreadManager.callEntityFunction<SharedValuesService, T?>(
+      parameters: InvocationParameters.only(name),
+      function: _getValueStatic<T>,
+    );
+
     if (_actualItem == null) {
       throw NegativeResult(
         identifier: NegativeResultCodes.nullValue,

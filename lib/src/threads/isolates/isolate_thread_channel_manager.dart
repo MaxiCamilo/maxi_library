@@ -102,6 +102,22 @@ class IsolateThreadChannelManager with IIsolateThreadChannelManager {
           newChannel.close();
         }
       });
+/*
+      final completer = Completer();
+
+      scheduleMicrotask(() async {
+        try {
+          await continueOtherFutures();
+          await function(parameters, newChannel);
+          completer.complete();
+        } catch (ex, st) {
+          newChannel.addErrorIfActive(ex, st);
+          newChannel.close();
+          completer.completeError(ex, st);
+        }
+      });
+
+      await completer.future;*/
 
       return newId;
     });

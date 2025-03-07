@@ -217,7 +217,7 @@ Future<T> volatileAsync<T>({
     throw rn;
   }
 }
-
+/*
 T cautious<T>({
   required Oration reasonFailure,
   required T Function() function,
@@ -230,7 +230,7 @@ T cautious<T>({
         message: reasonFailure,
         cause: x,
       ),
-    );
+    );*/
 
 T programmingFailure<T>({
   required Oration reasonFailure,

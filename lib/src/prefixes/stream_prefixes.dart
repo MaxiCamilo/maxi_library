@@ -6,13 +6,14 @@ import 'package:maxi_library/src/framework/stream_state_internal.dart';
 
 StreamState<S, R> streamStatus<S, R>(S item) => StreamStateItem(item: item);
 StreamState<S, R> checkStreamState<S, R>() => const StreamCheckActive();
-StreamState<S, R> partialError<S, R>(ex) => StreamStatePartialError(partialError: partialError);
+StreamState<S, R> streamPartialError<S, R>(ex) => StreamStatePartialError(partialError: ex);
 StreamState<S, R> streamResult<S, R>(R result) => StreamStateResult(result: result);
 StreamState<Oration, R> streamTextStatus<R>(Oration oration) => StreamStateItem<Oration, R>(item: oration);
 
 Stream<StreamState<S, R>> connectFunctionalStream<S, R, SR>(Stream<StreamState<S, SR>> other, [void Function(SR x)? sendResult]) async* {
   late final SR result;
   bool returnResult = false;
+
   await for (final item in other) {
     if (item is StreamStateItem<S, SR>) {
       yield StreamStateItem<S, R>(item: item.item);
@@ -41,6 +42,45 @@ Stream<StreamState<S, R>> connectFunctionalStream<S, R, SR>(Stream<StreamState<S
 
 Stream<S> getOnlyStreamItems<S, R>(Stream<StreamState<S, R>> stream) {
   return stream.whereType<StreamStateItem<S, R>>().map((x) => x.item);
+}
+
+Stream<StreamState<S, R>> connectOptionalFunctionalStream<S, R, SR>(
+  Stream<StreamState<S, SR>> other, {
+  void Function(SR x)? onResult,
+  void Function(dynamic, StackTrace?)? onError,
+}) async* {
+  late final SR result;
+  bool returnResult = false;
+  try {
+    await for (final item in other) {
+      if (item is StreamStateItem<S, SR>) {
+        yield StreamStateItem<S, R>(item: item.item);
+      } else if (item is StreamStateResult<S, SR>) {
+        result = item.result;
+        returnResult = true;
+        break;
+      } else if (item is StreamStatePartialError<S, SR>) {
+        yield StreamStatePartialError<S, R>(partialError: item.partialError);
+      } else if (item is StreamCheckActive<S, SR>) {
+        yield StreamCheckActive<S, R>();
+      } else {
+        log('[connectFunctionalStream] Unkown item steam');
+      }
+    }
+
+    if (returnResult && onResult != null) {
+      onResult(result);
+    } else if (!returnResult && onResult != null) {
+      throw NegativeResult(
+        identifier: NegativeResultCodes.implementationFailure,
+        message: Oration(message: 'The stateful process failed to produce the final output'),
+      );
+    }
+  } catch (x, y) {
+    if (onError != null) {
+      onError(x, y);
+    }
+  }
 }
 
 Future<R> waitFunctionalStream<S, R>({

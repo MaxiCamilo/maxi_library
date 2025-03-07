@@ -24,9 +24,9 @@ class GeneralConverter {
 
   bool toBoolean({required Oration propertyName}) => ConverterUtilities.toBoolean(value: item);
 
-  T toEnum<T>({required List<Enum> optionsList, Oration propertyName = Oration.empty}) => cautious(
-        reasonFailure: Oration(message: 'In the list of options not all are $T'),
-        codeReasonFailure: NegativeResultCodes.implementationFailure,
+  T toEnum<T>({required List<Enum> optionsList, Oration propertyName = Oration.empty}) => volatile(
+        detail: Oration(message: 'In the list of options not all are $T'),
+        //codeReasonFailure: NegativeResultCodes.implementationFailure,
         function: () => ConverterUtilities.toEnum(optionsList: optionsList, value: item) as T,
       );
 }

@@ -10,7 +10,8 @@ class SharedValuesService with StartableFunctionality, IThreadService {
 
   late final Map<String, dynamic> _mapValues;
   late final Map<String, List<IChannel>> _valueChannels;
-  late final StreamController<(String, dynamic)> _streamEvents;
+  //late final StreamController<(String, dynamic)> _streamEvents;
+  late final Map<String, StreamController> _streamControllers;
 
   static bool _wasMounted = false;
 
@@ -26,7 +27,7 @@ class SharedValuesService with StartableFunctionality, IThreadService {
   @override
   Future<void> initializeFunctionality() async {
     _mapValues = SplayTreeMap<String, dynamic>();
-    _streamEvents = StreamController<(String, dynamic)>.broadcast();
+    _streamControllers = <String, StreamController>{};
     _valueChannels = <String, List<IChannel>>{};
   }
 
@@ -52,16 +53,45 @@ class SharedValuesService with StartableFunctionality, IThreadService {
     }
   }*/
 
-  Future<Stream> getEvent({required String name}) async {
-    return _streamEvents.stream.where((x) => x.$1 == name).map((x) => x.$2);
+  Future<Stream<T>> getEvent<T>({required String name}) async {
+    final existent = _streamControllers[name];
+    if (existent == null) {
+      final newController = StreamController<T>.broadcast();
+      _streamControllers[name] = newController;
+      return newController.stream;
+    } else {
+      if (existent is StreamController<T>) {
+        return existent.stream;
+      } else {
+        throw NegativeResult(
+          identifier: NegativeResultCodes.implementationFailure,
+          message: Oration(
+            message: 'The %1 event was initialized as %2, but it was desired with type %3',
+            textParts: [name, existent.runtimeType.toString(), T.toString()],
+          ),
+        );
+      }
+    }
+
+    //return _streamEvents.stream.where((x) => x.$1 == name).map((x) => x.$2);
   }
 
   Future<void> setEvent({required String name, required dynamic value}) async {
-    _streamEvents.add((name, value));
+    final existent = _streamControllers[name];
+    if (existent == null) {
+      log('[SharedValueService]¡There is no $name (${value.runtimeType}) event to receive the object!');
+    } else {
+      existent.add(value);
+    }
   }
 
   Future<void> setErrorEvent({required String name, required dynamic value, StackTrace? stackTrace}) async {
-    _streamEvents.addError((name, value), stackTrace);
+    final existent = _streamControllers[name];
+    if (existent == null) {
+      log('[SharedValueService]¡There is no $name (${value.runtimeType}) event to receive the error!');
+    } else {
+      existent.addError(value);
+    }
   }
 
   T? getValue<T>(String name) {

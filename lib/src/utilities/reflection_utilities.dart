@@ -66,7 +66,7 @@ mixin ReflectionUtilities {
   }
 
   static dynamic convertSpecificPrimitive({required PrimitiesType type, required dynamic value}) {
-    cautious(reasonFailure: Oration(message: 'Null values are not accepted'), function: () => value!);
+    volatile(detail: Oration(message: 'Null values are not accepted'), function: () => value!);
     return switch (type) {
       PrimitiesType.isInt => ConverterUtilities.toInt(value: value),
       PrimitiesType.isDouble => ConverterUtilities.toDouble(value: value),

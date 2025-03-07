@@ -68,9 +68,9 @@ class IsolatedEvent<T> with StartableFunctionality, IChannel<T, T> {
   Future<void> initializeFunctionality() async {
     await SharedValuesService.mountService();
 
-    final subscription = await ThreadManager.callEntityStream<SharedValuesService, dynamic>(
+    final subscription = await ThreadManager.callEntityStream<SharedValuesService, T>(
       parameters: InvocationParameters.only(name),
-      function: (serv, para) => serv.getEvent(name: para.firts<String>()),
+      function: (serv, para) => serv.getEvent<T>(name: para.firts<String>()),
     );
     _subscription = subscription.listen(_dataChanged, onError: _dataError);
 
@@ -117,10 +117,9 @@ class IsolatedEvent<T> with StartableFunctionality, IChannel<T, T> {
   }
 
   @override
-  void add(T event) {
-    initialize().then((_) {
-      sendEvent(name: name, value: event);
-    });
+  Future<void> add(T event) async {
+    await initialize();
+    sendEvent(name: name, value: event);
   }
 
   @override
@@ -130,9 +129,8 @@ class IsolatedEvent<T> with StartableFunctionality, IChannel<T, T> {
   }
 
   @override
-  void addError(Object error, [StackTrace? stackTrace]) {
-    initialize().then((_) {
-      sendEventError(name: name, value: error, stackTrace: stackTrace);
-    });
+  Future<void> addError(Object error, [StackTrace? stackTrace]) async {
+    await initialize();
+    sendEventError(name: name, value: error, stackTrace: stackTrace);
   }
 }
