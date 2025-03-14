@@ -53,14 +53,14 @@ class SharedValuesService with StartableFunctionality, IThreadService {
     }
   }*/
 
-  Future<Stream<T>> getEvent<T>({required String name}) async {
+  Future<Stream<(int, T)>> getEvent<T>({required String name}) async {
     final existent = _streamControllers[name];
     if (existent == null) {
-      final newController = StreamController<T>.broadcast();
+      final newController = StreamController<(int, T)>.broadcast();
       _streamControllers[name] = newController;
       return newController.stream;
     } else {
-      if (existent is StreamController<T>) {
+      if (existent is StreamController<(int, T)>) {
         return existent.stream;
       } else {
         throw NegativeResult(
@@ -76,21 +76,21 @@ class SharedValuesService with StartableFunctionality, IThreadService {
     //return _streamEvents.stream.where((x) => x.$1 == name).map((x) => x.$2);
   }
 
-  Future<void> setEvent({required String name, required dynamic value}) async {
+  Future<void> setEvent({required String name, required int threadID, required dynamic value}) async {
     final existent = _streamControllers[name];
     if (existent == null) {
       log('[SharedValueService]¡There is no $name (${value.runtimeType}) event to receive the object!');
     } else {
-      existent.add(value);
+      existent.add((threadID, value));
     }
   }
 
-  Future<void> setErrorEvent({required String name, required dynamic value, StackTrace? stackTrace}) async {
+  Future<void> setErrorEvent({required String name, required int threadID, required dynamic value, StackTrace? stackTrace}) async {
     final existent = _streamControllers[name];
     if (existent == null) {
       log('[SharedValueService]¡There is no $name (${value.runtimeType}) event to receive the error!');
     } else {
-      existent.addError(value);
+      existent.addError((threadID, value));
     }
   }
 

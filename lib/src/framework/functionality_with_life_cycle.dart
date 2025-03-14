@@ -70,13 +70,14 @@ mixin FunctionalityWithLifeCycle on StartableFunctionality {
     return item;
   }
 
-  Future<R> joinAsyncObject<R extends Object>( Future<R> Function() function) async {
+  Future<R> joinAsyncObject<R extends Object>(Future<R> Function() function) async {
     final result = await function();
     _otherActiveList.add(result);
     return result;
   }
 
   @override
+  @mustCallSuper
   void performObjectDiscard() {
     if (!isInitialized) {
       return;

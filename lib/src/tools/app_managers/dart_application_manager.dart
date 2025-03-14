@@ -85,9 +85,22 @@ class DartApplicationManager with StartableFunctionality, IThreadInitializer, IA
   @override
   void closeAllThreads() {
     if (ThreadManager.instance is IThreadManagerServer) {
-       (ThreadManager.instance as IThreadManagerServer).closeAllThread();
+      (ThreadManager.instance as IThreadManagerServer).closeAllThread();
     } else {
-       ThreadManager.instance.callFunctionOnTheServer(function: (x) => (ThreadManager.instance as IThreadManagerServer).closeAllThread());
+      ThreadManager.instance.callFunctionOnTheServer(function: (x) => (ThreadManager.instance as IThreadManagerServer).closeAllThread());
     }
+  }
+
+  @override
+  void finishApplication() {
+    Future.delayed(Duration(milliseconds: 100)).then((value) async {
+      exit(0);
+    });
+  }
+
+  @override
+  void resetApplication({List<String> arguments = const []}) {
+    Process.run(Platform.resolvedExecutable, arguments);
+    finishApplication();
   }
 }

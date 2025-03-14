@@ -10,7 +10,7 @@ class EntityFile<T> with StartableFunctionality {
   int? maxSize;
   T? _item;
 
-  late final IReflectionType _reflected;
+  late final ITypeEntityReflection _reflected;
 
   final _changeEvent = StreamController<T>.broadcast();
 
@@ -22,7 +22,7 @@ class EntityFile<T> with StartableFunctionality {
     this.maxSize,
   })  : _item = item,
         _address = address {
-    _reflected = ReflectionManager.getReflectionType(T);
+    _reflected = ReflectionManager.getReflectionEntity(T);
   }
 
   T get item {
@@ -42,11 +42,9 @@ class EntityFile<T> with StartableFunctionality {
 
       final rawContent = await _address.readTextual(maxSize: maxSize);
 
-      final newValue = (_reflected.convertObject(rawContent) as T);
+      final newValue = (_reflected.interpretationFromJson(rawJson: rawContent, tryToCorrectNames: true) as T);
 
-      if (_reflected is ITypeEntityReflection) {
-        _reflected.verifyValueDirectly(value: newValue, parentEntity: null);
-      }
+      //_reflected.verifyValueDirectly(value: newValue, parentEntity: null);
 
       _item = newValue;
       _changeEvent.add(newValue);
@@ -67,16 +65,15 @@ class EntityFile<T> with StartableFunctionality {
 
   @override
   Future<void> initializeFunctionality() async {
-    if (_item == null) {
-      if (await _address.existsFile()) {
-        await loadFile();
-      } else {
-        _item = _reflected.generateEmptryObject();
-        await saveFile();
-      }
+    final folder = _address.getContainingFolder();
+    await folder.createAsFolder(secured: true);
+
+    if (await _address.existsFile()) {
+      await loadFile();
     } else {
-      final folder = _address.getContainingFolder();
-      await folder.createAsFolder(secured: true);
+      _item ??= _reflected.generateEmptryObject();
+
+      await saveFile();
     }
   }
 }

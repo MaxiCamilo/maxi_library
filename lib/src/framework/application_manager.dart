@@ -23,6 +23,9 @@ mixin IApplicationManager on StartableFunctionality, IThreadInitializer {
 
   IFileOperator makeFileOperator({required String address, required bool isLocal});
 
+  void resetApplication({List<String> arguments = const []});
+  void finishApplication();
+
   @override
   Future<void> performInitializationInThread(IThreadManager channel) async {
     ReflectionManager.defineAlbums = reflectors;

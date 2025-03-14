@@ -441,6 +441,25 @@ class ReflectionManager with IThreadInitializer {
     reflector.verifyValueDirectly(value: item, parentEntity: null);
   }
 
+  static T interpret<T>({
+    required dynamic value,
+    required bool tryToCorrectNames,
+    bool enableCustomInterpretation = true,
+    bool verify = true,
+    bool acceptZeroIdentifier = true,
+    bool primaryKeyMustBePresent = true,
+    bool essentialKeysMustBePresent = true,
+  }) =>
+      getReflectionEntity(T).interpret(
+        value: value,
+        tryToCorrectNames: tryToCorrectNames,
+        acceptZeroIdentifier: acceptZeroIdentifier,
+        enableCustomInterpretation: enableCustomInterpretation,
+        essentialKeysMustBePresent: essentialKeysMustBePresent,
+        primaryKeyMustBePresent: primaryKeyMustBePresent,
+        verify: verify,
+      ) as T;
+
   static void verifyListDirectly(Iterable list) {
     Type? type;
     late ITypeEntityReflection reflector;

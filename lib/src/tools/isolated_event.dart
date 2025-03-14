@@ -8,7 +8,7 @@ class IsolatedEvent<T> with StartableFunctionality, IChannel<T, T> {
   final String name;
 
   late StreamController<T> _controller;
-  StreamSubscription? _subscription;
+  StreamSubscription<(int, T)>? _subscription;
   Completer<IsolatedEvent<T>>? _doneCompleter;
 
   @override
@@ -23,8 +23,8 @@ class IsolatedEvent<T> with StartableFunctionality, IChannel<T, T> {
     await SharedValuesService.mountService();
 
     await ThreadManager.callEntityFunction<SharedValuesService, void>(
-      parameters: InvocationParameters.list([name, value]),
-      function: (serv, para) => serv.setEvent(name: para.firts<String>(), value: para.second()),
+      parameters: InvocationParameters.list([name, ThreadManager.instance.threadID, value]),
+      function: (serv, para) => serv.setEvent(name: para.firts<String>(), threadID: para.second<int>(), value: para.third()),
     );
   }
 
@@ -32,8 +32,8 @@ class IsolatedEvent<T> with StartableFunctionality, IChannel<T, T> {
     await SharedValuesService.mountService();
 
     await ThreadManager.callEntityFunction<SharedValuesService, void>(
-      parameters: InvocationParameters.list([name, value, stackTrace]),
-      function: (serv, para) => serv.setErrorEvent(name: para.firts<String>(), value: para.second(), stackTrace: para.third()),
+      parameters: InvocationParameters.list([name, value, stackTrace, ThreadManager.instance.threadID]),
+      function: (serv, para) => serv.setErrorEvent(name: para.firts<String>(), value: para.second(), stackTrace: para.third(), threadID: para.fourth<int>()),
     );
   }
 
@@ -68,7 +68,7 @@ class IsolatedEvent<T> with StartableFunctionality, IChannel<T, T> {
   Future<void> initializeFunctionality() async {
     await SharedValuesService.mountService();
 
-    final subscription = await ThreadManager.callEntityStream<SharedValuesService, T>(
+    final subscription = await ThreadManager.callEntityStream<SharedValuesService, (int, T)>(
       parameters: InvocationParameters.only(name),
       function: (serv, para) => serv.getEvent<T>(name: para.firts<String>()),
     );
@@ -98,16 +98,27 @@ class IsolatedEvent<T> with StartableFunctionality, IChannel<T, T> {
   }
 
   void _dataChanged(dynamic newValue) {
-    if (newValue is! T) {
+    if (newValue is! (int, T)) {
       log('[IsolatedEvent] Cannot accept value of type $T');
       return;
     }
 
-    _controller.add(newValue);
+    if (newValue.$1 == ThreadManager.instance.threadID) {
+      return;
+    }
+
+    _controller.add(newValue.$2);
   }
 
   void _dataError(dynamic error, StackTrace? trace) {
-    _controller.addError(error, trace);
+    if (error is (int, dynamic)) {
+      if (error.$1 == ThreadManager.instance.threadID) {
+        return;
+      }
+      _controller.addError(error.$2, trace);
+    } else {
+      log('[IsolatedEvent] Cannot sent Thread ID on error');
+    }
   }
 
   @override
@@ -119,18 +130,25 @@ class IsolatedEvent<T> with StartableFunctionality, IChannel<T, T> {
   @override
   Future<void> add(T event) async {
     await initialize();
+
+    _controller.add(event);
+
     sendEvent(name: name, value: event);
   }
 
   @override
   Future addStream(Stream<T> stream) async {
     await initialize();
+
     return await super.addStream(stream);
   }
 
   @override
   Future<void> addError(Object error, [StackTrace? stackTrace]) async {
     await initialize();
+
+    _controller.addError(error);
+
     sendEventError(name: name, value: error, stackTrace: stackTrace);
   }
 }
