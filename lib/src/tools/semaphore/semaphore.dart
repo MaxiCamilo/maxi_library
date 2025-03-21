@@ -2,16 +2,20 @@ import 'dart:async';
 
 import 'package:maxi_library/maxi_library.dart';
 
-class Semaphore {
+class Semaphore with ISemaphore {
   final _waitingList = <(Completer, FutureOr Function())>[];
   final _waitingStreamList = <(StreamController, FutureOr<Stream> Function())>[];
 
   bool get isActive => _isActive;
+  
+  @override
+  Future<bool> get checkIfLocker async => isActive;
 
   bool _isActive = false;
 
   int get pendingLength => _waitingList.length + _waitingStreamList.length;
 
+  @override
   Future<T> execute<T>({required FutureOr<T> Function() function}) {
     final waiter = Completer<T>();
     _waitingList.add((waiter, function));
@@ -24,7 +28,11 @@ class Semaphore {
     return waiter.future;
   }
 
-  Stream<T> executeStream<T>({required FutureOr<Stream<T>> Function() function}) {
+  @override
+  Stream<T> executeStream<T>({required Stream<T> stream}) => executeFutureStream<T>(function: () => stream);
+
+  @override
+  Stream<T> executeFutureStream<T>({required FutureOr<Stream<T>> Function() function}) {
     final controller = StreamController<T>();
     _waitingStreamList.add((controller, function));
 
@@ -36,6 +44,7 @@ class Semaphore {
     return controller.stream;
   }
 
+  @override
   Future<T?> executeIfStopped<T>({required FutureOr<T> Function() function}) async {
     if (!_isActive) {
       return await execute(function: function);
@@ -44,6 +53,7 @@ class Semaphore {
     }
   }
 
+  @override
   void cancel() {
     _waitingList.iterar((x) => x.$1.completeErrorIfIncomplete(NegativeResult(identifier: NegativeResultCodes.functionalityCancelled, message: Oration(message: 'The task was canceled'))));
     _waitingList.clear();
@@ -92,5 +102,19 @@ class Semaphore {
     } while (_waitingList.isNotEmpty || _waitingStreamList.isNotEmpty);
 
     _isActive = false;
+  }
+
+  @override
+  Future<void> awaitFullCompletion() async {
+    while (isActive) {
+      await execute(function: () {});
+      await continueOtherFutures();
+    }
+  }
+
+  @override
+  Future<T> executeOnlyIsFree<T>({required FutureOr<T> Function() function}) async {
+    await awaitFullCompletion();
+    return await execute(function: function);
   }
 }

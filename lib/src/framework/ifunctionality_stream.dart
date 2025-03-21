@@ -21,6 +21,10 @@ mixin IStreamFunctionality<T> {
 
   FunctionalityStreamManager<T> createManager() => FunctionalityStreamManager<T>(functionality: this);
   StreamStateTexts<T> runWithoutManager() => createManager().start();
+  StreamStateTexts<T> runWithoutManagerInBackground() async* {
+    final stream = await createManager().runInBackgrond();
+    yield* stream;
+  }
 }
 
 class FunctionalityStreamManager<T> {

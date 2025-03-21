@@ -115,4 +115,12 @@ extension IteratorStream<T> on Stream<T> {
       }
     }
   }
+
+  Stream<T> whereAsync(Future<bool> Function(T) function) async* {
+    await for (final item in this) {
+      if (await function(item)) {
+        yield item;
+      }
+    }
+  }
 }

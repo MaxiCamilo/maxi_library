@@ -356,4 +356,29 @@ class FileOperatorNative with IFileOperator, StartableFunctionality {
               encoding: encoder ?? utf8,
             ));
   }
+
+  @override
+  Stream<IFileOperator> getFolderContent() async* {
+    await initialize();
+    final folder = Directory(route);
+    if (!await folder.exists()) {
+      return;
+    }
+
+    yield* folder.list(recursive: true).map((x) => FileOperatorMask(isLocal: false, rawRoute: x.path));
+  }
+
+  @override
+  Future<DateTime> getCreationDate() async {
+    await initialize();
+
+    return FileStat.statSync(route).changed;
+  }
+
+  @override
+  Future<DateTime> getLastModificationDate() async {
+    await initialize();
+
+    return FileStat.statSync(route).modified;
+  }
 }

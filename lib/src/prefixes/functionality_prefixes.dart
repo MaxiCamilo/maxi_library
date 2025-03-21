@@ -126,6 +126,7 @@ T volatile<T>({
   void Function(NegativeResult)? ifFails,
   void Function(dynamic)? ifUnknownFails,
   void Function(dynamic)? ifFailsAnyway,
+  NegativeResultCodes errorID = NegativeResultCodes.nonStandardError
 }) {
   try {
     return function();
@@ -138,8 +139,8 @@ T volatile<T>({
     }
     rethrow;
   } catch (ex) {
-    final NegativeResult rn = NegativeResult(
-      identifier: NegativeResultCodes.nonStandardError,
+    final rn = NegativeResult(
+      identifier: errorID,
       message: detail,
       cause: ex,
     );
@@ -174,7 +175,7 @@ T volatileByFunctionality<T>({
 
 Future<T> volatileAsync<T>({
   required Oration detail,
-  required Future<T> Function() function,
+  required FutureOr<T> Function() function,
   void Function(NegativeResult)? ifFails,
   void Function(dynamic)? ifUnknownFails,
   void Function(dynamic)? ifFailsAnyway,
@@ -252,6 +253,23 @@ void checkProgrammingFailure<T>({
   final resultFunction = programmingFailure(
     reasonFailure: Oration(message: '%1 fired an error', textParts: [thatChecks]),
     function: result,
+  );
+
+  if (!resultFunction) {
+    throw NegativeResult(
+      identifier: NegativeResultCodes.implementationFailure,
+      message: Oration(message: 'The checker "%1" tested negative', textParts: [thatChecks]),
+    );
+  }
+}
+
+Future<void> checkProgrammingFailureAsync<T>({
+  required Oration thatChecks,
+  required FutureOr<bool> Function() result,
+}) async {
+  final resultFunction = await volatileAsync<bool>(
+    detail: Oration(message: '%1 fired an error', textParts: [thatChecks]),
+    function:  result,
   );
 
   if (!resultFunction) {

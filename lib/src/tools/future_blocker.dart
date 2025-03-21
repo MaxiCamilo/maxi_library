@@ -92,7 +92,7 @@ class FutureBlocker {
     _blocking += 1;
 
     try {
-      yield* _lockSynchronizer.executeStream(function: function);
+      yield* _lockSynchronizer.executeFutureStream(function: function);
     } finally {
       _blocking -= 1;
 

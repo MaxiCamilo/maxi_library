@@ -253,6 +253,14 @@ extension IteratorExtension<T> on Iterable<T> {
       }
     }
   }
+
+  Stream<T> whereAsync(Future<bool> Function(T) function) async* {
+    for (final item in this) {
+      if (await function(item)) {
+        yield item;
+      }
+    }
+  }
 }
 
 extension MapEntryListExtension<T, R> on Iterable<MapEntry<T, R>> {

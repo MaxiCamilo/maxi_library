@@ -79,40 +79,6 @@ mixin DirectoryUtilities {
 
     return buffer.toString();
   }
-/*
-  static Future<T> createTemporaryFolder<T>({
-    required Future<T> Function(String) funcion,
-    String? temporalDirection,
-  }) async {
-    String localizacionBase = temporalDirection ?? '$currentPath/temporal';
-    localizacionBase = interpretPrefix(localizacionBase);
 
-    final numero = Random().nextInt(9999999999);
-    final direction = '$localizacionBase/$numero';
 
-    if (temporalDirection == null && !_initializeDefaultTemporaryPath) {
-      if (await Directory(localizacionBase).exists()) {
-        await Directory(localizacionBase).delete(recursive: true);
-      }
-      await createFolder(localizacionBase);
-      _initializeDefaultTemporaryPath = true;
-    }
-
-    final carpeta = Directory(direction);
-    checkProgrammingFailure(thatChecks: Oration(message:'Temporary folder not found'), result: () => !carpeta.existsSync());
-
-    await volatileAsync(detail: Oration(message:'Something went wrong while creating directory %1', [direction]), function: () => carpeta.create());
-
-    late final T dio;
-    try {
-      dio = await funcion(direction);
-      await carpeta.delete(recursive: true);
-    } catch (_) {
-      await containErrorAsync(function: () => carpeta.delete(recursive: true));
-      rethrow;
-    }
-
-    return dio;
-  }
-  */
 }

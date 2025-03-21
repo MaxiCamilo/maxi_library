@@ -19,6 +19,8 @@ mixin IApplicationManager on StartableFunctionality, IThreadInitializer {
 
   bool get isFlutter;
 
+  bool get isDesktop => isLinux || isWindows || isMacOS;
+
   Future<String> getCurrentDirectory();
 
   IFileOperator makeFileOperator({required String address, required bool isLocal});

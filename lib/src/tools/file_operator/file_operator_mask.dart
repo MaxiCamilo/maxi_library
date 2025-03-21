@@ -133,4 +133,22 @@ class FileOperatorMask with IFileOperator, StartableFunctionality {
     await initialize();
     await _masked.addText(content: content, secured: secured, encoder: encoder);
   }
+
+  @override
+  Stream<IFileOperator> getFolderContent() async* {
+    await initialize();
+    yield* _masked.getFolderContent();
+  }
+
+  @override
+  Future<DateTime> getCreationDate() async {
+    await initialize();
+    return await _masked.getCreationDate();
+  }
+
+  @override
+  Future<DateTime> getLastModificationDate() async {
+    await initialize();
+    return await _masked.getLastModificationDate();
+  }
 }

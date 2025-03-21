@@ -3,6 +3,7 @@ import 'dart:collection';
 import 'dart:developer';
 
 import 'package:maxi_library/maxi_library.dart';
+import 'package:maxi_library/src/tools/internal/isolated_task_queue_controller.dart';
 
 class SharedValuesService with StartableFunctionality, IThreadService {
   @override
@@ -12,6 +13,8 @@ class SharedValuesService with StartableFunctionality, IThreadService {
   late final Map<String, List<IChannel>> _valueChannels;
   //late final StreamController<(String, dynamic)> _streamEvents;
   late final Map<String, StreamController> _streamControllers;
+
+  final taskQueueList = <IsolatedTaskQueueController>[];
 
   static bool _wasMounted = false;
 
@@ -150,5 +153,16 @@ class SharedValuesService with StartableFunctionality, IThreadService {
 
     channel.done.whenComplete(() => list.remove(channel));
     channel.receiver.listen((x) => changeValue<T>(value: x, valueName: valueName, omitChannel: channel));
+  }
+
+  IsolatedTaskQueueController getTaskQueue(String name) {
+    final exists = taskQueueList.selectItem((x) => x.nameQueue == name);
+    if (exists == null) {
+      final newController = IsolatedTaskQueueController(nameQueue: name);
+      taskQueueList.add(newController);
+      return newController;
+    } else {
+      return exists;
+    }
   }
 }

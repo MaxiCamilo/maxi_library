@@ -6,4 +6,11 @@ abstract class ValueValidator {
   const ValueValidator();
 
   NegativeResult? performValidation({required String name, required Oration formalName, required dynamic item, required dynamic parentEntity});
+
+  void directValidation({required String name, required Oration formalName, required dynamic item, required dynamic parentEntity}) {
+    final error = performValidation(formalName: formalName, name: name, item: item, parentEntity: parentEntity);
+    if (error != null) {
+      throw error;
+    }
+  }
 }

@@ -84,7 +84,11 @@ mixin FunctionalityWithLifeCycle on StartableFunctionality {
     }
     super.performObjectDiscard();
     _removeJoinedObjects();
+    afterDiscard();
   }
+
+  @protected
+  void afterDiscard() {}
 
   StreamController<R> createEventController<R>({required bool isBroadcast}) {
     late final StreamController<R> newController;
