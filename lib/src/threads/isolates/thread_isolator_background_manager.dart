@@ -28,13 +28,28 @@ class ThreadIsolatorBackgroundManager {
       busyInstances.add(item);
       return item;
     } else if (instances.length >= busyInstanceLimit) {
+      late final IThreadInvokeInstance free;
+      while (true) {
+        _freeWaiter ??= Completer<IThreadInvokeInstance>();
+        await _freeWaiter!.future;
+
+        if (freeInstances.isNotEmpty) {
+          free = freeInstances.removeAt(0);
+          break;
+        }
+      }
+
+      return free;
+
+      /*
       _freeWaiter ??= Completer<IThreadInvokeInstance>();
       final free = await _freeWaiter!.future;
       freeInstances.remove(free);
       busyInstances.add(free);
-      return free;
+      return free;*/
     } else {
       final newThread = await manager.makeNewThread(initializers: const [], name: 'Thread in the background No. ${instances.length + 1}');
+      instances.add(newThread);
       busyInstances.add(newThread);
       return newThread;
     }

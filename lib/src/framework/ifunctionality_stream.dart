@@ -115,6 +115,12 @@ class FunctionalityStreamManager<T> {
     wasDispose = true;
   }
 
+  Stream<StreamState<Oration, T>> continueOtherFutures() async* {
+    yield checkStreamState();
+    await Future.delayed(Duration.zero);
+    yield checkStreamState();
+  }
+
   Stream<StreamState<Oration, T>> start() {
     if (isActive) {
       return _streamController!.stream;

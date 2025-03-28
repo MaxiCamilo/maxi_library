@@ -22,6 +22,7 @@ export 'package:maxi_library/src/reflection/interfaces/ifield_reflection.dart';
 export 'package:maxi_library/src/reflection/interfaces/imethod_reflection.dart';
 export 'package:maxi_library/src/reflection/interfaces/itype_class_reflection.dart';
 export 'package:maxi_library/src/reflection/interfaces/icustom_serialization.dart';
+export 'package:maxi_library/src/reflection/interfaces/ipersonalized_comparison_reflected.dart';
 
 export 'package:maxi_library/src/reflection/types/type_dynamic_reflection.dart';
 export 'package:maxi_library/src/reflection/types/type_enumerator_reflector.dart';

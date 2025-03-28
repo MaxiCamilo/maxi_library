@@ -329,6 +329,10 @@ class ReflectionManager with IThreadInitializer {
       return false;
     }
 
+    if (first is IPersonalizedComparisonReflected) {
+      return first.areReflectedlySame(second);
+    }
+
     final reflectedType = getReflectionType(first.runtimeType, annotations: annotations);
 
     if (reflectedType is GeneratorList) {

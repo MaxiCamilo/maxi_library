@@ -89,7 +89,7 @@ class LanguageOperatorJson with StartableFunctionality, IOperatorLanguage {
     for (int i = 0; i < text.textParts.length; i++) {
       final part = text.textParts[i];
       late String textGenerated;
-      if (part is TranslatedOration) {
+      if (part is TranslatedText) {
         textGenerated = part.toString();
       }
       if (part is Oration) {
@@ -111,6 +111,10 @@ class LanguageOperatorJson with StartableFunctionality, IOperatorLanguage {
 
     final candidate = _translatedTextsMaps[text];
     if (candidate == null) {
+      final firstAttempt = _translatedTextsMaps[text.replaceAll('\n', '\\n')];
+      if (firstAttempt != null) {
+        return firstAttempt.replaceAll('\\n', '\n');
+      }
       log('There is no translatable candidate for text: "$text"');
       _translatedTextsMaps[text] = text;
       final bundle = bundles.selectItem((x) => x.prefixLanguage == prefixLanguage);
@@ -119,7 +123,7 @@ class LanguageOperatorJson with StartableFunctionality, IOperatorLanguage {
       }
       return text;
     } else {
-      return candidate;
+      return candidate.replaceAll('\\n', '\n');
     }
   }
 }

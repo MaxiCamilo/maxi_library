@@ -1,6 +1,8 @@
 import 'package:maxi_library/maxi_library.dart';
 
 mixin ApplicationManager {
+  static bool get isDefined => _instance != null;
+
   static IApplicationManager? _instance;
 
   static IApplicationManager get instance {
@@ -30,5 +32,11 @@ mixin ApplicationManager {
     }
 
     return _instance as T;
+  }
+
+  static changeInstanceIfInactive<T extends IApplicationManager>({required T newInstance, required bool initialize}) async {
+    if (!isDefined) {
+      await changeInstance<T>(newInstance: newInstance, initialize: initialize);
+    }
   }
 }

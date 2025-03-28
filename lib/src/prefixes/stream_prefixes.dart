@@ -10,6 +10,11 @@ StreamState<S, R> streamPartialError<S, R>(ex) => StreamStatePartialError(partia
 StreamState<S, R> streamResult<S, R>(R result) => StreamStateResult(result: result);
 StreamState<Oration, R> streamTextStatus<R>(Oration oration) => StreamStateItem<Oration, R>(item: oration);
 
+Stream<StreamState<Oration, R>> streamTextStatusSync<R>(Oration oration) async* {
+  yield StreamStateItem<Oration, R>(item: oration);
+  await continueOtherFutures();
+}
+
 Stream<StreamState<S, R>> connectFunctionalStream<S, R, SR>(Stream<StreamState<S, SR>> other, [void Function(SR x)? sendResult]) async* {
   late final SR result;
   bool returnResult = false;
@@ -38,6 +43,74 @@ Stream<StreamState<S, R>> connectFunctionalStream<S, R, SR>(Stream<StreamState<S
       message: Oration(message: 'The stateful process failed to produce the final output'),
     );
   }
+}
+
+Stream<StreamState<S, R>> connectSeveralFunctionalStream<S, R, SR>({
+  required List<Stream<StreamState<S, SR>>> streamList,
+  void Function(SR x)? onResult,
+}) {
+  final controller = StreamController<StreamState<S, R>>();
+  var completedCount = 0;
+  var isClosed = false;
+  final subscriptions = <StreamSubscription<StreamState<S, SR>>>[];
+
+  void closeAll() {
+    if (!isClosed) {
+      isClosed = true;
+      for (final sub in subscriptions) {
+        sub.cancel();
+      }
+      controller.close();
+    }
+  }
+
+  for (final stream in streamList) {
+    final sub = stream.listen(
+      (data) {
+        if (isClosed) {
+          return;
+        }
+
+        if (data is StreamStateItem<S, SR>) {
+          controller.addIfActive(StreamStateItem<S, R>(item: data.item));
+        } else if (data is StreamStateResult<S, SR>) {
+          if (onResult != null) {
+            onResult(data.result);
+          }
+         
+        } else if (data is StreamStatePartialError<S, SR>) {
+          controller.addIfActive(streamPartialError<S, R>(data.partialError));
+        } else if (data is StreamCheckActive<S, SR>) {
+          controller.addIfActive(StreamCheckActive<S, R>());
+        } else {
+          log('[connectFunctionalStream] Unkown item steam');
+        }
+
+        if (!controller.hasListener) {
+          closeAll();
+        }
+      },
+      onError: (error, stackTrace) {
+        if (!isClosed) {
+          isClosed = true;
+          // Propaga el error y cierra todo
+          controller.addError(error, stackTrace);
+          closeAll();
+        }
+      },
+      onDone: () {
+        if (!isClosed) {
+          completedCount++;
+          if (completedCount == streamList.length) {
+            closeAll();
+          }
+        }
+      },
+    );
+    subscriptions.add(sub);
+  }
+
+  return controller.stream;
 }
 
 Stream<S> getOnlyStreamItems<S, R>(Stream<StreamState<S, R>> stream) {
@@ -86,6 +159,7 @@ Stream<StreamState<S, R>> connectOptionalFunctionalStream<S, R, SR>(
 Future<R> waitFunctionalStream<S, R>({
   required Stream<StreamState<S, R>> stream,
   void Function(S x)? onData,
+  void Function(R x)? onResult,
   void Function(R?)? onDoneOrCanceled,
   void Function(dynamic ex)? onError,
   void Function(StreamSubscription<StreamState<S, R>>)? onSubscription,
@@ -100,6 +174,9 @@ Future<R> waitFunctionalStream<S, R>({
 
       if (R == dynamic || R.toString() == 'void' || R.toString() == 'Null') {
         completer.complete();
+        if (onResult != null) {
+          onResult(null as R);
+        }
       } else {
         completer.completeError(NegativeResult(
           identifier: NegativeResultCodes.implementationFailure,
@@ -115,6 +192,9 @@ Future<R> waitFunctionalStream<S, R>({
         completer.completeIfIncomplete(item.result);
         if (onDoneOrCanceled != null) {
           onDoneOrCanceled(item.result);
+        }
+        if (onResult != null) {
+          onResult(item.result);
         }
       } else if (item is StreamStatePartialError<S, R>) {
         onError?.call(item.partialError);

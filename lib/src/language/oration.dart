@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:maxi_library/maxi_library.dart';
 
 class Oration with ICustomSerialization {
-  static const empty = TranslatedOration(message: '');
+  static const empty = TranslatedText(message: '');
 
   final String tokenId;
   final String message;
@@ -22,7 +22,7 @@ class Oration with ICustomSerialization {
   factory Oration.interpretFromJson({required dynamic text}) {
     if (text is String) {
       if (text.isEmpty) {
-        return const TranslatedOration(message: '');
+        return const TranslatedText(message: '');
       }
       return volatile(detail: Oration(message: 'The translatable text cannot be interpreted (it must be JSON)'), function: () => Oration.interpret(map: json.decode(text)));
     } else if (text is Map<String, dynamic>) {

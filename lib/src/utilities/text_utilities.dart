@@ -201,4 +201,9 @@ mixin TextUtilities {
     final numericRegex = RegExp(r'^-?\d+$');
     return numericRegex.hasMatch(str);
   }
+
+  static List<String> parseQuotedTexts(String input) {
+    final RegExp exp = RegExp(r'"(.*?)"');
+    return exp.allMatches(input).map((match) => match.group(1)?.trim() ?? '').toList();
+  }
 }

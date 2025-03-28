@@ -7,7 +7,7 @@ import 'package:maxi_library/src/tools/internal/shared_values_service.dart';
 class IsolatedEvent<T> with StartableFunctionality, IChannel<T, T> {
   final String name;
 
-  late StreamController<T> _controller;
+  StreamController<T>? _controller;
   StreamSubscription<(int, T)>? _subscription;
   Completer<IsolatedEvent<T>>? _doneCompleter;
 
@@ -15,7 +15,15 @@ class IsolatedEvent<T> with StartableFunctionality, IChannel<T, T> {
   bool get isActive => isInitialized;
 
   @override
-  Stream<T> get receiver => checkActivityBefore(() => _controller.stream);
+  Stream<T> get receiver {
+    if (_controller == null || _controller!.isClosed) {
+      _controller = StreamController<T>.broadcast();
+    }
+
+    initialize();
+
+    return _controller!.stream;
+  }
 
   IsolatedEvent({required this.name});
 
@@ -39,7 +47,7 @@ class IsolatedEvent<T> with StartableFunctionality, IChannel<T, T> {
 
   Future<Stream<T>> get receiverAsync async {
     await initialize();
-    return _controller.stream;
+    return _controller!.stream;
   }
 
   Future<StreamSubscription<T>> createStreamDirect({required void Function(T) onData, Function? onError, void Function()? onDone, bool? cancelOnError}) async {
@@ -74,7 +82,9 @@ class IsolatedEvent<T> with StartableFunctionality, IChannel<T, T> {
     );
     _subscription = subscription.listen(_dataChanged, onError: _dataError);
 
-    _controller = StreamController<T>.broadcast();
+    if (_controller == null || _controller!.isClosed) {
+      _controller = StreamController<T>.broadcast();
+    }
   }
 
   @override
@@ -83,7 +93,9 @@ class IsolatedEvent<T> with StartableFunctionality, IChannel<T, T> {
       return;
     }
     _subscription?.cancel();
-    _controller.close();
+    _controller?.close();
+
+    _controller = null;
 
     dispose();
   }
@@ -107,7 +119,7 @@ class IsolatedEvent<T> with StartableFunctionality, IChannel<T, T> {
       return;
     }
 
-    _controller.add(newValue.$2);
+    _controller?.add(newValue.$2);
   }
 
   void _dataError(dynamic error, StackTrace? trace) {
@@ -115,7 +127,7 @@ class IsolatedEvent<T> with StartableFunctionality, IChannel<T, T> {
       if (error.$1 == ThreadManager.instance.threadID) {
         return;
       }
-      _controller.addError(error.$2, trace);
+      _controller?.addError(error.$2, trace);
     } else {
       log('[IsolatedEvent] Cannot sent Thread ID on error');
     }
@@ -131,7 +143,7 @@ class IsolatedEvent<T> with StartableFunctionality, IChannel<T, T> {
   Future<void> add(T event) async {
     await initialize();
 
-    _controller.add(event);
+    _controller?.add(event);
 
     sendEvent(name: name, value: event);
   }
@@ -147,7 +159,7 @@ class IsolatedEvent<T> with StartableFunctionality, IChannel<T, T> {
   Future<void> addError(Object error, [StackTrace? stackTrace]) async {
     await initialize();
 
-    _controller.addError(error);
+    _controller?.addError(error);
 
     sendEventError(name: name, value: error, stackTrace: stackTrace);
   }
