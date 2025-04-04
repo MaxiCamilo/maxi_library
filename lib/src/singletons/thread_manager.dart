@@ -29,6 +29,14 @@ mixin ThreadManager {
     _instance = newInvoker;
   }
 
+  static void killAllThread() {
+    if (ThreadManager.instance is IThreadManagerServer) {
+      (ThreadManager.instance as IThreadManagerServer).killAllThread();
+    } else {
+      ThreadManager.instance.callFunctionOnTheServer(function: (x) => (ThreadManager.instance as IThreadManagerServer).killAllThread());
+    }
+  }
+
   static Future<IThreadInvokeInstance> getEntityInstance<T extends Object>() => volatileAsync(detail: Oration(message: 'entity %1 was not mounted'), function: () async => (await instance.getEntityInstance<T>())!);
 
   static Future<R> callEntityFunction<T extends Object, R>({InvocationParameters parameters = InvocationParameters.emptry, required FutureOr<R> Function(T serv, InvocationParameters para) function}) =>

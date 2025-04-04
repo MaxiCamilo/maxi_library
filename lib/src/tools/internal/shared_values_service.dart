@@ -117,15 +117,16 @@ class SharedValuesService with StartableFunctionality, IThreadService {
     }
   }
 
-  void changeValue<T>({required String valueName, required T value, IChannel? omitChannel}) {
+  void changeValue<T>({required String valueName, required T value /*, IChannel? omitChannel*/}) {
     _mapValues[valueName] = value;
 
     final channelList = _valueChannels[valueName];
     if (channelList != null) {
       for (final channel in channelList) {
+        /*
         if (omitChannel == channel) {
           continue;
-        }
+        }*/
         try {
           channel.add(value);
         } catch (ex) {
@@ -152,7 +153,7 @@ class SharedValuesService with StartableFunctionality, IThreadService {
     list.add(channel);
 
     channel.done.whenComplete(() => list.remove(channel));
-    channel.receiver.listen((x) => changeValue<T>(value: x, valueName: valueName, omitChannel: channel));
+    channel.receiver.listen((x) => changeValue<T>(value: x, valueName: valueName /*, omitChannel: channel*/));
   }
 
   IsolatedTaskQueueController getTaskQueue(String name) {

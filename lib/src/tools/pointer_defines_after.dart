@@ -1,7 +1,12 @@
+import 'dart:async';
+import 'dart:developer';
+
 import 'package:maxi_library/maxi_library.dart';
 
 class PointerDefineAfter<T> {
   final bool onlyDefinedOnce;
+
+  Completer<T>? _waiterValue;
 
   T? _item;
 
@@ -20,9 +25,21 @@ class PointerDefineAfter<T> {
     }
   }
 
+  Future<T> waitValue({bool ifModifies = false}) async {
+    if (!ifModifies && _item != null) {
+      return _item!;
+    }
+
+    _waiterValue ??= Completer<T>();
+    return await _waiterValue!.future;
+  }
+
   void defineValue({required T item, bool skipIfDefined = false}) {
     if (_item != null && onlyDefinedOnce) {
       if (skipIfDefined) {
+        if (_waiterValue != null) {
+          log('[PointerDefineAfter] The change of value was expected, but it was omitted!');
+        }
         return;
       }
       throw NegativeResult(
@@ -36,6 +53,8 @@ class PointerDefineAfter<T> {
     }
 
     _item = item;
+    _waiterValue?.completeIfIncomplete(item);
+    _waiterValue = null;
   }
 
   void dispose() {

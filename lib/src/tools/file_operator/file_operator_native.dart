@@ -138,6 +138,7 @@ class FileOperatorNative with IFileOperator, StartableFunctionality {
 
   @override
   Future<void> createAsFolder({required bool secured}) async {
+    await initialize();
     if (await Directory(route).exists()) {
       return;
     }

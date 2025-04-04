@@ -66,6 +66,8 @@ class IsolatedValue<T extends Object> with StartableFunctionality, Functionality
   Future<void> changeValue(T value) async {
     await initialize();
 
+    //_receiverController.addIfActive(value);
+
     _channel.add(value);
     _actualItem = value;
     await continueOtherFutures();

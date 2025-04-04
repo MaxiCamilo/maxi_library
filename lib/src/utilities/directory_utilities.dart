@@ -79,6 +79,4 @@ mixin DirectoryUtilities {
 
     return buffer.toString();
   }
-
-
 }

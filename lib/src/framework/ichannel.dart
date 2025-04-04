@@ -7,7 +7,7 @@ mixin IChannel<R, S> implements StreamSink<S> {
 
   Stream<R> get receiver;
 
-  void dispose() => close();
+  //void dispose() => close();
 
   T checkActivityBefore<T>(T Function() function) {
     if (!isActive) {

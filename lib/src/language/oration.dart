@@ -55,6 +55,23 @@ class Oration with ICustomSerialization {
     );
   }
 
+  factory Oration.fromRawText(String newText) {
+    if (newText.isEmpty) {
+      return Oration.empty;
+    }
+
+    final mapText = ConverterUtilities.interpretToObjectJson(text: newText);
+    final mapType = volatile(detail: const Oration(message: 'Message type required'), function: () => mapText['\$type']);
+
+    if (mapType == 'Oration') {
+      return Oration.interpretFromJson(text: mapText);
+    } else if (mapType.startsWith('error')) {
+      return NegativeResult.interpret(values: mapText, checkTypeFlag: true).message;
+    } else {
+      return Oration(message: 'INVALID TEXT TYPE (Format: %1)', textParts: [mapType]);
+    }
+  }
+
   @override
   String toString() {
     return LanguageManager.translateText(this);

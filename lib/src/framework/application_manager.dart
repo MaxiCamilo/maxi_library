@@ -20,6 +20,7 @@ mixin IApplicationManager on StartableFunctionality, IThreadInitializer {
   bool get isFlutter;
 
   bool get isDesktop => isLinux || isWindows || isMacOS;
+  bool get isMovil => isAndroid || isIOS;
 
   Future<String> getCurrentDirectory();
 

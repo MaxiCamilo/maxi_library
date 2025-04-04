@@ -39,14 +39,14 @@ extension IteratorStream<T> on Stream<T> {
     return waiter.future;
   }
 
-  Future<T> waitItem() {
+  Future<T> waitItem({Duration? timeout}) async {
     final waiter = Completer<T>();
     late final StreamSubscription<T> subscription;
 
     subscription = listen(
       (x) {
         subscription.cancel();
-        waiter.complete(x);
+        waiter.completeIfIncomplete(x);
       },
       onError: (x) {
         subscription.cancel();
@@ -54,7 +54,7 @@ extension IteratorStream<T> on Stream<T> {
       },
       onDone: () {
         subscription.cancel();
-        waiter.completeError(
+        waiter.completeErrorIfIncomplete(
           NegativeResult(
             identifier: NegativeResultCodes.functionalityCancelled,
             message: Oration(message: 'The stream was expected to return an item, but the stream was closed'),
@@ -63,7 +63,24 @@ extension IteratorStream<T> on Stream<T> {
       },
     );
 
-    return waiter.future;
+    Timer? timer;
+
+    if (timeout != null) {
+      timer = Timer(timeout, () {
+        waiter.completeErrorIfIncomplete(NegativeResult(
+          identifier: NegativeResultCodes.timeout,
+          message: const Oration(message: 'It took too long to receive an item in the data stream'),
+        ));
+        subscription.cancel();
+      });
+    }
+
+    try {
+      return await waiter.future;
+    } finally {
+      timer?.cancel();
+      subscription.cancel();
+    }
   }
 
   Future<T?> waitSomething() {
