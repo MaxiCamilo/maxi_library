@@ -140,4 +140,52 @@ extension IteratorStream<T> on Stream<T> {
       }
     }
   }
+
+  Stream<T> parallelizingStreamWithFuture<F>({
+    required Future<F> Function() function,
+    void Function(F x)? onFuntionResult,
+    bool cancelFutureIfStreamClose = true,
+    bool closeStreamIfFutureFinish = true,
+  }) {
+    bool streamFinish = false;
+    bool futureFinish = false;
+
+    final controller = StreamController<T>();
+
+    late final Future future;
+    final subscription = listen(
+      (x) => controller.add(x),
+      onError: (x, y) {
+        controller.addError(x, y);
+        
+      },
+      onDone: () {
+        streamFinish = true;
+        if (futureFinish) {
+          controller.close();
+        } else if (cancelFutureIfStreamClose) {
+          future.ignore();
+          controller.close();
+        }
+      },
+    );
+
+    future = function().then((x) {
+      if (onFuntionResult != null) {
+        onFuntionResult(x);
+      }
+    }).onError((x, y) {
+      controller.addError(x!, y);
+    }).whenComplete(() {
+      futureFinish = true;
+      if (streamFinish) {
+        controller.close();
+      } else if (closeStreamIfFutureFinish) {
+        subscription.cancel();
+        controller.close();
+      }
+    });
+
+    return controller.stream;
+  }
 }

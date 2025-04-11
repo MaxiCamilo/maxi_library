@@ -86,4 +86,8 @@ mixin ThreadManager {
   static Stream<R> callEntityStreamSync<T extends Object, R>({InvocationParameters parameters = InvocationParameters.emptry, required FutureOr<Stream<R>> Function(T serv, InvocationParameters para) function}) async* {
     yield* await instance.callEntityStream<T, R>(function: function, parameters: parameters);
   }
+
+  static Future<IChannel<S, R>> callBackgroundChannel<R, S>({InvocationParameters parameters = InvocationParameters.emptry, required FutureOr<void> Function(InvocationContext, IChannel<R, S>) function}) {
+    return instance.callBackgroundChannel<R, S>(function: function, parameters: parameters);
+  }
 }

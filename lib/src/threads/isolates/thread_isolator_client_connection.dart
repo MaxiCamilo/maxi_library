@@ -84,6 +84,11 @@ class ThreadIsolatorClientConnection with IThreadInvoker, IThreadInvokeInstance,
   }
 
   @override
+  Future<IChannel<S, R>> callBackgroundChannel<R, S>({required InvocationParameters parameters, required FutureOr<void> Function(InvocationContext context, IChannel<R, S> channel) function}) {
+    return clientMannager.callBackgroundChannel<R, S>(parameters: parameters, function: function);
+  }
+
+  @override
   Future<R> callEntityFunction<T extends Object, R>({InvocationParameters parameters = InvocationParameters.emptry, required FutureOr<R> Function(T p1, InvocationContext p2) function}) {
     if (entityType == T) {
       parameters = InvocationParameters.clone(parameters)..namedParameters['#_CE()_#'] = function;

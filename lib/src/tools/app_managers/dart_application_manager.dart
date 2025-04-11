@@ -51,6 +51,11 @@ class DartApplicationManager with StartableFunctionality, IThreadInitializer, IA
   }
 
   @override
+  void changeLocalAddress(String address) {
+    _currentDirectory = address;
+  }
+
+  @override
   bool get isAndroid => Platform.isAndroid;
 
   @override

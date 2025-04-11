@@ -28,6 +28,7 @@ mixin IApplicationManager on StartableFunctionality, IThreadInitializer {
 
   void resetApplication({List<String> arguments = const []});
   void finishApplication();
+  void changeLocalAddress(String address);
 
   @override
   Future<void> performInitializationInThread(IThreadManager channel) async {

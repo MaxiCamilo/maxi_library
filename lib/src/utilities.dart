@@ -4,6 +4,7 @@ export 'package:maxi_library/src/utilities/extension/extensions_string.dart';
 export 'package:maxi_library/src/utilities/extension/extensions_completers.dart';
 export 'package:maxi_library/src/utilities/extension/extensions_stream.dart';
 export 'package:maxi_library/src/utilities/extension/extensions_stream_controller.dart';
+export 'package:maxi_library/src/utilities/extension/extensions_map.dart';
 
 export 'package:maxi_library/src/utilities/converter_utilities.dart';
 export 'package:maxi_library/src/utilities/reflection_utilities.dart';

@@ -87,6 +87,20 @@ class ThreadIsolatorClient with IThreadInvoker, IThreadManager, IThreadManagerCl
   }
 
   @override
+  Future<IChannel<S, R>> callBackgroundChannel<R, S>({required InvocationParameters parameters, required FutureOr<void> Function(InvocationContext context, IChannel<R, S> channel) function}) {
+    final newParameters = InvocationParameters.list([function, parameters]);
+    return _serverConnection.createChannel(parameters: newParameters, function: _callBackgroundChannelOnServer<R, S>);
+  }
+
+  static Future<void> _callBackgroundChannelOnServer<R, S>(InvocationContext context, IChannel<R, S> channel) async {
+    final function = context.firts<FutureOr<void> Function(InvocationContext context, IChannel<R, S> channel)>();
+    final functionParameters = context.second<InvocationParameters>();
+
+    final newChannel = await ThreadManager.callBackgroundChannel(function: function, parameters: functionParameters);
+    channel.joinWithOtherChannel(channel: newChannel, closeOtherChannelIfFinished: true, closeThisChannelIfFinish: true);
+  }
+
+  @override
   Future<R> callEntityFunction<T extends Object, R>({InvocationParameters parameters = InvocationParameters.emptry, required FutureOr<R> Function(T p1, InvocationContext p2) function}) async {
     if (T == entityType) {
       return function(_entity, InvocationContext.fromParametes(thread: this, applicant: this, parametres: parameters));

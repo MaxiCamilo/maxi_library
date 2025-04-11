@@ -25,6 +25,13 @@ mixin IStreamFunctionality<T> {
     final stream = await createManager().runInBackgrond();
     yield* stream;
   }
+
+  Future<T> runWithoutManagerAsFuture({void Function(Oration)? onTextReceived}) {
+    return waitFunctionalStream(
+      stream: createManager().start(),
+      onData: onTextReceived,
+    );
+  }
 }
 
 class FunctionalityStreamManager<T> {

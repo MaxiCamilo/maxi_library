@@ -61,6 +61,11 @@ class ThreadIsolatorServer with IThreadInvoker, IThreadManager, IThreadManagerSe
   }
 
   @override
+  Future<IChannel<S, R>> callBackgroundChannel<R, S>({required InvocationParameters parameters, required FutureOr<void> Function(InvocationContext context, IChannel<R, S> channel) function}) {
+    return backgroundManager.callBackgroundChannel<R, S>(function: function, parameters: parameters);
+  }
+
+  @override
   Future<R> callEntityFunction<T extends Object, R>({InvocationParameters parameters = InvocationParameters.emptry, required FutureOr<R> Function(T p1, InvocationContext p2) function}) {
     final connector = _clientList.selectItem((x) => x.entityType == T);
 

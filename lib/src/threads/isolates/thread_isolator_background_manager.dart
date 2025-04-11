@@ -90,4 +90,17 @@ class ThreadIsolatorBackgroundManager {
       },
     );
   }
+
+  Future<IChannel<S, R>> callBackgroundChannel<R, S>({required InvocationParameters parameters, required FutureOr<void> Function(InvocationContext context, IChannel<R, S> channel) function}) async {
+    final thread = await _reserveThread();
+
+    try {
+      final channel = await thread.createChannel<R, S>(function: function, parameters: parameters);
+      channel.done.whenComplete(() => _releaseThread(thread));
+      return channel;
+    } catch (_) {
+      _releaseThread(thread);
+      rethrow;
+    }
+  }
 }

@@ -45,6 +45,12 @@ Stream<StreamState<S, R>> connectFunctionalStream<S, R, SR>(Stream<StreamState<S
   }
 }
 
+Stream<StreamState<S, R>> connectItemStream<S, R, SR>(Stream<S> stream) async* {
+  await for (final item in stream) {
+    yield streamStatus(item);
+  }
+}
+
 Stream<StreamState<S, R>> connectSeveralFunctionalStream<S, R, SR>({
   required List<Stream<StreamState<S, SR>>> streamList,
   void Function(SR x)? onResult,
@@ -77,7 +83,6 @@ Stream<StreamState<S, R>> connectSeveralFunctionalStream<S, R, SR>({
           if (onResult != null) {
             onResult(data.result);
           }
-         
         } else if (data is StreamStatePartialError<S, SR>) {
           controller.addIfActive(streamPartialError<S, R>(data.partialError));
         } else if (data is StreamCheckActive<S, SR>) {

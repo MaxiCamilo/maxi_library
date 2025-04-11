@@ -66,6 +66,18 @@ class FakeThreadClient with IThreadInvoker, IThreadManager, IThreadManagerClient
   }
 
   @override
+  Future<IChannel<S, R>> callBackgroundChannel<R, S>({required InvocationParameters parameters, required FutureOr<void> Function(InvocationContext context, IChannel<R, S> channel) function}) async {
+    final master = MasterChannel<S, R>(closeIfEveryoneClosed: true);
+
+    scheduleMicrotask(() async {
+      final slaver = master.createSlave();
+      await function(InvocationContext.fromParametes(thread: this, applicant: this, parametres: parameters), slaver);
+    });
+
+    return master;
+  }
+
+  @override
   Future<Stream<R>> callStream<R>({required InvocationParameters parameters, required FutureOr<Stream<R>> Function(InvocationContext p1) function}) async {
     return await function(InvocationContext.fromParametes(thread: this, applicant: this, parametres: parameters));
   }

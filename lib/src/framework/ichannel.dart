@@ -72,6 +72,10 @@ mixin IChannel<R, S> implements StreamSink<S> {
       channel.done.whenComplete(() => close());
     }
   }
+
+  Future<R> waitObject({Duration? timeout}) {
+    return receiver.waitItem(timeout: timeout);
+  }
 }
 
 mixin IMasterChannel<R, S> on IChannel<R, S> {

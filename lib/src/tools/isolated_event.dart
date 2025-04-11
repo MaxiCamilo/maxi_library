@@ -78,13 +78,17 @@ class IsolatedEvent<T> with StartableFunctionality, IChannel<T, T> {
 
     final subscription = await ThreadManager.callEntityStream<SharedValuesService, (int, T)>(
       parameters: InvocationParameters.only(name),
-      function: (serv, para) => serv.getEvent<T>(name: para.firts<String>()),
+      function: _initializeFunctionalityOnService<T>,
     );
     _subscription = subscription.listen(_dataChanged, onError: _dataError);
 
     if (_controller == null || _controller!.isClosed) {
       _controller = StreamController<T>.broadcast();
     }
+  }
+
+  static Future<Stream<(int, T)>> _initializeFunctionalityOnService<T>(SharedValuesService serv, InvocationParameters para) {
+    return serv.getEvent<T>(name: para.firts<String>());
   }
 
   @override

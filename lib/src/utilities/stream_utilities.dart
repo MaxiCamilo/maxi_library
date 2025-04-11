@@ -44,4 +44,6 @@ mixin StreamUtilities {
       subscriptionsList.iterar((x) => x.cancel());
     }
   }
+
+  
 }

@@ -14,6 +14,12 @@ mixin StartableFunctionality implements IDisposable {
   bool get wasDiscarded => !_isInitialized;
 
   Semaphore? _semaphore;
+  Completer? _onDisposeCompleter;
+
+  Future<dynamic> get onDispose {
+    _onDisposeCompleter ??= Completer();
+    return _onDisposeCompleter!.future;
+  }
 
   void checkInitialize() {
     if (!_isInitialized) {
@@ -67,7 +73,9 @@ mixin StartableFunctionality implements IDisposable {
   @override
   void dispose() {
     if (_isInitialized) {
-      performObjectDiscard();
+      containErrorLog(detail: const Oration(message: 'Dispose object'), function: performObjectDiscard);
+      _onDisposeCompleter?.completeIfIncomplete();
+      _onDisposeCompleter = null;
       _isInitialized = false;
     }
   }

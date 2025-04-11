@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:maxi_library/maxi_library.dart';
@@ -133,5 +134,40 @@ mixin IHttpRequester {
     );
 
     return NegativeResult.interpret(values: rawJson, checkTypeFlag: true);
+  }
+
+  Stream executeWebSocketAsStream({
+    required String url,
+    bool disableIfNoOneListens = true,
+    Map<String, String>? headers,
+    Encoding? encoding,
+    Duration? timeout,
+  }) {
+    IChannel? channel;
+    final controller = StreamController(
+      onCancel: () => channel?.close(),
+    );
+
+    scheduleMicrotask(() async {
+      try {
+        channel = await executeWebSocket(
+          url: url,
+          disableIfNoOneListens: disableIfNoOneListens,
+          encoding: encoding,
+          headers: headers,
+          timeout: timeout,
+        );
+        channel!.receiver.listen(
+          (x) => controller.add(x),
+          onDone: () => controller.close(),
+          onError: (x, y) => controller.addError(x, y),
+        );
+      } catch (x, y) {
+        controller.addError(x, y);
+        controller.close();
+      }
+    });
+
+    return controller.stream;
   }
 }

@@ -9,6 +9,7 @@ mixin FunctionalityWithLifeCycle on StartableFunctionality {
   final _streamSubscriptions = <StreamSubscription>[];
   final _waiters = <Completer>[];
   final _otherActiveList = <Object>[];
+  final _futures = <Future>[];
 
   Completer? _onDone;
 
@@ -40,6 +41,9 @@ mixin FunctionalityWithLifeCycle on StartableFunctionality {
 
     _streamControllers.clear();
     _streamSubscriptions.clear();
+
+    _futures.iterar((x) => x.ignore());
+    _futures.clear();
 
     _waiters.iterar((x) {
       x.completeErrorIfIncomplete(
@@ -108,6 +112,32 @@ mixin FunctionalityWithLifeCycle on StartableFunctionality {
   StreamSubscription<T> joinSubscription<T>(StreamSubscription<T> subscription) {
     _streamSubscriptions.add(subscription);
     return subscription;
+  }
+
+  Future<T> joinFuture<T>(
+    Future<T> future, {
+    void Function(T)? onDone,
+    void Function(Object, StackTrace)? onError,
+    void Function()? whenCompleted,
+  }) async {
+    try {
+      _futures.add(future);
+      final result = await future;
+      if (onDone != null) {
+        onDone(result);
+      }
+      return result;
+    } catch (ex, st) {
+      if (onError != null) {
+        onError(ex, st);
+      }
+      rethrow;
+    } finally {
+      _futures.remove(future);
+      if (whenCompleted != null) {
+        whenCompleted();
+      }
+    }
   }
 
   Completer<R> joinWaiter<R>([Completer<R>? waiter]) {
