@@ -2,66 +2,63 @@ import 'dart:io';
 
 import 'package:maxi_library/export_reflectors.dart';
 
-class OrationSearchEngine with IStreamFunctionality<Set<String>> {
+class OrationSearchEngine with IStreamFunctionality<List<Oration>> {
   final List<String> directories;
+
+  static final orationPattern = RegExp(
+    r'(?<!Translated)Oration\s*\(\s*((?:[^()]*\([^)]*\))*[^)]*)\)',
+    multiLine: true,
+  );
+
+  static final messagePattern = RegExp(
+    r'''message\s*:\s*(['"])((?:\\\1|.)*?)\1''',
+    dotAll: true,
+  );
+
+  static final tokenIdPattern = RegExp(
+    r'''tokenId\s*:\s*(['"])((?:\\\1|.)*?)\1''',
+    dotAll: true,
+  );
 
   const OrationSearchEngine({required this.directories});
 
   @override
-  StreamStateTexts<Set<String>> runFunctionality({required FunctionalityStreamManager<void> manager}) async* {
-    final result = <String>{};
+  StreamStateTexts<List<Oration>> runFunctionality({required FunctionalityStreamManager<void> manager}) async* {
+    final result = <Oration>[];
 
-    //yield* connectFunctionalStream(_searchDartFiles(manager, Directory(directory)), (x) => result.addAll(x));
-    yield* connectSeveralFunctionalStream(
-      streamList: directories.map((x) => ThreadManager.callBackgroundStreamSync(parameters: InvocationParameters.only(x), function: _searchDartFiles)).toList(),
-      onResult: (x) => result.addAll(x),
-    );
+    final dartFiles = <File>[];
 
-    yield* streamTextStatusSync(Oration(message: '%1 sentences have been obtained', textParts: [result.length]));
-    yield streamResult(result);
-  }
-
-  static StreamStateTexts<Set<String>> _searchDartFiles(InvocationContext context) async* {
-    final result = <String>{};
-    final directory = Directory(context.firts<String>());
-
-    if (!directory.existsSync()) {
-      yield streamResult(result);
+    for (final route in directories) {
+      final list = await Directory(route).list(recursive: true).where((e) => e is File && e.path.endsWith('.dart')).cast<File>().toList();
+      dartFiles.addAll(list);
     }
 
-    final dartFiles = directory.listSync(recursive: true).where((file) => file is File && file.path.endsWith('.dart'));
+    for (final file in dartFiles) {
+      final content = await file.readAsString();
+      final matches = orationPattern.allMatches(content);
 
-    for (var file in dartFiles) {
-      yield* connectFunctionalStream(_extractOrationMessages(file as File), (x) => result.addAll(x));
-    }
+      for (final match in matches) {
+        final args = match.group(1)!;
 
-    yield streamResult(result);
-  }
+        final messageMatch = messagePattern.firstMatch(args);
+        if (messageMatch == null) continue;
 
-  static StreamStateTexts<Set<String>> _extractOrationMessages(File file) async* {
-    //yield streamTextStatus(Oration(message: 'Looking for texts in %1', textParts: [file.path]));
-    //await continueOtherFutures();
+        final message = _unescape(messageMatch.group(2)!);
 
-    final result = <String>{};
-    final regex = RegExp(
-      r"Oration\(.*?message:\s*'([^']+)'",
-      dotAll: true,
-    );
+        final tokenIdMatch = tokenIdPattern.firstMatch(args);
+        final tokenId = tokenIdMatch != null ? _unescape(tokenIdMatch.group(2)!) : '';
 
-    final content = file.readAsStringSync();
-    final matches = regex.allMatches(content);
-
-    for (var match in matches) {
-      final text = match.group(1);
-      if (text != null) {
-        result.add(text);
+        if (!result.any((x) => x.message == message)) {
+          result.add(Oration(message: message, tokenId: tokenId));
+        }
       }
     }
-
-    if (result.isNotEmpty) {
-      yield* streamTextStatusSync(Oration(message: 'The file %1 has %2 translatable sentences', textParts: [file.path, result.length]));
-    }
+    //log(result.map((x) => x.message).join('\n'));
 
     yield streamResult(result);
+  }
+
+  String _unescape(String input) {
+    return input.replaceAll(r"\'", "'").replaceAll(r'\"', '"').replaceAll(r'\\', r'\');
   }
 }

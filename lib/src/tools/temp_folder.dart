@@ -12,7 +12,7 @@ class TempFolder with StartableFunctionality, FunctionalityWithLifeCycle {
 
   Future<List<IFileOperator>> getAllContent() async {
     await initialize();
-    return await _folderInstance.getFolderContent().toList();
+    return await _folderInstance.getFolderContent().whereType<IFileOperator>().toList();
   }
 
   @override

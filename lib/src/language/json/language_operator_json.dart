@@ -11,8 +11,8 @@ class LanguageOperatorJson with StartableFunctionality, IOperatorLanguage {
 
   @override
   String prefixLanguage;
-
   final String filesLocation;
+  final List<IReadOnlyFileOperator> includeFiles;
 
   late final StreamController notifyLanguageChangeController;
 
@@ -22,22 +22,30 @@ class LanguageOperatorJson with StartableFunctionality, IOperatorLanguage {
 
   final _translatedTextsMaps = <String, String>{};
 
-  LanguageOperatorJson({this.prefixLanguage = 'en', this.filesLocation = '${DirectoryUtilities.prefixRouteLocal}/lang'}) {
+  LanguageOperatorJson({this.prefixLanguage = 'en', this.filesLocation = '${DirectoryUtilities.prefixRouteLocal}/lang', this.includeFiles = const []}) {
     notifyLanguageChangeController = StreamController.broadcast();
   }
 
   @override
   Future<void> initializeFunctionality() async {
     bundles.clear();
-    final folderMask = FileOperatorMask(isLocal: false, rawRoute: filesLocation);
-    await folderMask.initialize();
-    await folderMask.createAsFolder(secured: true);
-    final folder = Directory(folderMask.directAddress);
 
-    final filesList = await folder.list(recursive: false).where((entity) => entity is File && entity.path.endsWith('.json')).toList();
+    for (final file in includeFiles) {
+      final bundle = BundleTranslatedTextFileJson(file: file);
+      bundles.add(bundle);
+    }
 
-    for (final item in filesList) {
-      bundles.add(BundleTranslatedTextFileJson(file: FileOperatorMask(isLocal: false, rawRoute: item.path)));
+    if (ApplicationManager.instance.isDesktop) {
+      final folderMask = FileOperatorMask(isLocal: false, rawRoute: filesLocation);
+      await folderMask.initialize();
+      await folderMask.createAsFolder(secured: true);
+      final folder = Directory(folderMask.directAddress);
+
+      final filesList = await folder.list(recursive: false).where((entity) => entity is File && entity.path.endsWith('.json')).toList();
+
+      for (final item in filesList) {
+        bundles.add(BundleTranslatedTextFileJson(file: FileOperatorMask(isLocal: false, rawRoute: item.path)));
+      }
     }
   }
 
@@ -61,7 +69,8 @@ class LanguageOperatorJson with StartableFunctionality, IOperatorLanguage {
     prefixLanguage = newPrefixLanguage;
 
     this.inEnglish = false;
-    _translatedTextsMaps.addAll(await bundle.readTranslatedText());
+    _translatedTextsMaps.clear();
+    _translatedTextsMaps.addAll((await bundle.readTranslatedText()).map((x, y) => MapEntry(x.message, y)));
 
     notifyLanguageChangeController.add(prefixLanguage);
   }
@@ -89,7 +98,7 @@ class LanguageOperatorJson with StartableFunctionality, IOperatorLanguage {
     for (int i = 0; i < text.textParts.length; i++) {
       final part = text.textParts[i];
       late String textGenerated;
-      if (part is TranslatedText) {
+      if (part is TranslatedOration) {
         textGenerated = part.toString();
       }
       if (part is Oration) {
@@ -117,9 +126,11 @@ class LanguageOperatorJson with StartableFunctionality, IOperatorLanguage {
       }
       log('There is no translatable candidate for text: "$text"');
       _translatedTextsMaps[text] = text;
-      final bundle = bundles.selectItem((x) => x.prefixLanguage == prefixLanguage);
-      if (bundle != null) {
-        File(bundle.file.directAddress).writeAsStringSync(json.encode(_translatedTextsMaps));
+      if (ApplicationManager.instance.isDesktop) {
+        final bundle = bundles.selectItem((x) => x.prefixLanguage == prefixLanguage);
+        if (bundle != null) {
+          File(bundle.file.directAddress).writeAsStringSync(json.encode(_translatedTextsMaps));
+        }
       }
       return text;
     } else {

@@ -3,10 +3,10 @@ import 'package:maxi_library/maxi_library.dart';
 import 'package:xml/xml.dart';
 import 'package:xml/xpath.dart';
 
-class TranslateViaDepseekOrations with IStreamFunctionality<Map<String, String>> {
+class TranslateViaDepseekOrations with IStreamFunctionality<Map<Oration, String>> {
   final String apiKey;
   final String languaje;
-  final List<String> texts;
+  final List<Oration> texts;
   final bool useReasoner;
   final int splitTexts;
 
@@ -28,17 +28,18 @@ Your job is to translate the text contained in the "text" tags into %1. Return t
   });
 
   @override
-  StreamStateTexts<Map<String, String>> runFunctionality({required FunctionalityStreamManager<Map<String, String>> manager}) async* {
-    final result = <String, String>{};
+  StreamStateTexts<Map<Oration, String>> runFunctionality({required FunctionalityStreamManager<Map<Oration, String>> manager}) async* {
+    final result = <Oration, String>{};
 
     final context = (contentText ?? _standarContentText).replaceAll('%1', languaje);
     final deepSeek = DeepSeek(apiKey);
 
     int translatedAmount = 0;
     for (final part in texts.splitIntoParts(splitTexts)) {
-      final formatedParts = part.map((x) => '\t<text>${x.replaceAll('<', '%&1%').replaceAll('>', '%&2%').replaceAll('\n', '%&3%').replaceAll('\\n', '%&3%').replaceAll('\'', '%&4%').replaceAll('"', '%&5%').replaceAll('\\', '')}</text>');
+      final formatedParts = part.map(
+          (x) => '\t<text>${x.message.replaceAll('<', '%&1%').replaceAll('>', '%&2%').replaceAll('\n', '%&3%').replaceAll('\\n', '%&3%').replaceAll('\'', '%&4%').replaceAll('"', '%&5%').replaceAll('\\', '')}</text>');
       yield* streamTextStatusSync(Oration(message: 'Deepseek is being asked to translate %1 texts (%2/%3)', textParts: [formatedParts.length, translatedAmount, texts.length]));
-      if (part.any((x) => x.contains('\\'))) {
+      if (part.any((x) => x.message.contains('\\'))) {
         print('Heyyyyyyy');
       }
       final body = '<texts>${formatedParts.join('\n')}</texts>';
@@ -64,7 +65,7 @@ Your job is to translate the text contained in the "text" tags into %1. Return t
       await FileOperatorMask(isLocal: true, rawRoute: 'prueba.xml').writeText(content: rawXml);
 
       final document = XmlDocument.parse(rawXml);
-      final splitText = document.xpath('/texts/text').map((x) => x.innerText.replaceAll('%&1%', '<').replaceAll('%&2%', '>').replaceAll('%&3%', '\\n').replaceAll('%&4%', '\'' ).replaceAll('%&5%', '"')).toList();
+      final splitText = document.xpath('/texts/text').map((x) => x.innerText.replaceAll('%&1%', '<').replaceAll('%&2%', '>').replaceAll('%&3%', '\\n').replaceAll('%&4%', '\'').replaceAll('%&5%', '"')).toList();
 
       try {
         checkProgrammingFailure(thatChecks: Oration(message: 'The same number of texts were returned'), result: () => splitText.length == part.length);

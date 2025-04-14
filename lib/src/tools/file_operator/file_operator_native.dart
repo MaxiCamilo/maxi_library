@@ -5,7 +5,7 @@ import 'dart:typed_data';
 
 import 'package:maxi_library/maxi_library.dart';
 
-class FileOperatorNative with IFileOperator, StartableFunctionality {
+class FileOperatorNative with IAbstractFileOperator, IReadOnlyFileOperator, IFileModifierOperator, IFileOperator, StartableFunctionality {
   @override
   final bool isLocal;
 

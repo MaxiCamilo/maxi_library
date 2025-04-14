@@ -4,7 +4,7 @@ import 'dart:typed_data';
 
 import 'package:maxi_library/maxi_library.dart';
 
-class FileOperatorMask with IFileOperator, StartableFunctionality {
+class FileOperatorMask with IAbstractFileOperator, IReadOnlyFileOperator, IFileModifierOperator, IFileOperator, StartableFunctionality {
   @override
   final bool isLocal;
 
@@ -18,6 +18,7 @@ class FileOperatorMask with IFileOperator, StartableFunctionality {
   @override
   String get directAddress => _masked.directAddress;
 
+  
   FileOperatorMask({required this.isLocal, required this.rawRoute});
 
   @override
@@ -135,7 +136,7 @@ class FileOperatorMask with IFileOperator, StartableFunctionality {
   }
 
   @override
-  Stream<IFileOperator> getFolderContent() async* {
+  Stream<IReadOnlyFileOperator> getFolderContent() async* {
     await initialize();
     yield* _masked.getFolderContent();
   }

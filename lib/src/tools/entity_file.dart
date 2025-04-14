@@ -65,7 +65,10 @@ class EntityFile<T> with StartableFunctionality {
 
   @override
   Future<void> initializeFunctionality() async {
-    final folder = _address.getContainingFolder();
+    final roFolder = _address.getContainingFolder();
+
+    final folder = programmingFailure(reasonFailure: const Oration(message: 'The Director Operator must return a modifiable operator'), function: () => roFolder as IFileModifierOperator);
+
     await folder.createAsFolder(secured: true);
 
     if (await _address.existsFile()) {
