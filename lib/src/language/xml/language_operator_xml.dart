@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:developer';
 
 import 'package:maxi_library/maxi_library.dart';
-import 'package:maxi_library/src/language/xml/bundle_translated_text_file_xml.dart';
 
 class LanguageOperatorXml with StartableFunctionality, IOperatorLanguage {
   @override
@@ -32,7 +31,7 @@ class LanguageOperatorXml with StartableFunctionality, IOperatorLanguage {
     await continueOtherFutures();
 
     prefixLanguage = newPrefixLanguage;
-    await initializeFunctionality();
+    await initialize();
   }
 
   @override
@@ -57,7 +56,7 @@ class LanguageOperatorXml with StartableFunctionality, IOperatorLanguage {
       return;
     }
 
-    //HACER ESTA PARTE EN SEGUNDO PLANO!
+    //final result = await bundle.readTranslatedText();
     final result = await bundle.readTranslatedText();
 
     _referencesByText = result.map((x, y) => MapEntry(x.message, y));
@@ -65,6 +64,11 @@ class LanguageOperatorXml with StartableFunctionality, IOperatorLanguage {
 
     _notifyLanguageChangeController.addIfActive(prefixLanguage);
   }
+
+  /*static Future<Map<Oration, String>> _readTranslatedText(InvocationContext context) {
+    final item = context.firts<BundleTranslatedTextFileXml>();
+    return item.readTranslatedText();
+  }*/
 
   @override
   String translateString(String text) {
@@ -119,7 +123,7 @@ class LanguageOperatorXml with StartableFunctionality, IOperatorLanguage {
       log('[LanguageOperatorXml] Oration with Token "${text.tokenId}" has no translation');
     }
 
-    return text.message;
+    return _makeNewText(text.message, text);
   }
 
   String _makeNewText(String replacementText, Oration text) {

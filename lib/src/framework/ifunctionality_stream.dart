@@ -32,6 +32,40 @@ mixin IStreamFunctionality<T> {
       onData: onTextReceived,
     );
   }
+
+  StreamStateTexts<T> runOtherManager({required FunctionalityStreamManager manager}) async* {
+    final streamController = StreamController<StreamState<Oration, T>>();
+    final instance = createManager();
+
+    scheduleMicrotask(() async {
+      instance.start();
+
+      final otherDone = manager.done.whenComplete(() => instance.cancelStream());
+
+      try {
+        instance.textStream.listen((x) {
+          streamController.addIfActive(streamTextStatus(x));
+          manager.sendText(x);
+        });
+        final result = await instance.waitStreamResult();
+        streamController.addIfActive(streamResult(result));
+      } catch (ex, st) {
+        streamController.addErrorIfActive(ex, st);
+      } finally {
+        otherDone.ignore();
+        streamController.close();
+      }
+    });
+
+    yield* streamController.stream;
+  }
+
+  Future<T> runOtherManagerAsFuture({required FunctionalityStreamManager manager, void Function(Oration)? onTextReceived}) {
+    return waitFunctionalStream(
+      stream: runOtherManager(manager: manager),
+      onData: onTextReceived,
+    );
+  }
 }
 
 class FunctionalityStreamManager<T> {
@@ -53,6 +87,7 @@ class FunctionalityStreamManager<T> {
 
   T? _lastResult;
   NegativeResult? _lastError;
+  Completer? _doneCompleter;
 
   T get result {
     if (_lastResult == null) {
@@ -82,6 +117,11 @@ class FunctionalityStreamManager<T> {
       parameters: InvocationParameters.only(this),
       function: _runInBackgrond<T>,
     );
+  }
+
+  Future get done {
+    _doneCompleter ??= Completer();
+    return _doneCompleter!.future;
   }
 
   static FutureOr<Stream<StreamState<Oration, T>>> _runInBackgrond<T>(InvocationContext context) {
@@ -120,6 +160,11 @@ class FunctionalityStreamManager<T> {
     functionality.onDispose(manager: this);
 
     wasDispose = true;
+  }
+
+  void sendText(Oration text) {
+    _streamController?.addIfActive(streamTextStatus<T>(text));
+    _textStreamController?.addIfActive(text);
   }
 
   Stream<StreamState<Oration, T>> continueOtherFutures() async* {
@@ -215,6 +260,10 @@ class FunctionalityStreamManager<T> {
           );
           _textStreamController?.addIfActive(_lastError!.message);
         },
+        onDoneOrCanceled: (x) {
+          _doneCompleter?.completeIfIncomplete(x);
+          _doneCompleter = null;
+        },
       );
       if (_lastResult != null) {
         _streamController?.addIfActive(streamResult(_lastResult as T));
@@ -232,6 +281,10 @@ class FunctionalityStreamManager<T> {
     } finally {
       _streamController?.close();
       _streamController = null;
+
+      _doneCompleter?.completeIfIncomplete();
+      _doneCompleter = null;
+
       dispose();
     }
   }
