@@ -39,7 +39,10 @@ extension IteratorStream<T> on Stream<T> {
     return waiter.future;
   }
 
-  Future<T> waitItem({Duration? timeout}) async {
+  Future<T> waitItem({
+    Duration? timeout,
+    T Function()? onTimeout,
+  }) async {
     final waiter = Completer<T>();
     late final StreamSubscription<T> subscription;
 
@@ -67,10 +70,18 @@ extension IteratorStream<T> on Stream<T> {
 
     if (timeout != null) {
       timer = Timer(timeout, () {
-        waiter.completeErrorIfIncomplete(NegativeResult(
-          identifier: NegativeResultCodes.timeout,
-          message: const Oration(message: 'It took too long to receive an item in the data stream'),
-        ));
+        if (onTimeout == null) {
+          waiter.completeErrorIfIncomplete(NegativeResult(
+            identifier: NegativeResultCodes.timeout,
+            message: const Oration(message: 'It took too long to receive an item in the data stream'),
+          ));
+        } else {
+          try {
+            waiter.completeIfIncomplete(onTimeout());
+          } catch (ex, st) {
+            waiter.completeErrorIfIncomplete(ex, st);
+          }
+        }
         subscription.cancel();
       });
     }
@@ -157,7 +168,6 @@ extension IteratorStream<T> on Stream<T> {
       (x) => controller.add(x),
       onError: (x, y) {
         controller.addError(x, y);
-        
       },
       onDone: () {
         streamFinish = true;

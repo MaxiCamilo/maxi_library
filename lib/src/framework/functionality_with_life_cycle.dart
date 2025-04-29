@@ -11,7 +11,10 @@ mixin FunctionalityWithLifeCycle on StartableFunctionality {
   final _otherActiveList = <Object>[];
   final _futures = <Future>[];
 
+  bool get initiallyPreviouslyExecuted => _initiallyPreviouslyExecuted;
+
   Completer? _onDone;
+  bool _initiallyPreviouslyExecuted = false;
 
   @protected
   Future<void> afterInitializingFunctionality();
@@ -24,18 +27,23 @@ mixin FunctionalityWithLifeCycle on StartableFunctionality {
 
   @override
   @protected
+  @mustCallSuper
   Future<void> initializeFunctionality() async {
     try {
       await afterInitializingFunctionality();
     } catch (ex) {
       _onDone?.completeErrorIfIncomplete(ex);
       _onDone = null;
-      _removeJoinedObjects();
+      removeJoinedObjects();
       rethrow;
+    } finally {
+      _initiallyPreviouslyExecuted = true;
     }
   }
 
-  void _removeJoinedObjects() {
+  @protected
+  @mustCallSuper
+  void removeJoinedObjects() {
     _streamControllers.iterar((x) => x.close());
     _streamSubscriptions.iterar((x) => x.cancel());
 
@@ -87,7 +95,7 @@ mixin FunctionalityWithLifeCycle on StartableFunctionality {
       return;
     }
     super.performObjectDiscard();
-    _removeJoinedObjects();
+    removeJoinedObjects();
     afterDiscard();
   }
 
@@ -103,10 +111,14 @@ mixin FunctionalityWithLifeCycle on StartableFunctionality {
       newController = StreamController<R>();
     }
 
-    _streamControllers.add(newController);
-    newController.done.whenComplete(() => _streamControllers.remove(newController));
+    return joinStreamController<R>(newController);
+  }
 
-    return newController;
+  StreamController<R> joinStreamController<R>(StreamController<R> controller) {
+    _streamControllers.add(controller);
+    controller.done.whenComplete(() => _streamControllers.remove(controller));
+
+    return controller;
   }
 
   StreamSubscription<T> joinSubscription<T>(StreamSubscription<T> subscription) {
@@ -145,7 +157,9 @@ mixin FunctionalityWithLifeCycle on StartableFunctionality {
     checkProgrammingFailure(thatChecks: const Oration(message: 'The waiter was already completed'), result: () => !waiter!.isCompleted);
 
     _waiters.add(waiter);
-    waiter.future.whenComplete(() => _waiters.remove(waiter));
+    waiter.future.whenComplete(() {
+      _waiters.remove(waiter);
+    });
     return waiter;
   }
 
@@ -154,6 +168,7 @@ mixin FunctionalityWithLifeCycle on StartableFunctionality {
     required void Function(R) onData,
     void Function(dynamic)? onError,
     void Function()? onDone,
+    Function(StreamSubscription)? onSubscriptionCreated,
   }) {
     late final StreamSubscription<R> subscription;
     subscription = event.listen(
@@ -167,6 +182,10 @@ mixin FunctionalityWithLifeCycle on StartableFunctionality {
       },
     );
     _streamSubscriptions.add(subscription);
+
+    if (onSubscriptionCreated != null) {
+      onSubscriptionCreated(subscription);
+    }
 
     return subscription;
   }

@@ -15,10 +15,19 @@ mixin StartableFunctionality implements IDisposable {
 
   Semaphore? _semaphore;
   Completer? _onDisposeCompleter;
+  Completer? _onInitializedCompleter;
 
   Future<dynamic> get onDispose {
     _onDisposeCompleter ??= Completer();
     return _onDisposeCompleter!.future;
+  }
+
+  Future<dynamic> get onInitialized async {
+    if (isInitialized) {
+      return this;
+    }
+    _onInitializedCompleter ??= Completer();
+    return await _onInitializedCompleter!.future;
   }
 
   void checkInitialize() {
@@ -44,6 +53,12 @@ mixin StartableFunctionality implements IDisposable {
     return await function();
   }
 
+  Future<void> initializeIfInactive() async {
+    if (!isInitialized && _semaphore == null) {
+      await initialize();
+    }
+  }
+
   Future<void> initialize() async {
     if (_isInitialized) {
       return;
@@ -59,6 +74,8 @@ mixin StartableFunctionality implements IDisposable {
         await initializeFunctionality();
         reactWhenInitializedFinishes();
         _semaphore = null;
+        _onInitializedCompleter?.completeIfIncomplete(this);
+        _onInitializedCompleter = null;
       } catch (ex, st) {
         reactWhenItFails(ex, st);
         reactWhenInitializedFinishes();

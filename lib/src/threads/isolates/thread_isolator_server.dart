@@ -100,6 +100,11 @@ class ThreadIsolatorServer with IThreadInvoker, IThreadManager, IThreadManagerSe
   }
 
   @override
+  Future<Stream<R>> callStreamOnTheServer<R>({required InvocationParameters parameters, required FutureOr<Stream<R>> Function(InvocationContext p1) function}) async {
+    return await function(InvocationContext.fromParametes(thread: this, applicant: this, parametres: parameters));
+  }
+
+  @override
   void closeThread() {
     log('[ThreadIsolatorServer] This is a server thread, it cannot be closed');
   }
@@ -182,29 +187,7 @@ class ThreadIsolatorServer with IThreadInvoker, IThreadManager, IThreadManagerSe
   void _closeConnection(IThreadInvokeInstance value) {
     _clientList.remove(value);
   }
-/*
-  @override
-  Future<IPipe<S, R>> createEntityPipe<T extends Object, R, S>({
-    InvocationParameters parameters = InvocationParameters.emptry,
-    required FutureOr<void> Function(T p1, InvocationContext p2, IPipe<R, S> p3) function,
-  }) async {
-    final connector = _clientList.selectItem((x) => x.entityType == T);
 
-    if (connector == null) {
-      throw NegativeResult(
-        identifier: NegativeResultCodes.contextInvalidFunctionality,
-        message: Oration(message: 'There is no thread that manages the entity %1', textParts: [T]),
-      );
-    }
-
-    return pipelineManager.createEntityPipeline<T, R, S>(parameters: parameters, function: function, sender: connector);
-  }
-
-  @override
-  Future<IPipe<S, R>> createPipe<R, S>({InvocationParameters parameters = InvocationParameters.emptry, required FutureOr<void> Function(InvocationContext, IPipe<R, S>) function}) async {
-    final pipe = FakePipe<R, S>();
-    return pipe.callFunction(parameters: InvocationContext.fromParametes(thread: this, applicant: this, parametres: parameters), function: function);
-  }*/
 
   @override
   Future<void> closeAllThread() async {

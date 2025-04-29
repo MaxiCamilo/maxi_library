@@ -120,14 +120,13 @@ T volatileFactory<T>({
   }
 }
 
-T volatile<T>({
-  required Oration detail,
-  required T Function() function,
-  void Function(NegativeResult)? ifFails,
-  void Function(dynamic)? ifUnknownFails,
-  void Function(dynamic)? ifFailsAnyway,
-  NegativeResultCodes errorID = NegativeResultCodes.nonStandardError
-}) {
+T volatile<T>(
+    {required Oration detail,
+    required T Function() function,
+    void Function(NegativeResult)? ifFails,
+    void Function(dynamic)? ifUnknownFails,
+    void Function(dynamic)? ifFailsAnyway,
+    NegativeResultCodes errorID = NegativeResultCodes.nonStandardError}) {
   try {
     return function();
   } on NegativeResult catch (rn) {
@@ -269,7 +268,7 @@ Future<void> checkProgrammingFailureAsync<T>({
 }) async {
   final resultFunction = await volatileAsync<bool>(
     detail: Oration(message: '%1 fired an error', textParts: [thatChecks]),
-    function:  result,
+    function: result,
   );
 
   if (!resultFunction) {
@@ -326,5 +325,55 @@ T volatileProperty<T>({
     }
 
     throw rnp;
+  }
+}
+
+T makeSeveralAttempts<T>({
+  required T Function() function,
+  required int attempts,
+  void Function(int, dynamic, StackTrace)? onError,
+}) {
+  int i = 1;
+  while (true) {
+    try {
+      return function();
+    } catch (ex, st) {
+      if (onError != null) {
+        onError(i, ex, st);
+      }
+
+      log('[SeveralAttempts, $i/$attempts] $ex\n$st');
+
+      if (i >= attempts) {
+        rethrow;
+      }
+
+      i += 1;
+    }
+  }
+}
+
+Future<T> makeSeveralAttemptsAsync<T>({
+  required FutureOr<T> Function() function,
+  required int attempts,
+  void Function(int, dynamic, StackTrace)? onError,
+}) async {
+  int i = 1;
+  while (true) {
+    try {
+      return await function();
+    } catch (ex, st) {
+      if (onError != null) {
+        onError(i, ex, st);
+      }
+
+      log('[SeveralAttemptsAsync, $i/$attempts] $ex\n$st');
+
+      if (i >= attempts) {
+        rethrow;
+      }
+
+      i += 1;
+    }
   }
 }

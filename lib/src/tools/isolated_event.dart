@@ -149,7 +149,7 @@ class IsolatedEvent<T> with StartableFunctionality, IChannel<T, T> {
 
     _controller?.add(event);
 
-    sendEvent(name: name, value: event);
+    await sendEvent(name: name, value: event);
   }
 
   @override

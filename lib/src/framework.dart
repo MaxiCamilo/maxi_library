@@ -9,6 +9,7 @@ export 'package:maxi_library/src/framework/idisposable.dart';
 export 'package:maxi_library/src/framework/file_operator.dart';
 export 'package:maxi_library/src/framework/ihttp_requester.dart';
 export 'package:maxi_library/src/framework/functionality_with_life_cycle.dart';
+export 'package:maxi_library/src/framework/functionality_with_life_cycle_as_stream.dart';
 
 export 'package:maxi_library/src/framework/icondition_query.dart';
 export 'package:maxi_library/src/framework/conditions/compare_fields.dart';

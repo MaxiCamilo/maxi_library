@@ -57,6 +57,11 @@ class FakeThreadServer with IThreadInvoker, IThreadManager, IThreadManagerServer
   }
 
   @override
+  Future<Stream<R>> callStreamOnTheServer<R>({required InvocationParameters parameters, required FutureOr<Stream<R>> Function(InvocationContext p1) function}) async {
+    return await function(InvocationContext.fromParametes(thread: this, applicant: this, parametres: parameters));
+  }
+
+  @override
   Future<Stream<R>> callStream<R>({required InvocationParameters parameters, required FutureOr<Stream<R>> Function(InvocationContext p1) function}) async {
     return await function(InvocationContext.fromParametes(thread: this, applicant: this, parametres: parameters));
   }

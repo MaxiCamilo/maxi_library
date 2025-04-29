@@ -124,6 +124,7 @@ Stream<S> getOnlyStreamItems<S, R>(Stream<StreamState<S, R>> stream) {
 
 Stream<StreamState<S, R>> connectOptionalFunctionalStream<S, R, SR>(
   Stream<StreamState<S, SR>> other, {
+  void Function(S)? onData,
   void Function(SR x)? onResult,
   void Function(dynamic, StackTrace?)? onError,
 }) async* {
@@ -133,6 +134,9 @@ Stream<StreamState<S, R>> connectOptionalFunctionalStream<S, R, SR>(
     await for (final item in other) {
       if (item is StreamStateItem<S, SR>) {
         yield StreamStateItem<S, R>(item: item.item);
+        if (onData != null) {
+          onData(item.item);
+        }
       } else if (item is StreamStateResult<S, SR>) {
         result = item.result;
         returnResult = true;
@@ -148,7 +152,7 @@ Stream<StreamState<S, R>> connectOptionalFunctionalStream<S, R, SR>(
 
     if (returnResult && onResult != null) {
       onResult(result);
-    } else if (!returnResult && onResult != null) {
+    } else if (!returnResult && !(R == dynamic || R.toString() == 'void' || R.toString() == 'Null')) {
       throw NegativeResult(
         identifier: NegativeResultCodes.implementationFailure,
         message: Oration(message: 'The stateful process failed to produce the final output'),
@@ -159,6 +163,11 @@ Stream<StreamState<S, R>> connectOptionalFunctionalStream<S, R, SR>(
       onError(x, y);
     }
   }
+}
+
+Stream<T> waitForStreamReturn<T>(FutureOr<Stream<T>> Function() function) async* {
+  final stream = await function();
+  yield* stream;
 }
 
 Future<R> waitFunctionalStream<S, R>({
@@ -232,6 +241,11 @@ Future<R> waitFunctionalStream<S, R>({
 
   try {
     return await completer.future;
+  } catch (ex) {
+    if (onError != null) {
+      onError(ex);
+    }
+    rethrow;
   } finally {
     subscription.cancel();
   }

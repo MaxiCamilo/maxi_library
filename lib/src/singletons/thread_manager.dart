@@ -52,6 +52,32 @@ mixin ThreadManager {
     }
   }
 
+  static Future<Stream<R>> callStreamOnTheServer<R>({required InvocationParameters parameters, required FutureOr<Stream<R>> Function(InvocationContext p1) function}) =>
+      instance.callStreamOnTheServer<R>(function: function, parameters: parameters);
+
+  static Future<StreamSubscription<R>> callStreamOnTheServerDirectly<R>({
+    required InvocationParameters parameters,
+    required FutureOr<Stream<R>> Function(InvocationContext p1) function,
+    bool cancelOnError = false,
+    void Function(R)? onListen,
+    void Function()? onDone,
+    void Function(Object error, [StackTrace? stackTrace])? onError,
+    void Function(StreamSubscription<R>)? onSubscription,
+  }) async {
+    final subscription = (await instance.callStreamOnTheServer<R>(function: function, parameters: parameters)).listen(
+      onListen,
+      onDone: onDone,
+      onError: onError,
+      cancelOnError: cancelOnError,
+    );
+
+    if (onSubscription != null) {
+      onSubscription(subscription);
+    }
+
+    return subscription;
+  }
+
   static Future<StreamSubscription<R>> callEntityStreamDirectly<T extends Object, R>({
     InvocationParameters parameters = InvocationParameters.emptry,
     required FutureOr<Stream<R>> Function(T serv, InvocationParameters para) function,

@@ -132,6 +132,11 @@ class ThreadIsolatorClientConnection with IThreadInvoker, IThreadInvokeInstance,
   }
 
   @override
+  Future<Stream<R>> callStreamOnTheServer<R>({required InvocationParameters parameters, required FutureOr<Stream<R>> Function(InvocationContext p1) function}) {
+    return clientMannager.callStreamOnTheServer(function: function, parameters: parameters);
+  }
+
+  @override
   Future<Stream<R>> callStream<R>({required InvocationParameters parameters, required FutureOr<Stream<R>> Function(InvocationContext p1) function, bool cancelOnError = false}) {
     return streamManager.createSharedStream(parameters: parameters, function: function, invoker: this);
   }

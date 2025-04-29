@@ -28,7 +28,7 @@ mixin ApplicationManager {
     }
 
     if (initialize) {
-      await newInstance.initialize();
+      await newInstance.initializeIfInactive();
     }
 
     return _instance as T;
