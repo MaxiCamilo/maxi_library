@@ -29,7 +29,7 @@ Future<void> main() async {
 
   //await ThreadManager.callEntityFunction<FirstService, void>(function: (serv, para) => serv.createPipeInSecondService());
 
-  final waiter = Completer();
+  final waiter = MaxiCompleter();
   (await ThreadManager.callEntityStream<FirstService, String>(
     function: (serv, para) => serv.generateSomeText(amount: 10, waitingSeconds: 3),
   ))

@@ -20,7 +20,7 @@ mixin FunctionalityWithLifeCycle on StartableFunctionality {
   Future<void> afterInitializingFunctionality();
 
   Future get done {
-    _onDone ??= Completer();
+    _onDone ??= MaxiCompleter();
 
     return _onDone!.future;
   }
@@ -153,7 +153,7 @@ mixin FunctionalityWithLifeCycle on StartableFunctionality {
   }
 
   Completer<R> joinWaiter<R>([Completer<R>? waiter]) {
-    waiter ??= Completer<R>();
+    waiter ??= MaxiCompleter<R>();
     checkProgrammingFailure(thatChecks: const Oration(message: 'The waiter was already completed'), result: () => !waiter!.isCompleted);
 
     _waiters.add(waiter);

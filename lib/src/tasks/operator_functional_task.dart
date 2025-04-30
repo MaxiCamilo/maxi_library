@@ -208,7 +208,7 @@ class OperatorFunctionalTask<T> with IOperatorFunctionalTask<T> {
 
   @override
   Future<T> waitResult() {
-    _waitResult ??= Completer<T>();
+    _waitResult ??= MaxiCompleter<T>();
 
     return _waitResult!.future;
   }

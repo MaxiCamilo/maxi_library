@@ -10,7 +10,7 @@ mixin StreamUtilities {
     T? timeoutValue,
     Oration timeoutError = const Oration(message: 'Waited too long for a value in one of the selected streams'),
   }) async {
-    final completer = Completer<T>();
+    final completer = MaxiCompleter<T>();
     final subscriptionsList = <StreamSubscription>[];
     Timer? timer;
 

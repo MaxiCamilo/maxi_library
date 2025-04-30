@@ -3,7 +3,6 @@
 /// More dartdocs go here.
 library maxi_library;
 
-export 'src/maxi_library_base.dart';
 export 'src/utilities.dart';
 export 'src/error_handling.dart';
 export 'src/language.dart';

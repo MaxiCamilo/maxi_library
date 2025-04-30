@@ -16,8 +16,9 @@ class NegativeResult implements Exception, CustomSerialization, ICustomSerializa
     required this.message,
     DateTime? whenWasIt,
     this.cause,
-    this.stackTrace = '',
-  }) : whenWasIt = whenWasIt ?? DateTime.now();
+    String? stackTrace,
+  })  : whenWasIt = whenWasIt ?? DateTime.now(),
+        stackTrace = stackTrace ?? StackTrace.current.toString();
 
   factory NegativeResult.interpretJson({required String jsonText, bool checkTypeFlag = true}) => NegativeResult.interpret(values: ConverterUtilities.interpretToObjectJson(text: jsonText), checkTypeFlag: checkTypeFlag);
 

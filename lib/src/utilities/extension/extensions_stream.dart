@@ -9,7 +9,7 @@ extension IteratorStream<T> on Stream<T> {
     void Function(dynamic)? reactionError,
     List<Future> finished = const [],
   }) {
-    final waiter = Completer();
+    final waiter = MaxiCompleter();
 
     final subscription = listen((x) {
       if (reactionItem != null) {
@@ -43,7 +43,7 @@ extension IteratorStream<T> on Stream<T> {
     Duration? timeout,
     T Function()? onTimeout,
   }) async {
-    final waiter = Completer<T>();
+    final waiter = MaxiCompleter<T>();
     late final StreamSubscription<T> subscription;
 
     subscription = listen(
@@ -95,7 +95,7 @@ extension IteratorStream<T> on Stream<T> {
   }
 
   Future<T?> waitSomething() {
-    final waiter = Completer<T?>();
+    final waiter = MaxiCompleter<T?>();
     late final StreamSubscription<T> subscription;
 
     subscription = listen(

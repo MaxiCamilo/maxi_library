@@ -13,7 +13,7 @@ class OnlineWebSocket with IChannel {
   int _numberOfClients = 0;
 
   final _streamController = StreamController.broadcast();
-  final _waiter = Completer();
+  final _waiter = MaxiCompleter();
 
   @override
   bool get isActive => _isActive;

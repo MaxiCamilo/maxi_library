@@ -178,7 +178,7 @@ Future<R> waitFunctionalStream<S, R>({
   void Function(dynamic ex)? onError,
   void Function(StreamSubscription<StreamState<S, R>>)? onSubscription,
 }) async {
-  final completer = Completer<R>();
+  final completer = MaxiCompleter<R>();
 
   final subscription = stream.doOnCancel(() {
     if (!completer.isCompleted) {

@@ -51,7 +51,7 @@ class IsolatedSemaphore with StartableFunctionality, FunctionalityWithLifeCycle,
       function: (serv, para) => serv.getTaskQueue(para.firts<String>()).addReservationTask(para.second<Duration>()),
     );
 
-    final completer = Completer();
+    final completer = MaxiCompleter();
     _taskMap[id] = completer;
 
     await completer.future;

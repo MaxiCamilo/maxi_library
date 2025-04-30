@@ -30,7 +30,7 @@ class ConvertedStreamSink<I, O> implements StreamSink<I> {
 
   @override
   Future addStream(Stream<I> stream) async {
-    final compelteter = Completer();
+    final compelteter = MaxiCompleter();
 
     final subscription = stream.listen(
       (x) => add(x),

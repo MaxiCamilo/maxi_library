@@ -22,7 +22,7 @@ mixin IChannel<R, S> implements StreamSink<S> {
   @override
   Future addStream(Stream<S> stream) async {
     checkActivityBefore(() {});
-    final waiter = Completer<void>();
+    final waiter = MaxiCompleter<void>();
 
     late final StreamSubscription<S> subscription;
     subscription = stream.listen(

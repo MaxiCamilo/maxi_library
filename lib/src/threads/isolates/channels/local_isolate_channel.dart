@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:developer';
 
 import 'package:maxi_library/maxi_library.dart';
-import 'package:maxi_library/src/threads/iisolate_thread_channel_manager.dart';
+import 'package:maxi_library/src/threads/interfaces/iisolate_thread_channel_manager.dart';
 
 class LocalIsolateChannel<R, S> with IChannel<R, S>, ISlaveChannel<R, S> {
   final int identifier;
@@ -11,7 +11,7 @@ class LocalIsolateChannel<R, S> with IChannel<R, S>, ISlaveChannel<R, S> {
   bool _isActive = true;
 
   final _streamController = StreamController<R>.broadcast();
-  final _waiter = Completer();
+  final _waiter = MaxiCompleter();
 
   LocalIsolateChannel({required this.identifier, required this.channelManager});
 

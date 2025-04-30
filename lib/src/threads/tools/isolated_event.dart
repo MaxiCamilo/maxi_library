@@ -139,7 +139,7 @@ class IsolatedEvent<T> with StartableFunctionality, IChannel<T, T> {
 
   @override
   Future get done {
-    _doneCompleter ??= Completer<IsolatedEvent<T>>();
+    _doneCompleter ??= MaxiCompleter<IsolatedEvent<T>>();
     return _doneCompleter!.future;
   }
 

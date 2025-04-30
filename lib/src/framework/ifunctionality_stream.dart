@@ -120,7 +120,7 @@ class FunctionalityStreamManager<T> {
   }
 
   Future get done {
-    _doneCompleter ??= Completer();
+    _doneCompleter ??= MaxiCompleter();
     return _doneCompleter!.future;
   }
 
@@ -197,7 +197,7 @@ class FunctionalityStreamManager<T> {
     Duration? timeout,
     FutureOr<void> Function()? onCanceled,
   }) {
-    final futureWaiter = Completer<R>();
+    final futureWaiter = MaxiCompleter<R>();
     _completersList.add(futureWaiter);
 
     if (timeout == null) {

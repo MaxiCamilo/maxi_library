@@ -1,9 +1,7 @@
 import 'dart:async';
 
+import 'package:maxi_library/maxi_library.dart';
 import 'package:maxi_library/src/error_handling/cancel.dart';
-import 'package:maxi_library/src/tasks/interfaces/ifunctional_controller.dart';
-import 'package:maxi_library/src/tasks/interfaces/ifunctional_controller_for_operator.dart';
-import 'package:maxi_library/src/tasks/interfaces/ifunctional_controller_for_task.dart';
 
 class ExecutionController with IFunctionalControllerForTask, IFunctionalControllerForOperator,IFunctionalController {
   Completer? _condenser;
@@ -29,7 +27,7 @@ class ExecutionController with IFunctionalControllerForTask, IFunctionalControll
   Future<void> wait(Duration duration) async {
     checkState();
 
-    _condenser = Completer();
+    _condenser = MaxiCompleter();
     _timer = Timer(duration, _reactTimeout);
 
     await _condenser!.future;

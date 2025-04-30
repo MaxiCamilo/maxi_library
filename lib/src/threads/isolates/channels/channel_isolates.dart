@@ -8,8 +8,8 @@ class ChannelIsolates with IChannel {
   final bool isDetination;
   final ReceivePort _receiver;
 
-  final _completerDone = Completer<ChannelIsolates>();
-  final _completerInitilizer = Completer<ChannelIsolates>();
+  final _completerDone = MaxiCompleter<ChannelIsolates>();
+  final _completerInitilizer = MaxiCompleter<ChannelIsolates>();
 
   SendPort? _serder;
 
@@ -74,7 +74,7 @@ class ChannelIsolates with IChannel {
   static Future<ChannelIsolates> createInitialChannel({required void Function(SendPort) pointerSender}) async {
     final receiver = ReceivePort();
     final channel = ChannelIsolates._(isDetination: false, receiver: receiver);
-    final waiterSender = Completer();
+    final waiterSender = MaxiCompleter();
 
     late final StreamSubscription subscription;
     subscription = channel.receiver.listen(
@@ -187,7 +187,7 @@ class ChannelIsolates with IChannel {
       return;
     }
 
-    final compelteter = Completer();
+    final compelteter = MaxiCompleter();
 
     final subscription = stream.listen(
       (x) => add(x),

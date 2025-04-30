@@ -3,11 +3,11 @@ import 'dart:async';
 import 'package:maxi_library/maxi_library.dart';
 
 class Semaphore with ISemaphore {
-  final _waitingList = <(Completer, FutureOr Function())>[];
-  final _waitingStreamList = <(StreamController, FutureOr<Stream> Function())>[];
+  final _waitingList = <(Completer, FutureOr Function(), StackTrace)>[];
+  final _waitingStreamList = <(StreamController, FutureOr<Stream> Function(), StackTrace)>[];
 
   bool get isActive => _isActive;
-  
+
   @override
   Future<bool> get checkIfLocker async => isActive;
 
@@ -17,8 +17,8 @@ class Semaphore with ISemaphore {
 
   @override
   Future<T> execute<T>({required FutureOr<T> Function() function}) {
-    final waiter = Completer<T>();
-    _waitingList.add((waiter, function));
+    final waiter = MaxiCompleter<T>();
+    _waitingList.add((waiter, function, StackTrace.current));
 
     if (!_isActive) {
       _isActive = true;
@@ -34,7 +34,7 @@ class Semaphore with ISemaphore {
   @override
   Stream<T> executeFutureStream<T>({required FutureOr<Stream<T>> Function() function}) {
     final controller = StreamController<T>();
-    _waitingStreamList.add((controller, function));
+    _waitingStreamList.add((controller, function, StackTrace.current));
 
     if (!_isActive) {
       _isActive = true;
@@ -71,8 +71,9 @@ class Semaphore with ISemaphore {
         try {
           final result = await item.$2();
           item.$1.completeIfIncomplete(result);
-        } catch (ex) {
-          item.$1.completeErrorIfIncomplete(ex);
+        } catch (ex, st) {
+          final newSt = StackTrace.fromString('${st.toString()}\n-------------------------------------- Synchronizer Semaphor --------------------------------------\n${item.$3.toString()}');
+          item.$1.completeErrorIfIncomplete(ex, newSt);
         }
       }
 
@@ -88,13 +89,17 @@ class Semaphore with ISemaphore {
 
           final subcription = stream.listen(
             (x) => controller.add(x),
-            onError: (x, y) => controller.addError(x, y),
+            onError: (x, y) {
+              final newSt = StackTrace.fromString('${y.toString()}\n-------------------------------------- Synchronizer Semaphor --------------------------------------\n${instance.$3.toString()}');
+              controller.addError(x, newSt);
+            },
             onDone: () => controller.close(),
           );
 
           await controller.done.whenComplete(() => subcription.cancel());
-        } catch (ex) {
-          controller.addError(ex);
+        } catch (ex, st) {
+          final newSt = StackTrace.fromString('${st.toString()}\n-------------------------------------- Synchronizer Semaphor --------------------------------------\n${instance.$3.toString()}');
+          controller.addError(ex, newSt);
           controller.close();
           continue;
         }

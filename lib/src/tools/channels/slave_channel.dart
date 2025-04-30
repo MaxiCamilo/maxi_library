@@ -4,7 +4,7 @@ import 'package:maxi_library/maxi_library.dart';
 
 class SlaveChannel<R, S> with IChannel<R, S>, ISlaveChannel<R, S> {
   final IMasterChannel<S, R> _master;
-  final _waiter = Completer();
+  final _waiter = MaxiCompleter();
   final _masterStreamController = StreamController<R>.broadcast();
 
   bool _isActive = true;

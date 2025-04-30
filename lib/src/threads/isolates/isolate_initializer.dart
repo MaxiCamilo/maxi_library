@@ -27,7 +27,7 @@ class IsolateInitializer {
 
   Future<(Isolate, ChannelIsolates)> mountIsolate({required String name, required int threadID}) async {
     final channel = ChannelIsolates.createInitialChannelManually();
-    final completer = Completer<_IsolateInitializerFinalized>();
+    final completer = MaxiCompleter<_IsolateInitializerFinalized>();
     late final Isolate isolate;
 
     scheduleMicrotask(() async {

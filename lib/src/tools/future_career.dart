@@ -38,12 +38,12 @@ class FutureCareer<T> {
   }
 
   Future<T> waitItem() {
-    _waitingItem ??= Completer<T>();
+    _waitingItem ??= MaxiCompleter<T>();
     return _waitingItem!.future;
   }
 
   Future<T?> waitOptionalItem() {
-    _waitingOptionalItem ??= Completer<T>();
+    _waitingOptionalItem ??= MaxiCompleter<T>();
     return _waitingOptionalItem!.future;
   }
 

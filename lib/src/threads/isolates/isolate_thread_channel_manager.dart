@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:developer';
 
 import 'package:maxi_library/maxi_library.dart';
-import 'package:maxi_library/src/threads/iisolate_thread_channel_manager.dart';
+import 'package:maxi_library/src/threads/interfaces/iisolate_thread_channel_manager.dart';
 import 'package:maxi_library/src/threads/isolates/channels/extern_isolate_channel.dart';
 import 'package:maxi_library/src/threads/isolates/channels/local_isolate_channel.dart';
 import 'package:maxi_library/src/threads/isolates/ithread_isolador.dart';

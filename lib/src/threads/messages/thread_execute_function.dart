@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:maxi_library/maxi_library.dart';
-import 'package:maxi_library/src/threads/ithread_message.dart';
+import 'package:maxi_library/src/threads/interfaces/ithread_message.dart';
 
 class ThreadExecuteFunction<R> with IThreadMessage {
   final InvocationParameters parameters;
@@ -9,5 +9,5 @@ class ThreadExecuteFunction<R> with IThreadMessage {
 
   const ThreadExecuteFunction({required this.parameters, required this.function});
 
-  Completer<R> makeCompleter() => Completer<R>();
+  Completer<R> makeCompleter() => MaxiCompleter<R>();
 }

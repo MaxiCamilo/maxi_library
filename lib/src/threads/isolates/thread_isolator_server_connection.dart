@@ -7,7 +7,7 @@ import 'package:maxi_library/src/threads/isolates/isolated_thread_stream_manager
 import 'package:maxi_library/src/threads/isolates/ithread_isolador.dart';
 import 'package:maxi_library/src/threads/isolates/thread_isolator_client.dart';
 import 'package:maxi_library/src/threads/isolates/thread_isolator_server.dart';
-import 'package:maxi_library/src/threads/ithread_message.dart';
+import 'package:maxi_library/src/threads/interfaces/ithread_message.dart';
 import 'package:maxi_library/src/threads/standars/thread_function_requester.dart';
 import 'package:maxi_library/src/threads/standars/thread_message_executor.dart';
 import 'package:maxi_library/src/threads/standars/thread_messages_processor.dart';
@@ -17,7 +17,7 @@ class ThreadIsolatorServerConnection with IThreadInvoker, IThreadInvokeInstance,
   final ChannelIsolates channel;
   final Isolate isolate;
 
-  final _doneCompleter = Completer<IThreadInvokeInstance>();
+  final _doneCompleter = MaxiCompleter<IThreadInvokeInstance>();
 
   late final ThreadMessagesProcessor messageProcessor;
   late final ThreadMessageExecutor externalFunctionExecutor;

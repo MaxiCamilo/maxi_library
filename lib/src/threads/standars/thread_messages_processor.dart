@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:developer';
 
 import 'package:maxi_library/maxi_library.dart';
-import 'package:maxi_library/src/threads/ithread_message.dart';
+import 'package:maxi_library/src/threads/interfaces/ithread_message.dart';
 import 'package:maxi_library/src/threads/messages/thread_execute_function.dart';
 import 'package:maxi_library/src/threads/messages/thread_execution_confirmation.dart';
 import 'package:maxi_library/src/threads/messages/thread_execution_finished.dart';

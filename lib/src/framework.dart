@@ -23,3 +23,4 @@ export 'package:maxi_library/src/framework/entity_administrator/ientity_reader.d
 export 'package:maxi_library/src/framework/entity_administrator/ientity_writer.dart';
 
 export 'package:maxi_library/src/framework/application_manager.dart';
+export 'package:maxi_library/src/framework/iremote_functionalities_executor.dart';

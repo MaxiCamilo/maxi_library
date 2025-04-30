@@ -12,13 +12,13 @@ class QueuingSemaphore<T> {
   bool _avoidReexecution = false;
 
   bool get isActive => _semaphore.isActive;
-  Future get done => _doneCompleter == null ? (_doneCompleter = Completer()).future : _doneCompleter!.future;
+  Future get done => _doneCompleter == null ? (_doneCompleter = MaxiCompleter()).future : _doneCompleter!.future;
 
   QueuingSemaphore({required this.reservedFunction});
 
   Future<T> execute() {
-    _waiter ??= Completer<T>();
-    _doneCompleter ??= Completer();
+    _waiter ??= MaxiCompleter<T>();
+    _doneCompleter ??= MaxiCompleter();
 
     if (!isActive) {
       _semaphore.execute(function: _executeFunction);
@@ -43,7 +43,7 @@ class QueuingSemaphore<T> {
     }
 
     _avoidReexecution = true;
-    _doneWaitingExecution ??= Completer<T>();
+    _doneWaitingExecution ??= MaxiCompleter<T>();
     await done;
 
     try {
@@ -62,8 +62,8 @@ class QueuingSemaphore<T> {
   }
 
   Future<void> _executeFunction() async {
-    _waiter ??= Completer<T>();
-    _doneCompleter ??= Completer();
+    _waiter ??= MaxiCompleter<T>();
+    _doneCompleter ??= MaxiCompleter();
 
     try {
       final result = await reservedFunction();

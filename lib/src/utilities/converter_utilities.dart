@@ -283,4 +283,6 @@ mixin ConverterUtilities {
             : Oration(message: 'Expected a json object, but received a json listing or value %1', textParts: [extra]),
         function: () => (interpretJson(text: text, extra: extra) as List).cast<Map<String, dynamic>>()).toList();
   }
+
+  static String toJsonString(dynamic item) => volatile(detail: const Oration(message: 'The entered value cannot be converted to JSON text'), function: () => json.encode(item));
 }

@@ -21,7 +21,7 @@ class FakeThreadClient with IThreadInvoker, IThreadManager, IThreadManagerClient
 
   dynamic _entity;
 
-  final _onDone = Completer<IThreadInvokeInstance>();
+  final _onDone = MaxiCompleter<IThreadInvokeInstance>();
 
   FakeThreadClient({required this.threadID, required this.serverConnection, dynamic entity}) {
     _entity = entity;

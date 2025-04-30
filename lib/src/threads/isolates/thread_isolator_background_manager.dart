@@ -30,7 +30,7 @@ class ThreadIsolatorBackgroundManager {
     } else if (instances.length >= busyInstanceLimit) {
       late final IThreadInvokeInstance free;
       while (true) {
-        _freeWaiter ??= Completer<IThreadInvokeInstance>();
+        _freeWaiter ??= MaxiCompleter<IThreadInvokeInstance>();
         await _freeWaiter!.future;
 
         if (freeInstances.isNotEmpty) {

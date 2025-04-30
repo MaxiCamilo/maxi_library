@@ -18,7 +18,7 @@ mixin StartableFunctionality implements IDisposable {
   Completer? _onInitializedCompleter;
 
   Future<dynamic> get onDispose {
-    _onDisposeCompleter ??= Completer();
+    _onDisposeCompleter ??= MaxiCompleter();
     return _onDisposeCompleter!.future;
   }
 
@@ -26,7 +26,7 @@ mixin StartableFunctionality implements IDisposable {
     if (isInitialized) {
       return this;
     }
-    _onInitializedCompleter ??= Completer();
+    _onInitializedCompleter ??= MaxiCompleter();
     return await _onInitializedCompleter!.future;
   }
 

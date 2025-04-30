@@ -168,7 +168,7 @@ void main() {
       final newThread = await (ThreadManager.instance as IThreadManagerServer).makeNewThread(initializers: [], name: 'Test thread');
 
       final stream = await newThread.callStream<String>(parameters: InvocationParameters.emptry, function: (_) async => _makeTexts());
-      final waiter = Completer();
+      final waiter = MaxiCompleter();
       // ignore: unused_local_variable
       final subcription = stream.listen(
         (x) => log('The stream send item "$x"'),

@@ -28,7 +28,7 @@ class ChannelConnector<R, S> with IChannel<R, S> {
     );
 
     _streamController = StreamController<R>.broadcast();
-    _waiterDone = Completer();
+    _waiterDone = MaxiCompleter();
   }
 
   factory ChannelConnector.fromOtherChannel(IChannel<R, S> channel) => ChannelConnector(receiver: channel.receiver, sender: channel);

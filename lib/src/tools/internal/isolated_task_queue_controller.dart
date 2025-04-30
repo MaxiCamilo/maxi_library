@@ -24,7 +24,7 @@ class IsolatedTaskQueueController {
   Future<void> _execute() async {
     while (_taskQueue.isNotEmpty) {
       final actualTask = _taskQueue.removeAt(0);
-      _waitingConfirmation = Completer<int>();
+      _waitingConfirmation = MaxiCompleter<int>();
 
       _actualTask = actualTask.$1;
       _notifyNextTaskController.add(actualTask.$1);
@@ -39,7 +39,7 @@ class IsolatedTaskQueueController {
         continue;
       }
 
-      _waitingFinish = Completer<int>();
+      _waitingFinish = MaxiCompleter<int>();
       final finishID = await _waitingFinish!.future.timeout(actualTask.$2, onTimeout: () => -1);
 
       if (finishID == -1) {

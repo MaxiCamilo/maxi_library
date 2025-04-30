@@ -125,7 +125,7 @@ class IsolatedValue<T extends Object> with StartableFunctionality, Functionality
 
   @override
   Future get done {
-    _waiterDone ??= Completer();
+    _waiterDone ??= MaxiCompleter();
     return _waiterDone!.future;
   }
 

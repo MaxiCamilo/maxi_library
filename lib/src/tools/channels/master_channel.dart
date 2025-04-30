@@ -6,7 +6,7 @@ import 'package:maxi_library/maxi_library.dart';
 class MasterChannel<R, S> with IChannel<R, S>, IMasterChannel<R, S> {
   final bool closeIfEveryoneClosed;
 
-  final _waiter = Completer();
+  final _waiter = MaxiCompleter();
 
   final _receiverController = StreamController<R>.broadcast();
   final _childrenChannels = <ISlaveChannel<S, R>>[];
@@ -116,7 +116,7 @@ class MasterChannel<R, S> with IChannel<R, S>, IMasterChannel<R, S> {
     }
 
     if (_waiterNewConnection == null || _waiterNewConnection!.isCompleted) {
-      _waiterNewConnection = Completer();
+      _waiterNewConnection = MaxiCompleter();
     }
 
     return await _waiterNewConnection!.future;

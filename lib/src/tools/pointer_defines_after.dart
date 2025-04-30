@@ -30,7 +30,7 @@ class PointerDefineAfter<T> {
       return _item!;
     }
 
-    _waiterValue ??= Completer<T>();
+    _waiterValue ??= MaxiCompleter<T>();
     return await _waiterValue!.future;
   }
 

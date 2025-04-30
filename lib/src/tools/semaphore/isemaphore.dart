@@ -14,7 +14,7 @@ mixin ISemaphore {
   Future<T> executeOnlyIsFree<T>({required FutureOr<T> Function() function});
 
   Completer<void> buildLocker({Duration? timeout}) {
-    final locker = Completer();
+    final locker = MaxiCompleter();
 
     scheduleMicrotask(() async {
       try {
@@ -28,8 +28,8 @@ mixin ISemaphore {
   }
 
   Future<Completer<void>> buildAsyncLocker({Duration? timeout}) async {
-    final locker = Completer();
-    final makeTurn = Completer();
+    final locker = MaxiCompleter();
+    final makeTurn = MaxiCompleter();
 
     scheduleMicrotask(() async {
       try {

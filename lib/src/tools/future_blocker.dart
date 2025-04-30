@@ -56,11 +56,11 @@ class FutureBlocker {
   Future<T> block<T>({required Future<T> Function() function}) async {
     if (!_isLocked) {
       _isLocked = true;
-      _waitingUnlocked = Completer();
+      _waitingUnlocked = MaxiCompleter();
     }
 
     if (_passing > 0) {
-      _waitingPassFinish ??= Completer();
+      _waitingPassFinish ??= MaxiCompleter();
       await _waitingPassFinish!.future;
     }
 
@@ -81,11 +81,11 @@ class FutureBlocker {
   Stream<T> blockStream<T>({required Future<Stream<T>> Function() function}) async* {
     if (!_isLocked) {
       _isLocked = true;
-      _waitingUnlocked = Completer();
+      _waitingUnlocked = MaxiCompleter();
     }
 
     if (_passing > 0) {
-      _waitingPassFinish ??= Completer();
+      _waitingPassFinish ??= MaxiCompleter();
       await _waitingPassFinish!.future;
     }
 
