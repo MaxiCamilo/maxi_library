@@ -22,7 +22,7 @@ class Semaphore with ISemaphore {
 
     if (!_isActive) {
       _isActive = true;
-      scheduleMicrotask(_runSemaphone);
+      maxiScheduleMicrotask(_runSemaphone);
     }
 
     return waiter.future;
@@ -38,7 +38,7 @@ class Semaphore with ISemaphore {
 
     if (!_isActive) {
       _isActive = true;
-      scheduleMicrotask(_runSemaphone);
+      maxiScheduleMicrotask(_runSemaphone);
     }
 
     return controller.stream;

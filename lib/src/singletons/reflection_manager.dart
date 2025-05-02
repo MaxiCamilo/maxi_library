@@ -62,7 +62,7 @@ class ReflectionManager with IThreadInitializer {
       return generator;
     }
 
-    final isPrimitive = ReflectionUtilities.isPrimitive(type);
+    final isPrimitive = ConverterUtilities.isPrimitive(type);
     if (isPrimitive != null) {
       return TypePrimitiveReflection(annotations: annotations, type: type);
     }
@@ -99,7 +99,7 @@ class ReflectionManager with IThreadInitializer {
       return generator;
     }
 
-    final isPrimitive = ReflectionUtilities.isPrimitive(type);
+    final isPrimitive = ConverterUtilities.isPrimitive(type);
     if (isPrimitive != null) {
       return TypePrimitiveReflection(annotations: annotations, type: type);
     }
@@ -135,7 +135,7 @@ class ReflectionManager with IThreadInitializer {
       return const TypeVoidReflection();
     }
 
-    final primitiveType = ReflectionUtilities.isPrimitive(type);
+    final primitiveType = ConverterUtilities.isPrimitive(type);
     if (primitiveType != null) {
       return TypePrimitiveReflection(annotations: [], type: type);
     }
@@ -244,7 +244,7 @@ class ReflectionManager with IThreadInitializer {
     }
 
     if (value is! List) {
-      if (ReflectionUtilities.isPrimitive(value.runtimeType) != null) {
+      if (ConverterUtilities.isPrimitive(value.runtimeType) != null) {
         return value.runtimeType == String ? '["${value.toString()}"]' : '[${value.toString()}]';
       } else {
         return '[${getReflectionEntity(value.runtimeType).serializeToJson(value: value, setTypeValue: setTypeValue)}]';
@@ -258,8 +258,8 @@ class ReflectionManager with IThreadInitializer {
     for (final item in value) {
       if (item is List) {
         jsonList.add(serializeListToJson(value: item, setTypeValue: setTypeValue));
-      } else if (item is Enum || ReflectionUtilities.isPrimitive(item.runtimeType) != null) {
-        jsonList.add(ReflectionUtilities.serializeToJson(item));
+      } else if (item is Enum || ConverterUtilities.isPrimitive(item.runtimeType) != null) {
+        jsonList.add(ConverterUtilities.serializeToRawJson(item));
       } else if (item is ICustomSerialization) {
         final customSer = item.serialize();
         if (customSer is String) {
@@ -386,7 +386,7 @@ class ReflectionManager with IThreadInitializer {
 
     if (newList.isNotEmpty) {
       final sameType = newList.first.runtimeType;
-      if (ReflectionUtilities.isPrimitive(sameType) == null || tryGetReflectionEntity(sameType) != null) {
+      if (ConverterUtilities.isPrimitive(sameType) == null || tryGetReflectionEntity(sameType) != null) {
         for (final item in newList) {
           if (item.runtimeType != sameType) {
             break;

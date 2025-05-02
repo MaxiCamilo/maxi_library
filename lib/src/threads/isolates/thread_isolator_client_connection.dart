@@ -179,7 +179,7 @@ class ThreadIsolatorClientConnection with IThreadInvoker, IThreadInvokeInstance,
 
   @override
   void closeConnection() {
-    scheduleMicrotask(() async {
+    maxiScheduleMicrotask(() async {
       if (!channel.isActive) {
         return;
       }

@@ -92,7 +92,7 @@ abstract class ReflectedEntityTypeTemplate with IReflectionType, IDeclarationRef
       throw NegativeResult(identifier: NegativeResultCodes.invalidFunctionality, message: Oration(message: 'The entity %1 is abstract, cannot create an object', textParts: [formalName]));
     }
 
-    if (selectedBuild == '' && !hasDefaultConstructor) {
+    if (selectedBuild == '' && fixedParametersValues.isNotEmpty && namedParametersValues.isNotEmpty && !hasDefaultConstructor) {
       throw NegativeResult(identifier: NegativeResultCodes.invalidFunctionality, message: Oration(message: 'The entity %1 does not have a default constructor', textParts: [formalName]));
     }
 
@@ -570,7 +570,7 @@ abstract class ReflectedEntityTypeTemplate with IReflectionType, IDeclarationRef
 
     final values = fields.map((x) {
       final value = x.getValue(instance: item);
-      if (ReflectionUtilities.isPrimitive(value.runtimeType) != null) {
+      if (ConverterUtilities.isPrimitive(value.runtimeType) != null) {
         return value.hashCode;
       }
 

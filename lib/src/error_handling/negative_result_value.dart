@@ -15,6 +15,7 @@ class NegativeResultValue extends NegativeResult {
     super.identifier = NegativeResultCodes.invalidProperty,
     super.cause,
     super.whenWasIt,
+    super.stackTrace,
     this.value,
     List<NegativeResultValue>? invalidProperties,
   }) : invalidProperties = invalidProperties ?? [];
@@ -39,6 +40,7 @@ class NegativeResultValue extends NegativeResult {
       cause: nr.cause,
       whenWasIt: nr.whenWasIt,
       invalidProperties: invalidProperties,
+      stackTrace: nr.stackTrace,
     );
   }
 
@@ -64,7 +66,7 @@ class NegativeResultValue extends NegativeResult {
     map['name'] = name.toString();
     map['formalName'] = formalName.serializeToJson();
     map['invalidProperties'] = invalidProperties.map<Map<String, dynamic>>((x) => x.serialize()).toList();
-
+    map['stackTrace'] = stackTrace;
     if (value != null) {
       map['value'] = value.toString();
     }
@@ -132,12 +134,13 @@ class NegativeResultValue extends NegativeResult {
 
     return NegativeResultValue(
       message: Oration.interpretFromJson(text: volatileProperty(propertyName: 'message', formalName: const Oration(message: 'Error message'), function: () => values['message']!)),
-      identifier: volatileProperty(propertyName: 'identifier', formalName: const Oration(message: 'Error Identifier'), function: () => NegativeResultCodes.values[(( values['identifier'] ?? values['idError'])! as int)]),
+      identifier: volatileProperty(propertyName: 'identifier', formalName: const Oration(message: 'Error Identifier'), function: () => NegativeResultCodes.values[((values['identifier'] ?? values['idError'])! as int)]),
       name: volatileProperty(propertyName: 'name', formalName: const Oration(message: 'Entity name'), function: () => values['name']!),
       formalName: volatileProperty(propertyName: 'formalName', formalName: const Oration(message: 'Formal name of Entity'), function: () => Oration.interpretFromJson(text: values['formalName']!)),
       whenWasIt:
           DateTime.fromMillisecondsSinceEpoch(volatileProperty(propertyName: 'whenWasIt', formalName: const Oration(message: 'Error date and time'), function: () => values['whenWasIt']! as int), isUtc: true).toLocal(),
       invalidProperties: invalidProperties,
+      stackTrace: values['stackTrace'] ?? '',
     );
   }
 }

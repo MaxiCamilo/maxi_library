@@ -16,7 +16,7 @@ mixin ISemaphore {
   Completer<void> buildLocker({Duration? timeout}) {
     final locker = MaxiCompleter();
 
-    scheduleMicrotask(() async {
+    maxiScheduleMicrotask(() async {
       try {
         await execute(function: () => timeout == null ? locker.future : locker.future.timeout(timeout, onTimeout: () => null));
       } catch (ex) {
@@ -31,7 +31,7 @@ mixin ISemaphore {
     final locker = MaxiCompleter();
     final makeTurn = MaxiCompleter();
 
-    scheduleMicrotask(() async {
+    maxiScheduleMicrotask(() async {
       try {
         await execute(function: () async {
           makeTurn.completeIfIncomplete(null);

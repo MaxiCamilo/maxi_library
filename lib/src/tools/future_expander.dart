@@ -17,7 +17,7 @@ class FutureExpander<T> {
 
     if (!_isActive) {
       _isActive = true;
-      scheduleMicrotask(_startFuncion);
+      maxiScheduleMicrotask(_startFuncion);
     }
 
     return instanceWaiting.future;
@@ -27,10 +27,10 @@ class FutureExpander<T> {
     _isActive = true;
     try {
       final result = await reservedFunction();
-      _waitingList.iterarWithPosition((x,_) => x.complete(result));
+      _waitingList.iterarWithPosition((x, _) => x.complete(result));
       _waitingList.clear();
     } catch (ex) {
-      _waitingList.iterarWithPosition((x,_) => x.completeError(ex));
+      _waitingList.iterarWithPosition((x, _) => x.completeError(ex));
       _waitingList.clear();
     }
     _isActive = false;

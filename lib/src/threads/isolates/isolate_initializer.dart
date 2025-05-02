@@ -30,7 +30,7 @@ class IsolateInitializer {
     final completer = MaxiCompleter<_IsolateInitializerFinalized>();
     late final Isolate isolate;
 
-    scheduleMicrotask(() async {
+    maxiScheduleMicrotask(() async {
       isolate = await Isolate.spawn(_prepareThread, _IsolateInitializerContext(initializers: initializers, sender: channel.serder, threadID: threadID), debugName: name, errorsAreFatal: false);
     });
 

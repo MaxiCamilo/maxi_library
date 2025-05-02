@@ -148,7 +148,7 @@ mixin IHttpRequester {
       onCancel: () => channel?.close(),
     );
 
-    scheduleMicrotask(() async {
+    maxiScheduleMicrotask(() async {
       try {
         channel = await executeWebSocket(
           url: url,

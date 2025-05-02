@@ -28,8 +28,8 @@ class TypeDynamicReflection with IReflectionType {
       return originalItem;
     }
 
-    if (ReflectionUtilities.isPrimitive(originalItem.runtimeType) != null) {
-      return ReflectionUtilities.primitiveClone(originalItem);
+    if (ConverterUtilities.isPrimitive(originalItem.runtimeType) != null) {
+      return ConverterUtilities.primitiveClone(originalItem);
     }
 
     final reflectedClass = ReflectionManager.getReflectionType(originalItem.runtimeType, annotations: []);

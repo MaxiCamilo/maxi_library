@@ -98,7 +98,7 @@ class ChannelIsolates with IChannel {
       },
     );
 
-    scheduleMicrotask(() => pointerSender(receiver.sendPort));
+    maxiScheduleMicrotask(() => pointerSender(receiver.sendPort));
 
     try {
       final sender = await waiterSender.future;
@@ -109,7 +109,7 @@ class ChannelIsolates with IChannel {
       } else {
         throw NegativeResult(
           identifier: NegativeResultCodes.implementationFailure,
-          message: Oration(message: 'It was expected that the isolator would return a "Sendport", but it returned a %1',textParts: [sender.runtimeType]),
+          message: Oration(message: 'It was expected that the isolator would return a "Sendport", but it returned a %1', textParts: [sender.runtimeType]),
         );
       }
     } catch (_) {

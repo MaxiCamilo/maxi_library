@@ -60,7 +60,7 @@ class IsolatedTaskQueueController {
 
     _taskQueue.add((id, timeout));
 
-    scheduleMicrotask(() => _semaphore.executeIfStopped(function: _execute));
+    maxiScheduleMicrotask(() => _semaphore.executeIfStopped(function: _execute));
 
     return id;
   }

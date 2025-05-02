@@ -56,7 +56,7 @@ void main() {
               function: (p) async {
                 log('waiting to finish');
                 await Future.delayed(Duration(seconds: 10));
-                scheduleMicrotask(() async {
+                maxiScheduleMicrotask(() async {
                   log('Bye!');
                   p.thread.closeThread();
                 });
@@ -262,7 +262,7 @@ void main() {
       await Future.delayed(Duration(seconds: 30));
     });
 
-      test('External channel between 2 services', () async {
+    test('External channel between 2 services', () async {
       await ThreadManager.mountEntity(entity: FirstService(isMustFail: false));
       await ThreadManager.mountEntity(entity: SecondService());
 

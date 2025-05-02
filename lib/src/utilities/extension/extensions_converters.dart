@@ -22,6 +22,13 @@ class GeneralConverter {
         isLocal: isLocal,
       );
 
+  Map<String, dynamic> toMapObjeto({required Oration propertyName, bool isLocal = true}) => ConverterUtilities.interpretToObjectJson(
+      text: item,
+      extra: Oration(
+        message: '"%1" parameter',
+        textParts: [propertyName],
+      ));
+
   bool toBoolean({required Oration propertyName}) => ConverterUtilities.toBoolean(value: item);
 
   T toEnum<T>({required List<Enum> optionsList, Oration propertyName = Oration.empty}) => volatile(

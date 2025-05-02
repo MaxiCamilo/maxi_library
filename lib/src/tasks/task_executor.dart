@@ -111,7 +111,7 @@ class TaskExecutor with ITaskExecutor {
     }
     _active = true;
 
-    scheduleMicrotask(_executePendingTasks);
+    maxiScheduleMicrotask(_executePendingTasks);
   }
 
   Future<void> _executePendingTasks() async {
@@ -123,7 +123,7 @@ class TaskExecutor with ITaskExecutor {
 
       final isCorrect = await first.execute();
       if (!isCorrect && first.isPersistent) {
-        scheduleMicrotask(() => _waitFailedTaskToResume(first));
+        maxiScheduleMicrotask(() => _waitFailedTaskToResume(first));
       }
     }
 

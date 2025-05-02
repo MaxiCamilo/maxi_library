@@ -188,7 +188,6 @@ class ThreadIsolatorServer with IThreadInvoker, IThreadManager, IThreadManagerSe
     _clientList.remove(value);
   }
 
-
   @override
   Future<void> closeAllThread() async {
     for (final item in _clientList) {
@@ -213,7 +212,7 @@ class ThreadIsolatorServer with IThreadInvoker, IThreadManager, IThreadManagerSe
   Future<IChannel<S, R>> createChannel<R, S>({InvocationParameters parameters = InvocationParameters.emptry, required FutureOr<void> Function(InvocationContext context, IChannel<R, S> channel) function}) async {
     final master = MasterChannel<R, S>(closeIfEveryoneClosed: true);
 
-    scheduleMicrotask(() async {
+    maxiScheduleMicrotask(() async {
       try {
         await function(InvocationContext.fromParametes(thread: this, applicant: this, parametres: parameters), master);
       } catch (ex, st) {

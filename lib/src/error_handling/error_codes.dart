@@ -1,3 +1,6 @@
+import 'package:maxi_library/maxi_library.dart';
+
+@reflect
 enum NegativeResultCodes {
   nonStandardError,
 

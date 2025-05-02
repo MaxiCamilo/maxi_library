@@ -70,7 +70,7 @@ class InvocationParameters {
     final item = fixedParameters[location];
     return programmingFailure(
       reasonFailure: Oration(message: 'The item N° %1 is not %2, but it is %3', textParts: [location, T, item.runtimeType]),
-      function: () => item as T,
+      function: () => _convertValue<T>(item),
     );
   }
 
@@ -81,7 +81,7 @@ class InvocationParameters {
     checkProgrammingFailure(thatChecks: Oration(message: 'The listing constains an item called "%1"', textParts: [name]), result: () => item != null);
     return programmingFailure(
       reasonFailure: Oration(message: 'The item called  "%1"  is not %2, but it is %3', textParts: [name, T, item.runtimeType]),
-      function: () => item as T,
+      function: () => _convertValue<T>(item),
     );
   }
 
@@ -97,7 +97,31 @@ class InvocationParameters {
 
     return programmingFailure(
       reasonFailure: Oration(message: 'The item called %1 is not %2, but it is %3', textParts: [name, T, item.runtimeType]),
-      function: () => item as T,
+      function: () => _convertValue<T>(item),
+    );
+  }
+
+  static T _convertValue<T>(dynamic value) {
+    if (value is T) {
+      return value;
+    }
+
+    final primitiveType = ConverterUtilities.isPrimitive(T);
+    if (primitiveType != null) {
+      return ConverterUtilities.convertSpecificPrimitive(type: primitiveType, value: value);
+    }
+
+    if (ReflectionManager.tryGetReflectionEntity(T) != null) {
+      if (value is Map<String, dynamic>) {
+        return ReflectionManager.interpret(value: value, tryToCorrectNames: false);
+      } else if (value is String) {
+        return ReflectionManager.interpretJson(rawText: value, tryToCorrectNames: false);
+      }
+    }
+
+    throw Oration(
+      message: 'It is not possible to convert the value of %1 to %2',
+      textParts: [value.runtimeType, T],
     );
   }
 }

@@ -30,7 +30,7 @@ class StreamStateResult<S, R> implements StreamState<S, R>, ICustomSerialization
       serializeResult = (result as ICustomSerialization).serialize();
     } else if (result is List) {
       serializeResult = ReflectionManager.serializeListToJson(value: result, setTypeValue: true);
-    } else if (ReflectionUtilities.isPrimitive(result.runtimeType) != null) {
+    } else if (ConverterUtilities.isPrimitive(result.runtimeType) != null) {
       serializeResult = result;
     } else {
       serializeResult = ReflectionManager.getReflectionEntity(result.runtimeType).serializeToJson(value: result);
@@ -46,8 +46,9 @@ class StreamStateResult<S, R> implements StreamState<S, R>, ICustomSerialization
 
 class StreamStatePartialError<S, R> implements StreamState<S, R>, ICustomSerialization {
   final dynamic partialError;
-  
-  const StreamStatePartialError({required this.partialError});
+  final StackTrace? stackTrace;
+
+  const StreamStatePartialError({required this.partialError, this.stackTrace});
 
   @override
   serialize() {

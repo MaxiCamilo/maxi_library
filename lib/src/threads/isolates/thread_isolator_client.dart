@@ -299,7 +299,7 @@ class ThreadIsolatorClient with IThreadInvoker, IThreadManager, IThreadManagerCl
   Future<IChannel<S, R>> createChannel<R, S>({InvocationParameters parameters = InvocationParameters.emptry, required FutureOr<void> Function(InvocationContext context, IChannel<R, S> channel) function}) async {
     final master = MasterChannel<R, S>(closeIfEveryoneClosed: true);
 
-    scheduleMicrotask(() async {
+    maxiScheduleMicrotask(() async {
       try {
         await function(InvocationContext.fromParametes(thread: this, applicant: this, parametres: parameters), master);
       } catch (ex, st) {
@@ -317,7 +317,7 @@ class ThreadIsolatorClient with IThreadInvoker, IThreadManager, IThreadManagerCl
     if (T == entityType) {
       final master = MasterChannel<R, S>(closeIfEveryoneClosed: true);
 
-      scheduleMicrotask(() async {
+      maxiScheduleMicrotask(() async {
         try {
           await function(_entity, InvocationContext.fromParametes(thread: this, applicant: this, parametres: parameters), master);
         } catch (ex, st) {

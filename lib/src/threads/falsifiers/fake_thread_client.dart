@@ -74,7 +74,7 @@ class FakeThreadClient with IThreadInvoker, IThreadManager, IThreadManagerClient
   Future<IChannel<S, R>> callBackgroundChannel<R, S>({required InvocationParameters parameters, required FutureOr<void> Function(InvocationContext context, IChannel<R, S> channel) function}) async {
     final master = MasterChannel<S, R>(closeIfEveryoneClosed: true);
 
-    scheduleMicrotask(() async {
+    maxiScheduleMicrotask(() async {
       final slaver = master.createSlave();
       await function(InvocationContext.fromParametes(thread: this, applicant: this, parametres: parameters), slaver);
     });
@@ -152,7 +152,7 @@ class FakeThreadClient with IThreadInvoker, IThreadManager, IThreadManagerClient
   Future<IChannel<S, R>> createChannel<R, S>({InvocationParameters parameters = InvocationParameters.emptry, required FutureOr<void> Function(InvocationContext context, IChannel<R, S> channel) function}) async {
     final master = MasterChannel<R, S>(closeIfEveryoneClosed: true);
 
-    scheduleMicrotask(() async {
+    maxiScheduleMicrotask(() async {
       try {
         await function(InvocationContext.fromParametes(thread: this, applicant: this, parametres: parameters), master);
       } catch (ex, st) {
@@ -173,7 +173,7 @@ class FakeThreadClient with IThreadInvoker, IThreadManager, IThreadManagerClient
 
     final master = MasterChannel<R, S>(closeIfEveryoneClosed: true);
 
-    scheduleMicrotask(() async {
+    maxiScheduleMicrotask(() async {
       try {
         await function(_entity, InvocationContext.fromParametes(thread: this, applicant: this, parametres: parameters), master);
       } catch (ex, st) {

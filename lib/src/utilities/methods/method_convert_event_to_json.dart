@@ -22,7 +22,7 @@ class MethodConvertEventToJson with IFunctionality<Map<String, dynamic>> {
       final errorMap = result.serialize();
       map['\$type'] = errorMap['\$type'];
       map['content'] = errorMap;
-    } else if (ReflectionUtilities.isPrimitive(result.runtimeType) != null) {
+    } else if (ConverterUtilities.isPrimitive(result.runtimeType) != null) {
       map['\$type'] = result.runtimeType.toString().toLowerCase();
       map['content'] = result;
     } else if (result is ICustomSerialization) {

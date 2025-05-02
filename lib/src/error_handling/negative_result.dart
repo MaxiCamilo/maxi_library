@@ -39,6 +39,7 @@ class NegativeResult implements Exception, CustomSerialization, ICustomSerializa
       identifier: volatileProperty(propertyName: 'identifier', formalName: const Oration(message: 'Error Identifier'), function: () => NegativeResultCodes.values[((values['identifier'] ?? values['idError'])! as int)]),
       whenWasIt:
           DateTime.fromMillisecondsSinceEpoch(volatileProperty(propertyName: 'whenWasIt', formalName: const Oration(message: 'Error date and time'), function: () => values['whenWasIt']! as int), isUtc: true).toLocal(),
+      stackTrace: values['stackTrace'] ?? '',
     );
   }
 
@@ -79,6 +80,7 @@ class NegativeResult implements Exception, CustomSerialization, ICustomSerializa
         'idError': identifier.index,
         'message': message.serialize(),
         'whenWasIt': whenWasIt.toUtc().millisecondsSinceEpoch,
+        'stackTrace': stackTrace,
       };
     } else {
       return {
@@ -87,6 +89,7 @@ class NegativeResult implements Exception, CustomSerialization, ICustomSerializa
         'message': message.serialize(),
         'whenWasIt': whenWasIt.toUtc().millisecondsSinceEpoch,
         'originalError': cause.toString(),
+        'stackTrace': stackTrace,
       };
     }
   }

@@ -3,6 +3,8 @@ import 'dart:typed_data';
 
 import 'package:maxi_library/maxi_library.dart';
 
+enum PrimitiesType { isInt, isDouble, isNum, isString, isBoolean, isDateTime, isBinary, isObjectMap }
+
 mixin ConverterUtilities {
   static int toInt({required dynamic value, Oration propertyName = Oration.empty, bool ifEmptyIsZero = false}) {
     if (value == null) {
@@ -266,6 +268,49 @@ mixin ConverterUtilities {
     }
   }
 
+  //static String trySerializeToJson(dynamic item) => json.encode(trySerializeToPrimitive(item));
+
+  static String serializeToJson(dynamic item) {
+    if (item is Map<String, dynamic>) {
+      return json.encode(item.map((key, value) {
+        final primitiveType = isPrimitive(value.runtimeType);
+        if (primitiveType != null) {
+          return MapEntry(key, primitiveClone(value));
+        } else {
+          return MapEntry(key, serializeToJson(value));
+        }
+      }));
+    }
+
+    if (item is List) {
+      return json.encode(item.map((value) {
+        final primitiveType = isPrimitive(value.runtimeType);
+        if (primitiveType != null) {
+          return convertSpecificPrimitive(type: primitiveType, value: value);
+        } else {
+          return serializeToJson(value);
+        }
+      }).toList(growable: false));
+    }
+
+    final primitiveType = isPrimitive(item.runtimeType);
+    if (primitiveType != null) {
+      throw NegativeResult(identifier: NegativeResultCodes.invalidValue, message: const Oration(message: 'A primitive cannot be directly serialized to JSON'));
+      //return ConverterUtilities.convertSpecificPrimitive(type: primitiveType, value: item);
+    }
+
+    if (item is ICustomSerialization) {
+      final result = item.serialize();
+      if (result is String) {
+        return result;
+      } else {
+        return serializeToJson(result);
+      }
+    }
+
+    return ReflectionManager.serialzeEntityToJson(value: item);
+  }
+
   static dynamic interpretJson({required String text, Oration? extra}) {
     return volatile(detail: extra == null ? Oration(message: 'The content is not valid json') : Oration(message: 'The content is not valid json %1', textParts: [extra]), function: () => json.decode(text));
   }
@@ -284,5 +329,110 @@ mixin ConverterUtilities {
         function: () => (interpretJson(text: text, extra: extra) as List).cast<Map<String, dynamic>>()).toList();
   }
 
-  static String toJsonString(dynamic item) => volatile(detail: const Oration(message: 'The entered value cannot be converted to JSON text'), function: () => json.encode(item));
+  // static String toJsonString(dynamic item) => volatile(detail: const Oration(message: 'The entered value cannot be converted to JSON text'), function: () => json.encode(item));
+
+  static PrimitiesType? isPrimitive(Type type) {
+    return switch (type) {
+      const (String) => PrimitiesType.isString,
+      const (int) => PrimitiesType.isInt,
+      const (double) => PrimitiesType.isDouble,
+      const (bool) => PrimitiesType.isBoolean,
+      const (DateTime) => PrimitiesType.isDateTime,
+      const (num) => PrimitiesType.isNum,
+      const (Uint8List) || const (List<int>) => PrimitiesType.isBinary,
+      const (Map<String, dynamic>) => PrimitiesType.isObjectMap,
+      _ => null,
+    };
+  }
+
+  static String serializeToRawJson(dynamic value) {
+    if (value is Enum) {
+      return value.index.toString();
+    }
+
+    final type = volatile(detail: Oration(message: '%1 is primitive', textParts: [value.runtimeType]), function: () => isPrimitive(value.runtimeType)!);
+    return switch (type) {
+      PrimitiesType.isInt => value.toString(),
+      PrimitiesType.isDouble => value.toString(),
+      PrimitiesType.isNum => value.toString(),
+      PrimitiesType.isString => '"${value.toString()}"',
+      PrimitiesType.isBoolean => value.toString(),
+      PrimitiesType.isDateTime => (value as DateTime).millisecondsSinceEpoch.toString(),
+      PrimitiesType.isBinary => '"${utf8.decode(value)}"',
+      PrimitiesType.isObjectMap => json.encode(value),
+    };
+  }
+
+  static dynamic serializeToPrimitive(dynamic value, {bool nullIsEmptryString = true}) {
+    if (value == null) {
+      if (nullIsEmptryString) {
+        return '';
+      } else {}
+    }
+
+    if (value is Enum) {
+      return value.index.toString();
+    }
+
+    final primitive = isPrimitive(value.runtimeType);
+    if (primitive != null) {
+      return switch (primitive) {
+        PrimitiesType.isInt => value,
+        PrimitiesType.isDouble => value,
+        PrimitiesType.isNum => value,
+        PrimitiesType.isString => value,
+        PrimitiesType.isBoolean => value,
+        PrimitiesType.isDateTime => (value as DateTime).millisecondsSinceEpoch,
+        PrimitiesType.isBinary => utf8.decode(value),
+        PrimitiesType.isObjectMap => json.encode(value),
+      };
+    }
+
+    return ConverterUtilities.serializeToJson(value);
+  }
+
+  static dynamic primitiveClone(dynamic item) {
+    if (item is Enum) {
+      return primitiveClone(item.index);
+    }
+
+    return switch (item.runtimeType) {
+      const (String) => '$item',
+      const (int) => (item as int) * 1,
+      const (double) => (item as double) * 1,
+      const (bool) => (item as bool) ? true : false,
+      const (num) => (item as num) * 1,
+      const (DateTime) => (item as DateTime).add(Duration(milliseconds: 0)),
+      const (Uint8List) || const (List<int>) => Uint8List.fromList((item as List<int>)),
+      const (Map<String, dynamic>) => (item as Map<String, dynamic>).map((key, value) => MapEntry(key, primitiveClone(value))),
+      _ => throw NegativeResult(identifier: NegativeResultCodes.wrongType, message: Oration(message: 'The value is not a primitive value type ("%1")', textParts: [item.runtimeType]))
+    };
+  }
+
+  static dynamic generateDefaultPrimitive(PrimitiesType type) {
+    return switch (type) {
+      PrimitiesType.isInt => 0,
+      PrimitiesType.isDouble => 0.0,
+      PrimitiesType.isNum => 0,
+      PrimitiesType.isString => '',
+      PrimitiesType.isBoolean => false,
+      PrimitiesType.isDateTime => DateTime.now(),
+      PrimitiesType.isBinary => Uint8List.fromList([]),
+      PrimitiesType.isObjectMap => '{}',
+    };
+  }
+
+  static dynamic convertSpecificPrimitive({required PrimitiesType type, required dynamic value}) {
+    volatile(detail: Oration(message: 'Null values are not accepted'), function: () => value!);
+    return switch (type) {
+      PrimitiesType.isInt => ConverterUtilities.toInt(value: value),
+      PrimitiesType.isDouble => ConverterUtilities.toDouble(value: value),
+      PrimitiesType.isNum => ConverterUtilities.toDouble(value: value),
+      PrimitiesType.isString => value.toString(),
+      PrimitiesType.isBoolean => ConverterUtilities.toBoolean(value: value),
+      PrimitiesType.isDateTime => ConverterUtilities.toDateTime(value: value),
+      PrimitiesType.isBinary => ConverterUtilities.toBinary(value: value),
+      PrimitiesType.isObjectMap => ConverterUtilities.serializeToJson(value),
+    };
+  }
 }

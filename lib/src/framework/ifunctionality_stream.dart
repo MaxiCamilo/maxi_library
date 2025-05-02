@@ -37,7 +37,7 @@ mixin IStreamFunctionality<T> {
     final streamController = StreamController<StreamState<Oration, T>>();
     final instance = createManager();
 
-    scheduleMicrotask(() async {
+    maxiScheduleMicrotask(() async {
       instance.start();
 
       final otherDone = manager.done.whenComplete(() => instance.cancelStream());
@@ -183,7 +183,7 @@ class FunctionalityStreamManager<T> {
       onCancel: onThereAreNoListeners,
     );
 
-    scheduleMicrotask(_runStream);
+    maxiScheduleMicrotask(_runStream);
     return _streamController!.stream;
   }
 

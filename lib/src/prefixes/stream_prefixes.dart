@@ -204,11 +204,12 @@ Future<R> waitFunctionalStream<S, R>({
         onData?.call(item.item);
       } else if (item is StreamStateResult<S, R>) {
         completer.completeIfIncomplete(item.result);
-        if (onDoneOrCanceled != null) {
-          onDoneOrCanceled(item.result);
-        }
+
         if (onResult != null) {
           onResult(item.result);
+        }
+        if (onDoneOrCanceled != null) {
+          onDoneOrCanceled(item.result);
         }
       } else if (item is StreamStatePartialError<S, R>) {
         onError?.call(item.partialError);

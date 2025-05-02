@@ -25,14 +25,14 @@ class GeneratorPrimitiveList<T> with IValueGenerator, IReflectionType, IPrimitiv
     if (originalItem is Iterable) {
       final newList = <T>[];
       for (final item in originalItem) {
-        final reflector = volatile(detail: Oration(message: 'Item at list is primitive', textParts: [item.runtimeType]), function: () => ReflectionUtilities.isPrimitive(item.runtimeType)!);
-        newList.add(ReflectionUtilities.convertSpecificPrimitive(type: reflector, value: item));
+        final reflector = volatile(detail: Oration(message: 'Item at list is primitive', textParts: [item.runtimeType]), function: () => ConverterUtilities.isPrimitive(item.runtimeType)!);
+        newList.add(ConverterUtilities.convertSpecificPrimitive(type: reflector, value: item));
       }
       return newList;
     } else if (originalItem is T) {
-      return [ReflectionUtilities.primitiveClone(originalItem)];
+      return [ConverterUtilities.primitiveClone(originalItem)];
     } else {
-      return [ReflectionUtilities.convertSpecificPrimitive(type: ReflectionUtilities.isPrimitive(originalItem.runtimeType)!, value: originalItem)];
+      return [ConverterUtilities.convertSpecificPrimitive(type: ConverterUtilities.isPrimitive(originalItem.runtimeType)!, value: originalItem)];
     }
   }
 

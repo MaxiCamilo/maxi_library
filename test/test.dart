@@ -2,12 +2,14 @@
 
 import 'package:maxi_library/export_reflectors.dart';
 import 'package:maxi_library/maxi_library.dart';
-import 'package:maxi_library/src/reflection/decorators/essential_key.dart';
-import 'package:maxi_library/src/reflection/decorators/reflect.dart';
 import 'package:maxi_library/maxi_library.dart';
+import 'package:maxi_library/src/reflection/decorators/reflect.dart';
+import 'package:maxi_library/src/reflection/decorators/essential_key.dart';
 import 'dart:developer';
 import 'dart:math' as math;
 
+import 'functionalities/remote_functionality.dart';
+import 'functionalities/remote_functionality_stream.dart';
 import 'models/mammal.dart';
 import 'models/mutant.dart';
 import 'models/persons.dart';
@@ -45,6 +47,312 @@ class _TestClassTypeEnum extends TypeEnumeratorReflector {
           ],
         );
 }
+
+/*----------------------------------   Class Mammal   ----------------------------------*/
+
+/*MAMMAL FIELDS*/
+
+class _MammalnumberOfLegs extends GeneratedReflectedField<Mammal, int> with GeneratedReflectedModifiableField<Mammal, int> {
+  const _MammalnumberOfLegs();
+  @override
+  List get annotations => const [];
+
+  @override
+  String get name => 'numberOfLegs';
+
+  @override
+  bool get isStatic => false;
+
+  @override
+  bool get isConst => false;
+
+  @override
+  bool get isLate => false;
+
+  @override
+  bool get isFinal => false;
+
+  @override
+  bool get acceptNull => false;
+
+  @override
+  bool get hasDefaultValue => true;
+  @override
+  int? get defaulValue => 0;
+
+  @override
+  int getReservedValue({required Mammal? entity}) => entity!.numberOfLegs;
+  @override
+  void setReservedValue({required Mammal? entity, required int newValue}) => entity!.numberOfLegs = newValue;
+}
+
+/*MAMMAL METHODS*/
+
+class _MammalsayHiMethod extends GeneratedReflectedMethod<Mammal, String> {
+  const _MammalsayHiMethod();
+  @override
+  String get name => 'sayHi';
+
+  @override
+  bool get isStatic => false;
+
+  @override
+  MethodDetectedType get methodType => MethodDetectedType.commonMethod;
+
+  @override
+  List get annotations => const [];
+
+  static const _fix0 = GeneratedReflectedFixedParameter<String>(
+    annotations: const [],
+    name: 'namePerson',
+    position: 0,
+    hasDefaultValue: false,
+    defaultValue: null,
+    acceptNulls: false,
+  );
+  @override
+  List<GeneratedReflectedFixedParameter> get fixedParameters => const [_fix0];
+
+  @override
+  List<GeneratedReflectedNamedParameter> get namedParameters => const [];
+
+  @override
+  String callReservedMethod({required Mammal? entity, required List fixedValues, required Map<String, dynamic> namedValues}) => entity!.sayHi(
+        _fix0.getValueFromList(fixedValues),
+      );
+}
+
+/*MAMMAL INSTANCE*/
+
+class _Mammal extends GeneratedReflectedClass<Mammal> {
+  const _Mammal();
+  @override
+  List get annotations => const [reflect];
+
+  @override
+  Type? get baseClass => null;
+
+  @override
+  List<Type> get classThatImplement => const [];
+
+  @override
+  bool get isAbstract => true;
+
+  @override
+  bool get isMixin => true;
+
+  @override
+  String get name => 'Mammal';
+
+  @override
+  List<GeneratedReflectedMethod> get methods => const [_MammalsayHiMethod()];
+
+  @override
+  List<GeneratedReflectedField> get fields => const [_MammalnumberOfLegs()];
+}
+/*----------------------------------   x   ----------------------------------*/
+
+/*----------------------------------   Class Mutant   ----------------------------------*/
+
+/*MUTANT FIELDS*/
+
+/*MUTANT METHODS*/
+
+class _MutantmutantTypeGetter extends GeneratedReflectedMethod<Mutant, Type> {
+  const _MutantmutantTypeGetter();
+  @override
+  String get name => 'mutantType';
+
+  @override
+  bool get isStatic => false;
+
+  @override
+  MethodDetectedType get methodType => MethodDetectedType.getMehtod;
+
+  @override
+  List get annotations => const [];
+
+  @override
+  List<GeneratedReflectedFixedParameter> get fixedParameters => const [];
+
+  @override
+  List<GeneratedReflectedNamedParameter> get namedParameters => const [];
+
+  @override
+  Type callReservedMethod({required Mutant? entity, required List fixedValues, required Map<String, dynamic> namedValues}) => entity!.mutantType;
+}
+
+class _MutantsayHiMethod extends GeneratedReflectedMethod<Mutant, String> {
+  const _MutantsayHiMethod();
+  @override
+  String get name => 'sayHi';
+
+  @override
+  bool get isStatic => false;
+
+  @override
+  MethodDetectedType get methodType => MethodDetectedType.commonMethod;
+
+  @override
+  List get annotations => const [override];
+
+  static const _fix0 = GeneratedReflectedFixedParameter<String>(
+    annotations: const [],
+    name: 'namePerson',
+    position: 0,
+    hasDefaultValue: false,
+    defaultValue: null,
+    acceptNulls: false,
+  );
+  @override
+  List<GeneratedReflectedFixedParameter> get fixedParameters => const [_fix0];
+
+  @override
+  List<GeneratedReflectedNamedParameter> get namedParameters => const [];
+
+  @override
+  String callReservedMethod({required Mutant? entity, required List fixedValues, required Map<String, dynamic> namedValues}) => entity!.sayHi(
+        _fix0.getValueFromList(fixedValues),
+      );
+}
+
+class _MutantnamedParametersMethod extends GeneratedReflectedMethod<Mutant, dynamic> {
+  const _MutantnamedParametersMethod();
+  @override
+  String get name => 'namedParameters';
+
+  @override
+  bool get isStatic => false;
+
+  @override
+  MethodDetectedType get methodType => MethodDetectedType.commonMethod;
+
+  @override
+  List get annotations => const [];
+
+  static const _namnamedWithoutValue = GeneratedReflectedNamedParameter<String>(
+    annotations: const [],
+    defaultValue: null,
+    hasDefaultValue: false,
+    acceptNulls: false,
+    name: 'namedWithoutValue',
+  );
+  static const _namnamedWithValue = GeneratedReflectedNamedParameter<String>(
+    annotations: const [],
+    defaultValue: '',
+    hasDefaultValue: true,
+    acceptNulls: false,
+    name: 'namedWithValue',
+  );
+  @override
+  List<GeneratedReflectedFixedParameter> get fixedParameters => const [];
+
+  @override
+  List<GeneratedReflectedNamedParameter> get namedParameters => const [_namnamedWithoutValue, _namnamedWithValue];
+
+  @override
+  dynamic callReservedMethod({required Mutant? entity, required List fixedValues, required Map<String, dynamic> namedValues}) => entity!.namedParameters(
+        namedWithoutValue: _namnamedWithoutValue.getValueFromMap(namedValues),
+        namedWithValue: _namnamedWithValue.getValueFromMap(namedValues),
+      );
+}
+
+class _MutantfixedParametersMethod extends GeneratedReflectedMethod<Mutant, dynamic> {
+  const _MutantfixedParametersMethod();
+  @override
+  String get name => 'fixedParameters';
+
+  @override
+  bool get isStatic => false;
+
+  @override
+  MethodDetectedType get methodType => MethodDetectedType.commonMethod;
+
+  @override
+  List get annotations => const [];
+
+  static const _fix0 = GeneratedReflectedFixedParameter<String>(
+    annotations: const [],
+    name: 'fixedWithoutValue',
+    position: 0,
+    hasDefaultValue: false,
+    defaultValue: null,
+    acceptNulls: false,
+  );
+  static const _fix1 = GeneratedReflectedFixedParameter<String>(
+    annotations: const [],
+    name: 'fixedWithValue',
+    position: 1,
+    hasDefaultValue: true,
+    defaultValue: 'jeje',
+    acceptNulls: false,
+  );
+  @override
+  List<GeneratedReflectedFixedParameter> get fixedParameters => const [_fix0, _fix1];
+
+  @override
+  List<GeneratedReflectedNamedParameter> get namedParameters => const [];
+
+  @override
+  dynamic callReservedMethod({required Mutant? entity, required List fixedValues, required Map<String, dynamic> namedValues}) => entity!.fixedParameters(
+        _fix0.getValueFromList(fixedValues),
+        _fix1.getValueFromList(fixedValues),
+      );
+}
+
+class _MutantBuilder extends GeneratedReflectedMethod<Mutant, Mutant> {
+  const _MutantBuilder();
+  @override
+  String get name => '';
+
+  @override
+  bool get isStatic => true;
+
+  @override
+  MethodDetectedType get methodType => MethodDetectedType.buildMethod;
+
+  @override
+  List get annotations => const [];
+
+  @override
+  List<GeneratedReflectedFixedParameter> get fixedParameters => const [];
+
+  @override
+  List<GeneratedReflectedNamedParameter> get namedParameters => const [];
+
+  @override
+  Mutant callReservedMethod({required Mutant? entity, required List fixedValues, required Map<String, dynamic> namedValues}) => Mutant();
+}
+
+/*MUTANT INSTANCE*/
+
+class _Mutant extends GeneratedReflectedClass<Mutant> {
+  const _Mutant();
+  @override
+  List get annotations => const [reflect];
+
+  @override
+  Type? get baseClass => null;
+
+  @override
+  List<Type> get classThatImplement => const [Mammal];
+
+  @override
+  bool get isAbstract => false;
+
+  @override
+  bool get isMixin => false;
+
+  @override
+  String get name => 'Mutant';
+
+  @override
+  List<GeneratedReflectedMethod> get methods => const [_MutantmutantTypeGetter(), _MutantsayHiMethod(), _MutantnamedParametersMethod(), _MutantfixedParametersMethod(), _MutantBuilder()];
+
+  @override
+  List<GeneratedReflectedField> get fields => const [];
+}
+/*----------------------------------   x   ----------------------------------*/
 
 /*----------------------------------   Class Persons   ----------------------------------*/
 
@@ -675,312 +983,6 @@ class _Pets extends GeneratedReflectedClass<Pets> {
 }
 /*----------------------------------   x   ----------------------------------*/
 
-/*----------------------------------   Class Mammal   ----------------------------------*/
-
-/*MAMMAL FIELDS*/
-
-class _MammalnumberOfLegs extends GeneratedReflectedField<Mammal, int> with GeneratedReflectedModifiableField<Mammal, int> {
-  const _MammalnumberOfLegs();
-  @override
-  List get annotations => const [];
-
-  @override
-  String get name => 'numberOfLegs';
-
-  @override
-  bool get isStatic => false;
-
-  @override
-  bool get isConst => false;
-
-  @override
-  bool get isLate => false;
-
-  @override
-  bool get isFinal => false;
-
-  @override
-  bool get acceptNull => false;
-
-  @override
-  bool get hasDefaultValue => true;
-  @override
-  int? get defaulValue => 0;
-
-  @override
-  int getReservedValue({required Mammal? entity}) => entity!.numberOfLegs;
-  @override
-  void setReservedValue({required Mammal? entity, required int newValue}) => entity!.numberOfLegs = newValue;
-}
-
-/*MAMMAL METHODS*/
-
-class _MammalsayHiMethod extends GeneratedReflectedMethod<Mammal, String> {
-  const _MammalsayHiMethod();
-  @override
-  String get name => 'sayHi';
-
-  @override
-  bool get isStatic => false;
-
-  @override
-  MethodDetectedType get methodType => MethodDetectedType.commonMethod;
-
-  @override
-  List get annotations => const [];
-
-  static const _fix0 = GeneratedReflectedFixedParameter<String>(
-    annotations: const [],
-    name: 'namePerson',
-    position: 0,
-    hasDefaultValue: false,
-    defaultValue: null,
-    acceptNulls: false,
-  );
-  @override
-  List<GeneratedReflectedFixedParameter> get fixedParameters => const [_fix0];
-
-  @override
-  List<GeneratedReflectedNamedParameter> get namedParameters => const [];
-
-  @override
-  String callReservedMethod({required Mammal? entity, required List fixedValues, required Map<String, dynamic> namedValues}) => entity!.sayHi(
-        _fix0.getValueFromList(fixedValues),
-      );
-}
-
-/*MAMMAL INSTANCE*/
-
-class _Mammal extends GeneratedReflectedClass<Mammal> {
-  const _Mammal();
-  @override
-  List get annotations => const [reflect];
-
-  @override
-  Type? get baseClass => null;
-
-  @override
-  List<Type> get classThatImplement => const [];
-
-  @override
-  bool get isAbstract => true;
-
-  @override
-  bool get isMixin => true;
-
-  @override
-  String get name => 'Mammal';
-
-  @override
-  List<GeneratedReflectedMethod> get methods => const [_MammalsayHiMethod()];
-
-  @override
-  List<GeneratedReflectedField> get fields => const [_MammalnumberOfLegs()];
-}
-/*----------------------------------   x   ----------------------------------*/
-
-/*----------------------------------   Class Mutant   ----------------------------------*/
-
-/*MUTANT FIELDS*/
-
-/*MUTANT METHODS*/
-
-class _MutantmutantTypeGetter extends GeneratedReflectedMethod<Mutant, Type> {
-  const _MutantmutantTypeGetter();
-  @override
-  String get name => 'mutantType';
-
-  @override
-  bool get isStatic => false;
-
-  @override
-  MethodDetectedType get methodType => MethodDetectedType.getMehtod;
-
-  @override
-  List get annotations => const [];
-
-  @override
-  List<GeneratedReflectedFixedParameter> get fixedParameters => const [];
-
-  @override
-  List<GeneratedReflectedNamedParameter> get namedParameters => const [];
-
-  @override
-  Type callReservedMethod({required Mutant? entity, required List fixedValues, required Map<String, dynamic> namedValues}) => entity!.mutantType;
-}
-
-class _MutantsayHiMethod extends GeneratedReflectedMethod<Mutant, String> {
-  const _MutantsayHiMethod();
-  @override
-  String get name => 'sayHi';
-
-  @override
-  bool get isStatic => false;
-
-  @override
-  MethodDetectedType get methodType => MethodDetectedType.commonMethod;
-
-  @override
-  List get annotations => const [override];
-
-  static const _fix0 = GeneratedReflectedFixedParameter<String>(
-    annotations: const [],
-    name: 'namePerson',
-    position: 0,
-    hasDefaultValue: false,
-    defaultValue: null,
-    acceptNulls: false,
-  );
-  @override
-  List<GeneratedReflectedFixedParameter> get fixedParameters => const [_fix0];
-
-  @override
-  List<GeneratedReflectedNamedParameter> get namedParameters => const [];
-
-  @override
-  String callReservedMethod({required Mutant? entity, required List fixedValues, required Map<String, dynamic> namedValues}) => entity!.sayHi(
-        _fix0.getValueFromList(fixedValues),
-      );
-}
-
-class _MutantnamedParametersMethod extends GeneratedReflectedMethod<Mutant, dynamic> {
-  const _MutantnamedParametersMethod();
-  @override
-  String get name => 'namedParameters';
-
-  @override
-  bool get isStatic => false;
-
-  @override
-  MethodDetectedType get methodType => MethodDetectedType.commonMethod;
-
-  @override
-  List get annotations => const [];
-
-  static const _namnamedWithoutValue = GeneratedReflectedNamedParameter<String>(
-    annotations: const [],
-    defaultValue: null,
-    hasDefaultValue: false,
-    acceptNulls: false,
-    name: 'namedWithoutValue',
-  );
-  static const _namnamedWithValue = GeneratedReflectedNamedParameter<String>(
-    annotations: const [],
-    defaultValue: '',
-    hasDefaultValue: true,
-    acceptNulls: false,
-    name: 'namedWithValue',
-  );
-  @override
-  List<GeneratedReflectedFixedParameter> get fixedParameters => const [];
-
-  @override
-  List<GeneratedReflectedNamedParameter> get namedParameters => const [_namnamedWithoutValue, _namnamedWithValue];
-
-  @override
-  dynamic callReservedMethod({required Mutant? entity, required List fixedValues, required Map<String, dynamic> namedValues}) => entity!.namedParameters(
-        namedWithoutValue: _namnamedWithoutValue.getValueFromMap(namedValues),
-        namedWithValue: _namnamedWithValue.getValueFromMap(namedValues),
-      );
-}
-
-class _MutantfixedParametersMethod extends GeneratedReflectedMethod<Mutant, dynamic> {
-  const _MutantfixedParametersMethod();
-  @override
-  String get name => 'fixedParameters';
-
-  @override
-  bool get isStatic => false;
-
-  @override
-  MethodDetectedType get methodType => MethodDetectedType.commonMethod;
-
-  @override
-  List get annotations => const [];
-
-  static const _fix0 = GeneratedReflectedFixedParameter<String>(
-    annotations: const [],
-    name: 'fixedWithoutValue',
-    position: 0,
-    hasDefaultValue: false,
-    defaultValue: null,
-    acceptNulls: false,
-  );
-  static const _fix1 = GeneratedReflectedFixedParameter<String>(
-    annotations: const [],
-    name: 'fixedWithValue',
-    position: 1,
-    hasDefaultValue: true,
-    defaultValue: 'jeje',
-    acceptNulls: false,
-  );
-  @override
-  List<GeneratedReflectedFixedParameter> get fixedParameters => const [_fix0, _fix1];
-
-  @override
-  List<GeneratedReflectedNamedParameter> get namedParameters => const [];
-
-  @override
-  dynamic callReservedMethod({required Mutant? entity, required List fixedValues, required Map<String, dynamic> namedValues}) => entity!.fixedParameters(
-        _fix0.getValueFromList(fixedValues),
-        _fix1.getValueFromList(fixedValues),
-      );
-}
-
-class _MutantBuilder extends GeneratedReflectedMethod<Mutant, Mutant> {
-  const _MutantBuilder();
-  @override
-  String get name => '';
-
-  @override
-  bool get isStatic => true;
-
-  @override
-  MethodDetectedType get methodType => MethodDetectedType.buildMethod;
-
-  @override
-  List get annotations => const [];
-
-  @override
-  List<GeneratedReflectedFixedParameter> get fixedParameters => const [];
-
-  @override
-  List<GeneratedReflectedNamedParameter> get namedParameters => const [];
-
-  @override
-  Mutant callReservedMethod({required Mutant? entity, required List fixedValues, required Map<String, dynamic> namedValues}) => Mutant();
-}
-
-/*MUTANT INSTANCE*/
-
-class _Mutant extends GeneratedReflectedClass<Mutant> {
-  const _Mutant();
-  @override
-  List get annotations => const [reflect];
-
-  @override
-  Type? get baseClass => null;
-
-  @override
-  List<Type> get classThatImplement => const [Mammal];
-
-  @override
-  bool get isAbstract => false;
-
-  @override
-  bool get isMixin => false;
-
-  @override
-  String get name => 'Mutant';
-
-  @override
-  List<GeneratedReflectedMethod> get methods => const [_MutantmutantTypeGetter(), _MutantsayHiMethod(), _MutantnamedParametersMethod(), _MutantfixedParametersMethod(), _MutantBuilder()];
-
-  @override
-  List<GeneratedReflectedField> get fields => const [];
-}
-/*----------------------------------   x   ----------------------------------*/
-
 /*----------------------------------   Class Thing   ----------------------------------*/
 
 /*THING FIELDS*/
@@ -1038,361 +1040,6 @@ class _Thing extends GeneratedReflectedClass<Thing> {
 
   @override
   List<GeneratedReflectedField> get fields => const [];
-}
-/*----------------------------------   x   ----------------------------------*/
-
-/*----------------------------------   Class TestClass   ----------------------------------*/
-
-/*TESTCLASS FIELDS*/
-
-class _TestClassidentifier extends GeneratedReflectedField<TestClass, int> with GeneratedReflectedModifiableField<TestClass, int> {
-  const _TestClassidentifier();
-  @override
-  List get annotations => const [PrimaryKey()];
-
-  @override
-  String get name => 'identifier';
-
-  @override
-  bool get isStatic => false;
-
-  @override
-  bool get isConst => false;
-
-  @override
-  bool get isLate => false;
-
-  @override
-  bool get isFinal => false;
-
-  @override
-  bool get acceptNull => false;
-
-  @override
-  bool get hasDefaultValue => true;
-  @override
-  int? get defaulValue => 0;
-
-  @override
-  int getReservedValue({required TestClass? entity}) => entity!.identifier;
-  @override
-  void setReservedValue({required TestClass? entity, required int newValue}) => entity!.identifier = newValue;
-}
-
-class _TestClassanyDatetime extends GeneratedReflectedField<TestClass, DateTime> with GeneratedReflectedModifiableField<TestClass, DateTime> {
-  const _TestClassanyDatetime();
-  @override
-  List get annotations => const [];
-
-  @override
-  String get name => 'anyDatetime';
-
-  @override
-  bool get isStatic => false;
-
-  @override
-  bool get isConst => false;
-
-  @override
-  bool get isLate => false;
-
-  @override
-  bool get isFinal => false;
-
-  @override
-  bool get acceptNull => false;
-
-  @override
-  bool get hasDefaultValue => false;
-  @override
-  DateTime? get defaulValue => null;
-
-  @override
-  DateTime getReservedValue({required TestClass? entity}) => entity!.anyDatetime;
-  @override
-  void setReservedValue({required TestClass? entity, required DateTime newValue}) => entity!.anyDatetime = newValue;
-}
-
-/*TESTCLASS METHODS*/
-
-class _TestClasswhatIDoGetter extends GeneratedReflectedMethod<TestClass, String> {
-  const _TestClasswhatIDoGetter();
-  @override
-  String get name => 'whatIDo';
-
-  @override
-  bool get isStatic => false;
-
-  @override
-  MethodDetectedType get methodType => MethodDetectedType.getMehtod;
-
-  @override
-  List get annotations => const [];
-
-  @override
-  List<GeneratedReflectedFixedParameter> get fixedParameters => const [];
-
-  @override
-  List<GeneratedReflectedNamedParameter> get namedParameters => const [];
-
-  @override
-  String callReservedMethod({required TestClass? entity, required List fixedValues, required Map<String, dynamic> namedValues}) => entity!.whatIDo;
-}
-
-class _TestClasstypeGetter extends GeneratedReflectedMethod<TestClass, TestClassType> {
-  const _TestClasstypeGetter();
-  @override
-  String get name => 'type';
-
-  @override
-  bool get isStatic => false;
-
-  @override
-  MethodDetectedType get methodType => MethodDetectedType.getMehtod;
-
-  @override
-  List get annotations => const [];
-
-  @override
-  List<GeneratedReflectedFixedParameter> get fixedParameters => const [];
-
-  @override
-  List<GeneratedReflectedNamedParameter> get namedParameters => const [];
-
-  @override
-  TestClassType callReservedMethod({required TestClass? entity, required List fixedValues, required Map<String, dynamic> namedValues}) => entity!.type;
-}
-
-class _TestClassnameGetter extends GeneratedReflectedMethod<TestClass, String> {
-  const _TestClassnameGetter();
-  @override
-  String get name => 'name';
-
-  @override
-  bool get isStatic => false;
-
-  @override
-  MethodDetectedType get methodType => MethodDetectedType.getMehtod;
-
-  @override
-  List get annotations => const [];
-
-  @override
-  List<GeneratedReflectedFixedParameter> get fixedParameters => const [];
-
-  @override
-  List<GeneratedReflectedNamedParameter> get namedParameters => const [];
-
-  @override
-  String callReservedMethod({required TestClass? entity, required List fixedValues, required Map<String, dynamic> namedValues}) => entity!.name;
-}
-
-class _TestClassgetterMethod extends GeneratedReflectedMethod<TestClass, dynamic> {
-  const _TestClassgetterMethod();
-  @override
-  String get name => 'getter';
-
-  @override
-  bool get isStatic => false;
-
-  @override
-  MethodDetectedType get methodType => MethodDetectedType.commonMethod;
-
-  @override
-  List get annotations => const [];
-
-  @override
-  List<GeneratedReflectedFixedParameter> get fixedParameters => const [];
-
-  @override
-  List<GeneratedReflectedNamedParameter> get namedParameters => const [];
-
-  @override
-  dynamic callReservedMethod({required TestClass? entity, required List fixedValues, required Map<String, dynamic> namedValues}) => entity!.getter();
-}
-
-class _TestClassgetterStaticMethod extends GeneratedReflectedMethod<TestClass, dynamic> {
-  const _TestClassgetterStaticMethod();
-  @override
-  String get name => 'getterStatic';
-
-  @override
-  bool get isStatic => true;
-
-  @override
-  MethodDetectedType get methodType => MethodDetectedType.commonMethod;
-
-  @override
-  List get annotations => const [];
-
-  @override
-  List<GeneratedReflectedFixedParameter> get fixedParameters => const [];
-
-  @override
-  List<GeneratedReflectedNamedParameter> get namedParameters => const [];
-
-  @override
-  dynamic callReservedMethod({required TestClass? entity, required List fixedValues, required Map<String, dynamic> namedValues}) => TestClass.getterStatic();
-}
-
-class _TestClassnameSetter extends GeneratedReflectedMethod<TestClass, dynamic> {
-  const _TestClassnameSetter();
-  @override
-  String get name => 'name';
-
-  @override
-  bool get isStatic => false;
-
-  @override
-  MethodDetectedType get methodType => MethodDetectedType.setMethod;
-
-  @override
-  List get annotations => const [];
-
-  static const _fix0 = GeneratedReflectedFixedParameter<dynamic>(
-    annotations: const [],
-    name: 'newValue',
-    position: 0,
-    hasDefaultValue: false,
-    defaultValue: null,
-    acceptNulls: false,
-  );
-  @override
-  List<GeneratedReflectedFixedParameter> get fixedParameters => const [_fix0];
-
-  @override
-  List<GeneratedReflectedNamedParameter> get namedParameters => const [];
-
-  @override
-  dynamic callReservedMethod({required TestClass? entity, required List fixedValues, required Map<String, dynamic> namedValues}) => entity!.name = _fix0.getValueFromList(fixedValues);
-}
-
-class _TestClasstoStringMethod extends GeneratedReflectedMethod<TestClass, String> {
-  const _TestClasstoStringMethod();
-  @override
-  String get name => 'toString';
-
-  @override
-  bool get isStatic => false;
-
-  @override
-  MethodDetectedType get methodType => MethodDetectedType.commonMethod;
-
-  @override
-  List get annotations => const [override, EssentialKey()];
-
-  @override
-  List<GeneratedReflectedFixedParameter> get fixedParameters => const [];
-
-  @override
-  List<GeneratedReflectedNamedParameter> get namedParameters => const [];
-
-  @override
-  String callReservedMethod({required TestClass? entity, required List fixedValues, required Map<String, dynamic> namedValues}) => entity!.toString();
-}
-
-class _TestClassBuilder extends GeneratedReflectedMethod<TestClass, TestClass> {
-  const _TestClassBuilder();
-  @override
-  String get name => '';
-
-  @override
-  bool get isStatic => true;
-
-  @override
-  MethodDetectedType get methodType => MethodDetectedType.buildMethod;
-
-  @override
-  List get annotations => const [];
-
-  @override
-  List<GeneratedReflectedFixedParameter> get fixedParameters => const [];
-
-  @override
-  List<GeneratedReflectedNamedParameter> get namedParameters => const [];
-
-  @override
-  TestClass callReservedMethod({required TestClass? entity, required List fixedValues, required Map<String, dynamic> namedValues}) => TestClass();
-}
-
-class _TestClasssuperHumanFactorie extends GeneratedReflectedMethod<TestClass, TestClass> {
-  const _TestClasssuperHumanFactorie();
-  @override
-  String get name => 'superHuman';
-
-  @override
-  bool get isStatic => true;
-
-  @override
-  MethodDetectedType get methodType => MethodDetectedType.factoryMethod;
-
-  @override
-  List get annotations => const [];
-
-  static const _namname = GeneratedReflectedNamedParameter<String>(
-    annotations: const [],
-    defaultValue: null,
-    hasDefaultValue: false,
-    acceptNulls: false,
-    name: 'name',
-  );
-  static const _namdate = GeneratedReflectedNamedParameter<DateTime>(
-    annotations: const [],
-    defaultValue: null,
-    hasDefaultValue: false,
-    acceptNulls: false,
-    name: 'date',
-  );
-  @override
-  List<GeneratedReflectedFixedParameter> get fixedParameters => const [];
-
-  @override
-  List<GeneratedReflectedNamedParameter> get namedParameters => const [_namname, _namdate];
-
-  @override
-  TestClass callReservedMethod({required TestClass? entity, required List fixedValues, required Map<String, dynamic> namedValues}) => TestClass.superHuman(
-        name: _namname.getValueFromMap(namedValues),
-        date: _namdate.getValueFromMap(namedValues),
-      );
-}
-
-/*TESTCLASS INSTANCE*/
-
-class _TestClass extends GeneratedReflectedClass<TestClass> {
-  const _TestClass();
-  @override
-  List get annotations => const [reflect];
-
-  @override
-  Type? get baseClass => null;
-
-  @override
-  List<Type> get classThatImplement => const [];
-
-  @override
-  bool get isAbstract => false;
-
-  @override
-  bool get isMixin => false;
-
-  @override
-  String get name => 'TestClass';
-
-  @override
-  List<GeneratedReflectedMethod> get methods => const [
-        _TestClasswhatIDoGetter(),
-        _TestClasstypeGetter(),
-        _TestClassnameGetter(),
-        _TestClassgetterMethod(),
-        _TestClassgetterStaticMethod(),
-        _TestClassnameSetter(),
-        _TestClasstoStringMethod(),
-        _TestClassBuilder(),
-        _TestClasssuperHumanFactorie()
-      ];
-
-  @override
-  List<GeneratedReflectedField> get fields => const [_TestClassidentifier(), _TestClassanyDatetime()];
 }
 /*----------------------------------   x   ----------------------------------*/
 
@@ -1979,6 +1626,361 @@ class _SecondTestClass extends GeneratedReflectedClass<SecondTestClass> {
 }
 /*----------------------------------   x   ----------------------------------*/
 
+/*----------------------------------   Class TestClass   ----------------------------------*/
+
+/*TESTCLASS FIELDS*/
+
+class _TestClassidentifier extends GeneratedReflectedField<TestClass, int> with GeneratedReflectedModifiableField<TestClass, int> {
+  const _TestClassidentifier();
+  @override
+  List get annotations => const [PrimaryKey()];
+
+  @override
+  String get name => 'identifier';
+
+  @override
+  bool get isStatic => false;
+
+  @override
+  bool get isConst => false;
+
+  @override
+  bool get isLate => false;
+
+  @override
+  bool get isFinal => false;
+
+  @override
+  bool get acceptNull => false;
+
+  @override
+  bool get hasDefaultValue => true;
+  @override
+  int? get defaulValue => 0;
+
+  @override
+  int getReservedValue({required TestClass? entity}) => entity!.identifier;
+  @override
+  void setReservedValue({required TestClass? entity, required int newValue}) => entity!.identifier = newValue;
+}
+
+class _TestClassanyDatetime extends GeneratedReflectedField<TestClass, DateTime> with GeneratedReflectedModifiableField<TestClass, DateTime> {
+  const _TestClassanyDatetime();
+  @override
+  List get annotations => const [];
+
+  @override
+  String get name => 'anyDatetime';
+
+  @override
+  bool get isStatic => false;
+
+  @override
+  bool get isConst => false;
+
+  @override
+  bool get isLate => false;
+
+  @override
+  bool get isFinal => false;
+
+  @override
+  bool get acceptNull => false;
+
+  @override
+  bool get hasDefaultValue => false;
+  @override
+  DateTime? get defaulValue => null;
+
+  @override
+  DateTime getReservedValue({required TestClass? entity}) => entity!.anyDatetime;
+  @override
+  void setReservedValue({required TestClass? entity, required DateTime newValue}) => entity!.anyDatetime = newValue;
+}
+
+/*TESTCLASS METHODS*/
+
+class _TestClasswhatIDoGetter extends GeneratedReflectedMethod<TestClass, String> {
+  const _TestClasswhatIDoGetter();
+  @override
+  String get name => 'whatIDo';
+
+  @override
+  bool get isStatic => false;
+
+  @override
+  MethodDetectedType get methodType => MethodDetectedType.getMehtod;
+
+  @override
+  List get annotations => const [];
+
+  @override
+  List<GeneratedReflectedFixedParameter> get fixedParameters => const [];
+
+  @override
+  List<GeneratedReflectedNamedParameter> get namedParameters => const [];
+
+  @override
+  String callReservedMethod({required TestClass? entity, required List fixedValues, required Map<String, dynamic> namedValues}) => entity!.whatIDo;
+}
+
+class _TestClasstypeGetter extends GeneratedReflectedMethod<TestClass, TestClassType> {
+  const _TestClasstypeGetter();
+  @override
+  String get name => 'type';
+
+  @override
+  bool get isStatic => false;
+
+  @override
+  MethodDetectedType get methodType => MethodDetectedType.getMehtod;
+
+  @override
+  List get annotations => const [];
+
+  @override
+  List<GeneratedReflectedFixedParameter> get fixedParameters => const [];
+
+  @override
+  List<GeneratedReflectedNamedParameter> get namedParameters => const [];
+
+  @override
+  TestClassType callReservedMethod({required TestClass? entity, required List fixedValues, required Map<String, dynamic> namedValues}) => entity!.type;
+}
+
+class _TestClassnameGetter extends GeneratedReflectedMethod<TestClass, String> {
+  const _TestClassnameGetter();
+  @override
+  String get name => 'name';
+
+  @override
+  bool get isStatic => false;
+
+  @override
+  MethodDetectedType get methodType => MethodDetectedType.getMehtod;
+
+  @override
+  List get annotations => const [];
+
+  @override
+  List<GeneratedReflectedFixedParameter> get fixedParameters => const [];
+
+  @override
+  List<GeneratedReflectedNamedParameter> get namedParameters => const [];
+
+  @override
+  String callReservedMethod({required TestClass? entity, required List fixedValues, required Map<String, dynamic> namedValues}) => entity!.name;
+}
+
+class _TestClassgetterMethod extends GeneratedReflectedMethod<TestClass, dynamic> {
+  const _TestClassgetterMethod();
+  @override
+  String get name => 'getter';
+
+  @override
+  bool get isStatic => false;
+
+  @override
+  MethodDetectedType get methodType => MethodDetectedType.commonMethod;
+
+  @override
+  List get annotations => const [];
+
+  @override
+  List<GeneratedReflectedFixedParameter> get fixedParameters => const [];
+
+  @override
+  List<GeneratedReflectedNamedParameter> get namedParameters => const [];
+
+  @override
+  dynamic callReservedMethod({required TestClass? entity, required List fixedValues, required Map<String, dynamic> namedValues}) => entity!.getter();
+}
+
+class _TestClassgetterStaticMethod extends GeneratedReflectedMethod<TestClass, dynamic> {
+  const _TestClassgetterStaticMethod();
+  @override
+  String get name => 'getterStatic';
+
+  @override
+  bool get isStatic => true;
+
+  @override
+  MethodDetectedType get methodType => MethodDetectedType.commonMethod;
+
+  @override
+  List get annotations => const [];
+
+  @override
+  List<GeneratedReflectedFixedParameter> get fixedParameters => const [];
+
+  @override
+  List<GeneratedReflectedNamedParameter> get namedParameters => const [];
+
+  @override
+  dynamic callReservedMethod({required TestClass? entity, required List fixedValues, required Map<String, dynamic> namedValues}) => TestClass.getterStatic();
+}
+
+class _TestClassnameSetter extends GeneratedReflectedMethod<TestClass, dynamic> {
+  const _TestClassnameSetter();
+  @override
+  String get name => 'name';
+
+  @override
+  bool get isStatic => false;
+
+  @override
+  MethodDetectedType get methodType => MethodDetectedType.setMethod;
+
+  @override
+  List get annotations => const [];
+
+  static const _fix0 = GeneratedReflectedFixedParameter<dynamic>(
+    annotations: const [],
+    name: 'newValue',
+    position: 0,
+    hasDefaultValue: false,
+    defaultValue: null,
+    acceptNulls: false,
+  );
+  @override
+  List<GeneratedReflectedFixedParameter> get fixedParameters => const [_fix0];
+
+  @override
+  List<GeneratedReflectedNamedParameter> get namedParameters => const [];
+
+  @override
+  dynamic callReservedMethod({required TestClass? entity, required List fixedValues, required Map<String, dynamic> namedValues}) => entity!.name = _fix0.getValueFromList(fixedValues);
+}
+
+class _TestClasstoStringMethod extends GeneratedReflectedMethod<TestClass, String> {
+  const _TestClasstoStringMethod();
+  @override
+  String get name => 'toString';
+
+  @override
+  bool get isStatic => false;
+
+  @override
+  MethodDetectedType get methodType => MethodDetectedType.commonMethod;
+
+  @override
+  List get annotations => const [override, EssentialKey()];
+
+  @override
+  List<GeneratedReflectedFixedParameter> get fixedParameters => const [];
+
+  @override
+  List<GeneratedReflectedNamedParameter> get namedParameters => const [];
+
+  @override
+  String callReservedMethod({required TestClass? entity, required List fixedValues, required Map<String, dynamic> namedValues}) => entity!.toString();
+}
+
+class _TestClassBuilder extends GeneratedReflectedMethod<TestClass, TestClass> {
+  const _TestClassBuilder();
+  @override
+  String get name => '';
+
+  @override
+  bool get isStatic => true;
+
+  @override
+  MethodDetectedType get methodType => MethodDetectedType.buildMethod;
+
+  @override
+  List get annotations => const [];
+
+  @override
+  List<GeneratedReflectedFixedParameter> get fixedParameters => const [];
+
+  @override
+  List<GeneratedReflectedNamedParameter> get namedParameters => const [];
+
+  @override
+  TestClass callReservedMethod({required TestClass? entity, required List fixedValues, required Map<String, dynamic> namedValues}) => TestClass();
+}
+
+class _TestClasssuperHumanFactorie extends GeneratedReflectedMethod<TestClass, TestClass> {
+  const _TestClasssuperHumanFactorie();
+  @override
+  String get name => 'superHuman';
+
+  @override
+  bool get isStatic => true;
+
+  @override
+  MethodDetectedType get methodType => MethodDetectedType.factoryMethod;
+
+  @override
+  List get annotations => const [];
+
+  static const _namname = GeneratedReflectedNamedParameter<String>(
+    annotations: const [],
+    defaultValue: null,
+    hasDefaultValue: false,
+    acceptNulls: false,
+    name: 'name',
+  );
+  static const _namdate = GeneratedReflectedNamedParameter<DateTime>(
+    annotations: const [],
+    defaultValue: null,
+    hasDefaultValue: false,
+    acceptNulls: false,
+    name: 'date',
+  );
+  @override
+  List<GeneratedReflectedFixedParameter> get fixedParameters => const [];
+
+  @override
+  List<GeneratedReflectedNamedParameter> get namedParameters => const [_namname, _namdate];
+
+  @override
+  TestClass callReservedMethod({required TestClass? entity, required List fixedValues, required Map<String, dynamic> namedValues}) => TestClass.superHuman(
+        name: _namname.getValueFromMap(namedValues),
+        date: _namdate.getValueFromMap(namedValues),
+      );
+}
+
+/*TESTCLASS INSTANCE*/
+
+class _TestClass extends GeneratedReflectedClass<TestClass> {
+  const _TestClass();
+  @override
+  List get annotations => const [reflect];
+
+  @override
+  Type? get baseClass => null;
+
+  @override
+  List<Type> get classThatImplement => const [];
+
+  @override
+  bool get isAbstract => false;
+
+  @override
+  bool get isMixin => false;
+
+  @override
+  String get name => 'TestClass';
+
+  @override
+  List<GeneratedReflectedMethod> get methods => const [
+        _TestClasswhatIDoGetter(),
+        _TestClasstypeGetter(),
+        _TestClassnameGetter(),
+        _TestClassgetterMethod(),
+        _TestClassgetterStaticMethod(),
+        _TestClassnameSetter(),
+        _TestClasstoStringMethod(),
+        _TestClassBuilder(),
+        _TestClasssuperHumanFactorie()
+      ];
+
+  @override
+  List<GeneratedReflectedField> get fields => const [_TestClassidentifier(), _TestClassanyDatetime()];
+}
+/*----------------------------------   x   ----------------------------------*/
+
 /*----------------------------------   Class ThirdTestClass   ----------------------------------*/
 
 /*THIRDTESTCLASS FIELDS*/
@@ -2175,11 +2177,363 @@ class _ThirdTestClass extends GeneratedReflectedClass<ThirdTestClass> {
 }
 /*----------------------------------   x   ----------------------------------*/
 
+/*----------------------------------   Class RemoteFunctionality   ----------------------------------*/
+
+/*REMOTEFUNCTIONALITY FIELDS*/
+
+class _RemoteFunctionalityname extends GeneratedReflectedField<RemoteFunctionality, String> {
+  const _RemoteFunctionalityname();
+  @override
+  List get annotations => const [];
+
+  @override
+  String get name => 'name';
+
+  @override
+  bool get isStatic => false;
+
+  @override
+  bool get isConst => false;
+
+  @override
+  bool get isLate => false;
+
+  @override
+  bool get isFinal => true;
+
+  @override
+  bool get acceptNull => false;
+
+  @override
+  bool get hasDefaultValue => false;
+  @override
+  String? get defaulValue => null;
+
+  @override
+  String getReservedValue({required RemoteFunctionality? entity}) => entity!.name;
+}
+
+class _RemoteFunctionalitytimeout extends GeneratedReflectedField<RemoteFunctionality, int> {
+  const _RemoteFunctionalitytimeout();
+  @override
+  List get annotations => const [];
+
+  @override
+  String get name => 'timeout';
+
+  @override
+  bool get isStatic => false;
+
+  @override
+  bool get isConst => false;
+
+  @override
+  bool get isLate => false;
+
+  @override
+  bool get isFinal => true;
+
+  @override
+  bool get acceptNull => false;
+
+  @override
+  bool get hasDefaultValue => false;
+  @override
+  int? get defaulValue => null;
+
+  @override
+  int getReservedValue({required RemoteFunctionality? entity}) => entity!.timeout;
+}
+
+/*REMOTEFUNCTIONALITY METHODS*/
+
+class _RemoteFunctionalityrunFunctionalityMethod extends GeneratedReflectedMethod<RemoteFunctionality, Future<String>> {
+  const _RemoteFunctionalityrunFunctionalityMethod();
+  @override
+  String get name => 'runFunctionality';
+
+  @override
+  bool get isStatic => false;
+
+  @override
+  MethodDetectedType get methodType => MethodDetectedType.commonMethod;
+
+  @override
+  List get annotations => const [override];
+
+  @override
+  List<GeneratedReflectedFixedParameter> get fixedParameters => const [];
+
+  @override
+  List<GeneratedReflectedNamedParameter> get namedParameters => const [];
+
+  @override
+  Future<String> callReservedMethod({required RemoteFunctionality? entity, required List fixedValues, required Map<String, dynamic> namedValues}) => entity!.runFunctionality();
+}
+
+class _RemoteFunctionalityBuilder extends GeneratedReflectedMethod<RemoteFunctionality, RemoteFunctionality> {
+  const _RemoteFunctionalityBuilder();
+  @override
+  String get name => '';
+
+  @override
+  bool get isStatic => true;
+
+  @override
+  MethodDetectedType get methodType => MethodDetectedType.buildMethod;
+
+  @override
+  List get annotations => const [];
+
+  static const _namname = GeneratedReflectedNamedParameter<dynamic>(
+    annotations: const [],
+    defaultValue: null,
+    hasDefaultValue: false,
+    acceptNulls: false,
+    name: 'name',
+  );
+  static const _namtimeout = GeneratedReflectedNamedParameter<dynamic>(
+    annotations: const [],
+    defaultValue: null,
+    hasDefaultValue: false,
+    acceptNulls: false,
+    name: 'timeout',
+  );
+  @override
+  List<GeneratedReflectedFixedParameter> get fixedParameters => const [];
+
+  @override
+  List<GeneratedReflectedNamedParameter> get namedParameters => const [_namname, _namtimeout];
+
+  @override
+  RemoteFunctionality callReservedMethod({required RemoteFunctionality? entity, required List fixedValues, required Map<String, dynamic> namedValues}) => RemoteFunctionality(
+        name: _namname.getValueFromMap(namedValues),
+        timeout: _namtimeout.getValueFromMap(namedValues),
+      );
+}
+
+/*REMOTEFUNCTIONALITY INSTANCE*/
+
+class _RemoteFunctionality extends GeneratedReflectedClass<RemoteFunctionality> {
+  const _RemoteFunctionality();
+  @override
+  List get annotations => const [reflect];
+
+  @override
+  Type? get baseClass => null;
+
+  @override
+  List<Type> get classThatImplement => const [IFunctionality];
+
+  @override
+  bool get isAbstract => false;
+
+  @override
+  bool get isMixin => false;
+
+  @override
+  String get name => 'RemoteFunctionality';
+
+  @override
+  List<GeneratedReflectedMethod> get methods => const [_RemoteFunctionalityrunFunctionalityMethod(), _RemoteFunctionalityBuilder()];
+
+  @override
+  List<GeneratedReflectedField> get fields => const [_RemoteFunctionalityname(), _RemoteFunctionalitytimeout()];
+}
+/*----------------------------------   x   ----------------------------------*/
+
+/*----------------------------------   Class RemoteFunctionalityStream   ----------------------------------*/
+
+/*REMOTEFUNCTIONALITYSTREAM FIELDS*/
+
+class _RemoteFunctionalityStreamname extends GeneratedReflectedField<RemoteFunctionalityStream, String> {
+  const _RemoteFunctionalityStreamname();
+  @override
+  List get annotations => const [];
+
+  @override
+  String get name => 'name';
+
+  @override
+  bool get isStatic => false;
+
+  @override
+  bool get isConst => false;
+
+  @override
+  bool get isLate => false;
+
+  @override
+  bool get isFinal => true;
+
+  @override
+  bool get acceptNull => false;
+
+  @override
+  bool get hasDefaultValue => false;
+  @override
+  String? get defaulValue => null;
+
+  @override
+  String getReservedValue({required RemoteFunctionalityStream? entity}) => entity!.name;
+}
+
+class _RemoteFunctionalityStreamtimeout extends GeneratedReflectedField<RemoteFunctionalityStream, int> {
+  const _RemoteFunctionalityStreamtimeout();
+  @override
+  List get annotations => const [];
+
+  @override
+  String get name => 'timeout';
+
+  @override
+  bool get isStatic => false;
+
+  @override
+  bool get isConst => false;
+
+  @override
+  bool get isLate => false;
+
+  @override
+  bool get isFinal => true;
+
+  @override
+  bool get acceptNull => false;
+
+  @override
+  bool get hasDefaultValue => false;
+  @override
+  int? get defaulValue => null;
+
+  @override
+  int getReservedValue({required RemoteFunctionalityStream? entity}) => entity!.timeout;
+}
+
+/*REMOTEFUNCTIONALITYSTREAM METHODS*/
+
+class _RemoteFunctionalityStreamrunFunctionalityMethod extends GeneratedReflectedMethod<RemoteFunctionalityStream, StreamStateTexts<String>> {
+  const _RemoteFunctionalityStreamrunFunctionalityMethod();
+  @override
+  String get name => 'runFunctionality';
+
+  @override
+  bool get isStatic => false;
+
+  @override
+  MethodDetectedType get methodType => MethodDetectedType.commonMethod;
+
+  @override
+  List get annotations => const [override];
+
+  static const _nammanager = GeneratedReflectedNamedParameter<FunctionalityStreamManager<String>>(
+    annotations: const [],
+    defaultValue: null,
+    hasDefaultValue: false,
+    acceptNulls: false,
+    name: 'manager',
+  );
+  @override
+  List<GeneratedReflectedFixedParameter> get fixedParameters => const [];
+
+  @override
+  List<GeneratedReflectedNamedParameter> get namedParameters => const [_nammanager];
+
+  @override
+  StreamStateTexts<String> callReservedMethod({required RemoteFunctionalityStream? entity, required List fixedValues, required Map<String, dynamic> namedValues}) => entity!.runFunctionality(
+        manager: _nammanager.getValueFromMap(namedValues),
+      );
+}
+
+class _RemoteFunctionalityStreamBuilder extends GeneratedReflectedMethod<RemoteFunctionalityStream, RemoteFunctionalityStream> {
+  const _RemoteFunctionalityStreamBuilder();
+  @override
+  String get name => '';
+
+  @override
+  bool get isStatic => true;
+
+  @override
+  MethodDetectedType get methodType => MethodDetectedType.buildMethod;
+
+  @override
+  List get annotations => const [];
+
+  static const _namname = GeneratedReflectedNamedParameter<dynamic>(
+    annotations: const [],
+    defaultValue: null,
+    hasDefaultValue: false,
+    acceptNulls: false,
+    name: 'name',
+  );
+  static const _namtimeout = GeneratedReflectedNamedParameter<dynamic>(
+    annotations: const [],
+    defaultValue: null,
+    hasDefaultValue: false,
+    acceptNulls: false,
+    name: 'timeout',
+  );
+  @override
+  List<GeneratedReflectedFixedParameter> get fixedParameters => const [];
+
+  @override
+  List<GeneratedReflectedNamedParameter> get namedParameters => const [_namname, _namtimeout];
+
+  @override
+  RemoteFunctionalityStream callReservedMethod({required RemoteFunctionalityStream? entity, required List fixedValues, required Map<String, dynamic> namedValues}) => RemoteFunctionalityStream(
+        name: _namname.getValueFromMap(namedValues),
+        timeout: _namtimeout.getValueFromMap(namedValues),
+      );
+}
+
+/*REMOTEFUNCTIONALITYSTREAM INSTANCE*/
+
+class _RemoteFunctionalityStream extends GeneratedReflectedClass<RemoteFunctionalityStream> {
+  const _RemoteFunctionalityStream();
+  @override
+  List get annotations => const [reflect];
+
+  @override
+  Type? get baseClass => null;
+
+  @override
+  List<Type> get classThatImplement => const [IStreamFunctionality];
+
+  @override
+  bool get isAbstract => false;
+
+  @override
+  bool get isMixin => false;
+
+  @override
+  String get name => 'RemoteFunctionalityStream';
+
+  @override
+  List<GeneratedReflectedMethod> get methods => const [_RemoteFunctionalityStreamrunFunctionalityMethod(), _RemoteFunctionalityStreamBuilder()];
+
+  @override
+  List<GeneratedReflectedField> get fields => const [_RemoteFunctionalityStreamname(), _RemoteFunctionalityStreamtimeout()];
+}
+/*----------------------------------   x   ----------------------------------*/
+
 class _AlbumTest extends GeneratedReflectorAlbum {
   const _AlbumTest();
   @override
-  List<GeneratedReflectedClass> get classes =>
-      const [_Persons(), _Pets(), _Mammal(), _Mutant(), _Thing(), _TestClass(), _TestClassMakeIntList(), _TestClassMakeRandomText(), _SecondTestClassGenerator(), _SecondTestClass(), _ThirdTestClass()];
+  List<GeneratedReflectedClass> get classes => const [
+        _Mammal(),
+        _Mutant(),
+        _Persons(),
+        _Pets(),
+        _Thing(),
+        _TestClassMakeIntList(),
+        _TestClassMakeRandomText(),
+        _SecondTestClassGenerator(),
+        _SecondTestClass(),
+        _TestClass(),
+        _ThirdTestClass(),
+        _RemoteFunctionality(),
+        _RemoteFunctionalityStream()
+      ];
 
   @override
   List<TypeEnumeratorReflector> get enums => const [_TypeAnimalEnum(), _TestClassTypeEnum()];

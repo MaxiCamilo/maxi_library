@@ -7,7 +7,6 @@ export 'package:maxi_library/src/utilities/extension/extensions_stream_controlle
 export 'package:maxi_library/src/utilities/extension/extensions_map.dart';
 
 export 'package:maxi_library/src/utilities/converter_utilities.dart';
-export 'package:maxi_library/src/utilities/reflection_utilities.dart';
 export 'package:maxi_library/src/utilities/text_utilities.dart';
 export 'package:maxi_library/src/utilities/hexadecimal_utilities.dart';
 export 'package:maxi_library/src/utilities/directory_utilities.dart';

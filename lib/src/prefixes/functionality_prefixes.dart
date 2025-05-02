@@ -7,6 +7,24 @@ Future<void> continueOtherFutures() {
   return Future.delayed(Duration.zero);
 }
 
+Future<(dynamic, StackTrace)?> maxiScheduleMicrotask(FutureOr Function() callback) {
+  final stackTrace = StackTrace.current;
+  final completer = Completer<(dynamic, StackTrace)?>();
+
+  scheduleMicrotask(() async {
+    try {
+      await callback();
+      completer.completeIfIncomplete(null);
+    } catch (ex, st) {
+      final newSt = StackTrace.fromString('${st.toString()}\n-------------------------------------- Schedule Microtask --------------------------------------\n${stackTrace.toString()}');
+      log('[Schedule Microtask Error]: $ex \n $newSt\n------------------------------------------------------------------------------');
+      completer.completeIfIncomplete((ex, newSt));
+    }
+  });
+
+  return completer.future;
+}
+
 T? containError<T>({
   required T Function() function,
   void Function(NegativeResult)? ifFails,
@@ -357,6 +375,7 @@ Future<T> makeSeveralAttemptsAsync<T>({
   required FutureOr<T> Function() function,
   required int attempts,
   void Function(int, dynamic, StackTrace)? onError,
+  bool printLog = false,
 }) async {
   int i = 1;
   while (true) {
@@ -366,9 +385,9 @@ Future<T> makeSeveralAttemptsAsync<T>({
       if (onError != null) {
         onError(i, ex, st);
       }
-
-      log('[SeveralAttemptsAsync, $i/$attempts] $ex\n$st');
-
+      if (printLog) {
+        log('[SeveralAttemptsAsync, $i/$attempts] $ex\n$st');
+      }
       if (i >= attempts) {
         rethrow;
       }

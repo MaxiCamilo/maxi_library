@@ -185,7 +185,7 @@ class ThreadIsolatorServerConnection with IThreadInvoker, IThreadInvokeInstance,
 
   @override
   void closeConnection() {
-    scheduleMicrotask(() async {
+    maxiScheduleMicrotask(() async {
       if (!channel.isActive) {
         return;
       }
@@ -240,7 +240,7 @@ class ThreadIsolatorServerConnection with IThreadInvoker, IThreadInvokeInstance,
 
   void killIsolates() {
     isolate.kill(priority: Isolate.immediate);
-    scheduleMicrotask(() => declareClosed());
+    maxiScheduleMicrotask(() => declareClosed());
   }
 
   @override

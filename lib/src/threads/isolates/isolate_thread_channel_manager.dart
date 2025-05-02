@@ -93,7 +93,7 @@ class IsolateThreadChannelManager with IIsolateThreadChannelManager {
       _localChannelList.add(newChannel);
       newChannel.done.whenComplete(() => _localChannelList.remove(newChannel));
 
-      scheduleMicrotask(() async {
+      maxiScheduleMicrotask(() async {
         try {
           await continueOtherFutures();
           await function(parameters, newChannel);
@@ -105,7 +105,7 @@ class IsolateThreadChannelManager with IIsolateThreadChannelManager {
 /*
       final completer = Completer();
 
-      scheduleMicrotask(() async {
+      maxiScheduleMicrotask(() async {
         try {
           await continueOtherFutures();
           await function(parameters, newChannel);

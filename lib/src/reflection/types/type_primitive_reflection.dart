@@ -17,12 +17,12 @@ class TypePrimitiveReflection with IReflectionType, IValueGenerator, IPrimitiveV
   Oration get description => Description.searchDescription(annotations: annotations);
 
   TypePrimitiveReflection({required this.annotations, required this.type}) {
-    primitiveType = volatile(detail: Oration(message: 'The type %1 is not primitive',textParts: [type]), function: () => ReflectionUtilities.isPrimitive(type)!);
+    primitiveType = volatile(detail: Oration(message: 'The type %1 is not primitive', textParts: [type]), function: () => ConverterUtilities.isPrimitive(type)!);
   }
 
   @override
   cloneObject(originalItem) {
-    return ReflectionUtilities.primitiveClone(originalItem);
+    return ConverterUtilities.primitiveClone(originalItem);
   }
 
   @override
@@ -30,13 +30,13 @@ class TypePrimitiveReflection with IReflectionType, IValueGenerator, IPrimitiveV
     if (originalItem.runtimeType == type) {
       return cloneObject(originalItem);
     } else {
-      return ReflectionUtilities.convertSpecificPrimitive(type: primitiveType, value: originalItem);
+      return ConverterUtilities.convertSpecificPrimitive(type: primitiveType, value: originalItem);
     }
   }
 
   @override
   generateEmptryObject() {
-    return ReflectionUtilities.generateDefaultPrimitive(primitiveType);
+    return ConverterUtilities.generateDefaultPrimitive(primitiveType);
   }
 
   @override
@@ -46,7 +46,7 @@ class TypePrimitiveReflection with IReflectionType, IValueGenerator, IPrimitiveV
 
   @override
   bool isTypeCompatible(Type type) {
-    return ReflectionUtilities.isPrimitive(type) != null;
+    return ConverterUtilities.isPrimitive(type) != null;
   }
 
   @override
@@ -54,7 +54,7 @@ class TypePrimitiveReflection with IReflectionType, IValueGenerator, IPrimitiveV
     if (item is DateTime) {
       return item.toUtc().millisecondsSinceEpoch;
     }
-    return ReflectionUtilities.primitiveClone(item);
+    return ConverterUtilities.primitiveClone(item);
   }
 
   @override
