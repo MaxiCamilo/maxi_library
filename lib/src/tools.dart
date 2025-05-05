@@ -15,7 +15,8 @@ export 'package:maxi_library/src/tools/pointer_defines_after.dart';
 export 'package:maxi_library/src/tools/converted_stream_sink.dart';
 export 'package:maxi_library/src/tools/response_http_request.dart';
 export 'package:maxi_library/src/tools/maxi_completer.dart';
-export 'package:maxi_library/src/tools/remote_functionalities_executor_via_stream.dart';
+export 'package:maxi_library/src/tools/remote_functionalities_executor/remote_functionalities_executor_via_stream.dart';
+export 'package:maxi_library/src/tools/custom_stream_sink.dart';
 
 export 'package:maxi_library/src/tools/console_command_processor.dart';
 export 'package:maxi_library/src/tools/internal/console_command_interpret_result.dart';

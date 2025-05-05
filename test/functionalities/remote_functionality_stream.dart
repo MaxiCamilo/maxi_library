@@ -12,11 +12,11 @@ class RemoteFunctionalityStream with IStreamFunctionality<String> {
     yield streamTextStatus(const Oration(message: 'Hi! Let\'s start this functionality'));
 
     for (int i = 0; i < timeout; i++) {
-      yield streamTextStatus(Oration(message: '%1 seconds out of %2', textParts: [i + 1, timeout]));
+      yield streamTextStatus(Oration(message: '[%1] %2 seconds out of %3', textParts: [name, i + 1, timeout]));
       await Future.delayed(const Duration(seconds: 1));
     }
 
-    yield streamTextStatus(const Oration(message: 'I have finished'));
+    yield streamTextStatus(Oration(message: '[%1] I have finished', textParts: [name]));
 
     yield streamResult('Bye bye');
   }

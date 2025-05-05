@@ -121,14 +121,32 @@ void main() {
       await serverExecutor.initialize();
       await clientExecutor.initialize();
 
-      final result = await waitFunctionalStream(
-        stream: clientExecutor.executeStreamFunctionality<String, RemoteFunctionalityStream>(
-            parameters: InvocationParameters.named({
-          'name': 'Peladito',
-          'timeout': Random().nextInt(18) + 3,
-        })),
-        onData: (x) => print(x.toString()),
-      );
+      final result = await Future.wait([
+        waitFunctionalStream(
+          stream: clientExecutor.executeStreamFunctionality<String, RemoteFunctionalityStream>(
+              parameters: InvocationParameters.named({
+            'name': 'Peladito',
+            'timeout': Random().nextInt(18) + 3,
+          })),
+          onData: (x) => print(x.toString()),
+        ),
+        waitFunctionalStream(
+          stream: clientExecutor.executeStreamFunctionality<String, RemoteFunctionalityStream>(
+              parameters: InvocationParameters.named({
+            'name': 'Peluditos',
+            'timeout': Random().nextInt(18) + 3,
+          })),
+          onData: (x) => print(x.toString()),
+        ),
+        waitFunctionalStream(
+          stream: clientExecutor.executeStreamFunctionality<String, RemoteFunctionalityStream>(
+              parameters: InvocationParameters.named({
+            'name': 'Barbudito',
+            'timeout': Random().nextInt(18) + 3,
+          })),
+          onData: (x) => print(x.toString()),
+        ),
+      ]);
 
       print('Result $result');
     });
