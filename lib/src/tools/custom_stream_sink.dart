@@ -4,7 +4,7 @@ import 'dart:developer';
 import 'package:maxi_library/maxi_library.dart';
 
 class CustomStreamSink<T> implements StreamSink<T> {
-  final void Function(T) onNewItem;
+  final FutureOr Function(T) onNewItem;
   final void Function(Object error, StackTrace? stackTrace)? onNewError;
   final Future waitDone;
   final Function? onDone;
@@ -24,7 +24,13 @@ class CustomStreamSink<T> implements StreamSink<T> {
 
   @override
   void add(T event) {
-    onNewItem(event);
+    maxiScheduleMicrotask(() async {
+      await onNewItem(event);
+    }).then((error) {
+      if (error != null) {
+        log('[CustomStreamSink] Error sent: ${error.$1}\n${error.$2}');
+      }
+    });
   }
 
   @override

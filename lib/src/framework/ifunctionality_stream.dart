@@ -278,6 +278,7 @@ class FunctionalityStreamManager<T> {
         ),
       );
       _textStreamController?.addIfActive(_lastError!.message);
+      functionality.onError(manager: this, error: _lastError!);
     } finally {
       _streamController?.close();
       _streamController = null;

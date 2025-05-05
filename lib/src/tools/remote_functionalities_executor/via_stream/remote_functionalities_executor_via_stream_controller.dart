@@ -147,7 +147,7 @@ class RemoteFunctionalitiesExecutorViaStreamController with IDisposable {
           }),
           onError: (ex) => mainManager.sendPackage(flag: RFESPackageFlag.streamSendError, content: {
             identifierFlag: id,
-            contentFlag: NegativeResult.searchNegativity(item: ex, actionDescription: const Oration(message: 'Stream Error')),
+            contentFlag: NegativeResult.searchNegativity(item: ex, actionDescription: const Oration(message: 'Stream Error')).serializeToJson(),
           }),
         );
       } catch (ex, st) {

@@ -15,7 +15,7 @@ class RemoteFunctionalitiesExecutorViaStream with IRemoteFunctionalitiesExecutor
   final _creatorSemaphore = Semaphore();
 
   Completer<int>? _taskExecutionConfirm;
-  Completer? _waitConfirmConnection;
+  Completer<bool>? _waitConfirmConnection;
 
   bool _senderClose = false;
   int _lastID = 1;
@@ -64,34 +64,25 @@ class RemoteFunctionalitiesExecutorViaStream with IRemoteFunctionalitiesExecutor
       onData: _onReceivedData,
       onDone: () => dispose(),
     );
-
-    await checkConnection();
+    if (confirmConnection) {
+      await checkConnection();
+    }
   }
 
   Future<void> checkConnection() async {
-    if (_waitConfirmConnection != null) {
-      return _waitConfirmConnection!.future;
+    _waitConfirmConnection ??= joinWaiter<bool>();
+    bool isGood = false;
+    for (int i = 0; i <= (timeout.inMilliseconds ~/ 200); i++) {
+      sendPackage(flag: RFESPackageFlag.checkConnection);
+      isGood = await _waitConfirmConnection!.future.timeout(const Duration(milliseconds: 200), onTimeout: () => false);
+      if (isGood) {
+        break;
+      }
     }
-    _waitConfirmConnection = MaxiCompleter();
-    await makeSeveralAttemptsAsync(
-        attempts: (timeout.inMilliseconds ~/ 200) + 1,
-        function: () async {
-          sendPackage(flag: RFESPackageFlag.checkConnection);
-          await _waitConfirmConnection?.future.timeout(
-            Duration(milliseconds: 200),
-            onTimeout: () {
-              final error = NegativeResult(identifier: NegativeResultCodes.timeout, message: const Oration(message: 'The server took too long to confirm your activity'));
-              _waitConfirmConnection?.completeErrorIfIncomplete(error);
-              _waitConfirmConnection = null;
 
-              if (isInitialized) {
-                dispose();
-              }
-
-              throw error;
-            },
-          );
-        });
+    if (!isGood) {
+      throw NegativeResult(identifier: NegativeResultCodes.timeout, message: const Oration(message: 'The server took too long to confirm your activity'));
+    }
   }
 
   void sendPackage({required RFESPackageFlag flag, Map<String, dynamic> content = const {}}) {
@@ -163,7 +154,7 @@ class RemoteFunctionalitiesExecutorViaStream with IRemoteFunctionalitiesExecutor
         sendPackage(flag: RFESPackageFlag.confirmConnection);
         break;
       case RFESPackageFlag.confirmConnection:
-        _waitConfirmConnection?.completeIfIncomplete();
+        _waitConfirmConnection?.completeIfIncomplete(true);
         _waitConfirmConnection = null;
         break;
       case RFESPackageFlag.declareClose:
