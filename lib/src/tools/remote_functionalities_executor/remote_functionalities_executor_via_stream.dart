@@ -1,9 +1,10 @@
 import 'dart:async';
 
 import 'package:maxi_library/maxi_library.dart';
-import 'package:maxi_library/src/tools/remote_functionalities_executor/via_stream/remote_functionalities_executor_via_steam_package_flag.dart';
-import 'package:maxi_library/src/tools/remote_functionalities_executor/via_stream/remote_functionalities_executor_via_stream_controller.dart';
-import 'package:maxi_library/src/tools/remote_functionalities_executor/via_stream/remote_functionalities_executor_via_stream_functions.dart';
+import 'package:maxi_library/src/tools/remote_functionalities_executor/via_stream/remote_functionalities_executor_package_flag.dart';
+import 'package:maxi_library/src/tools/remote_functionalities_executor/via_stream/remote_functionalities_executor_controller.dart';
+import 'package:maxi_library/src/tools/remote_functionalities_executor/via_stream/remote_functionalities_executor_functions.dart';
+import 'package:maxi_library/src/tools/remote_functionalities_executor/via_stream/remote_functionalities_executor_thread_entity.dart';
 
 class RemoteFunctionalitiesExecutorViaStream with IRemoteFunctionalitiesExecutor, StartableFunctionality, FunctionalityWithLifeCycle {
   final Stream<Map<String, dynamic>> receiver;
@@ -20,8 +21,9 @@ class RemoteFunctionalitiesExecutorViaStream with IRemoteFunctionalitiesExecutor
   bool _senderClose = false;
   int _lastID = 1;
 
-  late RemoteFunctionalitiesExecutorViaStreamFunctions _functionsManager;
-  late RemoteFunctionalitiesExecutorViaStreamController _streanManager;
+  late RemoteFunctionalitiesExecutorFunctions _functionsManager;
+  late RemoteFunctionalitiesExecutorController _streanManager;
+  late RemoteFunctionalitiesExecutorThreadEntity _executorThreadEntity;
 
   @override
   bool get isActive => isInitialized;
@@ -51,8 +53,9 @@ class RemoteFunctionalitiesExecutorViaStream with IRemoteFunctionalitiesExecutor
       );
     }
 
-    _functionsManager = joinObject(item: RemoteFunctionalitiesExecutorViaStreamFunctions(mainManager: this));
-    _streanManager = joinObject(item: RemoteFunctionalitiesExecutorViaStreamController(mainManager: this));
+    _functionsManager = joinObject(item: RemoteFunctionalitiesExecutorFunctions(mainManager: this));
+    _streanManager = joinObject(item: RemoteFunctionalitiesExecutorController(mainManager: this));
+    _executorThreadEntity = joinObject(item: RemoteFunctionalitiesExecutorThreadEntity(mainManager: this));
 
     joinFuture(sender.done).whenComplete(() {
       _senderClose = true;
@@ -147,8 +150,14 @@ class RemoteFunctionalitiesExecutorViaStream with IRemoteFunctionalitiesExecutor
       case RFESPackageFlag.newStreamFunctionality:
         _creatorSemaphore.execute(function: () => _streanManager.processNewStreamFunctionality(data));
         break;
+      case RFESPackageFlag.newEntityFunctionality:
+        _creatorSemaphore.execute(function: () => _executorThreadEntity.processNewEntityFunctionality(data));
+        break;
       case RFESPackageFlag.functionalityEnded:
         _functionsManager.processFinishedExternalRequest(data);
+        break;
+      case RFESPackageFlag.entityFunctionalityEnd:
+        _executorThreadEntity.processFinishedFunction(data);
         break;
       case RFESPackageFlag.checkConnection:
         sendPackage(flag: RFESPackageFlag.confirmConnection);
@@ -206,5 +215,10 @@ class RemoteFunctionalitiesExecutorViaStream with IRemoteFunctionalitiesExecutor
     final id = _lastID;
     _lastID += 1;
     return id;
+  }
+
+  @override
+  Future<R> executeReflectedEntityFunction<R>({required String entityName, required String methodName, InvocationParameters parameters = InvocationParameters.emptry}) {
+    return _executorThreadEntity.executeReflectedEntityFunction<R>(entityName: entityName, methodName: methodName, parameters: parameters);
   }
 }

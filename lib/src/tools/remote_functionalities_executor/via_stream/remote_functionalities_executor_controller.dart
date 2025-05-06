@@ -2,15 +2,15 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:maxi_library/maxi_library.dart';
-import 'package:maxi_library/src/tools/remote_functionalities_executor/via_stream/remote_functionalities_executor_via_steam_package_flag.dart';
+import 'package:maxi_library/src/tools/remote_functionalities_executor/via_stream/remote_functionalities_executor_package_flag.dart';
 
-class RemoteFunctionalitiesExecutorViaStreamController with IDisposable {
+class RemoteFunctionalitiesExecutorController with IDisposable {
   final RemoteFunctionalitiesExecutorViaStream mainManager;
 
   final _pendingStream = <int, FunctionalityStreamManager>{};
   final _extenalsStream = <int, (Type, StreamController<StreamState<Oration, dynamic>>)>{};
 
-  RemoteFunctionalitiesExecutorViaStreamController({required this.mainManager});
+  RemoteFunctionalitiesExecutorController({required this.mainManager});
 
   @override
   void performObjectDiscard() {}

@@ -106,6 +106,11 @@ class ThreadIsolatorServerConnection with IThreadInvoker, IThreadInvokeInstance,
   }
 
   @override
+  Future<IThreadInvokeInstance?> getEntityInstanceByName({required String name}) {
+    return server.getEntityInstanceByName(name: name);
+  }
+
+  @override
   Future<IThreadInvokeInstance?> getIDInstance({required int id}) {
     return server.getIDInstance(id: id);
   }

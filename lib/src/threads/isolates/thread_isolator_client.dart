@@ -186,6 +186,34 @@ class ThreadIsolatorClient with IThreadInvoker, IThreadManager, IThreadManagerCl
   }
 
   @override
+  Future<IThreadInvokeInstance?> getEntityInstanceByName({required String name}) async {
+    final actualConnection = _connectionstList.selectItem((x) => x.entityType != null && x.entityType.toString() == name);
+    if (actualConnection != null) {
+      return actualConnection;
+    }
+
+    final sendPort = await _serverConnection.callFunction(parameters: InvocationParameters.only(name), function: _getEntityInstanceByName);
+
+    if (sendPort == null) {
+      return null;
+    }
+
+    return await hookPoint(sendPort);
+  }
+
+  static Future<SendPort?> _getEntityInstanceByName(InvocationContext context) async {
+    final server = volatile(detail: Oration(message: 'Thread is not ThreadIsolatorServer'), function: () => context.thread as ThreadIsolatorServer);
+    final name = context.firts<String>();
+
+    final connection = await server.getEntityInstanceByName(name: name);
+    if (connection == null) {
+      return null;
+    }
+
+    return await connection.getConnectionSendPort();
+  }
+
+  @override
   Future<IThreadInvokeInstance?> getIDInstance({required int id}) async {
     final actualConnection = _connectionstList.selectItem((x) => x.threadID == id);
     if (actualConnection != null) {

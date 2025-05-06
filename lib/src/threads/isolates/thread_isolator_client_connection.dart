@@ -156,6 +156,15 @@ class ThreadIsolatorClientConnection with IThreadInvoker, IThreadInvokeInstance,
   }
 
   @override
+  Future<IThreadInvokeInstance?> getEntityInstanceByName({required String name}) async {
+    if (entityType != null && entityType.toString() == name) {
+      return this;
+    }
+
+    return clientMannager.getEntityInstanceByName(name: name);
+  }
+
+  @override
   Future<IThreadInvokeInstance?> getIDInstance({required int id}) async {
     if (threadID == id) {
       return this;

@@ -14,6 +14,7 @@ mixin IThreadInvoker {
 
   Future<IThreadInvokeInstance> mountEntity<T extends Object>({required T entity, bool ifExistsOmit = true});
   Future<IThreadInvokeInstance?> getEntityInstance<T extends Object>();
+  Future<IThreadInvokeInstance?> getEntityInstanceByName({required String name});
   Future<IThreadInvokeInstance?> getIDInstance({required int id});
 
   Future<R> callFunction<R>({required InvocationParameters parameters, required FutureOr<R> Function(InvocationContext p1) function});

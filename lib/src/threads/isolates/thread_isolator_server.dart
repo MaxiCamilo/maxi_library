@@ -135,6 +135,11 @@ class ThreadIsolatorServer with IThreadInvoker, IThreadManager, IThreadManagerSe
   }
 
   @override
+  Future<ThreadIsolatorServerConnection?> getEntityInstanceByName({required String name}) async {
+    return _clientList.selectItem((x) => x.entityType != null && x.entityType.toString() == name);
+  }
+
+  @override
   Future<ThreadIsolatorServerConnection?> getIDInstance({required int id}) async {
     return _clientList.selectItem((x) => x.threadID == id);
   }

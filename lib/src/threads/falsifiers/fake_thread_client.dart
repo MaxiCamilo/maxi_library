@@ -184,4 +184,9 @@ class FakeThreadClient with IThreadInvoker, IThreadManager, IThreadManagerClient
 
     return master.createSlave();
   }
+
+  @override
+  Future<IThreadInvokeInstance?> getEntityInstanceByName({required String name}) {
+    return serverConnection.getEntityInstanceByName(name: name);
+  }
 }

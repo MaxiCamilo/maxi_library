@@ -205,4 +205,9 @@ class FakeThreadServer with IThreadInvoker, IThreadManager, IThreadManagerServer
       {InvocationParameters parameters = InvocationParameters.emptry, required FutureOr<void> Function(T entity, InvocationContext context, IChannel<R, S> channel) function}) {
     return getClientByEntity<T>().createEntityChannel<T, R, S>(function: function, parameters: parameters);
   }
+
+  @override
+  Future<IThreadInvokeInstance?> getEntityInstanceByName({required String name}) async {
+    return _clients.selectItem((x) => x.entityType != null && x.entityType.toString() == name);
+  }
 }
