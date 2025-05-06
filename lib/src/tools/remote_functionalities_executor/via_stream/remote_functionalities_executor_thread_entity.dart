@@ -107,7 +107,7 @@ class RemoteFunctionalitiesExecutorThreadEntity with IDisposable {
     }
   }
 
-  static FutureOr<dynamic> _callReflectedMethodOnThread(InvocationContext context) async {
+  static Future<dynamic> _callReflectedMethodOnThread(InvocationContext context) async {
     final threadType = context.thread.entityType;
     final name = context.firts<String>();
     final methodName = context.second<String>();
