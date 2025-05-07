@@ -180,6 +180,20 @@ extension ExtensionsString on String {
     }
   }
 
+  Iterable<(int, String, String)> getDifferences(String other) sync* {
+    final maxLength = other.length >= length ? other.length : length;
+
+    for (int i = 0; i < maxLength; i++) {
+      if (i >= length) {
+        yield (i, '', other[i]);
+      } else if (i >= other.length) {
+        yield (i, this[i], '');
+      } else if (other[i] != this[i]) {
+        yield (i, this[i], other[i]);
+      }
+    }
+  }
+
   Iterable<String> asIterable({int start = 0, int? end, bool inverse = false}) sync* {
     end ??= length - 1;
 
@@ -300,7 +314,4 @@ extension ExtensionsString on String {
 
     return this;
   }
-
-  
-  
 }

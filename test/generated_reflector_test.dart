@@ -9,7 +9,7 @@ void main() {
     });
 
     test('Generate file reflect', () {
-      ReflectorGenerator(directories: ['test/models', 'test/old_entities', 'test/functionalities'], fileCreationPlace: '/home/maxiro/Proyectos/maxi_proyectos/maxi_library/test', albumName: 'Test').build();
+      ReflectorGenerator(directories: ['test/models', 'test/old_entities', 'test/functionalities','test/services'], fileCreationPlace: '/home/maxiro/Proyectos/maxi_proyectos/maxi_library/test', albumName: 'Test').build();
     });
   });
 }

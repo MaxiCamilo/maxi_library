@@ -7,6 +7,7 @@ import 'package:test/test.dart';
 
 import 'functionalities/remote_functionality.dart';
 import 'functionalities/remote_functionality_stream.dart';
+import 'services/first_service.dart';
 import 'test.dart';
 
 void main() {
@@ -150,5 +151,23 @@ void main() {
 
       print('Result $result');
     });
+  });
+
+  test('Invoke thread entity', () async {
+    ReflectionManager.defineAlbums = [testReflectors];
+    ReflectionManager.defineAsTheMainReflector();
+    await ThreadManager.mountEntity<FirstService>(entity: FirstService(isMustFail: false));
+
+    final clientPipe = StreamController<Map<String, dynamic>>();
+    final serverPipe = StreamController<Map<String, dynamic>>();
+
+    final clientExecutor = RemoteFunctionalitiesExecutorViaStream.filtrePackage(receiver: serverPipe.stream, sender: clientPipe, confirmConnection: true);
+    final serverExecutor = RemoteFunctionalitiesExecutorViaStream.filtrePackage(receiver: clientPipe.stream, sender: serverPipe, confirmConnection: false);
+
+    await serverExecutor.initialize();
+    await clientExecutor.initialize();
+
+    final result = await clientExecutor.executeReflectedEntityFunction(entityName: 'FirstService', methodName: 'passSomeText');
+    print(result);
   });
 }

@@ -5,6 +5,7 @@ import 'package:maxi_library/maxi_library.dart';
 
 import 'second_service.dart';
 
+@reflect
 class FirstService with StartableFunctionality, IThreadService {
   final bool isMustFail;
 

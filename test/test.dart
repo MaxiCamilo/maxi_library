@@ -18,6 +18,8 @@ import 'models/thing.dart';
 import 'old_entities/second_test_class.dart';
 import 'old_entities/test_class.dart';
 import 'old_entities/third_test_class.dart';
+import 'services/first_service.dart';
+import 'services/second_service.dart';
 
 class _TypeAnimalEnum extends TypeEnumeratorReflector {
   const _TypeAnimalEnum()
@@ -2516,6 +2518,498 @@ class _RemoteFunctionalityStream extends GeneratedReflectedClass<RemoteFunctiona
 }
 /*----------------------------------   x   ----------------------------------*/
 
+/*----------------------------------   Class FirstService   ----------------------------------*/
+
+/*FIRSTSERVICE FIELDS*/
+
+class _FirstServiceisMustFail extends GeneratedReflectedField<FirstService, bool> {
+  const _FirstServiceisMustFail();
+  @override
+  List get annotations => const [];
+
+  @override
+  String get name => 'isMustFail';
+
+  @override
+  bool get isStatic => false;
+
+  @override
+  bool get isConst => false;
+
+  @override
+  bool get isLate => false;
+
+  @override
+  bool get isFinal => true;
+
+  @override
+  bool get acceptNull => false;
+
+  @override
+  bool get hasDefaultValue => false;
+  @override
+  bool? get defaulValue => null;
+
+  @override
+  bool getReservedValue({required FirstService? entity}) => entity!.isMustFail;
+}
+
+/*FIRSTSERVICE METHODS*/
+
+class _FirstServiceserviceNameGetter extends GeneratedReflectedMethod<FirstService, String> {
+  const _FirstServiceserviceNameGetter();
+  @override
+  String get name => 'serviceName';
+
+  @override
+  bool get isStatic => false;
+
+  @override
+  MethodDetectedType get methodType => MethodDetectedType.getMehtod;
+
+  @override
+  List get annotations => const [override];
+
+  @override
+  List<GeneratedReflectedFixedParameter> get fixedParameters => const [];
+
+  @override
+  List<GeneratedReflectedNamedParameter> get namedParameters => const [];
+
+  @override
+  String callReservedMethod({required FirstService? entity, required List fixedValues, required Map<String, dynamic> namedValues}) => entity!.serviceName;
+}
+
+class _FirstServiceinitializeFunctionalityMethod extends GeneratedReflectedMethod<FirstService, Future<void>> {
+  const _FirstServiceinitializeFunctionalityMethod();
+  @override
+  String get name => 'initializeFunctionality';
+
+  @override
+  bool get isStatic => false;
+
+  @override
+  MethodDetectedType get methodType => MethodDetectedType.commonMethod;
+
+  @override
+  List get annotations => const [override];
+
+  @override
+  List<GeneratedReflectedFixedParameter> get fixedParameters => const [];
+
+  @override
+  List<GeneratedReflectedNamedParameter> get namedParameters => const [];
+
+  @override
+  Future<void> callReservedMethod({required FirstService? entity, required List fixedValues, required Map<String, dynamic> namedValues}) => entity!.initializeFunctionality();
+}
+
+class _FirstServicepassSomeTextMethod extends GeneratedReflectedMethod<FirstService, Future<String>> {
+  const _FirstServicepassSomeTextMethod();
+  @override
+  String get name => 'passSomeText';
+
+  @override
+  bool get isStatic => false;
+
+  @override
+  MethodDetectedType get methodType => MethodDetectedType.commonMethod;
+
+  @override
+  List get annotations => const [];
+
+  @override
+  List<GeneratedReflectedFixedParameter> get fixedParameters => const [];
+
+  @override
+  List<GeneratedReflectedNamedParameter> get namedParameters => const [];
+
+  @override
+  Future<String> callReservedMethod({required FirstService? entity, required List fixedValues, required Map<String, dynamic> namedValues}) => entity!.passSomeText();
+}
+
+class _FirstServicepassSomeNumberMethod extends GeneratedReflectedMethod<FirstService, Future<int>> {
+  const _FirstServicepassSomeNumberMethod();
+  @override
+  String get name => 'passSomeNumber';
+
+  @override
+  bool get isStatic => false;
+
+  @override
+  MethodDetectedType get methodType => MethodDetectedType.commonMethod;
+
+  @override
+  List get annotations => const [];
+
+  @override
+  List<GeneratedReflectedFixedParameter> get fixedParameters => const [];
+
+  @override
+  List<GeneratedReflectedNamedParameter> get namedParameters => const [];
+
+  @override
+  Future<int> callReservedMethod({required FirstService? entity, required List fixedValues, required Map<String, dynamic> namedValues}) => entity!.passSomeNumber();
+}
+
+class _FirstServicegenerateSomeTextMethod extends GeneratedReflectedMethod<FirstService, Stream<String>> {
+  const _FirstServicegenerateSomeTextMethod();
+  @override
+  String get name => 'generateSomeText';
+
+  @override
+  bool get isStatic => false;
+
+  @override
+  MethodDetectedType get methodType => MethodDetectedType.commonMethod;
+
+  @override
+  List get annotations => const [];
+
+  static const _namamount = GeneratedReflectedNamedParameter<int>(
+    annotations: const [],
+    defaultValue: null,
+    hasDefaultValue: false,
+    acceptNulls: false,
+    name: 'amount',
+  );
+  static const _namwaitingSeconds = GeneratedReflectedNamedParameter<int>(
+    annotations: const [],
+    defaultValue: null,
+    hasDefaultValue: false,
+    acceptNulls: false,
+    name: 'waitingSeconds',
+  );
+  @override
+  List<GeneratedReflectedFixedParameter> get fixedParameters => const [];
+
+  @override
+  List<GeneratedReflectedNamedParameter> get namedParameters => const [_namamount, _namwaitingSeconds];
+
+  @override
+  Stream<String> callReservedMethod({required FirstService? entity, required List fixedValues, required Map<String, dynamic> namedValues}) => entity!.generateSomeText(
+        amount: _namamount.getValueFromMap(namedValues),
+        waitingSeconds: _namwaitingSeconds.getValueFromMap(namedValues),
+      );
+}
+
+class _FirstServicecreatePipeInSecondServiceMethod extends GeneratedReflectedMethod<FirstService, Future<void>> {
+  const _FirstServicecreatePipeInSecondServiceMethod();
+  @override
+  String get name => 'createPipeInSecondService';
+
+  @override
+  bool get isStatic => false;
+
+  @override
+  MethodDetectedType get methodType => MethodDetectedType.commonMethod;
+
+  @override
+  List get annotations => const [];
+
+  @override
+  List<GeneratedReflectedFixedParameter> get fixedParameters => const [];
+
+  @override
+  List<GeneratedReflectedNamedParameter> get namedParameters => const [];
+
+  @override
+  Future<void> callReservedMethod({required FirstService? entity, required List fixedValues, required Map<String, dynamic> namedValues}) => entity!.createPipeInSecondService();
+}
+
+class _FirstServiceBuilder extends GeneratedReflectedMethod<FirstService, FirstService> {
+  const _FirstServiceBuilder();
+  @override
+  String get name => '';
+
+  @override
+  bool get isStatic => true;
+
+  @override
+  MethodDetectedType get methodType => MethodDetectedType.buildMethod;
+
+  @override
+  List get annotations => const [];
+
+  static const _namisMustFail = GeneratedReflectedNamedParameter<dynamic>(
+    annotations: const [],
+    defaultValue: null,
+    hasDefaultValue: false,
+    acceptNulls: false,
+    name: 'isMustFail',
+  );
+  @override
+  List<GeneratedReflectedFixedParameter> get fixedParameters => const [];
+
+  @override
+  List<GeneratedReflectedNamedParameter> get namedParameters => const [_namisMustFail];
+
+  @override
+  FirstService callReservedMethod({required FirstService? entity, required List fixedValues, required Map<String, dynamic> namedValues}) => FirstService(
+        isMustFail: _namisMustFail.getValueFromMap(namedValues),
+      );
+}
+
+/*FIRSTSERVICE INSTANCE*/
+
+class _FirstService extends GeneratedReflectedClass<FirstService> {
+  const _FirstService();
+  @override
+  List get annotations => const [reflect];
+
+  @override
+  Type? get baseClass => null;
+
+  @override
+  List<Type> get classThatImplement => const [StartableFunctionality, IThreadService];
+
+  @override
+  bool get isAbstract => false;
+
+  @override
+  bool get isMixin => false;
+
+  @override
+  String get name => 'FirstService';
+
+  @override
+  List<GeneratedReflectedMethod> get methods => const [
+        _FirstServiceserviceNameGetter(),
+        _FirstServiceinitializeFunctionalityMethod(),
+        _FirstServicepassSomeTextMethod(),
+        _FirstServicepassSomeNumberMethod(),
+        _FirstServicegenerateSomeTextMethod(),
+        _FirstServicecreatePipeInSecondServiceMethod(),
+        _FirstServiceBuilder()
+      ];
+
+  @override
+  List<GeneratedReflectedField> get fields => const [_FirstServiceisMustFail()];
+}
+/*----------------------------------   x   ----------------------------------*/
+
+/*----------------------------------   Class SecondService   ----------------------------------*/
+
+/*SECONDSERVICE FIELDS*/
+
+/*SECONDSERVICE METHODS*/
+
+class _SecondServiceinitializeFunctionalityMethod extends GeneratedReflectedMethod<SecondService, Future<void>> {
+  const _SecondServiceinitializeFunctionalityMethod();
+  @override
+  String get name => 'initializeFunctionality';
+
+  @override
+  bool get isStatic => false;
+
+  @override
+  MethodDetectedType get methodType => MethodDetectedType.commonMethod;
+
+  @override
+  List get annotations => const [override];
+
+  @override
+  List<GeneratedReflectedFixedParameter> get fixedParameters => const [];
+
+  @override
+  List<GeneratedReflectedNamedParameter> get namedParameters => const [];
+
+  @override
+  Future<void> callReservedMethod({required SecondService? entity, required List fixedValues, required Map<String, dynamic> namedValues}) => entity!.initializeFunctionality();
+}
+
+class _SecondServiceserviceNameGetter extends GeneratedReflectedMethod<SecondService, String> {
+  const _SecondServiceserviceNameGetter();
+  @override
+  String get name => 'serviceName';
+
+  @override
+  bool get isStatic => false;
+
+  @override
+  MethodDetectedType get methodType => MethodDetectedType.getMehtod;
+
+  @override
+  List get annotations => const [override];
+
+  @override
+  List<GeneratedReflectedFixedParameter> get fixedParameters => const [];
+
+  @override
+  List<GeneratedReflectedNamedParameter> get namedParameters => const [];
+
+  @override
+  String callReservedMethod({required SecondService? entity, required List fixedValues, required Map<String, dynamic> namedValues}) => entity!.serviceName;
+}
+
+class _SecondServicecallFromFirstServiceMethod extends GeneratedReflectedMethod<SecondService, Future<void>> {
+  const _SecondServicecallFromFirstServiceMethod();
+  @override
+  String get name => 'callFromFirstService';
+
+  @override
+  bool get isStatic => false;
+
+  @override
+  MethodDetectedType get methodType => MethodDetectedType.commonMethod;
+
+  @override
+  List get annotations => const [];
+
+  @override
+  List<GeneratedReflectedFixedParameter> get fixedParameters => const [];
+
+  @override
+  List<GeneratedReflectedNamedParameter> get namedParameters => const [];
+
+  @override
+  Future<void> callReservedMethod({required SecondService? entity, required List fixedValues, required Map<String, dynamic> namedValues}) => entity!.callFromFirstService();
+}
+
+class _SecondServicecallStreamFromFirstServiceMethod extends GeneratedReflectedMethod<SecondService, Stream<String>> {
+  const _SecondServicecallStreamFromFirstServiceMethod();
+  @override
+  String get name => 'callStreamFromFirstService';
+
+  @override
+  bool get isStatic => false;
+
+  @override
+  MethodDetectedType get methodType => MethodDetectedType.commonMethod;
+
+  @override
+  List get annotations => const [];
+
+  @override
+  List<GeneratedReflectedFixedParameter> get fixedParameters => const [];
+
+  @override
+  List<GeneratedReflectedNamedParameter> get namedParameters => const [];
+
+  @override
+  Stream<String> callReservedMethod({required SecondService? entity, required List fixedValues, required Map<String, dynamic> namedValues}) => entity!.callStreamFromFirstService();
+}
+
+class _SecondServicemountFirstServiceMethod extends GeneratedReflectedMethod<SecondService, Future<void>> {
+  const _SecondServicemountFirstServiceMethod();
+  @override
+  String get name => 'mountFirstService';
+
+  @override
+  bool get isStatic => false;
+
+  @override
+  MethodDetectedType get methodType => MethodDetectedType.commonMethod;
+
+  @override
+  List get annotations => const [];
+
+  @override
+  List<GeneratedReflectedFixedParameter> get fixedParameters => const [];
+
+  @override
+  List<GeneratedReflectedNamedParameter> get namedParameters => const [];
+
+  @override
+  Future<void> callReservedMethod({required SecondService? entity, required List fixedValues, required Map<String, dynamic> namedValues}) => entity!.mountFirstService();
+}
+
+class _SecondServiceusePipeMethod extends GeneratedReflectedMethod<SecondService, Future<void>> {
+  const _SecondServiceusePipeMethod();
+  @override
+  String get name => 'usePipe';
+
+  @override
+  bool get isStatic => false;
+
+  @override
+  MethodDetectedType get methodType => MethodDetectedType.commonMethod;
+
+  @override
+  List get annotations => const [];
+
+  static const _fix0 = GeneratedReflectedFixedParameter<IChannel<int, String>>(
+    annotations: const [],
+    name: 'pipe',
+    position: 0,
+    hasDefaultValue: false,
+    defaultValue: null,
+    acceptNulls: false,
+  );
+  @override
+  List<GeneratedReflectedFixedParameter> get fixedParameters => const [_fix0];
+
+  @override
+  List<GeneratedReflectedNamedParameter> get namedParameters => const [];
+
+  @override
+  Future<void> callReservedMethod({required SecondService? entity, required List fixedValues, required Map<String, dynamic> namedValues}) => entity!.usePipe(
+        _fix0.getValueFromList(fixedValues),
+      );
+}
+
+class _SecondServiceBuilder extends GeneratedReflectedMethod<SecondService, SecondService> {
+  const _SecondServiceBuilder();
+  @override
+  String get name => '';
+
+  @override
+  bool get isStatic => true;
+
+  @override
+  MethodDetectedType get methodType => MethodDetectedType.buildMethod;
+
+  @override
+  List get annotations => const [];
+
+  @override
+  List<GeneratedReflectedFixedParameter> get fixedParameters => const [];
+
+  @override
+  List<GeneratedReflectedNamedParameter> get namedParameters => const [];
+
+  @override
+  SecondService callReservedMethod({required SecondService? entity, required List fixedValues, required Map<String, dynamic> namedValues}) => SecondService();
+}
+
+/*SECONDSERVICE INSTANCE*/
+
+class _SecondService extends GeneratedReflectedClass<SecondService> {
+  const _SecondService();
+  @override
+  List get annotations => const [reflect];
+
+  @override
+  Type? get baseClass => null;
+
+  @override
+  List<Type> get classThatImplement => const [StartableFunctionality, IThreadService];
+
+  @override
+  bool get isAbstract => false;
+
+  @override
+  bool get isMixin => false;
+
+  @override
+  String get name => 'SecondService';
+
+  @override
+  List<GeneratedReflectedMethod> get methods => const [
+        _SecondServiceinitializeFunctionalityMethod(),
+        _SecondServiceserviceNameGetter(),
+        _SecondServicecallFromFirstServiceMethod(),
+        _SecondServicecallStreamFromFirstServiceMethod(),
+        _SecondServicemountFirstServiceMethod(),
+        _SecondServiceusePipeMethod(),
+        _SecondServiceBuilder()
+      ];
+
+  @override
+  List<GeneratedReflectedField> get fields => const [];
+}
+/*----------------------------------   x   ----------------------------------*/
+
 class _AlbumTest extends GeneratedReflectorAlbum {
   const _AlbumTest();
   @override
@@ -2532,7 +3026,9 @@ class _AlbumTest extends GeneratedReflectorAlbum {
         _TestClass(),
         _ThirdTestClass(),
         _RemoteFunctionality(),
-        _RemoteFunctionalityStream()
+        _RemoteFunctionalityStream(),
+        _FirstService(),
+        _SecondService()
       ];
 
   @override

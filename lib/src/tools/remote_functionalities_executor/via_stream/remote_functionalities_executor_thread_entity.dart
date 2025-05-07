@@ -62,14 +62,14 @@ class RemoteFunctionalitiesExecutorThreadEntity with IDisposable {
       }
       mainManager.sendPackage(
         flag: RFESPackageFlag.entityFunctionalityEnd,
-        content: {isCorrectFlag: true, contentFlag: ConverterUtilities.isPrimitive(result.runtimeType) == null ? ConverterUtilities.serializeToJson(result) : result},
+        content: {identifierFlag: id, isCorrectFlag: true, contentFlag: ConverterUtilities.isPrimitive(result.runtimeType) == null ? ConverterUtilities.serializeToJson(result) : result},
       );
     } catch (ex, st) {
       if (wasDiscarded) {
         return;
       }
       final rn = NegativeResult.searchNegativity(item: ex, actionDescription: Oration(message: 'Call entity function %1 on server', textParts: [typeName]), stackTrace: st);
-      mainManager.sendPackage(flag: RFESPackageFlag.entityFunctionalityEnd, content: {isCorrectFlag: false, contentFlag: rn.serializeToJson()});
+      mainManager.sendPackage(flag: RFESPackageFlag.entityFunctionalityEnd, content: {identifierFlag: id, isCorrectFlag: false, contentFlag: rn.serializeToJson()});
     }
   }
 
@@ -91,7 +91,7 @@ class RemoteFunctionalitiesExecutorThreadEntity with IDisposable {
       }
 
       if (taskWaiter.expectedType == dynamic || taskWaiter.expectedType.toString() == 'void') {
-        taskWaiter.complete();
+        taskWaiter.complete(rawContent);
         return;
       }
 

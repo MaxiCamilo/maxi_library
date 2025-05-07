@@ -370,7 +370,7 @@ T makeSeveralAttempts<T>({
     }
   }
 }
-
+/*
 Future<T> makeSeveralAttemptsAsync<T>({
   required FutureOr<T> Function() function,
   required int attempts,
@@ -395,4 +395,4 @@ Future<T> makeSeveralAttemptsAsync<T>({
       i += 1;
     }
   }
-}
+}*/
