@@ -9,5 +9,5 @@ mixin IOperatorLanguage {
 
   Future<void> changeLanguage(String newPrefixLanguage);
 
-  Stream get notifyLanguageChange;
+  //Stream get notifyLanguageChange;
 }

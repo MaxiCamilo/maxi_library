@@ -4,13 +4,11 @@ import 'dart:developer';
 import 'package:maxi_library/maxi_library.dart';
 
 class LanguageOperatorBasic with IOperatorLanguage {
-  final _streamController = StreamController.broadcast();
 
   @override
   String get prefixLanguage => 'en';
 
-  @override
-  Stream get notifyLanguageChange => _streamController.stream;
+  
 
   @override
   Future<void> changeLanguage(String newPrefixLanguage) async {

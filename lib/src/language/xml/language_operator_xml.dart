@@ -3,10 +3,7 @@ import 'dart:developer';
 
 import 'package:maxi_library/maxi_library.dart';
 
-class LanguageOperatorXml with StartableFunctionality, IOperatorLanguage {
-  @override
-  Stream<String> get notifyLanguageChange => _notifyLanguageChangeController.stream;
-
+class LanguageOperatorXml with StartableFunctionality, FunctionalityWithLifeCycle, IOperatorLanguage {
   @override
   String prefixLanguage;
   final List<IReadOnlyFileOperator> includeFiles;
@@ -17,32 +14,37 @@ class LanguageOperatorXml with StartableFunctionality, IOperatorLanguage {
   Map<String, String> _referencesByToker = {};
   Map<String, String> _referencesByText = {};
 
-  late final StreamController<String> _notifyLanguageChangeController;
-
   LanguageOperatorXml({this.prefixLanguage = 'en' /*, this.filesLocation = '${DirectoryUtilities.prefixRouteLocal}/lang',*/, this.includeFiles = const []}) {
-    _notifyLanguageChangeController = StreamController<String>.broadcast();
-
     bundles = includeFiles.map((x) => BundleTranslatedTextFileXml(file: x)).toList(growable: false);
   }
 
   @override
   Future<void> changeLanguage(String newPrefixLanguage) async {
-    dispose();
-    await continueOtherFutures();
-
-    prefixLanguage = newPrefixLanguage;
     await initialize();
+    if (prefixLanguage == newPrefixLanguage) {
+      return;
+    } else {
+      prefixLanguage = newPrefixLanguage;
+      await _updateTexts();
+    }
   }
 
   @override
-  Future<void> initializeFunctionality() async {
+  Future<void> afterInitializingFunctionality() async {
     prefixLanguage = prefixLanguage.toLowerCase();
 
+    await LanguageManager.notifyLanguageChangeOperator.initialize();
+    await _updateTexts();
+
+    joinEvent(event: LanguageManager.notifyLanguageChangeOperator.receiver, onData: changeLanguage);
+  }
+
+  Future<void> _updateTexts() async {
     _inEnglish = prefixLanguage == 'en';
     if (_inEnglish) {
       _referencesByToker.clear();
       _referencesByText.clear();
-      _notifyLanguageChangeController.addIfActive(prefixLanguage);
+      LanguageManager.notifyLanguageChangeOperator.addIfActive(prefixLanguage);
       return;
     }
 
@@ -52,7 +54,7 @@ class LanguageOperatorXml with StartableFunctionality, IOperatorLanguage {
       _inEnglish = true;
       _referencesByToker.clear();
       _referencesByText.clear();
-      _notifyLanguageChangeController.addIfActive('en');
+      LanguageManager.notifyLanguageChangeOperator.addIfActive('en');
       return;
     }
 
@@ -62,7 +64,7 @@ class LanguageOperatorXml with StartableFunctionality, IOperatorLanguage {
     _referencesByText = result.map((x, y) => MapEntry(x.message, y));
     _referencesByToker = result.entries.where((x) => x.key.tokenId.isNotEmpty).map((x) => MapEntry(x.key.tokenId, x.value)).toMap();
 
-    _notifyLanguageChangeController.addIfActive(prefixLanguage);
+    LanguageManager.notifyLanguageChangeOperator.addIfActive(prefixLanguage);
   }
 
   /*static Future<Map<Oration, String>> _readTranslatedText(InvocationContext context) {
