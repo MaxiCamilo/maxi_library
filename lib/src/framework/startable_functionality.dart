@@ -89,6 +89,12 @@ mixin StartableFunctionality implements IDisposable {
 
   @override
   void dispose() {
+    maxi_dispose();
+  }
+
+  @override
+  // ignore: non_constant_identifier_names
+  void maxi_dispose() {
     if (_isInitialized) {
       containErrorLog(detail: const Oration(message: 'Dispose object'), function: performObjectDiscard);
       _onDisposeCompleter?.completeIfIncomplete();
