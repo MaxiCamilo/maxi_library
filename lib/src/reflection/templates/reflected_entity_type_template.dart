@@ -229,7 +229,7 @@ abstract class ReflectedEntityTypeTemplate with IReflectionType, IDeclarationRef
     initialized();
 
     if (custorSerialization != null) {
-      return custorSerialization!.performSerialization(entity: item, declaration: this, allowStaticFields: allowStaticFields, onlyModificable: onlyModificable);
+      return custorSerialization!.performSerialization(value: item, declaration: this, allowStaticFields: allowStaticFields, onlyModificable: onlyModificable);
     }
 
     late final List<IFieldReflection> fields;

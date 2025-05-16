@@ -87,7 +87,7 @@ class FieldEntity<T, R> with IDeclarationReflector, IGetterReflector, ISetterRef
     value = field.getValue(entity: instance);
 
     if (customSerialization != null) {
-      return customSerialization!.performSerialization(entity: value, declaration: this);
+      return customSerialization!.performSerialization(value: value, declaration: this);
     } else {
       return value;
     }

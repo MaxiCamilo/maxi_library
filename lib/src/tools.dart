@@ -32,6 +32,9 @@ export 'package:maxi_library/src/tools/semaphore/isemaphore.dart';
 export 'package:maxi_library/src/tools/online_http_requester.dart';
 export 'package:maxi_library/src/tools/online_web_socket.dart';
 
+export 'package:maxi_library/src/tools/execution_states_manager/execution_states_manager.dart';
+export 'package:maxi_library/src/tools/execution_states_manager/iexecution_states_manager_point.dart';
+
 export 'package:maxi_library/src/tools/app_managers/dart_application_manager.dart';
 export 'package:maxi_library/src/tools/file_operator/file_operator_mask.dart';
 export 'package:maxi_library/src/tools/file_operator/file_operator_native.dart';

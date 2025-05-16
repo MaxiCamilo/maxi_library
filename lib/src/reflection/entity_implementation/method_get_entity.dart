@@ -60,7 +60,7 @@ class MethodGetEntity<T, R> with IDeclarationReflector, IGetterReflector {
     if (customSerialization == null) {
       return value;
     } else {
-      return customSerialization!.performSerialization(entity: value, declaration: this);
+      return customSerialization!.performSerialization(value: value, declaration: this);
     }
   }
 }

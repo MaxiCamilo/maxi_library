@@ -269,4 +269,13 @@ mixin HexadecimalUtilities {
       return 0;
     }
   }
+
+  static int convertLiteralListHexToNumber(Iterable<int> data) {
+    final buffer = StringBuffer();
+    for (final item in data) {
+      buffer.write(item.toString());
+    }
+
+    return ConverterUtilities.toInt(value: buffer.toString(), propertyName: const Oration(message: ''));
+  }
 }

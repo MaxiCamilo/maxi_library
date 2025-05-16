@@ -97,5 +97,5 @@ class NegativeResult implements Exception, CustomSerialization, ICustomSerializa
   String serializeToJson() => json.encode(serialize());
 
   @override
-  performSerialization({required entity, required IDeclarationReflector declaration, bool onlyModificable = true, bool allowStaticFields = false}) => serialize();
+  performSerialization({required value, required IDeclarationReflector declaration, bool onlyModificable = true, bool allowStaticFields = false}) => serialize();
 }

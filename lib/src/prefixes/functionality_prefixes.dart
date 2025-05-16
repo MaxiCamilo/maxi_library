@@ -297,6 +297,15 @@ Future<void> checkProgrammingFailureAsync<T>({
   }
 }
 
+void checkValue({
+  required Oration errorLabel,
+  required bool Function() result,
+}) {
+  if (!result()) {
+    throw NegativeResult(identifier: NegativeResultCodes.invalidValue, message: errorLabel);
+  }
+}
+
 T volatileProperty<T>({
   required Oration formalName,
   required String propertyName,
