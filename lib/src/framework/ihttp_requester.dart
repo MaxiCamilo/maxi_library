@@ -120,7 +120,7 @@ mixin IHttpRequester {
     return volatile(detail: Oration(message: 'Expected json object in request %1', textParts: [url]), function: () => rawJson as Map<String, dynamic>);
   }
 
-  NegativeResult tryToInterpretError({required String content, required int codeError, required String url}) {
+  static NegativeResult tryToInterpretError({required String content, required int codeError, required String url}) {
     if (!content.startsWith('{') || !content.endsWith('}')) {
       throw NegativeResult(
         identifier: NegativeResultCodes.wrongType,

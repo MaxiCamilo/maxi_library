@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:maxi_library/maxi_library.dart';
 import 'package:maxi_library/src/tools/internal/shared_values_service.dart';
 
-class IsolatedValue<T extends Object> with StartableFunctionality, FunctionalityWithLifeCycle, IChannel<T, T> {
+class IsolatedValue<T extends Object> with StartableFunctionality, PaternalFunctionality ,FunctionalityWithLifeCycle, IChannel<T, T> {
   final String name;
   final T? defaultValue;
 

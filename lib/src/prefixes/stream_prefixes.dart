@@ -15,33 +15,44 @@ Stream<StreamState<Oration, R>> streamTextStatusSync<R>(Oration oration) async* 
   await continueOtherFutures();
 }
 
-Stream<StreamState<S, R>> connectFunctionalStream<S, R, SR>(Stream<StreamState<S, SR>> other, [void Function(SR x)? sendResult]) async* {
-  late final SR result;
-  bool returnResult = false;
+Stream<StreamState<S, R>> connectFunctionalStream<S, R, SR>(
+  Stream<StreamState<S, SR>> other, {
+  void Function(SR x)? sendResult,
+  void Function(dynamic, StackTrace)? onError,
+}) async* {
+  try {
+    late final SR result;
+    bool returnResult = false;
 
-  await for (final item in other) {
-    if (item is StreamStateItem<S, SR>) {
-      yield StreamStateItem<S, R>(item: item.item);
-    } else if (item is StreamStateResult<S, SR>) {
-      result = item.result;
-      returnResult = true;
-      break;
-    } else if (item is StreamStatePartialError<S, SR>) {
-      yield StreamStatePartialError<S, R>(partialError: item.partialError);
-    } else if (item is StreamCheckActive<S, SR>) {
-      yield StreamCheckActive<S, R>();
-    } else {
-      log('[connectFunctionalStream] Unkown item steam');
+    await for (final item in other) {
+      if (item is StreamStateItem<S, SR>) {
+        yield StreamStateItem<S, R>(item: item.item);
+      } else if (item is StreamStateResult<S, SR>) {
+        result = item.result;
+        returnResult = true;
+        break;
+      } else if (item is StreamStatePartialError<S, SR>) {
+        yield StreamStatePartialError<S, R>(partialError: item.partialError);
+      } else if (item is StreamCheckActive<S, SR>) {
+        yield StreamCheckActive<S, R>();
+      } else {
+        log('[connectFunctionalStream] Unkown item steam');
+      }
     }
-  }
 
-  if (returnResult && sendResult != null) {
-    sendResult(result);
-  } else if (!returnResult && sendResult != null) {
-    throw NegativeResult(
-      identifier: NegativeResultCodes.implementationFailure,
-      message: Oration(message: 'The stateful process failed to produce the final output'),
-    );
+    if (returnResult && sendResult != null) {
+      sendResult(result);
+    } else if (!returnResult && sendResult != null) {
+      throw NegativeResult(
+        identifier: NegativeResultCodes.implementationFailure,
+        message: Oration(message: 'The stateful process failed to produce the final output'),
+      );
+    }
+  } catch (ex, st) {
+    if (onError != null) {
+      onError(ex, st);
+    }
+    rethrow;
   }
 }
 

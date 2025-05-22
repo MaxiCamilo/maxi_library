@@ -8,6 +8,7 @@ export 'package:maxi_library/src/framework/ichannel.dart';
 export 'package:maxi_library/src/framework/idisposable.dart';
 export 'package:maxi_library/src/framework/file_operator.dart';
 export 'package:maxi_library/src/framework/ihttp_requester.dart';
+export 'package:maxi_library/src/framework/paternal_functionality.dart';
 export 'package:maxi_library/src/framework/functionality_with_life_cycle.dart';
 export 'package:maxi_library/src/framework/functionality_with_life_cycle_as_stream.dart';
 

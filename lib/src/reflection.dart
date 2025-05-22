@@ -41,3 +41,4 @@ export 'package:maxi_library/src/reflection/validators/texts/check_ip.dart';
 export 'package:maxi_library/src/reflection/validators/check_list.dart';
 
 export 'package:maxi_library/src/reflection/build/reflector_generator.dart';
+export 'package:maxi_library/src/reflection/decorators/ignore_file_for_reflection.dart';

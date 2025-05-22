@@ -31,7 +31,7 @@ class ThreadMessageExecutor {
     senderMessage.add(ThreadExecutionConfirmation(newId: id));
 
     try {
-      late final dynamic result;
+      late dynamic result;
       if (message.function is Future Function(InvocationContext)) {
         final future = (message.function as Future Function(InvocationContext))(InvocationContext.fromParametes(thread: thread, applicant: sender, parametres: message.parameters));
         result = await Future.any([future, completer.future]);
@@ -39,6 +39,10 @@ class ThreadMessageExecutor {
         future.ignore();
       } else {
         result = message.function(InvocationContext.fromParametes(thread: thread, applicant: sender, parametres: message.parameters));
+      }
+
+      if (result is Future) {
+        result = await result;
       }
 
       completer.completeIfIncomplete(result);

@@ -33,7 +33,8 @@ class IsolatedThreadStreamManager {
     _connectedStreams[id] = controller;
 
     return controller.stream.doOnCancel(() {
-      if (_connectedStreams.containsKey(id)) {
+      final instance = _connectedStreams.remove(id);
+      if (instance != null) {
         invoker.callFunction(parameters: InvocationParameters.only(id), function: _declareCanceled);
       }
     });

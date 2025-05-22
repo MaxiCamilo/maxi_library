@@ -19,6 +19,9 @@ mixin IStreamFunctionality<T> {
   @protected
   void onDispose({required FunctionalityStreamManager<T> manager}) {}
 
+  @protected
+  void onFinish({required FunctionalityStreamManager<T> manager, T? possibleResult, NegativeResult? possibleError}) {}
+
   FunctionalityStreamManager<T> createManager() => FunctionalityStreamManager<T>(functionality: this);
   StreamStateTexts<T> runWithoutManager() => createManager().start();
   StreamStateTexts<T> runWithoutManagerInBackground() async* {
@@ -33,9 +36,10 @@ mixin IStreamFunctionality<T> {
     );
   }
 
-  StreamStateTexts<T> runOtherManager({required FunctionalityStreamManager manager}) async* {
+  StreamStateTexts<T> runOtherManager({required FunctionalityStreamManager manager, void Function(T)? onResult, bool throwIfError = true}) async* {
     final streamController = StreamController<StreamState<Oration, T>>();
     final instance = createManager();
+    dynamic lastError;
 
     maxiScheduleMicrotask(() async {
       instance.start();
@@ -49,8 +53,12 @@ mixin IStreamFunctionality<T> {
         });
         final result = await instance.waitStreamResult();
         streamController.addIfActive(streamResult(result));
+        if (onResult != null) {
+          onResult(result);
+        }
       } catch (ex, st) {
         streamController.addErrorIfActive(ex, st);
+        lastError = ex;
       } finally {
         otherDone.ignore();
         streamController.close();
@@ -58,6 +66,10 @@ mixin IStreamFunctionality<T> {
     });
 
     yield* streamController.stream;
+
+    if (lastError != null) {
+      throw lastError;
+    }
   }
 
   Future<T> runOtherManagerAsFuture({required FunctionalityStreamManager manager, void Function(Oration)? onTextReceived}) {
@@ -173,9 +185,12 @@ class FunctionalityStreamManager<T> {
     yield checkStreamState();
   }
 
-  Stream<StreamState<Oration, T>> start() {
+  Stream<StreamState<Oration, T>> start({bool throwIfError = true}) async* {
     if (isActive) {
-      return _streamController!.stream;
+      yield* _streamController!.stream;
+      if (throwIfError && _lastError != null) {
+        throw _lastError!;
+      }
     }
 
     _streamController = StreamController<StreamState<Oration, T>>.broadcast(
@@ -184,7 +199,10 @@ class FunctionalityStreamManager<T> {
     );
 
     maxiScheduleMicrotask(_runStream);
-    return _streamController!.stream;
+    yield* _streamController!.stream;
+    if (throwIfError && _lastError != null) {
+      throw _lastError!;
+    }
   }
 
   Future<T> waitStreamResult() {
@@ -280,6 +298,8 @@ class FunctionalityStreamManager<T> {
       _textStreamController?.addIfActive(_lastError!.message);
       functionality.onError(manager: this, error: _lastError!);
     } finally {
+      containErrorLog(detail: const Oration(message: 'On finish functional stream'), function: () => functionality.onFinish(manager: this, possibleError: _lastError, possibleResult: _lastResult));
+
       _streamController?.close();
       _streamController = null;
 

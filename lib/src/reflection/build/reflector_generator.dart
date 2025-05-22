@@ -12,16 +12,26 @@ class ReflectorGenerator {
   final String albumName;
   final String fileCreationPlace;
 
+  final bool omitConditionalImports;
+  final bool omitWebPackage;
+  final bool omitImportsFromFiles;
+
+  final List<String> addedImports;
+
   const ReflectorGenerator({
     required this.directories,
     required this.fileCreationPlace,
     required this.albumName,
+    this.omitConditionalImports = true,
+    this.omitWebPackage = true,
+    this.omitImportsFromFiles = false,
+    this.addedImports = const [],
   });
 
   Future<void> build() async {
     final imports = <String>{
-      'import \'package:maxi_library/export_reflectors.dart\'',
-      'import \'package:maxi_library/maxi_library.dart\'',
+      'import \'package:maxi_library/export_reflectors.dart\';',
+      'import \'package:maxi_library/maxi_library.dart\';',
     };
 
     await ApplicationManager.changeInstance(
@@ -49,6 +59,11 @@ class ReflectorGenerator {
 
     for (var file in dartFiles) {
       final content = File(file.path).readAsStringSync();
+
+      if (content.startsWith('@ignoreFileForReflection')) {
+        continue;
+      }
+
       final result = parseString(content: content, throwIfDiagnostics: false);
       final unit = result.unit;
 
@@ -57,8 +72,24 @@ class ReflectorGenerator {
 
       classList.addAll(visitor.classList);
       enumList.addAll(visitor.enumList);
-      imports.addAll(visitor.imports);
+
+      if (!omitImportsFromFiles && (classList.isNotEmpty || enumList.isNotEmpty)) {
+        for (final imp in visitor.imports) {
+          if (omitConditionalImports && imp.replaceAll(' ', '').contains('if(')) {
+            continue;
+          }
+
+          if (omitWebPackage && imp.contains('package:web/web.dart')) {
+            continue;
+          }
+
+          imports.add(imp);
+        }
+        //imports.addAll(visitor.imports);
+      }
     }
+
+    imports.addAll(addedImports.map((x) => 'import \'$x\';'));
 
     final file = File('${DirectoryUtilities.interpretPrefix(fileCreationPlace)}/${albumName.toLowerCase()}.dart');
 

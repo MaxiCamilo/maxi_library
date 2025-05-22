@@ -2,7 +2,7 @@ import 'dart:math' show Random;
 
 import 'package:maxi_library/maxi_library.dart';
 
-class TempFolder with StartableFunctionality, FunctionalityWithLifeCycle {
+class TempFolder with StartableFunctionality, PaternalFunctionality, FunctionalityWithLifeCycle {
   static bool _tempFolderCreated = false;
   late String _currectAddress;
   late FileOperatorMask _folderInstance;

@@ -1,29 +1,22 @@
 import 'dart:async';
-import 'dart:developer';
 
 import 'package:maxi_library/maxi_library.dart';
 import 'package:meta/meta.dart';
 
-mixin FunctionalityWithLifeCycle on StartableFunctionality {
-  final _streamControllers = <StreamController>[];
-  final _streamSubscriptions = <StreamSubscription>[];
-  final _waiters = <Completer>[];
-  final _otherActiveList = <Object>[];
-  final _futures = <Future>[];
-
+mixin FunctionalityWithLifeCycle on StartableFunctionality, PaternalFunctionality {
   bool get initiallyPreviouslyExecuted => _initiallyPreviouslyExecuted;
 
-  Completer? _onDone;
   bool _initiallyPreviouslyExecuted = false;
 
-  @protected
-  Future<void> afterInitializingFunctionality();
+  Completer? _onDone;
 
   Future get done {
     _onDone ??= MaxiCompleter();
-
     return _onDone!.future;
   }
+
+  @protected
+  Future<void> afterInitializingFunctionality();
 
   @override
   @protected
@@ -31,10 +24,14 @@ mixin FunctionalityWithLifeCycle on StartableFunctionality {
   Future<void> initializeFunctionality() async {
     try {
       await afterInitializingFunctionality();
-    } catch (ex) {
-      _onDone?.completeErrorIfIncomplete(ex);
-      _onDone = null;
+      onDispose.whenComplete(() {
+        _onDone?.completeIfIncomplete();
+        _onDone = null;
+      });
+    } catch (ex, st) {
       removeJoinedObjects();
+      _onDone?.completeErrorIfIncomplete(ex, st);
+      _onDone = null;
       rethrow;
     } finally {
       _initiallyPreviouslyExecuted = true;
@@ -42,222 +39,11 @@ mixin FunctionalityWithLifeCycle on StartableFunctionality {
   }
 
   @protected
-  @mustCallSuper
-  void removeJoinedObjects() {
-    _streamControllers.iterar((x) => x.close());
-    _streamSubscriptions.iterar((x) => x.cancel());
-
-    _streamControllers.clear();
-    _streamSubscriptions.clear();
-
-    _futures.iterar((x) => x.ignore());
-    _futures.clear();
-
-    _waiters.iterar((x) {
-      x.completeErrorIfIncomplete(
-        NegativeResult(
-          identifier: NegativeResultCodes.functionalityCancelled,
-          message: const Oration(message: 'The functionality was canceled'),
-        ),
-      );
-    });
-
-    _waiters.clear();
-
-    _otherActiveList.iterar((x) {
-      try {
-        (x as dynamic).dispose();
-      } catch (ex) {
-        log('[FunctionalityWithLifeCycle] Error stirring the united object: $ex');
-      }
-    });
-    _otherActiveList.clear();
-
-    _onDone?.completeIfIncomplete(this);
-    _onDone = null;
-  }
-
-  R joinObject<R extends Object>({required R item}) {
-    _otherActiveList.add(item);
-    return item;
-  }
-
-  Future<R> joinAsyncObject<R extends Object>(Future<R> Function() function) async {
-    final result = await function();
-    _otherActiveList.add(result);
-    return result;
-  }
-
-  @override
-  @mustCallSuper
-  void performObjectDiscard() {
-    if (!isInitialized) {
-      return;
-    }
-    super.performObjectDiscard();
-    removeJoinedObjects();
-    afterDiscard();
-  }
-
-  @protected
   void afterDiscard() {}
 
-  StreamController<R> createEventController<R>({required bool isBroadcast}) {
-    late final StreamController<R> newController;
-
-    if (isBroadcast) {
-      newController = StreamController<R>.broadcast();
-    } else {
-      newController = StreamController<R>();
-    }
-
-    return joinStreamController<R>(newController);
-  }
-
-  StreamController<R> joinStreamController<R>(StreamController<R> controller) {
-    _streamControllers.add(controller);
-    controller.done.whenComplete(() => _streamControllers.remove(controller));
-
-    return controller;
-  }
-
-  StreamSubscription<T> joinSubscription<T>(StreamSubscription<T> subscription) {
-    _streamSubscriptions.add(subscription);
-    return subscription;
-  }
-
-  Future<T> joinFuture<T>(
-    Future<T> future, {
-    void Function(T)? onDone,
-    void Function(Object, StackTrace)? onError,
-    void Function()? whenCompleted,
-  }) async {
-    try {
-      _futures.add(future);
-      final result = await future;
-      if (onDone != null) {
-        onDone(result);
-      }
-      return result;
-    } catch (ex, st) {
-      if (onError != null) {
-        onError(ex, st);
-      }
-      rethrow;
-    } finally {
-      _futures.remove(future);
-      if (whenCompleted != null) {
-        whenCompleted();
-      }
-    }
-  }
-
-  Completer<R> joinWaiter<R>([Completer<R>? waiter]) {
-    waiter ??= MaxiCompleter<R>();
-    checkProgrammingFailure(thatChecks: const Oration(message: 'The waiter was already completed'), result: () => !waiter!.isCompleted);
-
-    _waiters.add(waiter);
-    waiter.future.whenComplete(() {
-      _waiters.remove(waiter);
-    });
-    return waiter;
-  }
-
-  StreamSubscription<R> joinEvent<R>({
-    required Stream<R> event,
-    required void Function(R) onData,
-    void Function(dynamic)? onError,
-    void Function()? onDone,
-    Function(StreamSubscription)? onSubscriptionCreated,
-  }) {
-    late final StreamSubscription<R> subscription;
-    subscription = event.listen(
-      onData,
-      onError: onError,
-      onDone: () {
-        _streamSubscriptions.remove(subscription);
-        if (onDone != null) {
-          onDone();
-        }
-      },
-    );
-    _streamSubscriptions.add(subscription);
-
-    if (onSubscriptionCreated != null) {
-      onSubscriptionCreated(subscription);
-    }
-
-    return subscription;
-  }
 /*
   R joinObject<R extends Object>({required R item}) {
     _otherActiveList.add(item);
     return item;
   }*/
-
-  Future<StreamSubscription<R>> callEntityStreamDirectly<S extends Object, R>({
-    InvocationParameters parameters = InvocationParameters.emptry,
-    required FutureOr<Stream<R>> Function(S serv, InvocationParameters para) function,
-    bool cancelOnError = false,
-    void Function(R)? onListen,
-    void Function()? onDone,
-    void Function(Object error, [StackTrace? stackTrace])? onError,
-  }) async {
-    final subscription = await ThreadManager.callEntityStreamDirectly(
-      function: function,
-      cancelOnError: cancelOnError,
-      onDone: onDone,
-      onError: onError,
-      onListen: onListen,
-      parameters: parameters,
-    );
-
-    if (wasDiscarded) {
-      subscription.cancel();
-    } else {
-      _streamSubscriptions.add(subscription);
-    }
-
-    return subscription;
-  }
-
-  Future<StreamController<R>> createEntityControllerStream<S extends Object, R>({
-    required bool isBroadcast,
-    required FutureOr<Stream<R>> Function(S serv, InvocationParameters para) function,
-    InvocationParameters parameters = InvocationParameters.emptry,
-    bool cancelOnError = false,
-    void Function(R)? onListen,
-    void Function()? onDone,
-    void Function(Object error, [StackTrace? stackTrace])? onError,
-  }) async {
-    final controller = createEventController<R>(isBroadcast: isBroadcast);
-
-    final subscription = await callEntityStreamDirectly(
-      function: function,
-      parameters: parameters,
-      cancelOnError: cancelOnError,
-      onListen: (x) {
-        controller.addIfActive(x);
-        if (onListen != null) {
-          onListen(x);
-        }
-      },
-      onError: (x, [y]) {
-        controller.addErrorIfActive(x, y);
-        if (onError != null) {
-          onError(x, y);
-        }
-      },
-      onDone: () {
-        controller.close();
-        if (onDone != null) {
-          onDone();
-        }
-      },
-    );
-
-    controller.done.whenComplete(() => subscription.cancel());
-
-    return controller;
-  }
 }

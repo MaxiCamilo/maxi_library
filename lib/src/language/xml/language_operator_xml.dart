@@ -3,7 +3,7 @@ import 'dart:developer';
 
 import 'package:maxi_library/maxi_library.dart';
 
-class LanguageOperatorXml with StartableFunctionality, FunctionalityWithLifeCycle, IOperatorLanguage {
+class LanguageOperatorXml with StartableFunctionality, PaternalFunctionality, FunctionalityWithLifeCycle, IOperatorLanguage {
   @override
   String prefixLanguage;
   final List<IReadOnlyFileOperator> includeFiles;

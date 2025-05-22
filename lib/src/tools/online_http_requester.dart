@@ -36,6 +36,7 @@ class OnlineHttpRequester with IHttpRequester {
     _activeRequest += 1;
 
     late final Future<http.Response> future;
+
     switch (type) {
       case HttpMethodType.postMethod:
         future = http.post(_makeUrl(url), headers: headers, body: content, encoding: encoding).timeout(timeout ?? defaultTimeout, onTimeout: () => _throwTimeout(url));
@@ -57,6 +58,16 @@ class OnlineHttpRequester with IHttpRequester {
     late final http.Response response;
     try {
       response = await future;
+    } on http.ClientException catch (ex, st) {
+      throw NegativeResult(
+        identifier: NegativeResultCodes.externalFault,
+        message: Oration(
+          message: 'A request to server %1 failed with the following error: %2',
+          textParts: [initialUrl, ex.message],
+        ),
+        cause: ex,
+        stackTrace: st.toString(),
+      );
     } finally {
       activeRequests.remove(future);
     }
@@ -69,7 +80,7 @@ class OnlineHttpRequester with IHttpRequester {
     }
 
     if (badStatusCodeIsNegativeResult && response.statusCode >= 400) {
-      final error = tryToInterpretError(codeError: response.statusCode, content: response.body, url: url);
+      final error = IHttpRequester.tryToInterpretError(codeError: response.statusCode, content: response.body, url: url);
       if (T == NegativeResult) {
         return ResponseHttpRequest<T>(content: error as T, codeResult: response.statusCode, url: url);
       } else {

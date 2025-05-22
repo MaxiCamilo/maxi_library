@@ -6,7 +6,7 @@ import 'package:maxi_library/src/tools/remote_functionalities_executor/via_strea
 import 'package:maxi_library/src/tools/remote_functionalities_executor/via_stream/remote_functionalities_executor_functions.dart';
 import 'package:maxi_library/src/tools/remote_functionalities_executor/via_stream/remote_functionalities_executor_thread_entity.dart';
 
-class RemoteFunctionalitiesExecutorViaStream with IRemoteFunctionalitiesExecutor, StartableFunctionality, FunctionalityWithLifeCycle {
+class RemoteFunctionalitiesExecutorViaStream with IRemoteFunctionalitiesExecutor, StartableFunctionality, PaternalFunctionality ,FunctionalityWithLifeCycle {
   final Stream<Map<String, dynamic>> receiver;
   final StreamSink<Map<String, dynamic>> sender;
   final Duration timeout;

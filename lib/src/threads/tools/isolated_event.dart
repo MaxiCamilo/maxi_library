@@ -15,17 +15,14 @@ class IsolatedEvent<T> with StartableFunctionality, IChannel<T, T> {
   bool get isActive => isInitialized;
 
   @override
-  Stream<T> get receiver {
-    if (_controller == null || _controller!.isClosed) {
-      _controller = StreamController<T>.broadcast();
-    }
-
-    initialize();
-
-    return _controller!.stream;
+  Stream<T> get receiver async* {
+    await initialize();
+    yield* _controller!.stream;
   }
 
   IsolatedEvent({required this.name});
+
+  static Future<void> mountService() => SharedValuesService.mountService();
 
   static Future<void> sendEvent({required String name, required dynamic value}) async {
     await SharedValuesService.mountService();
