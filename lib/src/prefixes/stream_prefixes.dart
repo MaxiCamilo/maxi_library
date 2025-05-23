@@ -15,6 +15,8 @@ Stream<StreamState<Oration, R>> streamTextStatusSync<R>(Oration oration) async* 
   await continueOtherFutures();
 }
 
+/*
+
 Stream<StreamState<S, R>> connectFunctionalStream<S, R, SR>(
   Stream<StreamState<S, SR>> other, {
   void Function(SR x)? sendResult,
@@ -133,48 +135,7 @@ Stream<S> getOnlyStreamItems<S, R>(Stream<StreamState<S, R>> stream) {
   return stream.whereType<StreamStateItem<S, R>>().map((x) => x.item);
 }
 
-Stream<StreamState<S, R>> connectOptionalFunctionalStream<S, R, SR>(
-  Stream<StreamState<S, SR>> other, {
-  void Function(S)? onData,
-  void Function(SR x)? onResult,
-  void Function(dynamic, StackTrace?)? onError,
-}) async* {
-  late final SR result;
-  bool returnResult = false;
-  try {
-    await for (final item in other) {
-      if (item is StreamStateItem<S, SR>) {
-        yield StreamStateItem<S, R>(item: item.item);
-        if (onData != null) {
-          onData(item.item);
-        }
-      } else if (item is StreamStateResult<S, SR>) {
-        result = item.result;
-        returnResult = true;
-        break;
-      } else if (item is StreamStatePartialError<S, SR>) {
-        yield StreamStatePartialError<S, R>(partialError: item.partialError);
-      } else if (item is StreamCheckActive<S, SR>) {
-        yield StreamCheckActive<S, R>();
-      } else {
-        log('[connectFunctionalStream] Unkown item steam');
-      }
-    }
 
-    if (returnResult && onResult != null) {
-      onResult(result);
-    } else if (!returnResult && !(R == dynamic || R.toString() == 'void' || R.toString() == 'Null')) {
-      throw NegativeResult(
-        identifier: NegativeResultCodes.implementationFailure,
-        message: Oration(message: 'The stateful process failed to produce the final output'),
-      );
-    }
-  } catch (x, y) {
-    if (onError != null) {
-      onError(x, y);
-    }
-  }
-}
 
 Stream<T> waitForStreamReturn<T>(FutureOr<Stream<T>> Function() function) async* {
   final stream = await function();
@@ -262,3 +223,4 @@ Future<R> waitFunctionalStream<S, R>({
     subscription.cancel();
   }
 }
+*/

@@ -14,10 +14,10 @@ class OrationTranslator with IStreamFunctionality<void> {
   @override
   StreamStateTexts<void> runFunctionality({required FunctionalityStreamManager<void> manager}) async* {
     yield streamTextStatus(const Oration(message: 'Looking for texts in files'));
-    final seacher = await searcherBuilder().runOtherManagerAsFuture(manager: manager);
+    final seacher = await searcherBuilder().waitResult(parent: manager, onText: (x) => print(x));
     yield streamTextStatus(Oration(message: 'Translating %1 texts', textParts: [seacher.length]));
-    final locatedText = await translatorBuilder(seacher).runOtherManagerAsFuture(manager: manager);
+    final locatedText = await translatorBuilder(seacher).waitResult(parent: manager, onText: (x) => print(x));
     yield streamTextStatus(const Oration(message: 'Generating file'));
-    await creatorBuilder(locatedText).runOtherManagerAsFuture(manager: manager);
+    await creatorBuilder(locatedText).waitResult(parent: manager, onText: (x) => print(x));
   }
 }

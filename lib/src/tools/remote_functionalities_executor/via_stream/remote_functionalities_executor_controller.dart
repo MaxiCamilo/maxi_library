@@ -4,16 +4,13 @@ import 'dart:convert';
 import 'package:maxi_library/maxi_library.dart';
 import 'package:maxi_library/src/tools/remote_functionalities_executor/via_stream/remote_functionalities_executor_package_flag.dart';
 
-class RemoteFunctionalitiesExecutorController with IDisposable {
+class RemoteFunctionalitiesExecutorController with IDisposable, PaternalFunctionality {
   final RemoteFunctionalitiesExecutorViaStream mainManager;
 
   final _pendingStream = <int, FunctionalityStreamManager>{};
   final _extenalsStream = <int, (Type, StreamController<StreamState<Oration, dynamic>>)>{};
 
   RemoteFunctionalitiesExecutorController({required this.mainManager});
-
-  @override
-  void performObjectDiscard() {}
 
   StreamStateTexts<T> executeStreamFunctionality<T, F extends IStreamFunctionality<T>>({
     required InvocationParameters parameters,
@@ -40,21 +37,23 @@ class RemoteFunctionalitiesExecutorController with IDisposable {
     late final T result;
     final resultController = StreamController<StreamState<Oration, T>>();
 
-    mainManager.joinFuture(
-      waitFunctionalStream(
-        stream: externalController.stream,
-        onData: (x) => resultController.add(streamTextStatus(x)),
-        onError: (ex) => resultController.addError(ex),
-        onDoneOrCanceled: (x) => resultController.close(),
-        onResult: (x) {
-          if (x is T) {
-            result = x;
-          } else {
-            resultController.addError(NegativeResult(identifier: NegativeResultCodes.wrongType, message: Oration(message: 'A result of type %1 was expected', textParts: [T])));
-          }
-        },
-      ),
-    );
+    final streamOperator = ExpressFunctionalityStream(
+      stream: externalController.stream,
+      onText: (x) => resultController.add(streamTextStatus(x)),
+      onError: (ex, st) => resultController.addError(ex, st),
+      onDoneOrCanceled: () => resultController.close(),
+      onResult: (x) {
+        if (x is T) {
+          result = x;
+        } else {
+          resultController.addError(NegativeResult(identifier: NegativeResultCodes.wrongType, message: Oration(message: 'A result of type %1 was expected', textParts: [T])));
+        }
+      },
+    ).createManager();
+
+    joinDisponsabeObject(item: streamOperator);
+
+    streamOperator.silentStart();
 
     yield* resultController.stream.doOnCancel(() {
       declareStreamClose(taskID);
@@ -131,25 +130,24 @@ class RemoteFunctionalitiesExecutorController with IDisposable {
     maxiScheduleMicrotask(() async {
       try {
         final instanceController = instance.createManager();
+        joinDisponsabeObject(item: instanceController);
         _pendingStream[id] = instanceController;
 
-        await waitFunctionalStream(
-          stream: instanceController.start(),
-          onDoneOrCanceled: (x) {
-            _pendingStream.remove(id);
-            mainManager.sendPackage(flag: RFESPackageFlag.streamEnded, content: {identifierFlag: id});
-          },
-          onData: (x) => mainManager.sendPackage(flag: RFESPackageFlag.streamSendText, content: {identifierFlag: id, contentFlag: x.serializeToJson()}),
-          onResult: (x) => mainManager.sendPackage(flag: RFESPackageFlag.streamSendResult, content: {
+        await instanceController.waitFinish(
+          onText: (x) => mainManager.sendPackage(flag: RFESPackageFlag.streamSendText, content: {identifierFlag: id, contentFlag: x.serializeToJson()}),
+          then: (x) => mainManager.sendPackage(flag: RFESPackageFlag.streamSendResult, content: {
             isCorrectFlag: true,
             identifierFlag: id,
             contentFlag: mainManager.serializeResult(x),
           }),
-          onError: (ex) => mainManager.sendPackage(flag: RFESPackageFlag.streamSendError, content: {
+          onError: (ex, st) => mainManager.sendPackage(flag: RFESPackageFlag.streamSendError, content: {
             identifierFlag: id,
-            contentFlag: NegativeResult.searchNegativity(item: ex, actionDescription: const Oration(message: 'Stream Error')).serializeToJson(),
+            contentFlag: NegativeResult.searchNegativity(item: ex, actionDescription: const Oration(message: 'Stream Error'), stackTrace: st).serializeToJson(),
           }),
         );
+
+        _pendingStream.remove(id);
+        mainManager.sendPackage(flag: RFESPackageFlag.streamEnded, content: {identifierFlag: id});
       } catch (ex, st) {
         final rn = NegativeResult.searchNegativity(
           item: ex,
@@ -172,7 +170,7 @@ class RemoteFunctionalitiesExecutorController with IDisposable {
       return;
     }
 
-    controller.cancelStream();
+    controller.cancel();
   }
 
   void processStreamResult(Map<String, dynamic> data) {

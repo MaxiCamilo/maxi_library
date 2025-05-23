@@ -23,22 +23,22 @@ mixin IEntityWriter<T> {
   Stream<R> reserveStream<R>(Future<Stream<R>> Function() function);
 
   Future<void> deleteAllAsFuture() {
-    return waitFunctionalStream(stream: deleteAll());
+    return ExpressFunctionalityStream(stream: deleteAll()).waitResult();
   }
 
   Future<void> deleteAsFuture({required List<int> listIDs}) {
-    return waitFunctionalStream(stream: delete(listIDs: listIDs));
+    return ExpressFunctionalityStream(stream: delete(listIDs: listIDs)).waitResult();
   }
 
   Future<void> addAsFuture({required List<T> list}) {
-    return waitFunctionalStream(stream: add(list: list));
+    return ExpressFunctionalityStream(stream: add(list: list)).waitResult();
   }
 
   Future<void> modifyAsFuture({required List<T> list}) {
-    return waitFunctionalStream(stream: modify(list: list));
+    return ExpressFunctionalityStream(stream: modify(list: list)).waitResult();
   }
 
   Future<void> assignAsFuture({required List<T> list}) {
-    return waitFunctionalStream(stream: assign(list: list));
+    return ExpressFunctionalityStream(stream: assign(list: list)).waitResult();
   }
 }

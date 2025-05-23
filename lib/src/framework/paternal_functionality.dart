@@ -14,23 +14,48 @@ mixin PaternalFunctionality on IDisposable {
 
   bool get hasChildren => _streamControllers.isNotEmpty || _streamSubscriptions.isNotEmpty || _waiters.isNotEmpty || _otherActiveList.isNotEmpty || _futures.isNotEmpty || _invokeObjects.isNotEmpty;
 
+  @protected
+  void checkBeforeJoining() {}
+
   R invokeFunctionIfDiscarded<R extends Object>({required R item, required FutureOr Function(R) function}) {
     _invokeObjects.add((item as Object, function as FutureOr Function(Object)));
     return item;
   }
 
   R joinObject<R extends Object>({required R item}) {
+    if (item is IDisposable) {
+      joinDisponsabeObject(item: item);
+      return item;
+    }
+
+    checkBeforeJoining();
     _otherActiveList.add(item);
     return item;
   }
 
+  R joinDisponsabeObject<R extends IDisposable>({required R item}) {
+    checkBeforeJoining();
+
+    item.onDispose.whenComplete(() {
+      _otherActiveList.remove(item);
+    });
+
+    _otherActiveList.add(item);
+    return item;
+  }
+  
+
+
   Future<R> joinAsyncObject<R extends Object>(Future<R> Function() function) async {
+    checkBeforeJoining();
     final result = await function();
+
     _otherActiveList.add(result);
     return result;
   }
 
   StreamController<R> createEventController<R>({required bool isBroadcast}) {
+    checkBeforeJoining();
     late final StreamController<R> newController;
 
     if (isBroadcast) {
@@ -43,6 +68,7 @@ mixin PaternalFunctionality on IDisposable {
   }
 
   StreamController<R> joinStreamController<R>(StreamController<R> controller) {
+    checkBeforeJoining();
     _streamControllers.add(controller);
     controller.done.whenComplete(() => _streamControllers.remove(controller));
 
@@ -50,6 +76,7 @@ mixin PaternalFunctionality on IDisposable {
   }
 
   StreamSubscription<T> joinSubscription<T>(StreamSubscription<T> subscription) {
+    checkBeforeJoining();
     _streamSubscriptions.add(subscription);
     return subscription;
   }
@@ -60,6 +87,7 @@ mixin PaternalFunctionality on IDisposable {
     void Function(Object, StackTrace)? onError,
     void Function()? whenCompleted,
   }) async {
+    checkBeforeJoining();
     try {
       _futures.add(future);
       final result = await future;
@@ -81,6 +109,7 @@ mixin PaternalFunctionality on IDisposable {
   }
 
   Completer<R> joinWaiter<R>([Completer<R>? waiter]) {
+    checkBeforeJoining();
     waiter ??= MaxiCompleter<R>();
     checkProgrammingFailure(thatChecks: const Oration(message: 'The waiter was already completed'), result: () => !waiter!.isCompleted);
 
@@ -94,10 +123,11 @@ mixin PaternalFunctionality on IDisposable {
   StreamSubscription<R> joinEvent<R>({
     required Stream<R> event,
     required void Function(R) onData,
-    void Function(dynamic)? onError,
+    void Function(dynamic, StackTrace)? onError,
     void Function()? onDone,
     Function(StreamSubscription)? onSubscriptionCreated,
   }) {
+    checkBeforeJoining();
     late final StreamSubscription<R> subscription;
     subscription = event.listen(
       onData,
@@ -126,6 +156,7 @@ mixin PaternalFunctionality on IDisposable {
     void Function()? onDone,
     void Function(Object error, [StackTrace? stackTrace])? onError,
   }) async {
+    checkBeforeJoining();
     final subscription = await ThreadManager.callEntityStreamDirectly(
       function: function,
       cancelOnError: cancelOnError,
@@ -153,6 +184,7 @@ mixin PaternalFunctionality on IDisposable {
     void Function()? onDone,
     void Function(Object error, [StackTrace? stackTrace])? onError,
   }) async {
+    checkBeforeJoining();
     final controller = createEventController<R>(isBroadcast: isBroadcast);
 
     final subscription = await callEntityStreamDirectly(

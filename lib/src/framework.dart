@@ -10,7 +10,7 @@ export 'package:maxi_library/src/framework/file_operator.dart';
 export 'package:maxi_library/src/framework/ihttp_requester.dart';
 export 'package:maxi_library/src/framework/paternal_functionality.dart';
 export 'package:maxi_library/src/framework/functionality_with_life_cycle.dart';
-export 'package:maxi_library/src/framework/functionality_with_life_cycle_as_stream.dart';
+export 'package:maxi_library/src/framework/functionality_stream_manager.dart';
 
 export 'package:maxi_library/src/framework/icondition_query.dart';
 export 'package:maxi_library/src/framework/conditions/compare_fields.dart';
@@ -26,3 +26,4 @@ export 'package:maxi_library/src/framework/entity_administrator/ientity_writer.d
 export 'package:maxi_library/src/framework/iremote_functionalities_executor.dart';
 
 export 'package:maxi_library/src/framework/application_manager.dart';
+export 'package:maxi_library/src/framework/express_functionality_stream.dart';
