@@ -16,6 +16,7 @@ mixin IDisposable {
   }
 
   Future<dynamic> get onDispose {
+    resurrectObject();
     _onDisposeCompleter ??= MaxiCompleter();
     return _onDisposeCompleter!.future;
   }
@@ -30,5 +31,12 @@ mixin IDisposable {
     _onDisposeCompleter?.completeIfIncomplete();
     _onDisposeCompleter = null;
     _wasDiscarded = true;
+  }
+
+  @protected
+  void resurrectObject() {
+    if (_wasDiscarded) {
+      _wasDiscarded = false;
+    }
   }
 }

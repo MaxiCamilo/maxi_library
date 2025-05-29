@@ -15,7 +15,10 @@ mixin PaternalFunctionality on IDisposable {
   bool get hasChildren => _streamControllers.isNotEmpty || _streamSubscriptions.isNotEmpty || _waiters.isNotEmpty || _otherActiveList.isNotEmpty || _futures.isNotEmpty || _invokeObjects.isNotEmpty;
 
   @protected
-  void checkBeforeJoining() {}
+  @mustCallSuper
+  void checkBeforeJoining() {
+    resurrectObject();
+  }
 
   R invokeFunctionIfDiscarded<R extends Object>({required R item, required FutureOr Function(R) function}) {
     _invokeObjects.add((item as Object, function as FutureOr Function(Object)));
@@ -24,7 +27,11 @@ mixin PaternalFunctionality on IDisposable {
 
   R joinObject<R extends Object>({required R item}) {
     if (item is IDisposable) {
-      joinDisponsabeObject(item: item);
+      checkBeforeJoining();
+
+      item.onDispose.whenComplete(() {
+        _otherActiveList.remove(item);
+      });
       return item;
     }
 
@@ -43,8 +50,6 @@ mixin PaternalFunctionality on IDisposable {
     _otherActiveList.add(item);
     return item;
   }
-  
-
 
   Future<R> joinAsyncObject<R extends Object>(Future<R> Function() function) async {
     checkBeforeJoining();
@@ -108,7 +113,7 @@ mixin PaternalFunctionality on IDisposable {
     }
   }
 
-  Completer<R> joinWaiter<R>([Completer<R>? waiter]) {
+  MaxiCompleter<R> joinWaiter<R>([MaxiCompleter<R>? waiter]) {
     checkBeforeJoining();
     waiter ??= MaxiCompleter<R>();
     checkProgrammingFailure(thatChecks: const Oration(message: 'The waiter was already completed'), result: () => !waiter!.isCompleted);
@@ -231,7 +236,13 @@ mixin PaternalFunctionality on IDisposable {
     _streamControllers.clear();
     _streamSubscriptions.clear();
 
-    _futures.iterar((x) => x.ignore());
+    _futures.iterar((x) {
+      if (x is MaxiFuture) {
+        x.ignore();
+      } else {
+        x.ignore();
+      }
+    });
     _futures.clear();
 
     _waiters.iterar((x) {

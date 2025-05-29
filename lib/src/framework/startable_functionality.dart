@@ -94,6 +94,11 @@ mixin StartableFunctionality implements IDisposable {
   }
 
   @override
+  void resurrectObject() {
+    
+  }
+
+  @override
   // ignore: non_constant_identifier_names
   void maxi_dispose() {
     if (_isInitialized) {

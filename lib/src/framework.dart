@@ -27,3 +27,6 @@ export 'package:maxi_library/src/framework/iremote_functionalities_executor.dart
 
 export 'package:maxi_library/src/framework/application_manager.dart';
 export 'package:maxi_library/src/framework/express_functionality_stream.dart';
+
+export 'package:maxi_library/src/framework/interactable_functionality.dart';
+export 'package:maxi_library/src/framework/interactable_functionality_operator.dart';

@@ -295,8 +295,8 @@ mixin ConverterUtilities {
 
     final primitiveType = isPrimitive(item.runtimeType);
     if (primitiveType != null) {
-      throw NegativeResult(identifier: NegativeResultCodes.invalidValue, message: const Oration(message: 'A primitive cannot be directly serialized to JSON'));
-      //return ConverterUtilities.convertSpecificPrimitive(type: primitiveType, value: item);
+      //throw NegativeResult(identifier: NegativeResultCodes.invalidValue, message: const Oration(message: 'A primitive cannot be directly serialized to JSON'));
+      return ConverterUtilities.convertSpecificPrimitive(type: primitiveType, value: item);
     }
 
     if (item is ICustomSerialization) {
@@ -311,14 +311,58 @@ mixin ConverterUtilities {
     return ReflectionManager.serialzeEntityToJson(value: item);
   }
 
+  static T castJson<T>({required String text}) {
+    if (T.toString() == 'void') {
+      return null as T;
+    }
+
+    if (T == dynamic) {
+      return text as T;
+    }
+
+    final primitiveType = isPrimitive(T);
+    if (primitiveType != null) {
+      return convertSpecificPrimitive(type: primitiveType, value: text);
+    }
+
+    if (T == Map<String, dynamic>) {
+      return interpretToObjectJson(text: text) as T;
+    }
+
+    if (T == List<Map<String, dynamic>>) {
+      return interpretToObjectListJson(text: text) as T;
+    }
+
+    if (T == Oration) {
+      return Oration.interpretFromJson(text: text) as T;
+    }
+
+    if (T == NegativeResult) {
+      return NegativeResult.interpretJson(jsonText: text) as T;
+    }
+
+    return ReflectionManager.interpretJson(rawText: text, tryToCorrectNames: false);
+  }
+
   static dynamic interpretJson({required String text, Oration? extra}) {
-    return volatile(detail: extra == null ? Oration(message: 'The content is not valid json') : Oration(message: 'The content is not valid json %1', textParts: [extra]), function: () => json.decode(text));
+    return volatile(
+      detail: extra == null ? Oration(message: 'The content is not valid json') : Oration(message: 'The content is not valid json %1', textParts: [extra]),
+      function: () => json.decode(text),
+    );
   }
 
   static Map<String, dynamic> interpretToObjectJson({required String text, Oration? extra}) {
     return volatile(
         detail: extra == null ? Oration(message: 'Expected a json object, but received a json listing or value') : Oration(message: 'Expected a json object, but received a json listing or value %1', textParts: [extra]),
         function: () => interpretJson(text: text, extra: extra) as Map<String, dynamic>);
+  }
+
+  static List interpretToJsonList({required String text, Oration? extra}) {
+    return volatile(
+        detail: extra == null
+            ? Oration(message: 'Expected a json list, but received a json value or individual object')
+            : Oration(message: 'Expected a json object, but received a json listing or value %1', textParts: [extra]),
+        function: () => interpretJson(text: text, extra: extra) as List);
   }
 
   static List<Map<String, dynamic>> interpretToObjectListJson({required String text, Oration? extra}) {
@@ -341,6 +385,20 @@ mixin ConverterUtilities {
       const (num) => PrimitiesType.isNum,
       const (Uint8List) || const (List<int>) => PrimitiesType.isBinary,
       const (Map<String, dynamic>) => PrimitiesType.isObjectMap,
+      _ => null,
+    };
+  }
+
+  static PrimitiesType? isPrimitiveByName(String typeName) {
+    return switch (typeName) {
+      const ('String') => PrimitiesType.isString,
+      const ('int') => PrimitiesType.isInt,
+      const ('double') => PrimitiesType.isDouble,
+      const ('bool') => PrimitiesType.isBoolean,
+      const ('DateTime') => PrimitiesType.isDateTime,
+      const ('num') => PrimitiesType.isNum,
+      const ('Uint8List') || const ('List<int>') => PrimitiesType.isBinary,
+      const ('Map<String, dynamic>') => PrimitiesType.isObjectMap,
       _ => null,
     };
   }

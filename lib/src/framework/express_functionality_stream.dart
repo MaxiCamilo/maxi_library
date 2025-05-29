@@ -39,8 +39,6 @@ class ExpressFunctionalityStream<T> with IDisposable, PaternalFunctionality impl
     return _manager;
   }
 
-  
-
   StreamStateTexts<T> start() => _manager.start();
 
   @override
@@ -67,6 +65,7 @@ class ExpressFunctionalityStream<T> with IDisposable, PaternalFunctionality impl
   @override
   Future<T> waitResult({void Function(Oration p1)? onText, PaternalFunctionality? parent}) {
     _waiter ??= joinWaiter<T>();
+    _manager.silentStart();
 
     return _waiter!.future;
   }
@@ -76,6 +75,7 @@ class ExpressFunctionalityStream<T> with IDisposable, PaternalFunctionality impl
     Function(T)? then,
     Function(dynamic, StackTrace)? onError,
   }) {
+    _manager.silentStart();
     return _manager.waitFinish(onError: onError, onText: onText, then: then);
   }
 

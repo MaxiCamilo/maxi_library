@@ -34,7 +34,25 @@ class Oration with ICustomSerialization {
   factory Oration.interpret({required Map<String, dynamic> map}) {
     final textParts = [];
 
-    for (final item in volatileProperty(formalName: Oration(message: 'Text Parts'), propertyName: 'textParts', function: () => map['textParts'] as List)) {
+    final processList = volatileProperty<List>(
+      formalName: Oration(message: 'Text Parts'),
+      propertyName: 'textParts',
+      function: () {
+        final rawList = map.getRequiredValue('textParts');
+        if (rawList is List) {
+          return rawList;
+        } else if (rawList is String) {
+          return ConverterUtilities.interpretToJsonList(text: rawList);
+        } else {
+          throw NegativeResult(
+            identifier: NegativeResultCodes.invalidValue,
+            message: const Oration(message: 'A list was expected for the parts of the text'),
+          );
+        }
+      },
+    );
+
+    for (final item in processList) {
       if (item is Map<String, dynamic>) {
         textParts.add(Oration.interpret(map: item));
         continue;

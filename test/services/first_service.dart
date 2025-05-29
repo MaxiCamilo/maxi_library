@@ -3,6 +3,7 @@ import 'dart:math' as math;
 
 import 'package:maxi_library/maxi_library.dart';
 
+import '../functionalities/new_functionality.dart';
 import 'second_service.dart';
 
 @reflect
@@ -69,5 +70,15 @@ class FirstService with StartableFunctionality, IThreadService {
     await newPipe.done;
 
     await Future.delayed(Duration(seconds: 5));
+  }
+
+  Future<String> callBackgroudFunctionality() async {
+    final funcOperator = NewFunctionality().runInBackground();
+
+    //Future.delayed(const Duration(seconds: 5)).whenComplete(() => funcOperator.cancel());
+
+    return await funcOperator.waitResult(
+      onItem: (x) => log(x.toString()),
+    );
   }
 }

@@ -64,7 +64,7 @@ class ThreadIsolatorClient with IThreadInvoker, IThreadManager, IThreadManagerCl
   Future<R> callBackgroundFunction<R>({InvocationParameters parameters = InvocationParameters.emptry, required FutureOr<R> Function(InvocationContext para) function}) {
     final newParameters = InvocationParameters.list([function, parameters]);
     return _serverConnection.callFunction(parameters: newParameters, function: _callBackgroundFunction<R>);
-  }
+  }  
 
   static Future<R> _callBackgroundFunction<R>(InvocationParameters parameters) {
     final function = parameters.firts<FutureOr<R> Function(InvocationContext)>();

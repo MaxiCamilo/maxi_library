@@ -29,6 +29,7 @@ export 'package:maxi_library/src/tools/channels/master_channel.dart';
 export 'package:maxi_library/src/tools/channels/slave_channel.dart';
 
 export 'package:maxi_library/src/tools/semaphore/isemaphore.dart';
+export 'package:maxi_library/src/tools/maxi_future.dart';
 
 export 'package:maxi_library/src/tools/online_http_requester.dart';
 export 'package:maxi_library/src/tools/online_web_socket.dart';

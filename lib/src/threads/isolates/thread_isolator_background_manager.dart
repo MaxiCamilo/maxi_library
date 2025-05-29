@@ -20,7 +20,7 @@ class ThreadIsolatorBackgroundManager {
     busyInstanceLimit = Platform.numberOfProcessors * 2;
   }
 
-  Future<IThreadInvokeInstance> _reserveThread() => _threadReserveSynchronizer.execute(function: _reserveThreadSincronized);
+  Future<IThreadInvokeInstance> reserveThread() => _threadReserveSynchronizer.execute(function: _reserveThreadSincronized);
 
   Future<IThreadInvokeInstance> _reserveThreadSincronized() async {
     if (freeInstances.isNotEmpty) {
@@ -55,7 +55,7 @@ class ThreadIsolatorBackgroundManager {
     }
   }
 
-  void _releaseThread(IThreadInvokeInstance thread) {
+  void releaseThread(IThreadInvokeInstance thread) {
     busyInstances.remove(thread);
     freeInstances.add(thread);
     _freeWaiter?.completeIfIncomplete(thread);
@@ -63,43 +63,43 @@ class ThreadIsolatorBackgroundManager {
   }
 
   Future<R> callBackgroundFunction<R>({InvocationParameters parameters = InvocationParameters.emptry, required FutureOr<R> Function(InvocationContext para) function}) async {
-    final thread = await _reserveThread();
+    final thread = await reserveThread();
     try {
       return await thread.callFunction<R>(parameters: parameters, function: function);
     } finally {
-      _releaseThread(thread);
+      releaseThread(thread);
     }
   }
 
   Future<Stream<R>> callBackgroundStream<R>({required InvocationParameters parameters, required FutureOr<Stream<R>> Function(InvocationContext p1) function}) async {
-    final thread = await _reserveThread();
+    final thread = await reserveThread();
 
     bool wasClose = false;
 
     return (await thread.callStream(parameters: parameters, function: function)).doOnCancel(() {
       if (!wasClose) {
         wasClose = true;
-        _releaseThread(thread);
+        releaseThread(thread);
       }
     }).asBroadcastStream(
       onCancel: (_) {
         if (!wasClose) {
           wasClose = true;
-          _releaseThread(thread);
+          releaseThread(thread);
         }
       },
     );
   }
 
   Future<IChannel<S, R>> callBackgroundChannel<R, S>({required InvocationParameters parameters, required FutureOr<void> Function(InvocationContext context, IChannel<R, S> channel) function}) async {
-    final thread = await _reserveThread();
+    final thread = await reserveThread();
 
     try {
       final channel = await thread.createChannel<R, S>(function: function, parameters: parameters);
-      channel.done.whenComplete(() => _releaseThread(thread));
+      channel.done.whenComplete(() => releaseThread(thread));
       return channel;
     } catch (_) {
-      _releaseThread(thread);
+      releaseThread(thread);
       rethrow;
     }
   }

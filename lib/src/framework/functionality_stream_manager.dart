@@ -24,7 +24,7 @@ class FunctionalityStreamManager<T> with IDisposable, PaternalFunctionality {
   Stream<Oration> get textStream => start().whereType<StreamStateItem<Oration, T>>().map((x) => x.item);
 
   void silentStart() {
-    if (_clientController == null || !_clientController!.isClosed) {
+    if (_clientController == null || _clientController!.isClosed) {
       _clientController = createEventController<StreamState<Oration, T>>(isBroadcast: true)..onCancel = _onNoMoreClients;
     }
 
@@ -86,7 +86,10 @@ class FunctionalityStreamManager<T> with IDisposable, PaternalFunctionality {
       joinEvent(event: textStream, onData: (x) => onText(x));
     }
 
-    await start().waitFinish();
+    silentStart();
+    _waiter ??= joinWaiter<void>();
+    await _waiter!.future;
+
     final completer = joinWaiter<T>(MaxiCompleter(waiterName: 'Functionality stream'));
 
     if (_itsWasGood) {
@@ -105,7 +108,8 @@ class FunctionalityStreamManager<T> with IDisposable, PaternalFunctionality {
   }
 
   StreamStateTexts<T> startAndBePending({required void Function(T) then, void Function(dynamic, StackTrace)? onError}) async* {
-    yield* start();
+    silentStart();
+    yield* textStream.map((x) => streamTextStatus<T>(x));
     final completer = joinWaiter(MaxiCompleter(waiterName: 'Functionality stream'));
 
     if (_itsWasGood) {
@@ -149,9 +153,33 @@ class FunctionalityStreamManager<T> with IDisposable, PaternalFunctionality {
 
     _waiter ??= joinWaiter<void>();
 
-    _subscription = joinEvent(
+    await continueOtherFutures();
+
+    // ignore: invalid_use_of_protected_member
+    final stream = functionality.runFunctionality(manager: this).handleError((x, y) {
+      _lastError = x;
+      _lastStackTraceError = y;
+      _itsWasGood = false;
       // ignore: invalid_use_of_protected_member
-      event: functionality.runFunctionality(manager: this),
+      containErrorLog(detail: const Oration(message: 'on error functionality'), function: () => functionality.onError(manager: this, error: _lastError, stackTrace: y));
+    });
+
+    await for (final item in stream) {
+      if (item is StreamStateResult<Oration, T>) {
+        _lastResult = item.result;
+        _itsWasGood = true;
+        _subscription?.cancel();
+        // ignore: invalid_use_of_protected_member
+        containErrorLog(detail: const Oration(message: 'on result functionality'), function: () => functionality.onResult(manager: this, result: _lastResult as T));
+      } else {
+        _clientController?.addIfActive(item);
+      }
+    }
+
+    _waiter?.completeIfIncomplete();
+    /*
+    _subscription = joinEvent(
+      event: _containerFunction(),
       onData: (x) {
         if (x is StreamStateResult<Oration, T>) {
           _lastResult = x.result;
@@ -172,12 +200,37 @@ class FunctionalityStreamManager<T> with IDisposable, PaternalFunctionality {
         containErrorLog(detail: const Oration(message: 'on error functionality'), function: () => functionality.onError(manager: this, error: _lastError, stackTrace: y));
       },
       onDone: () {
+        if (!_itsWasGood && _lastError == null) {
+          if (T == dynamic || T.toString() == 'void') {
+            _itsWasGood = true;
+          } else {
+            _lastError = NegativeResult(
+              identifier: NegativeResultCodes.implementationFailure,
+              message: const Oration(message: 'The stream did not end with a result'),
+            );
+            _lastStackTraceError = StackTrace.current;
+          }
+        }
+
         _waiter?.completeIfIncomplete();
         _waiter = null;
       },
     );
+    */
 
-    await _waiter!.future;
+    //await _waiter!.future;
+
+    if (!_itsWasGood && _lastError == null) {
+      if (T == dynamic || T.toString() == 'void') {
+        _itsWasGood = true;
+      } else {
+        _lastError = NegativeResult(
+          identifier: NegativeResultCodes.implementationFailure,
+          message: const Oration(message: 'The stream did not end with a result'),
+        );
+        _lastStackTraceError = StackTrace.current;
+      }
+    }
 
     containErrorLog(
       detail: const Oration(message: 'Finishing functionality'),
@@ -192,8 +245,26 @@ class FunctionalityStreamManager<T> with IDisposable, PaternalFunctionality {
     _isActive = false;
     _subscription = null;
 
+    _clientController?.close();
+    _clientController = null;
+
     dispose();
   }
+
+  /*
+
+  Stream<StreamState<Oration, T>> _containerFunction() async* {
+    try {
+      // ignore: invalid_use_of_protected_member
+      yield* functionality.runFunctionality(manager: this);
+      _itsWasGood = true;
+    } catch (ex, st) {
+      _lastError = ex;
+      _lastStackTraceError = st;
+      _itsWasGood = false;
+    }
+  }
+  */
 
   void cancel() {
     if (_isActive && !_wantsCanceled) {
@@ -216,6 +287,7 @@ class FunctionalityStreamManager<T> with IDisposable, PaternalFunctionality {
   @override
   @protected
   void checkBeforeJoining() {
+    super.checkBeforeJoining();
     if (_wantsCanceled) {
       throw NegativeResult(
         identifier: NegativeResultCodes.functionalityCancelled,

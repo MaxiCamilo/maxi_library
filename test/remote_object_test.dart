@@ -22,7 +22,7 @@ void main() {
       final serverPipe = StreamController<Map<String, dynamic>>();
 
       final clientExecutor = RemoteFunctionalitiesExecutorViaStream.filtrePackage(receiver: serverPipe.stream, sender: clientPipe, confirmConnection: true);
-      final serverExecutor = RemoteFunctionalitiesExecutorViaStream.filtrePackage(receiver: clientPipe.stream, sender: serverPipe, confirmConnection: true);
+      final serverExecutor = RemoteFunctionalitiesExecutorViaStream.filtrePackage(receiver: clientPipe.stream, sender: serverPipe, confirmConnection: false);
 
       await serverExecutor.initialize();
       final maxi = clientExecutor
@@ -123,30 +123,30 @@ void main() {
       await clientExecutor.initialize();
 
       final result = await Future.wait([
-        waitFunctionalStream(
+        ExpressFunctionalityStream(
           stream: clientExecutor.executeStreamFunctionality<String, RemoteFunctionalityStream>(
               parameters: InvocationParameters.named({
             'name': 'Peladito',
             'timeout': Random().nextInt(18) + 3,
           })),
-          onData: (x) => print(x.toString()),
-        ),
-        waitFunctionalStream(
+          onText: (x) => print(x.toString()),
+        ).waitResult(),
+        ExpressFunctionalityStream(
           stream: clientExecutor.executeStreamFunctionality<String, RemoteFunctionalityStream>(
               parameters: InvocationParameters.named({
             'name': 'Peluditos',
             'timeout': Random().nextInt(18) + 3,
           })),
-          onData: (x) => print(x.toString()),
-        ),
-        waitFunctionalStream(
+          onText: (x) => print(x.toString()),
+        ).waitResult(),
+        ExpressFunctionalityStream(
           stream: clientExecutor.executeStreamFunctionality<String, RemoteFunctionalityStream>(
               parameters: InvocationParameters.named({
             'name': 'Barbudito',
             'timeout': Random().nextInt(18) + 3,
           })),
-          onData: (x) => print(x.toString()),
-        ),
+          onText: (x) => print(x.toString()),
+        ).waitResult(),
       ]);
 
       print('Result $result');
