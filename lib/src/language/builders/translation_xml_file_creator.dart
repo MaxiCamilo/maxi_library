@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:maxi_library/maxi_library.dart';
 
-class TranslationXmlFileCreator with IStreamFunctionality<void> {
+class TranslationXmlFileCreator with TextableFunctionality<void> {
   final IFileModifierOperator fileOperator;
   final String prefix;
   final Map<Oration, String> texts;
@@ -10,8 +10,8 @@ class TranslationXmlFileCreator with IStreamFunctionality<void> {
   const TranslationXmlFileCreator({required this.fileOperator, required this.texts, required this.prefix});
 
   @override
-  StreamStateTexts<void> runFunctionality({required FunctionalityStreamManager<void> manager}) async* {
-    yield streamTextStatus(const Oration(message: 'Creating file'));
+  Future<void> runFunctionality({required InteractableFunctionalityExecutor<Oration, void> manager}) async {
+    manager.sendItem(const Oration(message: 'Creating file'));
     if (await fileOperator.existsFile()) {
       await fileOperator.deleteFile();
     }
@@ -39,7 +39,7 @@ class TranslationXmlFileCreator with IStreamFunctionality<void> {
     }
 
     await fileOperator.addText(content: '</translations>\n', encoder: utf8);
-    yield streamTextStatus(Oration(message: 'The XML file was created in %1', textParts: [fileOperator.directAddress]));
+    manager.sendItem(Oration(message: 'The XML file was created in %1', textParts: [fileOperator.directAddress]));
   }
 
   static String _formatText(String text) {

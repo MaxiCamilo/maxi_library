@@ -286,24 +286,24 @@ class EntityList<T> with IEntityWriter<T>, IEntityReader<T> {
   }
 
   @override
-  Stream<StreamState<Oration, void>> deleteAll() {
-    return _blocker.blockStream(function: () async => _deleteAll());
+  InteractableFunctionality<Oration, void> deleteAll() {
+    return TextableFunctionality.express((x) => _blocker.block(function: () => _deleteAll(x)));
   }
 
-  Stream<StreamState<Oration, void>> _deleteAll() async* {
+  Future<void> _deleteAll(TextableFunctionalityExecutorVoid manager) async {
     _mapList.clear();
     _notifyListChanged.add(null);
     _notifyTotalEliminations.add(null);
-    yield streamTextStatus(const Oration(message: 'All items were removed from the list'));
+    await manager.sendItemAsync(const Oration(message: 'All items were removed from the list'));
     _updateLastPrimaryKey();
   }
 
   @override
-  Stream<StreamState<Oration, void>> add({required List<T> list}) {
-    return _blocker.blockStream(function: () async => _add(list: list));
+  TextableFunctionalityVoid add({required List<T> list}) {
+    return TextableFunctionality.express((x) => _blocker.block(function: () => _add(manager: x, list: list)));
   }
 
-  Stream<StreamState<Oration, void>> _add({required List<T> list}) async* {
+  Future<void> _add({required TextableFunctionalityExecutorVoid manager, required List<T> list}) async {
     try {
       final newMap = _defineIDZeros(list: list);
       newMap.values.iterar((x) => _checkUniqueProperties(item: x));
@@ -325,7 +325,7 @@ class EntityList<T> with IEntityWriter<T>, IEntityReader<T> {
     _updateLastPrimaryKey();
     _notifyListChanged.add(null);
     _notifyAssignedItems.add(list.map((x) => reflector.getPrimaryKey(instance: x)).toList(growable: false));
-    yield streamTextStatus(Oration(message: '%1 items have been added to the list', textParts: [list.length]));
+    await manager.sendItemAsync(Oration(message: '%1 items have been added to the list', textParts: [list.length]));
   }
 
   int _getNewId() {
@@ -335,11 +335,11 @@ class EntityList<T> with IEntityWriter<T>, IEntityReader<T> {
   }
 
   @override
-  Stream<StreamState<Oration, void>> assign({required List<T> list}) {
-    return _blocker.blockStream(function: () async => _assign(list: list));
+  TextableFunctionalityVoid assign({required List<T> list}) {
+    return TextableFunctionality.express((x) => _blocker.block(function: () => _assign(manager: x, list: list)));
   }
 
-  Stream<StreamState<Oration, void>> _assign({required List<T> list}) async* {
+  Future<void> _assign({required TextableFunctionalityExecutorVoid manager, required List<T> list}) async {
     try {
       final newMap = _defineIDZeros(list: list);
       newMap.values.iterar((x) => _checkUniqueProperties(item: x));
@@ -350,29 +350,29 @@ class EntityList<T> with IEntityWriter<T>, IEntityReader<T> {
     }
     _notifyListChanged.add(null);
     _notifyAssignedItems.add(list.map((x) => reflector.getPrimaryKey(instance: x)).toList(growable: false));
-    yield streamTextStatus(Oration(message: '%1 items have been assigned to the list', textParts: [list.length]));
+    await manager.sendItemAsync(Oration(message: '%1 items have been assigned to the list', textParts: [list.length]));
   }
 
   @override
-  Stream<StreamState<Oration, void>> delete({required List<int> listIDs}) {
-    return _blocker.blockStream(function: () async => _delete(listIDs: listIDs));
+  TextableFunctionalityVoid delete({required List<int> listIDs}) {
+    return TextableFunctionality.express((x) => _blocker.block(function: () async => _delete(manager: x, listIDs: listIDs)));
   }
 
-  Stream<StreamState<Oration, void>> _delete({required List<int> listIDs}) async* {
+  Future<void> _delete({required TextableFunctionalityExecutorVoid manager, required List<int> listIDs}) async {
     listIDs.iterar((x) => _mapList.remove(x));
 
     _notifyListChanged.add(null);
     _notifyDeletedItems.add(listIDs);
-    yield streamTextStatus(Oration(message: '%1 items were deleted in the list', textParts: [listIDs.length]));
+    await manager.sendItemAsync(Oration(message: '%1 items were deleted in the list', textParts: [listIDs.length]));
     _updateLastPrimaryKey();
   }
 
   @override
-  Stream<StreamState<Oration, void>> modify({required List<T> list}) {
-    return _blocker.blockStream(function: () async => _modify(list: list));
+  TextableFunctionalityVoid modify({required List<T> list}) {
+    return TextableFunctionality.express((x) => _blocker.block(function: () async => _modify(manager: x, list: list)));
   }
 
-  Stream<StreamState<Oration, void>> _modify({required List<T> list}) async* {
+  Future<void> _modify({required TextableFunctionalityExecutorVoid manager, required List<T> list}) async {
     try {
       final newMap = _defineIDZeros(list: list);
       newMap.values.iterar((x) => _checkUniqueProperties(item: x));
@@ -392,7 +392,7 @@ class EntityList<T> with IEntityWriter<T>, IEntityReader<T> {
 
     _notifyListChanged.add(null);
     _notifyAssignedItems.add(list.map((x) => reflector.getPrimaryKey(instance: x)).toList(growable: false));
-    yield streamTextStatus(Oration(message: '%1 items were modified in the list', textParts: [list.length]));
+    await manager.sendItemAsync(Oration(message: '%1 items were modified in the list', textParts: [list.length]));
   }
 
   @override

@@ -25,39 +25,49 @@ class EntityListFile<T> extends EntityList<T> {
   }
 
   @override
-  Stream<StreamState<Oration, void>> add({required List<T> list}) async* {
-    final original = this.list;
-    yield* super.add(list: list);
-    await _updateOrDisponse(before: original);
-  }
+  TextableFunctionalityVoid add({required List<T> list}) => TextableFunctionalityVoid.express(
+        (manager) async {
+          final original = this.list;
+          await super.add(list: list).joinExecutor(manager);
+          await _updateOrDisponse(before: original);
+        },
+      );
 
   @override
-  Stream<StreamState<Oration, void>> modify({required List<T> list}) async* {
-    final original = this.list;
-    yield* super.modify(list: list);
-    await _updateOrDisponse(before: original);
-  }
+  TextableFunctionalityVoid modify({required List<T> list}) => TextableFunctionalityVoid.express(
+        (manager) async {
+          final original = this.list;
+          await super.modify(list: list).joinExecutor(manager);
+          await _updateOrDisponse(before: original);
+        },
+      );
 
   @override
-  Stream<StreamState<Oration, void>> assign({required List<T> list}) async* {
-    final original = this.list;
-    yield* super.assign(list: list);
-    await _updateOrDisponse(before: original);
-  }
+  TextableFunctionalityVoid assign({required List<T> list}) => TextableFunctionalityVoid.express(
+        (manager) async {
+          final original = this.list;
+          await super.assign(list: list).joinExecutor(manager);
+          await _updateOrDisponse(before: original);
+        },
+      );
 
   @override
-  Stream<StreamState<Oration, void>> deleteAll() async* {
-    final original = list;
-    yield* super.deleteAll();
-    await _updateOrDisponse(before: original);
-  }
+  TextableFunctionalityVoid deleteAll() => TextableFunctionalityVoid.express(
+        (manager) async {
+          final original = list;
+          await super.deleteAll().joinExecutor(manager);
+          await _updateOrDisponse(before: original);
+        },
+      );
 
   @override
-  Stream<StreamState<Oration, void>> delete({required List<int> listIDs}) async* {
-    final original = list;
-    yield* super.delete(listIDs: listIDs);
-    await _updateOrDisponse(before: original);
-  }
+  TextableFunctionalityVoid delete({required List<int> listIDs}) => TextableFunctionalityVoid.express(
+        (manager) async {
+          final original = list;
+          await super.delete(listIDs: listIDs).joinExecutor(manager);
+          await _updateOrDisponse(before: original);
+        },
+      );
 
   Future<void> _updateOrDisponse({required List<T> before}) async {
     try {
@@ -74,7 +84,7 @@ class EntityListFile<T> extends EntityList<T> {
     if (jsonContent.length > maxSize) {
       throw NegativeResult(
         identifier: NegativeResultCodes.invalidValue,
-        message: Oration(message: 'JSON Result is too big (It supports up to %1 bytes, but the generated JSON is %2 bytes)',textParts: [maxSize, jsonContent.length]),
+        message: Oration(message: 'JSON Result is too big (It supports up to %1 bytes, but the generated JSON is %2 bytes)', textParts: [maxSize, jsonContent.length]),
       );
     }
 

@@ -14,7 +14,7 @@ void main() {
     });
 
     test('Test local functionality', () async {
-      final result = await NewFunctionality().execute(
+      final result = await NewFunctionality().executeAndWait(
         onItem: (x) => print(x),
       );
 
@@ -22,7 +22,7 @@ void main() {
     });
 
     test('Test cancel local functionality', () async {
-      final future = NewFunctionality().execute(
+      final future = NewFunctionality().executeAndWait(
         onItem: (x) => print(x),
       );
 
@@ -55,9 +55,22 @@ void main() {
         initialize: true,
       );
       await ThreadManager.mountEntity<FirstService>(entity: FirstService(isMustFail: false));
-      final result = await NewFunctionality().runInBackground().waitResult(onItem: (x) => print(x));
 
-      print(result);
+      final results = await Future.wait([
+        NewFunctionality().runInBackground().waitResult(onItem: (x) => print(x)),
+        NewFunctionality().runInBackground().waitResult(onItem: (x) => print(x)),
+        NewFunctionality().runInBackground().waitResult(onItem: (x) => print(x))
+      ]);
+
+      print(results);
+
+       final otherResults = await Future.wait([
+        NewFunctionality().runInBackground().waitResult(onItem: (x) => print(x)),
+        NewFunctionality().runInBackground().waitResult(onItem: (x) => print(x)),
+        //NewFunctionality().runInBackground().waitResult(onItem: (x) => print(x))
+      ]);
+
+      print(otherResults);
     });
 
     test('Call on enitity background', () async {
@@ -79,7 +92,7 @@ void main() {
 
       final receiver = InteractableFunctionality.listenStream<Oration, String>(streamController.stream);
 
-      final sender = NewFunctionality(secondWaiting: 10).runInStream(sender: streamController);
+      final sender = NewFunctionality(secondWaiting: 10).runInStream(sender: streamController, closeSenderIfDone: true);
 
       //Future.delayed(const Duration(seconds: 5)).whenComplete(() => sender.cancel());
 
@@ -95,7 +108,7 @@ void main() {
 
       final receiver = InteractableFunctionality.listenStream<Oration, String>(streamController.stream);
 
-      final sender = NewFunctionality(secondWaiting: 10).runInJsonStream(sender: streamController);
+      final sender = NewFunctionality(secondWaiting: 10).runInJsonStream(sender: streamController, closeSenderIfDone: true);
       //Future.delayed(const Duration(seconds: 5)).whenComplete(() => sender.cancel());
 
       final result = await receiver.waitResult(onItem: (item) => print(item.toString()));

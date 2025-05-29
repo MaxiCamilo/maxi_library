@@ -1,8 +1,9 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:maxi_library/export_reflectors.dart';
 
-class OrationSearchEngine with IStreamFunctionality<List<Oration>> {
+class OrationSearchEngine with TextableFunctionality<List<Oration>> {
   final List<String> directories;
 
   static final orationPattern = RegExp(
@@ -23,7 +24,7 @@ class OrationSearchEngine with IStreamFunctionality<List<Oration>> {
   const OrationSearchEngine({required this.directories});
 
   @override
-  StreamStateTexts<List<Oration>> runFunctionality({required FunctionalityStreamManager<void> manager}) async* {
+  Future<List<Oration>> runFunctionality({required InteractableFunctionalityExecutor<Oration, List<Oration>> manager}) async {
     final result = <Oration>[];
 
     final dartFiles = <File>[];
@@ -55,10 +56,12 @@ class OrationSearchEngine with IStreamFunctionality<List<Oration>> {
     }
     //log(result.map((x) => x.message).join('\n'));
 
-    yield streamResult(result);
+    return result;
   }
 
   String _unescape(String input) {
     return input.replaceAll(r"\'", "'").replaceAll(r'\"', '"').replaceAll(r'\\', r'\');
   }
+
+  
 }

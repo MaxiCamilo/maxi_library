@@ -3,7 +3,7 @@ import 'package:maxi_library/maxi_library.dart';
 import 'package:xml/xml.dart';
 import 'package:xml/xpath.dart';
 
-class TranslateViaDepseekOrations with IStreamFunctionality<Map<Oration, String>> {
+class TranslateViaDepseekOrations with TextableFunctionality<Map<Oration, String>> {
   final String apiKey;
   final String languaje;
   final List<Oration> texts;
@@ -28,7 +28,7 @@ Your job is to translate the text contained in the "text" tags into %1. Return t
   });
 
   @override
-  StreamStateTexts<Map<Oration, String>> runFunctionality({required FunctionalityStreamManager<Map<Oration, String>> manager}) async* {
+  Future<Map<Oration, String>> runFunctionality({required InteractableFunctionalityExecutor<Oration, Map<Oration, String>> manager}) async {
     final result = <Oration, String>{};
 
     final context = (contentText ?? _standarContentText).replaceAll('%1', languaje);
@@ -38,7 +38,7 @@ Your job is to translate the text contained in the "text" tags into %1. Return t
     for (final part in texts.splitIntoParts(splitTexts)) {
       final formatedParts = part.map(
           (x) => '\t<text>${x.message.replaceAll('<', '%&1%').replaceAll('>', '%&2%').replaceAll('\n', '%&3%').replaceAll('\\n', '%&3%').replaceAll('\'', '%&4%').replaceAll('"', '%&5%').replaceAll('\\', '')}</text>');
-      yield* streamTextStatusSync(Oration(message: 'Deepseek is being asked to translate %1 texts (%2/%3)', textParts: [formatedParts.length, translatedAmount, texts.length]));
+      manager.sendItem(Oration(message: 'Deepseek is being asked to translate %1 texts (%2/%3)', textParts: [formatedParts.length, translatedAmount, texts.length]));
       if (part.any((x) => x.message.contains('\\'))) {
         print('Heyyyyyyy');
       }
@@ -76,6 +76,6 @@ Your job is to translate the text contained in the "text" tags into %1. Return t
       translatedAmount += part.length;
     }
 
-    yield streamResult(result);
+    return result;
   }
 }

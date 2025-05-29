@@ -6,15 +6,15 @@ mixin IEntityWriter<T> {
   Stream<List<int>> get notifyDeletedItems;
   Stream<void> get notifyTotalElimination;
 
-  Stream<StreamState<Oration, void>> add({required List<T> list});
+  TextableFunctionality<void> add({required List<T> list});
 
-  Stream<StreamState<Oration, void>> modify({required List<T> list});
+  TextableFunctionality<void> modify({required List<T> list});
 
-  Stream<StreamState<Oration, void>> assign({required List<T> list});
+  TextableFunctionality<void> assign({required List<T> list});
 
-  Stream<StreamState<Oration, void>> delete({required List<int> listIDs});
+  TextableFunctionality<void> delete({required List<int> listIDs});
 
-  Stream<StreamState<Oration, void>> deleteAll();
+  TextableFunctionality<void> deleteAll();
 
   Future<bool> checkUniqueProperties({required T item});
 
@@ -23,22 +23,22 @@ mixin IEntityWriter<T> {
   Stream<R> reserveStream<R>(Future<Stream<R>> Function() function);
 
   Future<void> deleteAllAsFuture() {
-    return ExpressFunctionalityStream(stream: deleteAll()).waitResult();
+    return deleteAll().executeAndWait();
   }
 
   Future<void> deleteAsFuture({required List<int> listIDs}) {
-    return ExpressFunctionalityStream(stream: delete(listIDs: listIDs)).waitResult();
+    return delete(listIDs: listIDs).executeAndWait();
   }
 
   Future<void> addAsFuture({required List<T> list}) {
-    return ExpressFunctionalityStream(stream: add(list: list)).waitResult();
+    return add(list: list).executeAndWait();
   }
 
   Future<void> modifyAsFuture({required List<T> list}) {
-    return ExpressFunctionalityStream(stream: modify(list: list)).waitResult();
+    return modify(list: list).executeAndWait();
   }
 
   Future<void> assignAsFuture({required List<T> list}) {
-    return ExpressFunctionalityStream(stream: assign(list: list)).waitResult();
+    return assign(list: list).executeAndWait();
   }
 }

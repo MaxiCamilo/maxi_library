@@ -270,7 +270,7 @@ mixin ConverterUtilities {
 
   //static String trySerializeToJson(dynamic item) => json.encode(trySerializeToPrimitive(item));
 
-  static String serializeToJson(dynamic item) {
+  static dynamic serializeToJson(dynamic item) {
     if (item is Map<String, dynamic>) {
       return json.encode(item.map((key, value) {
         final primitiveType = isPrimitive(value.runtimeType);
@@ -311,37 +311,63 @@ mixin ConverterUtilities {
     return ReflectionManager.serialzeEntityToJson(value: item);
   }
 
-  static T castJson<T>({required String text}) {
-    if (T.toString() == 'void') {
-      return null as T;
+  static T castJson<T>({required String text}) => castDynamicJson(text: text, type: T) as T;
+
+  static dynamic castDynamicJson({required String text, required Type type}) {
+    if (type.toString() == 'void') {
+      return null;
     }
 
-    if (T == dynamic) {
-      return text as T;
+    if (type == dynamic) {
+      return tryCastDynamicJson(text: text) ?? text;
     }
 
-    final primitiveType = isPrimitive(T);
+    final primitiveType = isPrimitive(type);
     if (primitiveType != null) {
       return convertSpecificPrimitive(type: primitiveType, value: text);
     }
 
-    if (T == Map<String, dynamic>) {
-      return interpretToObjectJson(text: text) as T;
+    if (type == Map<String, dynamic>) {
+      return interpretToObjectJson(text: text);
     }
 
-    if (T == List<Map<String, dynamic>>) {
-      return interpretToObjectListJson(text: text) as T;
+    if (type == List<Map<String, dynamic>>) {
+      return interpretToObjectListJson(text: text);
     }
 
-    if (T == Oration) {
-      return Oration.interpretFromJson(text: text) as T;
+    if (type == Oration) {
+      return Oration.interpretFromJson(text: text);
     }
 
-    if (T == NegativeResult) {
-      return NegativeResult.interpretJson(jsonText: text) as T;
+    if (type == NegativeResult) {
+      return NegativeResult.interpretJson(jsonText: text);
+    }
+
+    if (type == InvocationParameters) {
+      return InvocationParameters.interpretFromJson(text);
     }
 
     return ReflectionManager.interpretJson(rawText: text, tryToCorrectNames: false);
+  }
+
+  static dynamic tryCastDynamicJson({required String text}) {
+    final mapJson = interpretJson(text: text);
+    if (mapJson is! Map<String, dynamic>) {
+      return null;
+    }
+
+    final type = mapJson.getRequiredValueWithSpecificType<String>('\$type');
+
+    if (type == 'Oration') {
+      return Oration.interpret(map: mapJson);
+    } else if (type.startsWith('error')) {
+      return NegativeResultValue.interpret(values: mapJson, checkTypeFlag: true);
+    } else if (type == 'Parameters') {
+      return InvocationParameters.interpret(mapJson);
+    }
+
+    final reflector = ReflectionManager.getReflectionEntityByName(type);
+    return reflector.interpret(value: mapJson, tryToCorrectNames: true);
   }
 
   static dynamic interpretJson({required String text, Oration? extra}) {

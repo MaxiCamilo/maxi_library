@@ -1,6 +1,6 @@
 import 'package:maxi_library/maxi_library.dart';
 
-class InvocationParameters {
+class InvocationParameters with ICustomSerialization {
   final List fixedParameters;
   final Map<String, dynamic> namedParameters;
 
@@ -18,6 +18,42 @@ class InvocationParameters {
   factory InvocationParameters.list(List list) => InvocationParameters(fixedParameters: list);
 
   factory InvocationParameters.named(Map<String, dynamic> map) => InvocationParameters(namedParameters: map);
+
+  factory InvocationParameters.interpret(Map<String, dynamic> map) {
+    return InvocationParameters(
+      fixedParameters: map['fixed'] ?? [],
+      namedParameters: map['named'] ?? {},
+    );
+  }
+
+  factory InvocationParameters.interpretFromJson(String text) {
+    final jsonObj = ConverterUtilities.interpretToObjectJson(text: text);
+    if (jsonObj.getRequiredValueWithSpecificType<String>('\$type') != 'Parameters') {
+      throw NegativeResult(
+        identifier: NegativeResultCodes.wrongType,
+        message: Oration(message: 'Parameters are invalid or do not have their type label'),
+      );
+    }
+
+    late final List fixedParameters;
+    late final Map<String, dynamic> namedParameters;
+
+    final rawFixed = jsonObj.getRequiredValue('fixed');
+    if (rawFixed is String) {
+      fixedParameters = ConverterUtilities.interpretToObjectListJson(text: rawFixed);
+    } else {
+      fixedParameters = volatile(detail: const Oration(message: 'Fixed values are not listed'), function: () => rawFixed as List);
+    }
+
+    final rawNamed = jsonObj.getRequiredValue('named');
+    if (rawNamed is String) {
+      namedParameters = ConverterUtilities.interpretToObjectJson(text: rawNamed);
+    } else {
+      namedParameters = volatile(detail: const Oration(message: 'Named values are not dictionary'), function: () => rawNamed as Map<String, dynamic>);
+    }
+
+    return InvocationParameters(fixedParameters: fixedParameters, namedParameters: namedParameters);
+  }
 
   operator []=(String name, dynamic value) => namedParameters[name] = value;
 
@@ -124,4 +160,15 @@ class InvocationParameters {
       textParts: [value.runtimeType, T],
     );
   }
+
+  @override
+  Map<String, dynamic> serialize() {
+    return {
+      'fixed': fixedParameters.map((x) => ConverterUtilities.serializeToJson(x)).toList(),
+      'named': namedParameters.map((x, y) => MapEntry(x, ConverterUtilities.serializeToJson(y))),
+      '\$type': 'Parameters',
+    };
+  }
+
+  String serializeToJson() => ConverterUtilities.serializeToJson(serialize());
 }

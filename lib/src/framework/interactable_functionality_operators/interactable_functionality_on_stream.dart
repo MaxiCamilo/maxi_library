@@ -6,6 +6,7 @@ import 'package:maxi_library/src/framework/interactable_functionality_operators/
 
 class RunInteractableFunctionalityOnStream<I, R> with InteractableFunctionality<I, R> {
   final FutureOr<Stream> Function() streamGetter;
+
   StreamSubscription? _subscription;
   MaxiCompleter<R>? _resultWaiter;
   late InteractableFunctionalityExecutor<I, R> _manager;
@@ -91,6 +92,7 @@ class InteractableFunctionalityStreamExecutor<I, R> with IDisposable, Interactab
   final int identifier;
   final InteractableFunctionality<I, R> functionality;
   final StreamSink sender;
+  final bool closeSenderIfDone;
 
   final dynamic Function(int, I)? itemConverted;
   final dynamic Function(int, R)? resultConverted;
@@ -101,12 +103,14 @@ class InteractableFunctionalityStreamExecutor<I, R> with IDisposable, Interactab
   factory InteractableFunctionalityStreamExecutor.onMapStream({
     required InteractableFunctionality<I, R> functionality,
     required StreamSink<Map<String, dynamic>> sender,
+    required bool closeSenderIfDone,
     int identifier = 0,
   }) {
     return InteractableFunctionalityStreamExecutor<I, R>(
       functionality: functionality,
       sender: sender,
       identifier: identifier,
+      closeSenderIfDone: closeSenderIfDone,
       itemConverted: _convertItemToMap<I>,
       resultConverted: _convertResultToMap<R>,
       errorConverted: _convertErrorToMap,
@@ -116,12 +120,14 @@ class InteractableFunctionalityStreamExecutor<I, R> with IDisposable, Interactab
   factory InteractableFunctionalityStreamExecutor.onJson({
     required InteractableFunctionality<I, R> functionality,
     required StreamSink<String> sender,
+    required bool closeSenderIfDone,
     int identifier = 0,
   }) {
     return InteractableFunctionalityStreamExecutor<I, R>(
       functionality: functionality,
       sender: sender,
       identifier: identifier,
+      closeSenderIfDone: closeSenderIfDone,
       itemConverted: (i, x) => ConverterUtilities.serializeToJson(_convertItemToMap<I>(i, x)),
       resultConverted: (i, x) => ConverterUtilities.serializeToJson(_convertResultToMap<R>(i, x)),
       errorConverted: (i, x, y) => ConverterUtilities.serializeToJson(_convertErrorToMap(i, x, y)),
@@ -143,6 +149,7 @@ class InteractableFunctionalityStreamExecutor<I, R> with IDisposable, Interactab
   InteractableFunctionalityStreamExecutor({
     required this.functionality,
     required this.sender,
+    required this.closeSenderIfDone,
     this.identifier = 0,
     this.itemConverted,
     this.resultConverted,
@@ -189,7 +196,9 @@ class InteractableFunctionalityStreamExecutor<I, R> with IDisposable, Interactab
       }
     }
 
-    sender.close();
+    if (closeSenderIfDone) {
+      sender.close();
+    }
     _executor.dispose();
   }
 
@@ -204,7 +213,9 @@ class InteractableFunctionalityStreamExecutor<I, R> with IDisposable, Interactab
   @override
   void performObjectDiscard() {
     _executor.dispose();
-    sender.close();
+    if (closeSenderIfDone) {
+      sender.close();
+    }
   }
 
   @override

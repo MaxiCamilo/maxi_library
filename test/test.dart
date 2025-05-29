@@ -2,11 +2,12 @@
 
 import 'package:maxi_library/export_reflectors.dart';
 import 'package:maxi_library/maxi_library.dart';
-import 'package:maxi_library/maxi_library.dart';
 import 'package:maxi_library/src/reflection/decorators/reflect.dart';
 import 'package:maxi_library/src/reflection/decorators/essential_key.dart';
 import 'dart:developer';
 import 'dart:math' as math;
+import 'dart:math';
+import 'dart:async';
 
 import 'functionalities/remote_functionality.dart';
 import 'functionalities/remote_functionality_stream.dart';
@@ -2414,7 +2415,7 @@ class _RemoteFunctionalityStreamtimeout extends GeneratedReflectedField<RemoteFu
 
 /*REMOTEFUNCTIONALITYSTREAM METHODS*/
 
-class _RemoteFunctionalityStreamrunFunctionalityMethod extends GeneratedReflectedMethod<RemoteFunctionalityStream, StreamStateTexts<String>> {
+class _RemoteFunctionalityStreamrunFunctionalityMethod extends GeneratedReflectedMethod<RemoteFunctionalityStream, Future<String>> {
   const _RemoteFunctionalityStreamrunFunctionalityMethod();
   @override
   String get name => 'runFunctionality';
@@ -2428,7 +2429,7 @@ class _RemoteFunctionalityStreamrunFunctionalityMethod extends GeneratedReflecte
   @override
   List get annotations => const [override];
 
-  static const _nammanager = GeneratedReflectedNamedParameter<FunctionalityStreamManager<String>>(
+  static const _nammanager = GeneratedReflectedNamedParameter<TextableFunctionalityExecutor<String>>(
     annotations: const [],
     defaultValue: null,
     hasDefaultValue: false,
@@ -2442,7 +2443,7 @@ class _RemoteFunctionalityStreamrunFunctionalityMethod extends GeneratedReflecte
   List<GeneratedReflectedNamedParameter> get namedParameters => const [_nammanager];
 
   @override
-  StreamStateTexts<String> callReservedMethod({required RemoteFunctionalityStream? entity, required List fixedValues, required Map<String, dynamic> namedValues}) => entity!.runFunctionality(
+  Future<String> callReservedMethod({required RemoteFunctionalityStream? entity, required List fixedValues, required Map<String, dynamic> namedValues}) => entity!.runFunctionality(
         manager: _nammanager.getValueFromMap(namedValues),
       );
 }
@@ -2499,7 +2500,7 @@ class _RemoteFunctionalityStream extends GeneratedReflectedClass<RemoteFunctiona
   Type? get baseClass => null;
 
   @override
-  List<Type> get classThatImplement => const [IStreamFunctionality];
+  List<Type> get classThatImplement => const [TextableFunctionality];
 
   @override
   bool get isAbstract => false;
@@ -2717,6 +2718,30 @@ class _FirstServicecreatePipeInSecondServiceMethod extends GeneratedReflectedMet
   Future<void> callReservedMethod({required FirstService? entity, required List fixedValues, required Map<String, dynamic> namedValues}) => entity!.createPipeInSecondService();
 }
 
+class _FirstServicecallBackgroudFunctionalityMethod extends GeneratedReflectedMethod<FirstService, Future<String>> {
+  const _FirstServicecallBackgroudFunctionalityMethod();
+  @override
+  String get name => 'callBackgroudFunctionality';
+
+  @override
+  bool get isStatic => false;
+
+  @override
+  MethodDetectedType get methodType => MethodDetectedType.commonMethod;
+
+  @override
+  List get annotations => const [];
+
+  @override
+  List<GeneratedReflectedFixedParameter> get fixedParameters => const [];
+
+  @override
+  List<GeneratedReflectedNamedParameter> get namedParameters => const [];
+
+  @override
+  Future<String> callReservedMethod({required FirstService? entity, required List fixedValues, required Map<String, dynamic> namedValues}) => entity!.callBackgroudFunctionality();
+}
+
 class _FirstServiceBuilder extends GeneratedReflectedMethod<FirstService, FirstService> {
   const _FirstServiceBuilder();
   @override
@@ -2780,6 +2805,7 @@ class _FirstService extends GeneratedReflectedClass<FirstService> {
         _FirstServicepassSomeNumberMethod(),
         _FirstServicegenerateSomeTextMethod(),
         _FirstServicecreatePipeInSecondServiceMethod(),
+        _FirstServicecallBackgroudFunctionalityMethod(),
         _FirstServiceBuilder()
       ];
 
