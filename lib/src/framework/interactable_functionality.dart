@@ -10,6 +10,7 @@ import 'package:meta/meta.dart';
 
 typedef TextableFunctionality<R> = InteractableFunctionality<Oration, R>;
 typedef TextableFunctionalityVoid = TextableFunctionality<void>;
+typedef TextableFunctionalityOperator<R> = InteractableFunctionalityOperator<Oration, R>;
 typedef TextableFunctionalityExecutor<R> = InteractableFunctionalityExecutor<Oration, R>;
 typedef TextableFunctionalityExecutorVoid = TextableFunctionalityExecutor<void>;
 

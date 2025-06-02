@@ -64,7 +64,7 @@ void main() {
 
       print(results);
 
-       final otherResults = await Future.wait([
+      final otherResults = await Future.wait([
         NewFunctionality().runInBackground().waitResult(onItem: (x) => print(x)),
         NewFunctionality().runInBackground().waitResult(onItem: (x) => print(x)),
         //NewFunctionality().runInBackground().waitResult(onItem: (x) => print(x))
@@ -91,7 +91,7 @@ void main() {
       final streamController = StreamController();
 
       final receiver = InteractableFunctionality.listenStream<Oration, String>(streamController.stream);
-
+// ignore: unused_local_variable
       final sender = NewFunctionality(secondWaiting: 10).runInStream(sender: streamController, closeSenderIfDone: true);
 
       //Future.delayed(const Duration(seconds: 5)).whenComplete(() => sender.cancel());
@@ -107,7 +107,7 @@ void main() {
       streamController.stream.listen((x) => print(x));
 
       final receiver = InteractableFunctionality.listenStream<Oration, String>(streamController.stream);
-
+// ignore: unused_local_variable
       final sender = NewFunctionality(secondWaiting: 10).runInJsonStream(sender: streamController, closeSenderIfDone: true);
       //Future.delayed(const Duration(seconds: 5)).whenComplete(() => sender.cancel());
 

@@ -20,6 +20,7 @@ void main() {
       final serverPipe = StreamController<Map<String, dynamic>>();
 
       final clientExecutor = RemoteFunctionalitiesExecutor.fromStream(input: serverPipe.stream, output: clientPipe);
+      // ignore: unused_local_variable
       final serverExecutor = RemoteFunctionalitiesExecutor.fromStream(input: clientPipe.stream, output: serverPipe);
 
       final oreo = clientExecutor.executeInteractableFunctionality<String, RemoteFunctionalityStream>(

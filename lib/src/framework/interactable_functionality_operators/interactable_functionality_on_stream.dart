@@ -139,6 +139,9 @@ class InteractableFunctionalityStreamExecutor<I, R> with IDisposable, Interactab
   }
 
   static _convertResultToMap<R>(int id, R item) {
+    if(item == null && (R == dynamic || R.toString() == 'void')){
+      return _FunctionalityResult<R>(idetifier: id, result: '' as R).serialize();
+    }
     return _FunctionalityResult<R>(idetifier: id, result: item).serialize();
   }
 

@@ -7,6 +7,14 @@ mixin InteractableFunctionalityOperator<I, R> on IDisposable {
   void start();
   void cancel();
   MaxiFuture<R> waitResult({void Function(I item)? onItem});
+/*
+  MaxiFuture<R> joinOperator({
+    required InteractableFunctionalityOperator<I, dynamic> other,
+    required void Function(I) onItem,
+  }) {
+   other.onDispose.whenComplete(() => ,);
+    return waitResult(onItem: onItem);
+  }*/
 }
 
 mixin InteractableFunctionalityExecutor<I, R> on IDisposable, PaternalFunctionality {

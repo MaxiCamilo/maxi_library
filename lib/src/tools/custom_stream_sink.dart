@@ -25,7 +25,9 @@ class CustomStreamSink<T> implements StreamSink<T> {
   @override
   void add(T event) {
     maxiScheduleMicrotask(() async {
+      await continueOtherFutures();
       await onNewItem(event);
+      await continueOtherFutures();
     }).then((error) {
       if (error != null) {
         log('[CustomStreamSink] Error sent: ${error.$1}\n${error.$2}');
