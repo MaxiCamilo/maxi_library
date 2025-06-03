@@ -26,3 +26,6 @@ export 'package:maxi_library/src/framework/application_manager.dart';
 
 export 'package:maxi_library/src/framework/interactable_functionality.dart';
 export 'package:maxi_library/src/framework/interactable_functionality_operator.dart';
+export 'package:maxi_library/src/framework/interactable_functionality_operators/functionalities_returns.dart';
+
+export 'package:maxi_library/src/framework/interactable_functionality_operators/channel_interactable_functionality.dart';

@@ -52,11 +52,11 @@ class RunInteractableFunctionalityOnStream<I, R> with InteractableFunctionality<
   }
 
   void _processData(dynamic event) {
-    if (event is _FunctionalityItem<I>) {
+    if (event is FunctionalityItem<I>) {
       _manager.sendItem(event.item);
-    } else if (event is _FunctionalityResult<R>) {
+    } else if (event is FunctionalityResult<R>) {
       _resultWaiter?.completeIfIncomplete(event.result);
-    } else if (event is _FunctionalityError) {
+    } else if (event is FunctionalityError) {
       _resultWaiter?.completeErrorIfIncomplete(event.error, event.stackTrace);
     } else if (event is Map<String, dynamic>) {
       _processMap(event);
@@ -72,13 +72,13 @@ class RunInteractableFunctionalityOnStream<I, R> with InteractableFunctionality<
     final type = event.getRequiredValueWithSpecificType<String>('\$type');
     switch (type) {
       case 'item':
-        _processData(_FunctionalityItem.interpret<I>(event));
+        _processData(FunctionalityItem.interpret<I>(event));
         break;
       case 'result':
-        _processData(_FunctionalityResult.interpret<R>(event));
+        _processData(FunctionalityResult.interpret<R>(event));
         break;
-      case 'error':
-        _processData(_FunctionalityError.interpret(event));
+      case 'failed':
+        _processData(FunctionalityError.interpret(event));
         break;
       default:
         log('[RunInteractableFunctionalityOnStream] Unknown Map object received in the current (is of type $type)');
@@ -135,18 +135,18 @@ class InteractableFunctionalityStreamExecutor<I, R> with IDisposable, Interactab
   }
 
   static _convertItemToMap<I>(int id, I item) {
-    return _FunctionalityItem<I>(idetifier: id, item: item).serialize();
+    return FunctionalityItem<I>(idetifier: id, item: item).serialize();
   }
 
   static _convertResultToMap<R>(int id, R item) {
-    if(item == null && (R == dynamic || R.toString() == 'void')){
-      return _FunctionalityResult<R>(idetifier: id, result: '' as R).serialize();
+    if (item == null && (R == dynamic || R.toString() == 'void')) {
+      return FunctionalityResult<R>(idetifier: id, result: '' as R).serialize();
     }
-    return _FunctionalityResult<R>(idetifier: id, result: item).serialize();
+    return FunctionalityResult<R>(idetifier: id, result: item).serialize();
   }
 
   static _convertErrorToMap(int id, NegativeResult error, StackTrace stack) {
-    return _FunctionalityError(idetifier: id, error: error, stackTrace: stack).serialize();
+    return FunctionalityError(idetifier: id, error: error, stackTrace: stack).serialize();
   }
 
   InteractableFunctionalityStreamExecutor({
@@ -173,7 +173,7 @@ class InteractableFunctionalityStreamExecutor<I, R> with IDisposable, Interactab
       final result = await _executor.waitResult(
         onItem: (x) {
           if (itemConverted == null) {
-            sender.add(_FunctionalityItem<I>(idetifier: identifier, item: x));
+            sender.add(FunctionalityItem<I>(idetifier: identifier, item: x));
           } else {
             sender.add(itemConverted!(identifier, x));
           }
@@ -181,14 +181,14 @@ class InteractableFunctionalityStreamExecutor<I, R> with IDisposable, Interactab
       );
 
       if (resultConverted == null) {
-        sender.add(_FunctionalityResult<R>(idetifier: identifier, result: result));
+        sender.add(FunctionalityResult<R>(idetifier: identifier, result: result));
       } else {
         sender.add(resultConverted!(identifier, result));
       }
     } catch (ex, st) {
       if (errorConverted == null) {
         sender.add(
-          _FunctionalityError(
+          FunctionalityError(
             idetifier: identifier,
             error: NegativeResult.searchNegativity(item: ex, actionDescription: const Oration(message: 'Execute functionality stream')),
             stackTrace: st,
@@ -227,77 +227,5 @@ class InteractableFunctionalityStreamExecutor<I, R> with IDisposable, Interactab
   @override
   MaxiFuture<R> waitResult({void Function(I item)? onItem}) {
     return _executor.waitResult(onItem: onItem);
-  }
-}
-
-class _FunctionalityItem<I> with ICustomSerialization {
-  final I item;
-  final int idetifier;
-
-  const _FunctionalityItem({required this.item, required this.idetifier});
-
-  static _FunctionalityItem<I> interpret<I>(Map<String, dynamic> map) {
-    final id = map.getRequiredValueWithSpecificType<int>('id');
-    final item = ConverterUtilities.castJson<I>(text: map.getRequiredValueWithSpecificType<String>('item'));
-
-    return _FunctionalityItem<I>(idetifier: id, item: item);
-  }
-
-  @override
-  Map<String, dynamic> serialize() {
-    return {
-      'id': idetifier,
-      '\$type': 'item',
-      'item': ConverterUtilities.serializeToJson(item),
-    };
-  }
-}
-
-class _FunctionalityResult<R> with ICustomSerialization {
-  final R result;
-  final int idetifier;
-
-  const _FunctionalityResult({required this.result, required this.idetifier});
-
-  static _FunctionalityResult<R> interpret<R>(Map<String, dynamic> map) {
-    final id = map.getRequiredValueWithSpecificType<int>('id');
-    final result = ConverterUtilities.castJson<R>(text: map.getRequiredValueWithSpecificType<String>('result'));
-
-    return _FunctionalityResult<R>(idetifier: id, result: result);
-  }
-
-  @override
-  Map<String, dynamic> serialize() {
-    return {
-      'id': idetifier,
-      '\$type': 'result',
-      'result': ConverterUtilities.serializeToJson(result),
-    };
-  }
-}
-
-class _FunctionalityError with ICustomSerialization {
-  final NegativeResult error;
-  final StackTrace stackTrace;
-  final int idetifier;
-
-  const _FunctionalityError({required this.error, required this.stackTrace, required this.idetifier});
-
-  factory _FunctionalityError.interpret(Map<String, dynamic> map) {
-    final id = map.getRequiredValueWithSpecificType<int>('id');
-    final error = NegativeResult.interpretJson(jsonText: map.getRequiredValueWithSpecificType<String>('error'));
-    final stackTrace = StackTrace.fromString(map.getRequiredValueWithSpecificType<String>('stackTrace'));
-
-    return _FunctionalityError(idetifier: id, error: error, stackTrace: stackTrace);
-  }
-
-  @override
-  Map<String, dynamic> serialize() {
-    return {
-      'id': idetifier,
-      '\$type': 'error',
-      'error': error.serializeToJson(),
-      'stackTrace': stackTrace.toString(),
-    };
   }
 }

@@ -79,10 +79,16 @@ mixin AbylityEntityFramework on ITypeClassReflection, IEntityFramework {
     primaryList.addAll(getters.where((x) => x.annotations.any((y) => y is PrimaryKey)).toList());
 
     if (primaryList.length > 1) {
-      throw NegativeResult(
-        identifier: NegativeResultCodes.wrongType,
-        message: Oration(message: 'The entity %1 has more than one primary key, but only one is allowed', textParts: [name]),
-      );
+      final onlyFileds = primaryList.whereType<IFieldReflection>();
+
+      if (onlyFileds.length == 1) {
+        _primaryKey = onlyFileds.first;
+      } else {
+        throw NegativeResult(
+          identifier: NegativeResultCodes.wrongType,
+          message: Oration(message: 'The entity %1 has more than one primary key, but only one is allowed', textParts: [name]),
+        );
+      }
     } else if (primaryList.isNotEmpty) {
       _primaryKey = primaryList.first;
     } else {

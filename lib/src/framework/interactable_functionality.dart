@@ -29,8 +29,8 @@ mixin InteractableFunctionality<I, R> {
   @protected
   void onError({required InteractableFunctionalityExecutor<I, R> manager, required NegativeResult error, required StackTrace stackTrace}) {}
 
-  @protected
-  void onResult({required InteractableFunctionalityExecutor<I, R> manager, required R result}) {}
+  //@protected
+  //void onResult({required InteractableFunctionalityExecutor<I, R> manager, required R result}) {}
 
   @protected
   void onCancel({required InteractableFunctionalityExecutor<I, R> manager}) {}
@@ -96,6 +96,44 @@ mixin InteractableFunctionality<I, R> {
         onItem(x);
       }
     });
+  }
+
+  IChannel makeChannel({bool closeIfItEnd = true, int identifier = 0}) {
+    final channel = MasterChannel(closeIfEveryoneClosed: true);
+    ChannelInteractableFunctionality<I, R>(
+      channel: channel,
+      functionality: this,
+      closeIfItEnd: closeIfItEnd,
+      identifier: identifier,
+    ).start();
+
+    return channel;
+  }
+
+  IChannel makeBackgroundChannel({bool closeIfItEnd = true, int identifier = 0}) {
+    final channel = MasterChannel(closeIfEveryoneClosed: true);
+
+    ThreadManager.callBackgroundChannel(
+        parameters: InvocationParameters.list([closeIfItEnd, identifier, this]),
+        function: (parameters, otherChannel) {
+          final closeIfItEnd = parameters.firts<bool>();
+          final identifier = parameters.second<int>();
+          final interacable = parameters.third<InteractableFunctionality<I, R>>();
+          ChannelInteractableFunctionality<I, R>(
+            channel: otherChannel,
+            functionality: interacable,
+            closeIfItEnd: closeIfItEnd,
+            identifier: identifier,
+          ).start();
+          //final channel = interacable.makeChannel(closeIfItEnd: closeIfItEnd, identifier: identifier);
+          //otherChannel.joinWithOtherChannel(channel: channel, closeOtherChannelIfFinished: true, closeThisChannelIfFinish: true);
+        }).then((newChannel) {
+      channel.joinWithOtherChannel(channel: newChannel, closeOtherChannelIfFinished: true, closeThisChannelIfFinish: true);
+    }).onError((x, y) {
+      channel.close();
+    });
+
+    return channel.createSlave();
   }
 }
 

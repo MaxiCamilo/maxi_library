@@ -18,7 +18,7 @@ class CreateNewExternalTask with TextableFunctionality<dynamic> {
     final entityReflector = ReflectionManager.getReflectionEntityByName(rawData.getRequiredValueWithSpecificType<String>('functionality'));
 
     final entity = entityReflector.buildEntity(fixedParametersValues: parameters.fixedParameters, namedParametersValues: parameters.namedParameters) as TextableFunctionality;
-    _executor = entity.createOperator(identifier: identifier);
+    _executor = entity.runInBackground(identifier: identifier);
     return _executor!.waitResult(
       onItem: (item) => manager.sendItem(item),
     );
