@@ -4,7 +4,6 @@ export 'package:maxi_library/src/tools/queuing_semaphone.dart';
 export 'package:maxi_library/src/tools/future_career.dart';
 export 'package:maxi_library/src/tools/table_result.dart';
 export 'package:maxi_library/src/tools/synchronous_singleton.dart';
-export 'package:maxi_library/src/tools/dart_application_initializer.dart';
 export 'package:maxi_library/src/tools/arguments_parser.dart';
 export 'package:maxi_library/src/tools/entity_file/entity_file.dart';
 export 'package:maxi_library/src/tools/asynchronous_singleton.dart';

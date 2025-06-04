@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:maxi_library/maxi_library.dart';
 
 mixin InteractableFunctionalityOperator<I, R> on IDisposable {
@@ -22,6 +24,7 @@ mixin InteractableFunctionalityExecutor<I, R> on IDisposable, PaternalFunctional
   void sendItem(I item);
   void checkActivity();
   Future<void> delayed(Duration time);
+  Future<T> waitFuture<T>({required Future<T> future, Duration? timeout, FutureOr<T> Function()? onTimeout});
   Future<void> sendItemAsync(I item) async {
     await continueOtherFutures();
     checkActivity();

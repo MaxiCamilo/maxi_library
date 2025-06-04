@@ -103,7 +103,7 @@ class LocalInteractableFunctionalityOperator<I, R> with IDisposable, PaternalFun
       _itsWantCancel = true;
 
       _executionConfirmationWaiter.future.whenComplete(() {
-        if(!_isActive){
+        if (!_isActive) {
           return;
         }
         _onCanceled?.completeIfIncomplete();
@@ -194,6 +194,46 @@ class LocalInteractableFunctionalityOperator<I, R> with IDisposable, PaternalFun
     timeout.completeIfIncomplete();
 
     checkActivity();
+  }
+
+  @override
+  Future<T> waitFuture<T>({required Future<T> future, Duration? timeout, FutureOr<T> Function()? onTimeout}) async {
+    checkActivity();
+
+    if (timeout == null) {
+      _onCanceled ??= Completer();
+      final result = await Future.any([_onCanceled!.future, future]);
+      future.ignore();
+      checkActivity();
+      return result;
+    } else {
+      bool isTimeout = false;
+      _onCanceled ??= Completer();
+      final timeoutWaiter = Completer();
+      final timerWaiter = Timer(timeout, () {
+        isTimeout = true;
+        timeoutWaiter.completeIfIncomplete();
+      });
+
+      final result = await Future.any([_onCanceled!.future, timeoutWaiter.future, future]);
+      timerWaiter.cancel();
+      timeoutWaiter.completeIfIncomplete();
+      future.ignore();
+      checkActivity();
+
+      if (isTimeout) {
+        if (onTimeout == null) {
+          throw NegativeResult(
+            identifier: NegativeResultCodes.timeout,
+            message: const Oration(message: 'A feature took an excessive amount of time to complete'),
+          );
+        } else {
+          return await onTimeout();
+        }
+      } else {
+        return result;
+      }
+    }
   }
 
   void _checkIfListen(bool containtError) {
