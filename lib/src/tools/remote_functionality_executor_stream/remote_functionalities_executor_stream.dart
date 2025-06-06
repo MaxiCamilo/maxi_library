@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:developer';
 
 import 'package:maxi_library/maxi_library.dart';
+import 'package:maxi_library/src/tools/remote_functionality_executor_stream/logic/create_external_unknown_waiter.dart';
 import 'package:maxi_library/src/tools/remote_functionality_executor_stream/logic/create_external_waiter.dart';
 import 'package:maxi_library/src/tools/remote_functionality_executor_stream/logic/create_new_external_task.dart';
 import 'package:maxi_library/src/tools/remote_functionality_executor_stream/remote_functionalities_executor_waiter.dart';
@@ -37,12 +38,16 @@ class RemoteFunctionalitiesExecutorStream with IDisposable, PaternalFunctionalit
   }
 
   Future<RemoteFunctionalitiesExecutorWaiter<T>> sendAndWait<T, F extends TextableFunctionality<T>>(InvocationParameters parameters) {
+    return sendAndWaitUnknown(parameters: parameters, type: F.toString());
+  }
+
+  Future<RemoteFunctionalitiesExecutorWaiter<T>> sendAndWaitUnknown<T>({required String type, required InvocationParameters parameters}) {
     return _syncNewTask.execute(function: () async {
       _waitingNewTask ??= joinWaiter<int>();
 
       output.add({
         '\$type': 'newTask',
-        'functionality': F.toString(),
+        'functionality': type,
         'parameters': parameters.serializeToJson(),
       });
 
@@ -54,6 +59,12 @@ class RemoteFunctionalitiesExecutorStream with IDisposable, PaternalFunctionalit
 
       return newTask;
     });
+  }
+
+  @override
+  InteractableFunctionalityOperator<Oration, T> executeInteractableFunctionalityViaName<T>({required String functionalityName, InvocationParameters parameters = InvocationParameters.emptry}) {
+    resurrectObject();
+    return CreateExternalUnknownWaiter<T>(mainOperator: this, parameters: parameters, typeName: functionalityName).createOperator()..start();
   }
 
   @override

@@ -94,9 +94,7 @@ mixin StartableFunctionality implements IDisposable {
   }
 
   @override
-  void resurrectObject() {
-    
-  }
+  void resurrectObject() {}
 
   @override
   // ignore: non_constant_identifier_names
@@ -114,4 +112,6 @@ mixin StartableFunctionality implements IDisposable {
 
   void reactWhenItFails(dynamic error, StackTrace trace) {}
   void reactWhenInitializedFinishes() {}
+  @override
+  void performResurrection() {}
 }

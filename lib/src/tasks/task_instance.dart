@@ -1,23 +1,30 @@
 import 'dart:async';
 
 import 'package:maxi_library/maxi_library.dart';
-import 'package:maxi_library/src/tasks/imixable_task.dart';
-import 'package:maxi_library/src/tasks/itask_functionality.dart';
 import 'package:meta/meta.dart';
 
-enum TagInstanceStatus { waiting, active, failed, finished }
+enum TaskInstanceStatus { waiting, active, failed, finished }
 
 class TaskInstance<R> with TextableFunctionality<bool>, ITaskFunctionality, IMixableTask {
+  static const _pendingText = Oration(message: 'Waiting for the completion of the previous tasks');
+
+  @override
+  String get functionalityName => _functionalityName ?? functionality.functionalityName;
+
+  @override
   int identifier;
 
   final TextableFunctionality<R> functionality;
 
   final DateTime _whenCreated;
+  final String? _functionalityName;
 
   bool _isActive = false;
   bool _successfullyCompleted = false;
   bool _alreadyExecuted = false;
   bool _canceled = false;
+  Oration _lastText = _pendingText;
+
   R? _lastResult;
   NegativeResult? _lastError;
 
@@ -26,14 +33,15 @@ class TaskInstance<R> with TextableFunctionality<bool>, ITaskFunctionality, IMix
 
   InteractableFunctionalityOperator<Oration, R>? _lastExecutor;
 
-  DateTime _whenFinished = DateTime.fromMillisecondsSinceEpoch(0);
+  DateTime _whenLastModification = DateTime.now();
   DateTime _nextTurn = DateTime.fromMillisecondsSinceEpoch(0);
 
-  DateTime get whenFinished => _whenFinished;
+  DateTime get whenLastModification => _whenLastModification;
   DateTime get whenCreated => _whenCreated;
   @override
   DateTime get nextTurn => _nextTurn;
 
+  Oration get lastText => _lastText;
   bool get isActive => _isActive;
   bool get successfullyCompleted => _successfullyCompleted;
   bool get alreadyExecuted => _alreadyExecuted;
@@ -63,16 +71,16 @@ class TaskInstance<R> with TextableFunctionality<bool>, ITaskFunctionality, IMix
     return _lastResult as R;
   }
 
-  TagInstanceStatus get status {
-    if (!_alreadyExecuted) {
-      return TagInstanceStatus.waiting;
-    }
-
+  TaskInstanceStatus get status {
     if (isActive) {
-      return TagInstanceStatus.active;
+      return TaskInstanceStatus.active;
     }
 
-    return successfullyCompleted ? TagInstanceStatus.finished : TagInstanceStatus.failed;
+    if (!_alreadyExecuted) {
+      return TaskInstanceStatus.waiting;
+    }
+
+    return successfullyCompleted ? TaskInstanceStatus.finished : TaskInstanceStatus.failed;
   }
 
   Stream<Oration> get textStream async* {
@@ -90,11 +98,21 @@ class TaskInstance<R> with TextableFunctionality<bool>, ITaskFunctionality, IMix
     this.waitToTryAgain = const Duration(minutes: 5),
     this.attempts = 0,
     DateTime? whenCreated,
-  }) : _whenCreated = whenCreated ?? DateTime.now();
+    String? functionalityName,
+  })  : _whenCreated = whenCreated ?? DateTime.now(),
+        _functionalityName = functionalityName ?? functionality.functionalityName;
+
+  void setPending() {
+    _lastText = _pendingText;
+    _alreadyExecuted = false;
+  }
 
   @override
   Future<bool> runFunctionality({required InteractableFunctionalityExecutor<Oration, bool> manager}) async {
     _isActive = true;
+    _lastText = const Oration(message: 'The task is running');
+
+    _whenLastModification = DateTime.now();
 
     try {
       if (_canceled) {
@@ -106,6 +124,7 @@ class TaskInstance<R> with TextableFunctionality<bool>, ITaskFunctionality, IMix
       final result = await manager.waitFuture(future: newOperator.waitResult(onItem: (item) {
         manager.sendItem(item);
         _textStream?.addIfActive(item);
+        _lastText = item;
       }));
 
       _successfullyCompleted = true;
@@ -113,9 +132,10 @@ class TaskInstance<R> with TextableFunctionality<bool>, ITaskFunctionality, IMix
     } catch (ex) {
       _lastError = NegativeResult.searchNegativity(item: ex, actionDescription: const Oration(message: 'Execute task'));
       _successfullyCompleted = false;
+      _lastText = _lastError!.message;
       _nextTurn = DateTime.now().add(waitToTryAgain);
     } finally {
-      _whenFinished = DateTime.now();
+      _whenLastModification = DateTime.now();
       _alreadyExecuted = true;
       _isActive = false;
 
@@ -214,8 +234,13 @@ class TaskInstance<R> with TextableFunctionality<bool>, ITaskFunctionality, IMix
 
     if (otherTask is TaskInstance) {
       (functionality as IMixableTask).mixTask(otherTask.functionality);
+      if (otherTask.attempts > attempts) {
+        attempts = otherTask.attempts;
+      }
     } else {
       (functionality as IMixableTask).mixTask(otherTask);
     }
+
+    _whenLastModification = DateTime.now();
   }
 }

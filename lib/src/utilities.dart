@@ -5,6 +5,7 @@ export 'package:maxi_library/src/utilities/extension/extensions_completers.dart'
 export 'package:maxi_library/src/utilities/extension/extensions_stream.dart';
 export 'package:maxi_library/src/utilities/extension/extensions_stream_controller.dart';
 export 'package:maxi_library/src/utilities/extension/extensions_map.dart';
+export 'package:maxi_library/src/utilities/extension/extensions_queue_executor_list.dart';
 
 export 'package:maxi_library/src/utilities/converter_utilities.dart';
 export 'package:maxi_library/src/utilities/text_utilities.dart';

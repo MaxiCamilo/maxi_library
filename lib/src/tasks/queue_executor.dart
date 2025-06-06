@@ -1,15 +1,21 @@
 import 'dart:async';
 
 import 'package:maxi_library/maxi_library.dart';
-import 'package:maxi_library/src/tasks/imixable_task.dart';
-import 'package:maxi_library/src/tasks/itask_functionality.dart';
-import 'package:maxi_library/src/tasks/task_instance.dart';
 
 class QueueExecutor<F extends TextableFunctionality> with IDisposable, PaternalFunctionality {
+  final int identifier;
+
   F? _activeFunctionality;
   TextableFunctionalityOperator? _activeOperator;
 
-  StreamController<Oration>? _textStream;
+  StreamController<(F, Oration)>? _textStream;
+
+  late StreamController<F> _changedExecutionTask;
+  late StreamController<F> _activeTaskEnded;
+
+  late StreamController<QueueExecutor<F>> _executorIsActivated;
+  late StreamController<QueueExecutor<F>> _executorIsInactivated;
+  late StreamController<F> _taskChangedState;
 
   final _pendingFunctionalities = <F>[];
   final _persistentFunctionalities = <F>[];
@@ -18,15 +24,49 @@ class QueueExecutor<F extends TextableFunctionality> with IDisposable, PaternalF
   List<F> get pendingFunctionalities => _pendingFunctionalities;
   List<F> get persistentFunctionalities => _persistentFunctionalities;
 
+  List<F> get tasks {
+    final list = <F>[..._pendingFunctionalities, ..._persistentFunctionalities];
+
+    if (_activeFunctionality != null) {
+      list.insert(0, _activeFunctionality!);
+    }
+
+    return list;
+  }
+
   bool _isActive = false;
   F? _nextPersistent;
 
   Timer? _timerNext;
   MaxiCompleter? _timerWaiter;
 
-  Stream<Oration> get textStream async* {
-    _textStream ??= StreamController<Oration>.broadcast();
+  Stream<F> get changedExecutionTask => _changedExecutionTask.stream;
+  Stream<F> get activeTaskEnded => _activeTaskEnded.stream;
+  Stream<QueueExecutor<F>> get executorIsActivated => _executorIsActivated.stream;
+  Stream<QueueExecutor<F>> get executorIsInactivated => _executorIsInactivated.stream;
+  Stream<F> get taskChangedState => _taskChangedState.stream;
+
+  bool get isActive => _isActive;
+
+  Stream<(F, Oration)> get textStream async* {
+    _textStream ??= StreamController<(F, Oration)>.broadcast();
     yield* _textStream!.stream;
+  }
+
+  QueueExecutor({this.identifier = 0}) {
+    performResurrection();
+  }
+
+  @override
+  void performResurrection() {
+    super.performResurrection();
+
+    _changedExecutionTask = createEventController<F>(isBroadcast: true);
+    _activeTaskEnded = createEventController<F>(isBroadcast: true);
+
+    _executorIsActivated = createEventController<QueueExecutor<F>>(isBroadcast: true);
+    _executorIsInactivated = createEventController<QueueExecutor<F>>(isBroadcast: true);
+    _taskChangedState = createEventController<F>(isBroadcast: true);
   }
 
   @override
@@ -67,10 +107,32 @@ class QueueExecutor<F extends TextableFunctionality> with IDisposable, PaternalF
     _activeOperator?.cancel();
   }
 
-  void cancel(int identifier) {
+  F? searchTask(int identifier) {
+    if (_activeFunctionality != null && _activeOperator != null && _activeOperator!.identifier == identifier) {
+      return _activeFunctionality;
+    }
+
+    final isPending = _pendingFunctionalities.whereType<ITaskFunctionality>().selectItem((x) => x.identifier == identifier);
+    if (isPending != null) {
+      return isPending as F;
+    }
+
+    final isPersistent = _persistentFunctionalities.whereType<ITaskFunctionality>().selectItem((x) => x.identifier == identifier);
+    if (isPersistent != null) {
+      return isPersistent as F;
+    }
+
+    return null;
+  }
+
+  void cancelActiveFunctionality() {
+    _activeOperator?.cancel();
+  }
+
+  bool cancelTask(int identifier) {
     if (_activeOperator != null && _activeOperator!.identifier == identifier) {
-      _activeOperator?.cancel();
-      return;
+      cancelActiveFunctionality();
+      return true;
     }
 
     final persistent = _persistentFunctionalities.whereType<TaskInstance>().selectItem((x) => x.identifier == identifier);
@@ -79,15 +141,41 @@ class QueueExecutor<F extends TextableFunctionality> with IDisposable, PaternalF
       _persistentFunctionalities.remove(persistent);
       _timerWaiter?.completeIfIncomplete();
       _timerWaiter = null;
-      return;
+      _taskChangedState.addIfActive(persistent as F);
+      return true;
     }
 
     final pending = _pendingFunctionalities.whereType<TaskInstance>().selectItem((x) => x.identifier == identifier);
     if (pending != null) {
       pending.cancel();
       _pendingFunctionalities.remove(pending);
-      return;
+      _taskChangedState.addIfActive(pending as F);
+      return true;
     }
+
+    return false;
+  }
+
+  bool startTask(int identifier) {
+    if (_activeOperator != null && _activeOperator!.identifier == identifier) {
+      return true;
+    }
+
+    final isPending = _pendingFunctionalities.whereType<ITaskFunctionality>().selectItem((x) => x.identifier == identifier);
+    if (isPending != null) {
+      return true;
+    }
+
+    final isPersistent = _persistentFunctionalities.whereType<ITaskFunctionality>().selectItem((x) => x.identifier == identifier);
+    if (isPersistent != null) {
+      _persistentFunctionalities.remove(isPersistent);
+      _pendingFunctionalities.add(isPersistent as F);
+      _timerWaiter?.completeIfIncomplete();
+
+      return true;
+    }
+
+    return false;
   }
 
   F addFunctionality({required F newTask, bool mixTask = true}) {
@@ -114,10 +202,18 @@ class QueueExecutor<F extends TextableFunctionality> with IDisposable, PaternalF
         if (_nextPersistent == persistentCandidate) {
           _timerWaiter?.completeIfIncomplete();
         }
+
+        return persistentCandidate as F;
       }
     }
 
     _pendingFunctionalities.add(newTask);
+
+    if (newTask is TaskInstance) {
+      newTask.setPending();
+    }
+
+    _taskChangedState.addIfActive(newTask);
 
     if (!_isActive) {
       _isActive = true;
@@ -131,6 +227,7 @@ class QueueExecutor<F extends TextableFunctionality> with IDisposable, PaternalF
 
   Future<void> _runFunctionalities() async {
     _isActive = true;
+    _executorIsActivated.add(this);
 
     do {
       while (_pendingFunctionalities.isNotEmpty) {
@@ -146,17 +243,27 @@ class QueueExecutor<F extends TextableFunctionality> with IDisposable, PaternalF
     _activeFunctionality = null;
 
     _isActive = false;
+    _executorIsInactivated.add(this);
   }
 
   Future<void> _executeTask(F actual) async {
     _activeFunctionality = actual;
+
+    _taskChangedState.addIfActive(actual);
+
     if (actual is TaskInstance) {
       final actualOperator = actual.createOperator(identifier: actual.identifier);
       _activeOperator = actualOperator;
       late final bool isGood;
       try {
+        scheduleMicrotask(() async {
+          await continueOtherFutures();
+          await continueOtherFutures();
+          await continueOtherFutures();
+          _taskChangedState.addIfActive(actual);
+        });
         isGood = await actualOperator.waitResult(
-          onItem: (item) => _textStream?.addIfActive(item),
+          onItem: (item) => _textStream?.addIfActive((actual, item)),
         );
       } catch (_) {
         isGood = false;
@@ -170,7 +277,7 @@ class QueueExecutor<F extends TextableFunctionality> with IDisposable, PaternalF
       final actualOperator = actual.createOperator();
       try {
         await actualOperator.waitResult(
-          onItem: (item) => _textStream?.addIfActive(item),
+          onItem: (item) => _textStream?.addIfActive((actual, item)),
         );
       } catch (_) {
         if (actual is ITaskFunctionality && (actual as ITaskFunctionality).itIsPersistent && (actual as ITaskFunctionality).attempts > 0) {
@@ -180,6 +287,8 @@ class QueueExecutor<F extends TextableFunctionality> with IDisposable, PaternalF
       }
     }
 
+    _activeTaskEnded.addIfActive(actual);
+    _taskChangedState.addIfActive(actual);
     _activeOperator = null;
   }
 
@@ -189,16 +298,22 @@ class QueueExecutor<F extends TextableFunctionality> with IDisposable, PaternalF
     for (final item in reintent) {
       _persistentFunctionalities.remove(item);
       _pendingFunctionalities.add(item as F);
+
+      if (item is TaskInstance) {
+        item.setPending();
+      }
+
+      _taskChangedState.addIfActive(item as F);
     }
   }
 
   Future<void> _checkPersistents() async {
-    if (_persistentFunctionalities.isNotEmpty) {
+    if (_persistentFunctionalities.isEmpty) {
       return;
     }
 
     final persistents = _persistentFunctionalities.cast<ITaskFunctionality>();
-    if (persistents.isNotEmpty) {
+    if (persistents.isEmpty) {
       return;
     }
 

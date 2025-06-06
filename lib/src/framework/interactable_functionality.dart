@@ -86,6 +86,7 @@ mixin InteractableFunctionality<I, R> {
       InteractableFunctionalityStreamExecutor<I, R>.onJson(functionality: this, sender: sender, identifier: identifier, closeSenderIfDone: closeSenderIfDone);
 
   Future<R> joinExecutor<T>(InteractableFunctionalityExecutor<I, T> unitedOperator, {void Function(I)? onItem}) {
+    unitedOperator.checkActivity();
     final newOperator = createOperator(identifier: unitedOperator.identifier);
 
     unitedOperator.joinDisponsabeObject(item: newOperator);

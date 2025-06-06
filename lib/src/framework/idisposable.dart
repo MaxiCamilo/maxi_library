@@ -34,9 +34,13 @@ mixin IDisposable {
   }
 
   @protected
+  void performResurrection() {}
+
+  @protected
   void resurrectObject() {
     if (_wasDiscarded) {
       _wasDiscarded = false;
+      performResurrection();
     }
   }
 }

@@ -1,4 +1,5 @@
 mixin ITaskFunctionality {
+  int get identifier;
   bool get itIsPersistent;
   DateTime get nextTurn;
 

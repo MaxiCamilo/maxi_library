@@ -32,4 +32,9 @@ mixin InteractableFunctionalityExecutor<I, R> on IDisposable, PaternalFunctional
     await continueOtherFutures();
     checkActivity();
   }
+
+  Future<void> checkActivityAsync() async {
+    await continueOtherFutures();
+    checkActivity();
+  }
 }
