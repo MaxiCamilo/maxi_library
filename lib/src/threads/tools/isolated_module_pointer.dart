@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:maxi_library/maxi_library.dart';
+import 'package:maxi_library/src/threads/standars/execute_functionality_on_specific_object.dart';
 
 class IsolatedModulePointer<S extends Object, T> {
   final FutureOr<T> Function(S serv, InvocationParameters para) getterModule;
@@ -24,6 +25,17 @@ class IsolatedModulePointer<S extends Object, T> {
       function: _executeStreamInThread<S, T, R>,
     );
     yield* stream;
+  }
+
+  InteractableFunctionalityOperator<I, R> executeFunctionality<I, R>({
+    required FutureOr<InteractableFunctionality<I, R>> Function(T item, InvocationParameters para) function,
+    InvocationParameters parameters = InvocationParameters.emptry,
+  }) {
+    return ExecuteFunctionalityOnSpecificObject<I, R, S, T>(
+      operatorGetter: getterModule,
+      functionalityGetter: function,
+      parameters: parameters,
+    ).runInService<S>();
   }
 
   static Future<R> _executeInThread<S, T, R>(S serv, InvocationParameters para) async {

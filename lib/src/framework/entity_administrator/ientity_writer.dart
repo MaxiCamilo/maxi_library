@@ -41,4 +41,6 @@ mixin IEntityWriter<T> {
   Future<void> assignAsFuture({required List<T> list}) {
     return assign(list: list).executeAndWait();
   }
+
+  
 }

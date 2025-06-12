@@ -269,7 +269,7 @@ class QueueExecutor<F extends TextableFunctionality> with IDisposable, PaternalF
         isGood = false;
       }
 
-      if (!isGood && actual.itIsPersistent) {
+      if (!isGood && actual.itIsPersistent && actual.attempts > 0) {
         actual.attempts = actual.attempts - 1;
         _persistentFunctionalities.add(actual);
       }
@@ -293,7 +293,7 @@ class QueueExecutor<F extends TextableFunctionality> with IDisposable, PaternalF
   }
 
   void _addPersistentToPending() {
-    final reintent = _persistentFunctionalities.cast<ITaskFunctionality>().where((x) => DateTime.now().isBefore(x.nextTurn)).toList();
+    final reintent = _persistentFunctionalities.cast<ITaskFunctionality>().where((x) => DateTime.now().isAfter(x.nextTurn)).toList();
 
     for (final item in reintent) {
       _persistentFunctionalities.remove(item);

@@ -5,7 +5,7 @@ import 'package:maxi_library/src/framework/interactable_functionality_operators/
 import 'package:maxi_library/src/framework/interactable_functionality_operators/isolated_interactable_functionality_operator.dart';
 import 'package:maxi_library/src/framework/interactable_functionality_operators/local_interactable_functionality_operator.dart';
 import 'package:maxi_library/src/framework/interactable_functionality_operators/run_interactable_functionality_on_backgroud.dart';
-import 'package:maxi_library/src/threads/isolates/thread_isolator_client.dart';
+import 'package:maxi_library/src/framework/interactable_functionality_operators/run_interactable_functionality_on_main_thread.dart';
 import 'package:meta/meta.dart';
 
 typedef TextableFunctionality<R> = InteractableFunctionality<Oration, R>;
@@ -62,9 +62,14 @@ mixin InteractableFunctionality<I, R> {
 
   MaxiFuture<R> executeAndWait({int identifier = 0, void Function(I)? onItem}) => LocalInteractableFunctionalityOperator<I, R>(functionality: this, identifier: identifier).waitResult(onItem: onItem);
 
+  InteractableFunctionality<I, R> inThreadServer() => RunInteractableFunctionalityOnMainThread<I, R>(anotherFunctionality: this);
+  InteractableFunctionality<I, R> inBackground() => RunInteractableFunctionalityOnBackgroud<I, R>(anotherFunctionality: this);
+
   InteractableFunctionalityOperator<I, R> runInAnotherThread({required IThreadInvoker invoker}) => IsolatedInteractableFunctionalityOperator<I, R>(invokerGetter: () => invoker, functionality: this);
   InteractableFunctionalityOperator<I, R> runInService<S extends Object>() => IsolatedInteractableFunctionalityOperator<I, R>(invokerGetter: ThreadManager.getEntityInstance<S>, functionality: this);
-  InteractableFunctionalityOperator<I, R> runInThreadServer() {
+  //InteractableFunctionalityOperator<I, R> runInThreadServer({int identifier = 0}) => inThreadServer().createOperator(identifier: identifier);
+
+  /*{
     if (ApplicationManager.instance.isWeb || ThreadManager.instance.isServer) {
       return createOperator();
     }
@@ -73,7 +78,7 @@ mixin InteractableFunctionality<I, R> {
       functionality: RunInteractableFunctionalityOnBackgroud(anotherFunctionality: this),
       invokerGetter: () => (ThreadManager.instance as ThreadIsolatorClient).serverConnection,
     );
-  }
+  }*/
 
   InteractableFunctionalityOperator<I, R> runInBackground({int identifier = 0}) => RunInteractableFunctionalityOnBackgroud<I, R>(anotherFunctionality: this).createOperator(identifier: identifier);
 

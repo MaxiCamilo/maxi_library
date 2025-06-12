@@ -24,7 +24,7 @@ class RunInteractableFunctionalityOnBackgroud<I, R> with InteractableFunctionali
       manager.checkActivity();
       return _functionalityOperator!.waitResult(onItem: (x) => manager.sendItem(x));
     } else {
-      _functionalityOperator = anotherFunctionality.runInThreadServer();
+      _functionalityOperator = anotherFunctionality.createOperator();
       return await _functionalityOperator!.waitResult(onItem: (x) => manager.sendItem(x));
     }
   }

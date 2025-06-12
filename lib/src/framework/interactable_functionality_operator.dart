@@ -15,7 +15,7 @@ mixin InteractableFunctionalityOperator<I, R> on IDisposable {
     required void Function(I) onItem,
   }) {
    other.onDispose.whenComplete(() => ,);
-    return waitResult(onItem: onItem);
+    return waitResult(onItem: (item) => other.,);
   }*/
 }
 
