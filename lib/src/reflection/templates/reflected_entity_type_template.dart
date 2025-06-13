@@ -182,6 +182,10 @@ abstract class ReflectedEntityTypeTemplate with IReflectionType, IDeclarationRef
       return cloneObject(originalItem);
     }
 
+    if (originalItem is Map<String, dynamic>) {
+      return interpretAsMap(mapValues: originalItem, tryToCorrectNames: true);
+    }
+
     final originalItemReflector = ReflectionManager.getReflectionEntity(type);
     final compatiblePropertys = originalItemReflector.fields.where((x) => modificableFields.any((y) => y.name == x.name && y.reflectedType.isTypeCompatible(x.reflectedType.type))).toList();
 

@@ -1,3 +1,5 @@
+import 'dart:math' show Random;
+
 import 'package:maxi_library/maxi_library.dart';
 
 mixin TextUtilities {
@@ -205,5 +207,11 @@ mixin TextUtilities {
   static List<String> parseQuotedTexts(String input) {
     final RegExp exp = RegExp(r'"(.*?)"');
     return exp.allMatches(input).map((match) => match.group(1)?.trim() ?? '').toList();
+  }
+
+  static String createRandomText(int longitud) {
+    const characters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    final random = Random();
+    return List.generate(longitud, (index) => characters[random.nextInt(characters.length)]).join();
   }
 }
