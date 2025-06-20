@@ -20,6 +20,8 @@ mixin PaternalFunctionality on IDisposable {
     resurrectObject();
   }
 
+  
+
   R invokeFunctionIfDiscarded<R extends Object>({required R item, required FutureOr Function(R) function}) {
     _invokeObjects.add((item as Object, function as FutureOr Function(Object)));
     return item;
@@ -249,7 +251,7 @@ mixin PaternalFunctionality on IDisposable {
       x.completeErrorIfIncomplete(
         NegativeResult(
           identifier: NegativeResultCodes.functionalityCancelled,
-          message: const Oration(message: 'The functionality was canceled'),
+          message: const Oration(message: 'The task was canceled'),
         ),
       );
     });

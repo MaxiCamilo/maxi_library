@@ -12,7 +12,7 @@ class OrationTranslator with TextableFunctionality<void> {
   });
 
   @override
-  Future<void> runFunctionality({required InteractableFunctionalityExecutor<Oration, void> manager}) async {
+  Future<void> runFunctionality({required InteractiveFunctionalityExecutor<Oration, void> manager}) async {
     manager.sendItem(const Oration(message: 'Looking for texts in files'));
     final seacher = await searcherBuilder().joinExecutor(manager);
     manager.sendItem(Oration(message: 'Translating %1 texts', textParts: [seacher.length]));

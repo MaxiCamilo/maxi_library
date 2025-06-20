@@ -2,11 +2,11 @@ import 'dart:async';
 
 import 'package:maxi_library/maxi_library.dart';
 
-class ChannelInteractableFunctionality<I, R> with IDisposable, PaternalFunctionality, InteractableFunctionalityExecutor<I, R> {
+class ChannelInteractiveFunctionality<I, R> with IDisposable, PaternalFunctionality, InteractiveFunctionalityExecutor<I, R> {
   @override
   int identifier;
 
-  final InteractableFunctionality<I, R> functionality;
+  final InteractiveFunctionality<I, R> functionality;
   final IChannel channel;
   final bool closeIfItEnd;
 
@@ -14,7 +14,7 @@ class ChannelInteractableFunctionality<I, R> with IDisposable, PaternalFunctiona
 
   Completer? _onCanceled;
 
-  ChannelInteractableFunctionality({
+  ChannelInteractiveFunctionality({
     required this.channel,
     required this.functionality,
     this.closeIfItEnd = true,

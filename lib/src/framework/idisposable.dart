@@ -43,4 +43,13 @@ mixin IDisposable {
       performResurrection();
     }
   }
+
+  void checkIfDispose() {
+    if (_wasDiscarded) {
+      throw NegativeResult(
+        identifier: NegativeResultCodes.discontinuedFunctionality,
+        message: const Oration(message: 'Functionality is no longer operational'),
+      );
+    }
+  }
 }

@@ -28,7 +28,7 @@ Your job is to translate the text contained in the "text" tags into %1. Return t
   });
 
   @override
-  Future<Map<Oration, String>> runFunctionality({required InteractableFunctionalityExecutor<Oration, Map<Oration, String>> manager}) async {
+  Future<Map<Oration, String>> runFunctionality({required InteractiveFunctionalityExecutor<Oration, Map<Oration, String>> manager}) async {
     final result = <Oration, String>{};
 
     final context = (contentText ?? _standarContentText).replaceAll('%1', languaje);

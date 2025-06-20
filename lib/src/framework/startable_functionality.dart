@@ -114,4 +114,9 @@ mixin StartableFunctionality implements IDisposable {
   void reactWhenInitializedFinishes() {}
   @override
   void performResurrection() {}
+
+  @override
+  void checkIfDispose() {
+    checkInitialize();
+  }
 }

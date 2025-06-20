@@ -10,7 +10,7 @@ class TranslationXmlFileCreator with TextableFunctionality<void> {
   const TranslationXmlFileCreator({required this.fileOperator, required this.texts, required this.prefix});
 
   @override
-  Future<void> runFunctionality({required InteractableFunctionalityExecutor<Oration, void> manager}) async {
+  Future<void> runFunctionality({required InteractiveFunctionalityExecutor<Oration, void> manager}) async {
     manager.sendItem(const Oration(message: 'Creating file'));
     if (await fileOperator.existsFile()) {
       await fileOperator.deleteFile();

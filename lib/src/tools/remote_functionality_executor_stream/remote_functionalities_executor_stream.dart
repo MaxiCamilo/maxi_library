@@ -2,10 +2,8 @@ import 'dart:async';
 import 'dart:developer';
 
 import 'package:maxi_library/maxi_library.dart';
-import 'package:maxi_library/src/tools/remote_functionality_executor_stream/logic/create_external_unknown_waiter.dart';
-import 'package:maxi_library/src/tools/remote_functionality_executor_stream/logic/create_external_waiter.dart';
-import 'package:maxi_library/src/tools/remote_functionality_executor_stream/logic/create_new_external_task.dart';
-import 'package:maxi_library/src/tools/remote_functionality_executor_stream/remote_functionalities_executor_waiter.dart';
+import 'package:maxi_library/src/tools/remote_functionality_executor_stream/logic/remote_functionalities_request_task.dart';
+import 'package:maxi_library/src/tools/remote_functionality_executor_stream/logic/remote_functionalities_waiter_task.dart';
 
 class RemoteFunctionalitiesExecutorStream with IDisposable, PaternalFunctionality, RemoteFunctionalitiesExecutor {
   //final Stream<Map<String, dynamic>> input;
@@ -14,8 +12,8 @@ class RemoteFunctionalitiesExecutorStream with IDisposable, PaternalFunctionalit
 
   final _syncNewTask = Semaphore();
 
-  final _externalTasks = <RemoteFunctionalitiesExecutorWaiter>[];
-  final _internalTasks = <InteractableFunctionalityOperator<Oration, dynamic>>[];
+  final _internalTasks = <int, InteractiveFunctionalityOperator>{};
+  final _externalTask = <int, RemoteFunctionalitiesWaiterTask>{};
 
   int _lastID = 1;
 
@@ -32,39 +30,44 @@ class RemoteFunctionalitiesExecutorStream with IDisposable, PaternalFunctionalit
   }
 
   @override
-  InteractableFunctionalityOperator<Oration, T> executeInteractableFunctionality<T, F extends TextableFunctionality<T>>({InvocationParameters parameters = InvocationParameters.emptry}) {
+  TextableFunctionality<T> executeInteractiveFunctionality<T, F extends TextableFunctionality<T>>({InvocationParameters parameters = InvocationParameters.emptry}) {
     resurrectObject();
-    return CreateExternalWaiter<T, F>(mainOperator: this, parameters: parameters).createOperator()..start();
-  }
-
-  Future<RemoteFunctionalitiesExecutorWaiter<T>> sendAndWait<T, F extends TextableFunctionality<T>>(InvocationParameters parameters) {
-    return sendAndWaitUnknown(parameters: parameters, type: F.toString());
-  }
-
-  Future<RemoteFunctionalitiesExecutorWaiter<T>> sendAndWaitUnknown<T>({required String type, required InvocationParameters parameters}) {
-    return _syncNewTask.execute(function: () async {
-      _waitingNewTask ??= joinWaiter<int>();
-
-      output.add({
-        '\$type': 'newTask',
-        'functionality': type,
-        'parameters': parameters.serializeToJson(),
-      });
-
-      final id = await _waitingNewTask!.future;
-      final newTask = RemoteFunctionalitiesExecutorWaiter<T>(identifier: id, mainOperator: this);
-
-      _externalTasks.add(newTask);
-      newTask.onDispose.whenComplete(() => _externalTasks.remove(newTask));
-
-      return newTask;
-    });
+    return RemoteFunctionalitiesWaiterTask<T>(mainExecutor: this, parameters: parameters, type: F.toString());
   }
 
   @override
-  InteractableFunctionalityOperator<Oration, T> executeInteractableFunctionalityViaName<T>({required String functionalityName, InvocationParameters parameters = InvocationParameters.emptry}) {
+  TextableFunctionality<T> executeInteractiveFunctionalityViaName<T>({required String functionalityName, InvocationParameters parameters = InvocationParameters.emptry}) {
     resurrectObject();
-    return CreateExternalUnknownWaiter<T>(mainOperator: this, parameters: parameters, typeName: functionalityName).createOperator()..start();
+    return RemoteFunctionalitiesWaiterTask<T>(mainExecutor: this, parameters: parameters, type: functionalityName);
+  }
+
+  void requestNewTask({
+    required String type,
+    required InvocationParameters parameters,
+    required RemoteFunctionalitiesWaiterTask task,
+  }) {
+    _syncNewTask.execute(function: () async {
+      try {
+        _waitingNewTask ??= joinWaiter<int>();
+
+        output.add({
+          '\$type': 'newTask',
+          'functionality': type,
+          'parameters': parameters.serializeToJson(),
+        });
+
+        final newID = await _waitingNewTask!.future;
+
+        _externalTask[newID] = task;
+        task.setNewID(newID);
+      } catch (ex, st) {
+        task.defineErrorWhenRequestingIdentifier(NegativeResult.searchNegativity(item: ex, actionDescription: const Oration(message: 'Executing task')), st);
+      }
+    });
+  }
+
+  void removeExternalTask(int id) {
+    _externalTask.remove(id);
   }
 
   @override
@@ -73,17 +76,19 @@ class RemoteFunctionalitiesExecutorStream with IDisposable, PaternalFunctionalit
     _inputSubscription.cancel();
     output.close();
 
-    _externalTasks.iterar((x) => x.dispose());
-    _externalTasks.clear();
+    _internalTasks.entries.iterar((x) => x.value.cancel());
+    _internalTasks.clear();
+
+    _externalTask.clear();
   }
 
   void _processData(Map<String, dynamic> event) {
     final type = event.getRequiredValueWithSpecificType<String>('\$type');
-    if (const ['item', 'result', 'error'].contains(type)) {
+    if (const ['text', 'result', 'error'].contains(type)) {
       final id = event.getRequiredValueWithSpecificType<int>('id');
-      final task = _externalTasks.selectItem((x) => x.identifier == id);
+      final task = _externalTask[id];
       if (task != null) {
-        task.sendMessage(event);
+        task.processContent(event);
       } else {
         log('[RemoteFunctionalitiesExecutorStream] External task number $id was not found');
       }
@@ -94,7 +99,7 @@ class RemoteFunctionalitiesExecutorStream with IDisposable, PaternalFunctionalit
       _waitingNewTask = null;
     } else if (type == 'cancel') {
       final id = event.getRequiredValueWithSpecificType<int>('id');
-      final task = _internalTasks.selectItem((x) => x.identifier == id);
+      final task = _internalTasks[id];
       task?.cancel();
     } else if (type == 'newTask') {
       _createInternalTask(event);
@@ -106,16 +111,41 @@ class RemoteFunctionalitiesExecutorStream with IDisposable, PaternalFunctionalit
     }
   }
 
-  void _createInternalTask(Map<String, dynamic> event) {
+  Future<void> _createInternalTask(Map<String, dynamic> event) async {
     final id = _lastID;
     _lastID += 1;
 
     output.add({'\$type': 'confirmNewTask', 'id': id});
 
-    final newOperator = CreateNewExternalTask(identifier: id, mainOperator: this, rawData: event).runInMapStream(sender: output, closeSenderIfDone: false, identifier: id);
-    _internalTasks.add(newOperator);
+    final newOperator = RemoteFunctionalityRequestTask(identifier: id, mainOperator: this, rawData: event).createOperator(identifier: id);
+    _internalTasks[id] = newOperator;
 
-    newOperator.onDispose.whenComplete(() => _internalTasks.remove(newOperator));
-    newOperator.start();
+    try {
+      final result = await newOperator.waitResult(
+        onItem: (item) => output.add(
+          {
+            '\$type': 'text',
+            'id': id,
+            'content': item.serializeToJson(),
+          },
+        ),
+      );
+      output.add({
+        '\$type': 'result',
+        'id': id,
+        'content': result == null ? '' : ConverterUtilities.serializeToJson(result),
+        'contentType': result.runtimeType.toString(),
+      });
+    } catch (ex, st) {
+      final rn = NegativeResult.searchNegativity(item: ex, actionDescription: const Oration(message: 'Executing external task'));
+      output.add({
+        '\$type': 'error',
+        'id': id,
+        'content': rn.serializeToJson(),
+        'stack': st.toString(),
+      });
+    } finally {
+      _internalTasks.remove(id);
+    }
   }
 }

@@ -17,7 +17,7 @@ class SerialExecutor with IDisposable, TextableFunctionalityOperator<List> {
   StreamController<Oration>? _textController;
   MaxiCompleter<List>? _waiterResult;
 
-  InteractableFunctionalityOperator? _currentOperator;
+  InteractiveFunctionalityOperator? _currentOperator;
 
   SerialExecutor({required this.functionalities, this.identifier = 0});
 
@@ -64,7 +64,7 @@ class SerialExecutor with IDisposable, TextableFunctionalityOperator<List> {
     _waiterResult?.completeErrorIfIncomplete(
         NegativeResult(
           identifier: NegativeResultCodes.functionalityCancelled,
-          message: const Oration(message: 'The functionality was canceled'),
+          message: const Oration(message: 'The task was canceled'),
         ),
         StackTrace.current);
     _waiterResult = null;
@@ -98,7 +98,7 @@ class SerialExecutor with IDisposable, TextableFunctionalityOperator<List> {
         if (_wantCancel) {
           throw NegativeResult(
             identifier: NegativeResultCodes.functionalityCancelled,
-            message: const Oration(message: 'The functionality was canceled'),
+            message: const Oration(message: 'The task was canceled'),
           );
         }
 

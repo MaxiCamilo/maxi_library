@@ -4,8 +4,9 @@ import 'package:maxi_library/maxi_library.dart';
 class RemoteFunctionalityStream with TextableFunctionality<String> {
   final String name;
   final int timeout;
+  final bool launchException;
 
-  const RemoteFunctionalityStream({required this.name, required this.timeout});
+  const RemoteFunctionalityStream({required this.name, required this.timeout, this.launchException = false});
 
   @override
   Future<String> runFunctionality({required TextableFunctionalityExecutor<String> manager}) async {
@@ -15,8 +16,11 @@ class RemoteFunctionalityStream with TextableFunctionality<String> {
       await manager.sendItemAsync(Oration(message: '[%1] %2 seconds out of %3', textParts: [name, i + 1, timeout]));
       await manager.delayed(const Duration(seconds: 1));
     }
-
     await manager.sendItemAsync(Oration(message: '[%1] I have finished', textParts: [name]));
+
+    if (launchException) {
+      throw NegativeResult(identifier: NegativeResultCodes.abnormalOperation, message: const Oration(message: 'Oh rayos!'));
+    }
 
     return 'Bye bye';
   }

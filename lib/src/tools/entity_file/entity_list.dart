@@ -286,7 +286,7 @@ class EntityList<T> with IEntityWriter<T>, IEntityReader<T> {
   }
 
   @override
-  InteractableFunctionality<Oration, void> deleteAll() {
+  InteractiveFunctionality<Oration, void> deleteAll() {
     return TextableFunctionality.express((x) => _blocker.block(function: () => _deleteAll(x)));
   }
 

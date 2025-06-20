@@ -8,7 +8,7 @@ class NewFunctionality with TextableFunctionality<String> {
   const NewFunctionality({this.secondWaiting = 5});
 
   @override
-  FutureOr<String> runFunctionality({required InteractableFunctionalityExecutor<Oration, String> manager}) async {
+  FutureOr<String> runFunctionality({required InteractiveFunctionalityExecutor<Oration, String> manager}) async {
     await manager.sendItemAsync(const Oration(message: 'Vamos a probar este sistema'));
 
     await manager.delayed(Duration(seconds: secondWaiting));

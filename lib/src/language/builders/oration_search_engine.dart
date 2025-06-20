@@ -24,7 +24,7 @@ class OrationSearchEngine with TextableFunctionality<List<Oration>> {
   const OrationSearchEngine({required this.directories});
 
   @override
-  Future<List<Oration>> runFunctionality({required InteractableFunctionalityExecutor<Oration, List<Oration>> manager}) async {
+  Future<List<Oration>> runFunctionality({required InteractiveFunctionalityExecutor<Oration, List<Oration>> manager}) async {
     final result = <Oration>[];
 
     final dartFiles = <File>[];
@@ -62,6 +62,4 @@ class OrationSearchEngine with TextableFunctionality<List<Oration>> {
   String _unescape(String input) {
     return input.replaceAll(r"\'", "'").replaceAll(r'\"', '"').replaceAll(r'\\', r'\');
   }
-
-  
 }

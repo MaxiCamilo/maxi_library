@@ -2,8 +2,8 @@ import 'dart:async';
 
 import 'package:maxi_library/maxi_library.dart';
 
-class LocalInteractableFunctionalityOperator<I, R> with IDisposable, PaternalFunctionality, InteractableFunctionalityOperator<I, R>, InteractableFunctionalityExecutor<I, R> {
-  final InteractableFunctionality<I, R> functionality;
+class LocalInteractiveFunctionalityOperator<I, R> with IDisposable, PaternalFunctionality, InteractiveFunctionalityOperator<I, R>, InteractiveFunctionalityExecutor<I, R> {
+  final InteractiveFunctionality<I, R> functionality;
 
   StreamController<I>? _textStreamController;
   MaxiCompleter<R>? _waiter;
@@ -25,7 +25,7 @@ class LocalInteractableFunctionalityOperator<I, R> with IDisposable, PaternalFun
   @override
   int identifier;
 
-  LocalInteractableFunctionalityOperator({required this.functionality, this.identifier = 0});
+  LocalInteractiveFunctionalityOperator({required this.functionality, this.identifier = 0});
 
   @override
   Stream<I> get itemStream async* {
@@ -99,7 +99,7 @@ class LocalInteractableFunctionalityOperator<I, R> with IDisposable, PaternalFun
 
   @override
   void cancel() {
-    if (!_itsWantCancel) {
+    if (!_itsWantCancel && !_itsWasGood) {
       _itsWantCancel = true;
 
       _executionConfirmationWaiter.future.whenComplete(() {
@@ -123,7 +123,7 @@ class LocalInteractableFunctionalityOperator<I, R> with IDisposable, PaternalFun
     if (_itsWantCancel) {
       throw NegativeResult(
         identifier: NegativeResultCodes.functionalityCancelled,
-        message: const Oration(message: 'Functionality was canceled'),
+        message: const Oration(message: 'The task was canceled'),
       );
     }
 
@@ -148,7 +148,7 @@ class LocalInteractableFunctionalityOperator<I, R> with IDisposable, PaternalFun
     _waiter?.completeErrorIfIncomplete(
       NegativeResult(
         identifier: NegativeResultCodes.functionalityCancelled,
-        message: const Oration(message: 'Functionality was canceled'),
+        message: const Oration(message: 'The task was canceled'),
       ),
     );
     _waiter = null;

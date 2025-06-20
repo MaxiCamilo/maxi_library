@@ -126,6 +126,9 @@ class QueueExecutor<F extends TextableFunctionality> with IDisposable, PaternalF
   }
 
   void cancelActiveFunctionality() {
+    if (_activeFunctionality is TaskInstance) {
+      (_activeFunctionality as TaskInstance).attempts = 0;
+    }
     _activeOperator?.cancel();
   }
 
@@ -137,6 +140,7 @@ class QueueExecutor<F extends TextableFunctionality> with IDisposable, PaternalF
 
     final persistent = _persistentFunctionalities.whereType<TaskInstance>().selectItem((x) => x.identifier == identifier);
     if (persistent != null) {
+      persistent.attempts = 0;
       persistent.cancel();
       _persistentFunctionalities.remove(persistent);
       _timerWaiter?.completeIfIncomplete();
@@ -147,6 +151,7 @@ class QueueExecutor<F extends TextableFunctionality> with IDisposable, PaternalF
 
     final pending = _pendingFunctionalities.whereType<TaskInstance>().selectItem((x) => x.identifier == identifier);
     if (pending != null) {
+      pending.attempts = 0;
       pending.cancel();
       _pendingFunctionalities.remove(pending);
       _taskChangedState.addIfActive(pending as F);
@@ -168,9 +173,14 @@ class QueueExecutor<F extends TextableFunctionality> with IDisposable, PaternalF
 
     final isPersistent = _persistentFunctionalities.whereType<ITaskFunctionality>().selectItem((x) => x.identifier == identifier);
     if (isPersistent != null) {
+      if (isPersistent is TaskInstance) {
+        isPersistent.setPending();
+      }
       _persistentFunctionalities.remove(isPersistent);
       _pendingFunctionalities.add(isPersistent as F);
       _timerWaiter?.completeIfIncomplete();
+
+      _taskChangedState.addIfActive(isPersistent as F);
 
       return true;
     }
@@ -189,6 +199,8 @@ class QueueExecutor<F extends TextableFunctionality> with IDisposable, PaternalF
       final pendingCandidate = _pendingFunctionalities.whereType<IMixableTask>().selectItem((x) => x.isMixable(newTask));
       if (pendingCandidate != null) {
         pendingCandidate.mixTask(newTask);
+        _taskChangedState.addIfActive(pendingCandidate as F);
+
         _timerWaiter?.completeIfIncomplete();
         return pendingCandidate as F;
       }
@@ -202,6 +214,11 @@ class QueueExecutor<F extends TextableFunctionality> with IDisposable, PaternalF
         if (_nextPersistent == persistentCandidate) {
           _timerWaiter?.completeIfIncomplete();
         }
+
+        if (persistentCandidate is TaskInstance) {
+          persistentCandidate.setPending();
+        }
+        _taskChangedState.addIfActive(persistentCandidate as F);
 
         return persistentCandidate as F;
       }
@@ -233,6 +250,7 @@ class QueueExecutor<F extends TextableFunctionality> with IDisposable, PaternalF
       while (_pendingFunctionalities.isNotEmpty) {
         await _executeTask(_pendingFunctionalities.removeAt(0));
       }
+      _activeFunctionality = null;
 
       _addPersistentToPending();
 

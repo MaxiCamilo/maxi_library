@@ -1,6 +1,6 @@
 import 'package:maxi_library/maxi_library.dart';
 
-extension ExtensionQueueExecutorIterable<F extends InteractableFunctionality<Oration, dynamic>> on Iterable<QueueExecutor<F>> {
+extension ExtensionQueueExecutorIterable<F extends InteractiveFunctionality<Oration, dynamic>> on Iterable<QueueExecutor<F>> {
   QueueExecutor? searchQueue({required int identifier}) => selectItem((x) => x.identifier == identifier);
 
   (QueueExecutor, F)? selectTaskAndQueue({required int identifier}) {
@@ -33,7 +33,7 @@ extension ExtensionQueueExecutorIterable<F extends InteractableFunctionality<Ora
   }
 }
 
-extension ExtensionQueueExecutorList<F extends InteractableFunctionality<Oration, dynamic>> on List<QueueExecutor<F>> {
+extension ExtensionQueueExecutorList<F extends InteractiveFunctionality<Oration, dynamic>> on List<QueueExecutor<F>> {
   bool removeQueue({required int identifier}) {
     final result = searchQueue(identifier: identifier);
     if (result == null) {

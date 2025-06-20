@@ -73,7 +73,7 @@ class FirstService with StartableFunctionality, IThreadService {
   }
 
   Future<String> callBackgroudFunctionality() async {
-    final funcOperator = NewFunctionality().runInBackground();
+    final funcOperator = NewFunctionality().inBackground().createOperator();
 
     //Future.delayed(const Duration(seconds: 5)).whenComplete(() => funcOperator.cancel());
 

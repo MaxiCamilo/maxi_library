@@ -2413,6 +2413,38 @@ class _RemoteFunctionalityStreamtimeout extends GeneratedReflectedField<RemoteFu
   int getReservedValue({required RemoteFunctionalityStream? entity}) => entity!.timeout;
 }
 
+class _RemoteFunctionalityStreamlaunchException extends GeneratedReflectedField<RemoteFunctionalityStream, bool> {
+  const _RemoteFunctionalityStreamlaunchException();
+  @override
+  List get annotations => const [];
+
+  @override
+  String get name => 'launchException';
+
+  @override
+  bool get isStatic => false;
+
+  @override
+  bool get isConst => false;
+
+  @override
+  bool get isLate => false;
+
+  @override
+  bool get isFinal => true;
+
+  @override
+  bool get acceptNull => false;
+
+  @override
+  bool get hasDefaultValue => false;
+  @override
+  bool? get defaulValue => null;
+
+  @override
+  bool getReservedValue({required RemoteFunctionalityStream? entity}) => entity!.launchException;
+}
+
 /*REMOTEFUNCTIONALITYSTREAM METHODS*/
 
 class _RemoteFunctionalityStreamrunFunctionalityMethod extends GeneratedReflectedMethod<RemoteFunctionalityStream, Future<String>> {
@@ -2476,16 +2508,24 @@ class _RemoteFunctionalityStreamBuilder extends GeneratedReflectedMethod<RemoteF
     acceptNulls: false,
     name: 'timeout',
   );
+  static const _namlaunchException = GeneratedReflectedNamedParameter<dynamic>(
+    annotations: const [],
+    defaultValue: false,
+    hasDefaultValue: true,
+    acceptNulls: false,
+    name: 'launchException',
+  );
   @override
   List<GeneratedReflectedFixedParameter> get fixedParameters => const [];
 
   @override
-  List<GeneratedReflectedNamedParameter> get namedParameters => const [_namname, _namtimeout];
+  List<GeneratedReflectedNamedParameter> get namedParameters => const [_namname, _namtimeout, _namlaunchException];
 
   @override
   RemoteFunctionalityStream callReservedMethod({required RemoteFunctionalityStream? entity, required List fixedValues, required Map<String, dynamic> namedValues}) => RemoteFunctionalityStream(
         name: _namname.getValueFromMap(namedValues),
         timeout: _namtimeout.getValueFromMap(namedValues),
+        launchException: _namlaunchException.getValueFromMap(namedValues),
       );
 }
 
@@ -2515,7 +2555,7 @@ class _RemoteFunctionalityStream extends GeneratedReflectedClass<RemoteFunctiona
   List<GeneratedReflectedMethod> get methods => const [_RemoteFunctionalityStreamrunFunctionalityMethod(), _RemoteFunctionalityStreamBuilder()];
 
   @override
-  List<GeneratedReflectedField> get fields => const [_RemoteFunctionalityStreamname(), _RemoteFunctionalityStreamtimeout()];
+  List<GeneratedReflectedField> get fields => const [_RemoteFunctionalityStreamname(), _RemoteFunctionalityStreamtimeout(), _RemoteFunctionalityStreamlaunchException()];
 }
 /*----------------------------------   x   ----------------------------------*/
 

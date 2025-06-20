@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:maxi_library/export_reflectors.dart';
 
+
 mixin StreamUtilities {
   static Future<T> waitForSomethingInSeveralStream<T>({
     required Iterable<Stream<T>> streams,
@@ -44,6 +45,4 @@ mixin StreamUtilities {
       subscriptionsList.iterar((x) => x.cancel());
     }
   }
-
-  
 }

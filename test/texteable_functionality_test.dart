@@ -37,7 +37,7 @@ void main() {
     test('Call on service', () async {
       await ThreadManager.mountEntity<FirstService>(entity: FirstService(isMustFail: false));
 
-      final funcOperator = NewFunctionality().runInService<FirstService>();
+      final funcOperator = NewFunctionality().inService<FirstService>().createOperator();
 
       final result = await funcOperator.waitResult(
         onItem: (x) => print(x),
@@ -57,16 +57,16 @@ void main() {
       await ThreadManager.mountEntity<FirstService>(entity: FirstService(isMustFail: false));
 
       final results = await Future.wait([
-        NewFunctionality().runInBackground().waitResult(onItem: (x) => print(x)),
-        NewFunctionality().runInBackground().waitResult(onItem: (x) => print(x)),
-        NewFunctionality().runInBackground().waitResult(onItem: (x) => print(x))
+        NewFunctionality().inBackground().createOperator().waitResult(onItem: (x) => print(x)),
+        NewFunctionality().inBackground().createOperator().waitResult(onItem: (x) => print(x)),
+        NewFunctionality().inBackground().createOperator().waitResult(onItem: (x) => print(x))
       ]);
 
       print(results);
 
       final otherResults = await Future.wait([
-        NewFunctionality().runInBackground().waitResult(onItem: (x) => print(x)),
-        NewFunctionality().runInBackground().waitResult(onItem: (x) => print(x)),
+        NewFunctionality().inBackground().createOperator().waitResult(onItem: (x) => print(x)),
+        NewFunctionality().inBackground().createOperator().waitResult(onItem: (x) => print(x)),
         //NewFunctionality().runInBackground().waitResult(onItem: (x) => print(x))
       ]);
 
@@ -87,32 +87,6 @@ void main() {
       print(result);
     });
 
-    test('Call on Stream', () async {
-      final streamController = StreamController();
-
-      final receiver = InteractableFunctionality.listenStream<Oration, String>(streamController.stream);
-// ignore: unused_local_variable
-      final sender = NewFunctionality(secondWaiting: 10).runInStream(sender: streamController, closeSenderIfDone: true);
-
-      //Future.delayed(const Duration(seconds: 5)).whenComplete(() => sender.cancel());
-
-      final result = await receiver.waitResult(onItem: (item) => print(item.toString()));
-      print(result);
-      await Future.delayed(const Duration(seconds: 5));
-    });
-
-    test('Call on Json Stream', () async {
-      final streamController = StreamController<String>.broadcast();
-
-      streamController.stream.listen((x) => print(x));
-
-      final receiver = InteractableFunctionality.listenStream<Oration, String>(streamController.stream);
-// ignore: unused_local_variable
-      final sender = NewFunctionality(secondWaiting: 10).runInJsonStream(sender: streamController, closeSenderIfDone: true);
-      //Future.delayed(const Duration(seconds: 5)).whenComplete(() => sender.cancel());
-
-      final result = await receiver.waitResult(onItem: (item) => print(item.toString()));
-      print(result);
-    });
+    
   });
 }

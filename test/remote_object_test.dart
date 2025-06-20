@@ -10,9 +10,14 @@ import 'test.dart';
 
 void main() {
   group('Reflection test', () {
-    setUp(() {
-      ReflectionManager.defineAlbums = [testReflectors];
-      ReflectionManager.defineAsTheMainReflector();
+    setUp(() async {
+      //ReflectionManager.defineAlbums =;
+      //ReflectionManager.defineAsTheMainReflector();
+
+      await ApplicationManager.changeInstance(
+        newInstance: DartApplicationManager(defineLanguageOperatorInOtherThread: false, reflectors: [testReflectors]),
+        initialize: true,
+      );
     });
 
     test('Invoke Functionality', () async {
@@ -23,12 +28,14 @@ void main() {
       // ignore: unused_local_variable
       final serverExecutor = RemoteFunctionalitiesExecutor.fromStream(input: clientPipe.stream, output: serverPipe);
 
-      final oreo = clientExecutor.executeInteractableFunctionality<String, RemoteFunctionalityStream>(
-        parameters: InvocationParameters.named({
-          'name': 'Oreo',
-          'timeout': Random().nextInt(18) + 3,
-        }),
-      );
+      final oreo = clientExecutor
+          .executeInteractiveFunctionality<String, RemoteFunctionalityStream>(
+            parameters: InvocationParameters.named({
+              'name': 'Oreo',
+              'timeout': Random().nextInt(18) + 3,
+            }),
+          )
+          .createOperator();
 
       String result = await oreo.waitResult(
         onItem: (x) => log('Text: "$x"'),
@@ -36,14 +43,41 @@ void main() {
 
       print('Result "$result"');
 
-      final sabrina = clientExecutor.executeInteractableFunctionality<String, RemoteFunctionalityStream>(
-        parameters: InvocationParameters.named({
-          'name': 'Sabrina',
-          'timeout': Random().nextInt(18) + 3,
-        }),
-      );
+      final sabrina = clientExecutor
+          .executeInteractiveFunctionality<String, RemoteFunctionalityStream>(
+            parameters: InvocationParameters.named({
+              'name': 'Sabrina',
+              'timeout': Random().nextInt(18) + 3,
+            }),
+          )
+          .createOperator();
 
       result = await sabrina.waitResult(
+        onItem: (x) => log('Text: "$x"'),
+      );
+
+      print('Result "$result"');
+    });
+
+    test('Invoke exception', () async {
+      final clientPipe = StreamController<Map<String, dynamic>>();
+      final serverPipe = StreamController<Map<String, dynamic>>();
+
+      final clientExecutor = RemoteFunctionalitiesExecutor.fromStream(input: serverPipe.stream, output: clientPipe);
+      // ignore: unused_local_variable
+      final serverExecutor = RemoteFunctionalitiesExecutor.fromStream(input: clientPipe.stream, output: serverPipe);
+
+      final oreo = clientExecutor
+          .executeInteractiveFunctionality<String, RemoteFunctionalityStream>(
+            parameters: InvocationParameters.named({
+              'name': 'Oreo',
+              'timeout': Random().nextInt(18) + 3,
+              'launchException': true,
+            }),
+          )
+          .createOperator();
+
+      String result = await oreo.waitResult(
         onItem: (x) => log('Text: "$x"'),
       );
 

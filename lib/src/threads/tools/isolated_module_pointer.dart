@@ -27,15 +27,15 @@ class IsolatedModulePointer<S extends Object, T> {
     yield* stream;
   }
 
-  InteractableFunctionalityOperator<I, R> executeFunctionality<I, R>({
-    required FutureOr<InteractableFunctionality<I, R>> Function(T item, InvocationParameters para) function,
+  InteractiveFunctionality<I, R> executeFunctionality<I, R>({
+    required FutureOr<InteractiveFunctionality<I, R>> Function(T item, InvocationParameters para) function,
     InvocationParameters parameters = InvocationParameters.emptry,
   }) {
     return ExecuteFunctionalityOnSpecificObject<I, R, S, T>(
       operatorGetter: getterModule,
       functionalityGetter: function,
       parameters: parameters,
-    ).runInService<S>();
+    ).inService<S>();
   }
 
   static Future<R> _executeInThread<S, T, R>(S serv, InvocationParameters para) async {

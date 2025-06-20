@@ -31,7 +31,7 @@ class TaskInstance<R> with TextableFunctionality<bool>, ITaskFunctionality, IMix
   MaxiCompleter<bool>? _waiter;
   StreamController<Oration>? _textStream;
 
-  InteractableFunctionalityOperator<Oration, R>? _lastExecutor;
+  InteractiveFunctionalityOperator<Oration, R>? _lastExecutor;
 
   DateTime _whenLastModification = DateTime.now();
   DateTime _nextTurn = DateTime.fromMillisecondsSinceEpoch(0);
@@ -108,7 +108,7 @@ class TaskInstance<R> with TextableFunctionality<bool>, ITaskFunctionality, IMix
   }
 
   @override
-  Future<bool> runFunctionality({required InteractableFunctionalityExecutor<Oration, bool> manager}) async {
+  Future<bool> runFunctionality({required InteractiveFunctionalityExecutor<Oration, bool> manager}) async {
     _isActive = true;
     _lastText = const Oration(message: 'The task is running');
 
@@ -187,9 +187,9 @@ class TaskInstance<R> with TextableFunctionality<bool>, ITaskFunctionality, IMix
   }
 
   @override
-  void onCancel({required InteractableFunctionalityExecutor<Oration, bool> manager}) {
+  void onCancel({required InteractiveFunctionalityExecutor<Oration, bool> manager}) {
     super.onCancel(manager: manager);
-    _lastExecutor?.cancel();
+    cancel();
   }
 
   @override
@@ -202,10 +202,10 @@ class TaskInstance<R> with TextableFunctionality<bool>, ITaskFunctionality, IMix
 
   @protected
   @override
-  void onThereAreNoListeners({required InteractableFunctionalityExecutor<Oration, bool> manager}) {
+  void onThereAreNoListeners({required InteractiveFunctionalityExecutor<Oration, bool> manager}) {
     super.onThereAreNoListeners(manager: manager);
     if (_isActive && _lastExecutor != null) {
-      functionality.onThereAreNoListeners(manager: _lastExecutor! as InteractableFunctionalityExecutor<Oration, R>);
+      functionality.onThereAreNoListeners(manager: _lastExecutor! as InteractiveFunctionalityExecutor<Oration, R>);
     }
   }
 

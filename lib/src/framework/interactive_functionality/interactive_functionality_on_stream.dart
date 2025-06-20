@@ -2,19 +2,19 @@ import 'dart:async';
 import 'dart:developer';
 
 import 'package:maxi_library/maxi_library.dart';
-import 'package:maxi_library/src/framework/interactable_functionality_operators/local_interactable_functionality_operator.dart';
+import 'package:maxi_library/src/framework/interactive_functionality_operators/local_interactive_functionality_operator.dart';
 
-class RunInteractableFunctionalityOnStream<I, R> with InteractableFunctionality<I, R> {
+class RunInteractiveFunctionalityOnStream<I, R> with InteractiveFunctionality<I, R> {
   final FutureOr<Stream> Function() streamGetter;
 
   StreamSubscription? _subscription;
   MaxiCompleter<R>? _resultWaiter;
-  late InteractableFunctionalityExecutor<I, R> _manager;
+  late InteractiveFunctionalityExecutor<I, R> _manager;
 
-  RunInteractableFunctionalityOnStream({required this.streamGetter});
+  RunInteractiveFunctionalityOnStream({required this.streamGetter});
 
   @override
-  Future<R> runFunctionality({required InteractableFunctionalityExecutor<I, R> manager}) async {
+  Future<R> runFunctionality({required InteractiveFunctionalityExecutor<I, R> manager}) async {
     _manager = manager;
 
     final stream = await streamGetter();
@@ -39,14 +39,14 @@ class RunInteractableFunctionalityOnStream<I, R> with InteractableFunctionality<
   }
 
   @override
-  void onCancel({required InteractableFunctionalityExecutor<I, R> manager}) {
+  void onCancel({required InteractiveFunctionalityExecutor<I, R> manager}) {
     super.onCancel(manager: manager);
     _subscription?.cancel();
     _onDoneStream();
   }
 
   @override
-  void onFinish({required InteractableFunctionalityExecutor<I, R> manager, R? possibleResult, NegativeResult? possibleError}) {
+  void onFinish({required InteractiveFunctionalityExecutor<I, R> manager, R? possibleResult, NegativeResult? possibleError}) {
     super.onFinish(manager: manager, possibleResult: possibleResult, possibleError: possibleError);
     _subscription?.cancel();
   }
@@ -64,7 +64,7 @@ class RunInteractableFunctionalityOnStream<I, R> with InteractableFunctionality<
       final rawJson = ConverterUtilities.interpretToObjectJson(text: event);
       _processMap(rawJson);
     } else {
-      log('[RunInteractableFunctionalityOnStream] Unknown object received in the current (is of type ${event.runtimeType})');
+      log('[RunInteractiveFunctionalityOnStream] Unknown object received in the current (is of type ${event.runtimeType})');
     }
   }
 
@@ -81,16 +81,16 @@ class RunInteractableFunctionalityOnStream<I, R> with InteractableFunctionality<
         _processData(FunctionalityError.interpret(event));
         break;
       default:
-        log('[RunInteractableFunctionalityOnStream] Unknown Map object received in the current (is of type $type)');
+        log('[RunInteractiveFunctionalityOnStream] Unknown Map object received in the current (is of type $type)');
         break;
     }
   }
 }
 
-class InteractableFunctionalityStreamExecutor<I, R> with IDisposable, InteractableFunctionalityOperator<I, R> {
+class InteractiveFunctionalityStreamExecutor<I, R> with IDisposable, InteractiveFunctionalityOperator<I, R> {
   @override
   final int identifier;
-  final InteractableFunctionality<I, R> functionality;
+  final InteractiveFunctionality<I, R> functionality;
   final StreamSink sender;
   final bool closeSenderIfDone;
 
@@ -98,15 +98,15 @@ class InteractableFunctionalityStreamExecutor<I, R> with IDisposable, Interactab
   final dynamic Function(int, R)? resultConverted;
   final dynamic Function(int, NegativeResult, StackTrace)? errorConverted;
 
-  late final LocalInteractableFunctionalityOperator<I, R> _executor;
+  late final LocalInteractiveFunctionalityOperator<I, R> _executor;
 
-  factory InteractableFunctionalityStreamExecutor.onMapStream({
-    required InteractableFunctionality<I, R> functionality,
+  factory InteractiveFunctionalityStreamExecutor.onMapStream({
+    required InteractiveFunctionality<I, R> functionality,
     required StreamSink<Map<String, dynamic>> sender,
     required bool closeSenderIfDone,
     int identifier = 0,
   }) {
-    return InteractableFunctionalityStreamExecutor<I, R>(
+    return InteractiveFunctionalityStreamExecutor<I, R>(
       functionality: functionality,
       sender: sender,
       identifier: identifier,
@@ -117,13 +117,13 @@ class InteractableFunctionalityStreamExecutor<I, R> with IDisposable, Interactab
     );
   }
 
-  factory InteractableFunctionalityStreamExecutor.onJson({
-    required InteractableFunctionality<I, R> functionality,
+  factory InteractiveFunctionalityStreamExecutor.onJson({
+    required InteractiveFunctionality<I, R> functionality,
     required StreamSink<String> sender,
     required bool closeSenderIfDone,
     int identifier = 0,
   }) {
-    return InteractableFunctionalityStreamExecutor<I, R>(
+    return InteractiveFunctionalityStreamExecutor<I, R>(
       functionality: functionality,
       sender: sender,
       identifier: identifier,
@@ -149,7 +149,7 @@ class InteractableFunctionalityStreamExecutor<I, R> with IDisposable, Interactab
     return FunctionalityError(idetifier: id, error: error, stackTrace: stack).serialize();
   }
 
-  InteractableFunctionalityStreamExecutor({
+  InteractiveFunctionalityStreamExecutor({
     required this.functionality,
     required this.sender,
     required this.closeSenderIfDone,
@@ -158,7 +158,7 @@ class InteractableFunctionalityStreamExecutor<I, R> with IDisposable, Interactab
     this.resultConverted,
     this.errorConverted,
   }) {
-    _executor = LocalInteractableFunctionalityOperator(functionality: functionality, identifier: identifier);
+    _executor = LocalInteractiveFunctionalityOperator(functionality: functionality, identifier: identifier);
     sender.done.whenComplete(_reactSinkDone);
     maxiScheduleMicrotask(_runFuntionality);
   }
