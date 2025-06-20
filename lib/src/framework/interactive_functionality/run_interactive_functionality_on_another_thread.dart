@@ -83,6 +83,7 @@ class RunInteractiveFunctionalityOnAnotherThread<I, R> with InteractiveFunctiona
   }
 
   static void _reactError(InvocationContext context) {
+    print('EL SISTEMA ESTPÁ MAL');
     final id = context.firts<int>();
     final exception = context.second();
     final stackTrace = context.third();
@@ -100,6 +101,7 @@ class RunInteractiveFunctionalityOnAnotherThread<I, R> with InteractiveFunctiona
   }
 
   static void _reactResult(InvocationContext context) {
+    print('EL SISTEMA ESTPÁ MAL');
     final id = context.firts<int>();
     final result = context.second();
 
