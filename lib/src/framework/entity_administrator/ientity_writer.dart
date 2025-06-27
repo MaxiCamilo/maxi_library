@@ -6,7 +6,7 @@ mixin IEntityWriter<T> {
   Stream<List<int>> get notifyDeletedItems;
   Stream<void> get notifyTotalElimination;
 
-  TextableFunctionality<void> add({required List<T> list});
+  TextableFunctionality<List<int>> add({required List<T> list});
 
   TextableFunctionality<void> modify({required List<T> list});
 
@@ -30,7 +30,7 @@ mixin IEntityWriter<T> {
     return delete(listIDs: listIDs).executeAndWait();
   }
 
-  Future<void> addAsFuture({required List<T> list}) {
+  Future<List<int>> addAsFuture({required List<T> list}) {
     return add(list: list).executeAndWait();
   }
 

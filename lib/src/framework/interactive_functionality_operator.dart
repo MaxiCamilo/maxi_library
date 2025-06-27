@@ -23,6 +23,8 @@ mixin InteractiveFunctionalityOperator<I, R> on IDisposable {
 
 mixin InteractiveFunctionalityExecutor<I, R> on IDisposable, PaternalFunctionality {
   int get identifier;
+  Future<bool> get onCancelOrDone;
+
   void sendItem(I item);
   void checkActivity();
   Future<void> delayed(Duration time);
@@ -38,8 +40,6 @@ mixin InteractiveFunctionalityExecutor<I, R> on IDisposable, PaternalFunctionali
     await Future.delayed(Duration.zero);
     checkActivity();
   }
-
- 
 
   Future<T> waitFutureFunction<T>({required Future<T> Function() function, Duration? timeout, FutureOr<T> Function()? onTimeout}) {
     final future = function();

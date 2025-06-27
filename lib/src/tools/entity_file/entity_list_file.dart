@@ -25,11 +25,12 @@ class EntityListFile<T> extends EntityList<T> {
   }
 
   @override
-  TextableFunctionalityVoid add({required List<T> list}) => TextableFunctionalityVoid.express(
+  TextableFunctionality<List<int>> add({required List<T> list}) => TextableFunctionalityVoid.express(
         (manager) async {
           final original = this.list;
-          await super.add(list: list).joinExecutor(manager);
+          final idList = await super.add(list: list).joinExecutor(manager);
           await _updateOrDisponse(before: original);
+          return idList;
         },
       );
 

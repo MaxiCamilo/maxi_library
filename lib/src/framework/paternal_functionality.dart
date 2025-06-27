@@ -20,8 +20,6 @@ mixin PaternalFunctionality on IDisposable {
     resurrectObject();
   }
 
-  
-
   R invokeFunctionIfDiscarded<R extends Object>({required R item, required FutureOr Function(R) function}) {
     _invokeObjects.add((item as Object, function as FutureOr Function(Object)));
     return item;
@@ -117,7 +115,7 @@ mixin PaternalFunctionality on IDisposable {
 
   MaxiCompleter<R> joinWaiter<R>([MaxiCompleter<R>? waiter]) {
     checkBeforeJoining();
-    waiter ??= MaxiCompleter<R>();
+    waiter ??= MaxiCompleter<R>(stack: StackTrace.current);
     checkProgrammingFailure(thatChecks: const Oration(message: 'The waiter was already completed'), result: () => !waiter!.isCompleted);
 
     _waiters.add(waiter);

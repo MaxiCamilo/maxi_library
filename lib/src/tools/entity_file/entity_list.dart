@@ -299,11 +299,11 @@ class EntityList<T> with IEntityWriter<T>, IEntityReader<T> {
   }
 
   @override
-  TextableFunctionalityVoid add({required List<T> list}) {
+  TextableFunctionality<List<int>> add({required List<T> list}) {
     return TextableFunctionality.express((x) => _blocker.block(function: () => _add(manager: x, list: list)));
   }
 
-  Future<void> _add({required TextableFunctionalityExecutorVoid manager, required List<T> list}) async {
+  Future<List<int>> _add({required TextableFunctionalityExecutorVoid manager, required List<T> list}) async {
     try {
       final newMap = _defineIDZeros(list: list);
       newMap.values.iterar((x) => _checkUniqueProperties(item: x));
@@ -319,20 +319,16 @@ class EntityList<T> with IEntityWriter<T>, IEntityReader<T> {
 
       _mapList.addAll(newMap);
     } finally {
-      _defineIDZeros(list: list);
+      _updateLastPrimaryKey();
     }
 
-    _updateLastPrimaryKey();
     _notifyListChanged.add(null);
     _notifyAssignedItems.add(list.map((x) => reflector.getPrimaryKey(instance: x)).toList(growable: false));
     await manager.sendItemAsync(Oration(message: '%1 items have been added to the list', textParts: [list.length]));
+    return list.map((x) => reflector.getPrimaryKey(instance: x)).toList();
   }
 
-  int _getNewId() {
-    final id = _lastPrimaryKey + 1;
-    _lastPrimaryKey = id;
-    return id;
-  }
+  
 
   @override
   TextableFunctionalityVoid assign({required List<T> list}) {
@@ -445,10 +441,11 @@ class EntityList<T> with IEntityWriter<T>, IEntityReader<T> {
   Map<int, T> _defineIDZeros({required List<T> list}) {
     final newMaps = <int, T>{};
 
-    int lastId = _getNewId();
+    int? lastId;
     for (final item in list) {
       int actualId = reflector.getPrimaryKey(instance: item);
       if (actualId == 0) {
+        lastId ??= _lastPrimaryKey + 1;
         actualId = lastId;
         lastId += 1;
         reflector.changePrimaryKey(instance: item, newId: actualId);

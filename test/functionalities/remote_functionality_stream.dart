@@ -24,4 +24,10 @@ class RemoteFunctionalityStream with TextableFunctionality<String> {
 
     return 'Bye bye';
   }
+
+  @override
+  void onCancel({required InteractiveFunctionalityExecutor<Oration, String> manager}) {
+    super.onCancel(manager: manager);
+    print('Se canceló :(');
+  }
 }

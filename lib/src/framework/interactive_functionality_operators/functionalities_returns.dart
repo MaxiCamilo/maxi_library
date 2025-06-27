@@ -1,73 +1,89 @@
+import 'dart:convert';
+
 import 'package:maxi_library/maxi_library.dart';
 
 class FunctionalityItem<I> with ICustomSerialization {
   final I item;
-  final int idetifier;
 
-  const FunctionalityItem({required this.item, required this.idetifier});
+  const FunctionalityItem({required this.item});
 
   static FunctionalityItem<I> interpret<I>(Map<String, dynamic> map) {
-    final id = map.getRequiredValueWithSpecificType<int>('id');
     final item = ConverterUtilities.castJson<I>(text: map.getRequiredValueWithSpecificType<String>('item'));
 
-    return FunctionalityItem<I>(idetifier: id, item: item);
+    return FunctionalityItem<I>(item: item);
   }
 
   @override
   Map<String, dynamic> serialize() {
     return {
-      'id': idetifier,
       '\$type': 'item',
       'item': ConverterUtilities.serializeToJson(item),
     };
   }
+
+  String serializeToJson() => json.encode(serialize());
 }
 
-class FunctionalityResult<R> with ICustomSerialization {
-  final R result;
-  final int idetifier;
+class FunctionalityCancel with ICustomSerialization {
+  const FunctionalityCancel();
 
-  const FunctionalityResult({required this.result, required this.idetifier});
-
-  static FunctionalityResult<R> interpret<R>(Map<String, dynamic> map) {
-    final id = map.getRequiredValueWithSpecificType<int>('id');
-    final result = ConverterUtilities.castJson<R>(text: map.getRequiredValueWithSpecificType<String>('result'));
-
-    return FunctionalityResult<R>(idetifier: id, result: result);
+  static FunctionalityCancel interpret(Map<String, dynamic> map) {
+    return FunctionalityCancel();
   }
 
   @override
   Map<String, dynamic> serialize() {
     return {
-      'id': idetifier,
+      '\$type': 'cancel',
+    };
+  }
+
+  String serializeToJson() => json.encode(serialize());
+}
+
+class FunctionalityResult<R> with ICustomSerialization {
+  final R result;
+
+  const FunctionalityResult({required this.result});
+
+  static FunctionalityResult<R> interpret<R>(Map<String, dynamic> map) {
+    final result = ConverterUtilities.castJson<R>(text: map.getRequiredValueWithSpecificType<String>('result'));
+
+    return FunctionalityResult<R>(result: result);
+  }
+
+  @override
+  Map<String, dynamic> serialize() {
+    return {
       '\$type': 'result',
       'result': result == null ? '' : ConverterUtilities.serializeToJson(result),
     };
   }
+
+  String serializeToJson() => json.encode(serialize());
 }
 
 class FunctionalityError with ICustomSerialization {
   final NegativeResult error;
   final StackTrace stackTrace;
-  final int idetifier;
 
-  const FunctionalityError({required this.error, required this.stackTrace, required this.idetifier});
+  const FunctionalityError({required this.error, required this.stackTrace});
 
   factory FunctionalityError.interpret(Map<String, dynamic> map) {
-    final id = map.getRequiredValueWithSpecificType<int>('id');
     final error = NegativeResult.interpretJson(jsonText: map.getRequiredValueWithSpecificType<String>('error'));
     final stackTrace = StackTrace.fromString(map.getRequiredValueWithSpecificType<String>('stackTrace'));
 
-    return FunctionalityError(idetifier: id, error: error, stackTrace: stackTrace);
+    return FunctionalityError(error: error, stackTrace: stackTrace);
   }
 
   @override
   Map<String, dynamic> serialize() {
     return {
-      'id': idetifier,
       '\$type': 'failed',
       'error': error.serializeToJson(),
       'stackTrace': stackTrace.toString(),
     };
   }
+
+  String serializeToJson() => json.encode(serialize());
 }

@@ -21,7 +21,7 @@ void main() {
       print(result);
     });
 
-    test('Test cancel local functionality', () async {
+    test('Test cancel and ignore local functionality', () async {
       final future = NewFunctionality().executeAndWait(
         onItem: (x) => print(x),
       );
@@ -32,6 +32,14 @@ void main() {
       future.ignore();
 
       await Future.delayed(const Duration(seconds: 22));
+    });
+
+    test('Test cancel local functionality', () async {
+      final newOperator = NewFunctionality().createOperator();
+
+      Future.delayed(const Duration(seconds: 1)).whenComplete(() => newOperator.cancel());
+
+      await newOperator.waitResult();
     });
 
     test('Call on service', () async {
@@ -86,6 +94,26 @@ void main() {
 
       print(result);
     });
+
+    test('Cancel extern operator', () async {
+      await ApplicationManager.changeInstance(
+        newInstance: DartApplicationManager(
+          defineLanguageOperatorInOtherThread: false,
+          reflectors: const [],
+        ),
+        initialize: true,
+      );
+      final newOperator = NewFunctionality(secondWaiting: 60).inBackground().createOperator();
+
+      final future = newOperator.waitResult(onItem: (x) => print(x));
+      future.then((x) => print(x));
+
+      await Future.delayed(const Duration(seconds: 10));
+      future.ignore();
+
+      await Future.delayed(const Duration(seconds: 15));
+    });
+
 
     
   });

@@ -1,11 +1,12 @@
 import 'dart:async';
 
 import 'package:maxi_library/maxi_library.dart';
-import 'package:maxi_library/src/framework/interactive_functionality/interactive_functionality_on_stream.dart';
+import 'package:maxi_library/src/framework/interactive_functionality/connect_interactive_functionality_on_channel.dart';
 import 'package:maxi_library/src/framework/interactive_functionality/run_interactive_functionality_on_another_thread.dart';
 import 'package:maxi_library/src/framework/interactive_functionality/run_interactive_functionality_on_backgroud.dart';
 import 'package:maxi_library/src/framework/interactive_functionality/run_interactive_functionality_on_main_thread.dart';
 import 'package:maxi_library/src/framework/interactive_functionality/run_interactive_functionality_on_service_thread.dart';
+import 'package:maxi_library/src/framework/interactive_functionality_operators/execute_functionality_within_to_channel.dart';
 import 'package:maxi_library/src/framework/interactive_functionality_operators/local_interactive_functionality_operator.dart';
 import 'package:meta/meta.dart';
 
@@ -16,7 +17,6 @@ typedef TextableFunctionalityExecutor<R> = InteractiveFunctionalityExecutor<Orat
 typedef TextableFunctionalityExecutorVoid = TextableFunctionalityExecutor<void>;
 
 mixin InteractiveFunctionality<I, R> {
-  @protected
   bool get cancelIfItsInactive => true;
 
   String get functionalityName => runtimeType.toString();
@@ -55,9 +55,26 @@ mixin InteractiveFunctionality<I, R> {
   }
 
   static InteractiveFunctionality<I, R> express<I, R>(FutureOr<R> Function(InteractiveFunctionalityExecutor<I, R>) function) => _InteractiveFunctionalityExpress<I, R>(function: function);
+  static InteractiveFunctionality<I, R> listenToChannel<I, R>({required IChannel channel, required bool closeChannelIfFinish, int identifier = 0}) =>
+      ConnectInteractiveFunctionalityOnChannel<I, R>(channel: channel, idenfifier: identifier, closeChannelIfFinish: closeChannelIfFinish);
 
-  static InteractiveFunctionalityOperator<I, R> listenAsyncStream<I, R>(FutureOr<Stream> Function() streamGetter) => RunInteractiveFunctionalityOnStream<I, R>(streamGetter: streamGetter).createOperator()..start();
-  static InteractiveFunctionalityOperator<I, R> listenStream<I, R>(Stream stream) => RunInteractiveFunctionalityOnStream<I, R>(streamGetter: () => stream).createOperator()..start();
+  static IFunctionality<Future<ChannelExecutionResult<R>>> createChannelExecutor<I, R>({
+    required IChannel channel,
+    required FutureOr<InteractiveFunctionality<I, R>> Function(Stream) functionalityBuilder,
+    bool closeChannelIfFinish = true,
+    bool cancelIfChannelCloses = true,
+    int idenfifier = 0,
+  }) =>
+      ExecuteFunctionalityWithinToChannel<I, R>(
+        channel: channel,
+        cancelIfChannelCloses: cancelIfChannelCloses,
+        closeChannelIfFinish: closeChannelIfFinish,
+        functionalityBuilder: functionalityBuilder,
+        idenfifier: idenfifier,
+      );
+
+  //static InteractiveFunctionalityOperator<I, R> listenAsyncStream<I, R>(FutureOr<Stream> Function() streamGetter) => RunInteractiveFunctionalityOnStream<I, R>(streamGetter: streamGetter).createOperator()..start();
+  //static InteractiveFunctionalityOperator<I, R> listenStream<I, R>(Stream stream) => RunInteractiveFunctionalityOnStream<I, R>(streamGetter: () => stream).createOperator()..start();
 
   InteractiveFunctionalityOperator<I, R> createOperator({int identifier = 0}) => LocalInteractiveFunctionalityOperator<I, R>(functionality: this, identifier: identifier);
 
@@ -68,6 +85,49 @@ mixin InteractiveFunctionality<I, R> {
 
   InteractiveFunctionality<I, R> inAnotherThread({required IThreadInvoker invoker}) => RunInteractiveFunctionalityOnAnotherThread<I, R>(thread: invoker, anotherFunctionality: this);
   InteractiveFunctionality<I, R> inService<S extends Object>() => RunInteractiveFunctionalityOnServiceThread<S, I, R>(anotherFunctionality: this);
+
+  IFunctionality<Future<ChannelExecutionResult<R>>> settingOnchannel({
+    required IChannel channel,
+    bool closeChannelIfFinish = true,
+    bool cancelIfChannelCloses = true,
+    int idenfifier = 0,
+    void Function(InteractiveFunctionality<I, R>, Stream)? setStream,
+  }) =>
+      ExecuteFunctionalityWithinToChannel<I, R>(
+          channel: channel,
+          cancelIfChannelCloses: cancelIfChannelCloses,
+          closeChannelIfFinish: closeChannelIfFinish,
+          functionalityBuilder: (stream) {
+            if (setStream != null) {
+              setStream(this, stream);
+            }
+            return this;
+          },
+          idenfifier: idenfifier);
+
+  IChannel createChannel({
+    bool closeChannelIfFinish = true,
+    bool cancelIfChannelCloses = true,
+    int idenfifier = 0,
+    void Function(InteractiveFunctionality<I, R>, Stream)? setStream,
+  }) {
+    final channel = MasterChannel(closeIfEveryoneClosed: closeChannelIfFinish);
+
+    final instance = settingOnchannel(
+      channel: channel,
+      closeChannelIfFinish: closeChannelIfFinish,
+      cancelIfChannelCloses: cancelIfChannelCloses,
+      idenfifier: idenfifier,
+      setStream: setStream,
+    );
+    scheduleMicrotask(() async {
+      await continueOtherFutures();
+      instance.runFunctionality();
+    });
+
+    return channel.createSlave();
+  }
+
   //InteractiveFunctionalityOperator<I, R> runInThreadServer({int identifier = 0}) => inThreadServer().createOperator(identifier: identifier);
 
   /*{
@@ -81,70 +141,34 @@ mixin InteractiveFunctionality<I, R> {
     );
   }*/
 
- 
-
- // InteractiveFunctionalityOperator<I, R> runInStream({required StreamSink sender, required bool closeSenderIfDone, int identifier = 0}) =>
- //     InteractiveFunctionalityStreamExecutor<I, R>(functionality: this, sender: sender, closeSenderIfDone: closeSenderIfDone, identifier: identifier);
+  // InteractiveFunctionalityOperator<I, R> runInStream({required StreamSink sender, required bool closeSenderIfDone, int identifier = 0}) =>
+  //     InteractiveFunctionalityStreamExecutor<I, R>(functionality: this, sender: sender, closeSenderIfDone: closeSenderIfDone, identifier: identifier);
 //  InteractiveFunctionalityOperator<I, R> runInMapStream({required StreamSink<Map<String, dynamic>> sender, required bool closeSenderIfDone, int identifier = 0}) =>
- //     InteractiveFunctionalityStreamExecutor<I, R>.onMapStream(functionality: this, sender: sender, identifier: identifier, closeSenderIfDone: closeSenderIfDone);
+  //     InteractiveFunctionalityStreamExecutor<I, R>.onMapStream(functionality: this, sender: sender, identifier: identifier, closeSenderIfDone: closeSenderIfDone);
 
- // InteractiveFunctionalityOperator<I, R> runInJsonStream({required StreamSink<String> sender, required bool closeSenderIfDone, int identifier = 0}) =>
- //     InteractiveFunctionalityStreamExecutor<I, R>.onJson(functionality: this, sender: sender, identifier: identifier, closeSenderIfDone: closeSenderIfDone);
+  // InteractiveFunctionalityOperator<I, R> runInJsonStream({required StreamSink<String> sender, required bool closeSenderIfDone, int identifier = 0}) =>
+  //     InteractiveFunctionalityStreamExecutor<I, R>.onJson(functionality: this, sender: sender, identifier: identifier, closeSenderIfDone: closeSenderIfDone);
 
-  Future<R> joinExecutor<T>(InteractiveFunctionalityExecutor<I, T> unitedOperator, {void Function(I)? onItem}) {
-    unitedOperator.checkActivity();
-    final newOperator = createOperator(identifier: unitedOperator.identifier);
+  Future<R> joinExecutor<T>(InteractiveFunctionalityExecutor<I, T> manager, {void Function(I)? onItem}) {
+    manager.checkActivity();
+    final newOperator = createOperator(identifier: manager.identifier);
 
-    unitedOperator.onDispose.whenComplete(() {
+    manager.onDispose.whenComplete(() {
+      newOperator.dispose();
+    });
+
+    manager.onCancelOrDone.whenComplete(() {
       newOperator.cancel();
     });
 
     //unitedOperator.joinDisponsabeObject(item: newOperator);
 
     return newOperator.waitResult(onItem: (x) {
-      unitedOperator.sendItem(x);
+      manager.sendItem(x);
       if (onItem != null) {
         onItem(x);
       }
     });
-  }
-
-  IChannel makeChannel({bool closeIfItEnd = true, int identifier = 0}) {
-    final channel = MasterChannel(closeIfEveryoneClosed: true);
-    ChannelInteractiveFunctionality<I, R>(
-      channel: channel,
-      functionality: this,
-      closeIfItEnd: closeIfItEnd,
-      identifier: identifier,
-    ).start();
-
-    return channel;
-  }
-
-  IChannel makeBackgroundChannel({bool closeIfItEnd = true, int identifier = 0}) {
-    final channel = MasterChannel(closeIfEveryoneClosed: true);
-
-    ThreadManager.callBackgroundChannel(
-        parameters: InvocationParameters.list([closeIfItEnd, identifier, this]),
-        function: (parameters, otherChannel) {
-          final closeIfItEnd = parameters.firts<bool>();
-          final identifier = parameters.second<int>();
-          final interacable = parameters.third<InteractiveFunctionality<I, R>>();
-          ChannelInteractiveFunctionality<I, R>(
-            channel: otherChannel,
-            functionality: interacable,
-            closeIfItEnd: closeIfItEnd,
-            identifier: identifier,
-          ).start();
-          //final channel = interacable.makeChannel(closeIfItEnd: closeIfItEnd, identifier: identifier);
-          //otherChannel.joinWithOtherChannel(channel: channel, closeOtherChannelIfFinished: true, closeThisChannelIfFinish: true);
-        }).then((newChannel) {
-      channel.joinWithOtherChannel(channel: newChannel, closeOtherChannelIfFinished: true, closeThisChannelIfFinish: true);
-    }).onError((x, y) {
-      channel.close();
-    });
-
-    return channel.createSlave();
   }
 }
 

@@ -72,7 +72,7 @@ class CheckTextLength extends ValueValidator {
         );
       }
 
-      if (minimumLines != null && minimumLines! > lines) {
+      if (minimumLines != null && (minimumLines! > lines && !(minimumLines == 1 && lines == 0))) {
         return NegativeResultValue(
           message: Oration(message: 'The property %1 requires at least %2 lines', textParts: [name, minimumLines!]),
           formalName: formalName,

@@ -18,12 +18,22 @@ class LocalInteractiveFunctionalityOperator<I, R> with IDisposable, PaternalFunc
   NegativeResult? _error;
   StackTrace? _stackTrace;
 
-  Completer? _onCanceled;
+  Completer<bool>? _onCanceledOrDone;
 
   final MaxiCompleter _executionConfirmationWaiter = MaxiCompleter();
 
   @override
   int identifier;
+
+  @override
+  Future<bool> get onCancelOrDone async {
+    if (_itEndedFunction) {
+      return _itsWasGood;
+    }
+
+    _onCanceledOrDone ??= Completer<bool>();
+    return await _onCanceledOrDone!.future;
+  }
 
   LocalInteractiveFunctionalityOperator({required this.functionality, this.identifier = 0});
 
@@ -82,7 +92,9 @@ class LocalInteractiveFunctionalityOperator<I, R> with IDisposable, PaternalFunc
     );
 
     _isActive = false;
-    _itEndedFunction = false;
+    _itEndedFunction = true;
+    _onCanceledOrDone?.completeIfIncomplete(true);
+    _onCanceledOrDone = null;
 
     if (_waiter != null) {
       if (_itsWasGood) {
@@ -106,8 +118,8 @@ class LocalInteractiveFunctionalityOperator<I, R> with IDisposable, PaternalFunc
         if (!_isActive) {
           return;
         }
-        _onCanceled?.completeIfIncomplete();
-        _onCanceled = null;
+        _onCanceledOrDone?.completeIfIncomplete(false);
+        _onCanceledOrDone = null;
 
         containErrorLog(
           detail: Oration(message: 'On Finish textable functionality "%1"', textParts: [functionality.functionalityName]),
@@ -142,8 +154,8 @@ class LocalInteractiveFunctionalityOperator<I, R> with IDisposable, PaternalFunc
   void dispose() {
     super.dispose();
 
-    _onCanceled?.completeIfIncomplete();
-    _onCanceled = null;
+    _onCanceledOrDone?.completeIfIncomplete(false);
+    _onCanceledOrDone = null;
 
     _waiter?.completeErrorIfIncomplete(
       NegativeResult(
@@ -183,13 +195,13 @@ class LocalInteractiveFunctionalityOperator<I, R> with IDisposable, PaternalFunc
   @override
   Future<void> delayed(Duration time) async {
     checkActivity();
-    _onCanceled ??= Completer();
+    _onCanceledOrDone ??= Completer<bool>();
     final timeout = Completer();
     final timerWaiter = Timer(time, () {
       timeout.completeIfIncomplete();
     });
 
-    await Future.any([_onCanceled!.future, timeout.future]);
+    await Future.any([_onCanceledOrDone!.future, timeout.future]);
     timerWaiter.cancel();
     timeout.completeIfIncomplete();
 
@@ -201,21 +213,21 @@ class LocalInteractiveFunctionalityOperator<I, R> with IDisposable, PaternalFunc
     checkActivity();
 
     if (timeout == null) {
-      _onCanceled ??= Completer();
-      final result = await Future.any([_onCanceled!.future, future]);
+      _onCanceledOrDone ??= Completer();
+      final result = await Future.any([_onCanceledOrDone!.future, future]);
       future.ignore();
       checkActivity();
-      return result;
+      return result as T;
     } else {
       bool isTimeout = false;
-      _onCanceled ??= Completer();
+      _onCanceledOrDone ??= Completer();
       final timeoutWaiter = Completer();
       final timerWaiter = Timer(timeout, () {
         isTimeout = true;
         timeoutWaiter.completeIfIncomplete();
       });
 
-      final result = await Future.any([_onCanceled!.future, timeoutWaiter.future, future]);
+      final result = await Future.any([_onCanceledOrDone!.future, timeoutWaiter.future, future]);
       timerWaiter.cancel();
       timeoutWaiter.completeIfIncomplete();
       future.ignore();
@@ -237,7 +249,7 @@ class LocalInteractiveFunctionalityOperator<I, R> with IDisposable, PaternalFunc
   }
 
   void _checkIfListen(bool containtError) {
-    if (_waiter != null && !_waiter!.hasListener && !_callThereAreNoListeners) {
+    if (_waiter != null && _waiter!.allInactive && !_callThereAreNoListeners) {
       _callThereAreNoListeners = true;
       if (containtError) {
         containErrorLog(

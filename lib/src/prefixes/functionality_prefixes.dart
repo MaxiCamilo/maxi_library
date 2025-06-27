@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:developer';
 
 import 'package:maxi_library/maxi_library.dart';
+import 'package:maxi_library/src/framework/interactive_functionality/run_interactive_functionality_as_future.dart';
 
 Future<void> continueOtherFutures() {
   return Future.delayed(Duration.zero);
@@ -379,29 +380,25 @@ T makeSeveralAttempts<T>({
     }
   }
 }
-/*
-Future<T> makeSeveralAttemptsAsync<T>({
-  required FutureOr<T> Function() function,
-  required int attempts,
-  void Function(int, dynamic, StackTrace)? onError,
-  bool printLog = false,
-}) async {
-  int i = 1;
-  while (true) {
-    try {
-      return await function();
-    } catch (ex, st) {
-      if (onError != null) {
-        onError(i, ex, st);
-      }
-      if (printLog) {
-        log('[SeveralAttemptsAsync, $i/$attempts] $ex\n$st');
-      }
-      if (i >= attempts) {
-        rethrow;
-      }
 
-      i += 1;
-    }
-  }
-}*/
+InteractiveFunctionality<I, R> asyncFunctionality<I, R>(
+  FutureOr<R> Function(InteractiveFunctionalityExecutor<I, R>) function, {
+  void Function()? onCancel,
+  void Function(NegativeResult, StackTrace)? onError,
+  void Function(R?, NegativeResult?)? onFinish,
+}) {
+  return RunInteractiveFunctionalityAsFuture<I, R>(
+    function: function,
+    onCancelFunction: onCancel,
+    onErrorFunction: onError,
+    onFinishFunction: onFinish,
+  );
+}
+
+TextableFunctionality<R> asyncTextable<R>(
+  FutureOr<R> Function(InteractiveFunctionalityExecutor<Oration, R>) function, {
+  void Function()? onCancel,
+  void Function(NegativeResult, StackTrace)? onError,
+  void Function(R?, NegativeResult?)? onFinish,
+}) =>
+    asyncFunctionality(function, onCancel: onCancel, onError: onError, onFinish: onFinish);

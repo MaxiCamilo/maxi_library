@@ -94,22 +94,38 @@ extension IteratorStream<T> on Stream<T> {
     }
   }
 
-  Future<T?> waitSomething() {
+  Future<T?> waitSomething({
+    Duration? timeout,
+    T Function()? onTimeout,
+  }) {
     final waiter = MaxiCompleter<T?>();
     late final StreamSubscription<T> subscription;
+
+    Timer? timer;
+
+    if (timeout != null) {
+      timer = Timer(timeout, () {
+        subscription.cancel();
+        if (onTimeout != null) {
+          onTimeout();
+        }
+      });
+    }
 
     subscription = listen(
       (x) {
         subscription.cancel();
-        waiter.complete(x);
+        waiter.completeIfIncomplete(x);
+        timer?.cancel();
       },
       onError: (x) {
         subscription.cancel();
-        waiter.complete(null);
+        waiter.completeIfIncomplete(null);
       },
       onDone: () {
+        timer?.cancel();
         subscription.cancel();
-        waiter.complete(null);
+        waiter.completeIfIncomplete(null);
       },
     );
 

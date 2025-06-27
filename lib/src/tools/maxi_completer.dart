@@ -4,12 +4,13 @@ import 'dart:developer';
 import 'package:maxi_library/export_reflectors.dart';
 
 class MaxiCompleter<T> implements Completer<T> {
-  final StackTrace instanceStack = StackTrace.current;
+  final StackTrace instanceStack;
   final _realCompleter = Completer<T>();
   final String waiterName;
   final List<MaxiFuture<T>> _futureList = [];
 
   bool get hasListener => _futureList.isNotEmpty && _futureList.any((x) => x.wasAccessed);
+  bool get allInactive => _futureList.isEmpty || _realCompleter.isCompleted || _futureList.every((x) => x.wasIgnored);
 
   Type get expectedType => T;
 
@@ -33,7 +34,11 @@ class MaxiCompleter<T> implements Completer<T> {
   @override
   bool get isCompleted => _realCompleter.isCompleted;
 
-  MaxiCompleter({this.waiterName = 'Synchronized waiting', this.onNoOneListen});
+  MaxiCompleter({
+    this.waiterName = 'Synchronized waiting',
+    this.onNoOneListen,
+    StackTrace? stack,
+  }) : instanceStack = stack ?? StackTrace.current;
 
   factory MaxiCompleter.fromFuture(FutureOr<T> Function() function) {
     final newCompleter = MaxiCompleter<T>();

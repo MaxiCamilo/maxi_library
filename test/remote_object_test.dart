@@ -83,6 +83,33 @@ void main() {
 
       print('Result "$result"');
     });
+
+    test('Run and cancel operator', () async {
+      final clientPipe = StreamController<Map<String, dynamic>>();
+      final serverPipe = StreamController<Map<String, dynamic>>();
+
+      final clientExecutor = RemoteFunctionalitiesExecutor.fromStream(input: serverPipe.stream, output: clientPipe);
+      // ignore: unused_local_variable
+      final serverExecutor = RemoteFunctionalitiesExecutor.fromStream(input: clientPipe.stream, output: serverPipe);
+
+      final oreo = clientExecutor
+          .executeInteractiveFunctionality<String, RemoteFunctionalityStream>(
+            parameters: InvocationParameters.named({
+              'name': 'Oreo',
+              'timeout': Random().nextInt(18) + 3,
+            }),
+          )
+          .createOperator();
+
+      final future = oreo.waitResult(
+        onItem: (x) => log('Text: "$x"'),
+      );
+
+      await Future.delayed(const Duration(seconds: 4));
+      future.ignore();
+
+      await Future.delayed(const Duration(seconds: 20));
+    });
 /*
     test('Invoke Isolates Functionalities', () async {
       final serverChannel = await ThreadManager.callBackgroundChannel<Map<String, dynamic>, Map<String, dynamic>>(function: (_, channel) async {

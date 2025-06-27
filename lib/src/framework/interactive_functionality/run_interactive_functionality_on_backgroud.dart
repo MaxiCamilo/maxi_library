@@ -20,6 +20,10 @@ class RunInteractiveFunctionalityOnBackgroud<I, R> with InteractiveFunctionality
       functionalityOperator.onDispose.whenComplete(() => (ThreadManager.instance as ThreadIsolatorServer).backgroundManager.releaseThread(reservedThread));
 
       manager.checkActivity();
+
+      manager.onCancelOrDone.whenComplete(() => functionalityOperator.cancel());
+      manager.onDispose.whenComplete(() => functionalityOperator.dispose());
+
       return await functionalityOperator.waitResult(onItem: (x) => manager.sendItem(x));
     } else {
       return await inThreadServer().joinExecutor(manager);

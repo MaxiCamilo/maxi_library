@@ -30,4 +30,5 @@ enum NegativeResultCodes {
   communicationInterrupted,
 
   applicationGaping,
+  accessDenied,
 }

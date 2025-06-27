@@ -318,6 +318,12 @@ class ReflectionManager with IThreadInitializer {
     }
   }
 
+  static T clone<T>(T original) {
+    final reflector = getReflectionEntity(T);
+
+    return reflector.cloneObject(original);
+  }
+
   static bool areSame({required dynamic first, required dynamic second, List annotations = const []}) {
     if (first == null && second == null) {
       return true;
