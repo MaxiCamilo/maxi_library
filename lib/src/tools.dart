@@ -16,8 +16,7 @@ export 'package:maxi_library/src/tools/response_http_request.dart';
 export 'package:maxi_library/src/tools/paternal_object.dart';
 export 'package:maxi_library/src/tools/maxi_completer.dart';
 export 'package:maxi_library/src/tools/custom_stream_sink.dart';
-
-
+export 'package:maxi_library/src/tools/maxi_timer.dart';
 
 export 'package:maxi_library/src/tools/console_command_processor.dart';
 export 'package:maxi_library/src/tools/internal/console_command_interpret_result.dart';

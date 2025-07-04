@@ -3,7 +3,7 @@ import 'dart:collection';
 
 import 'package:maxi_library/maxi_library.dart';
 
-class EntityList<T> with IEntityWriter<T>, IEntityReader<T> {
+class EntityList<T> with IEntityWriter<T>, IEntityReader<T>, IEntityTable<T> {
   final int splits;
 
   late final List<IFieldReflection> _uniqueProperties;

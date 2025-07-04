@@ -11,6 +11,25 @@ class InvocationParameters with ICustomSerialization {
         fixedParameters: avoidConstants ? original.fixedParameters.toList() : original.fixedParameters, namedParameters: avoidConstants ? Map<String, dynamic>.from(original.namedParameters) : original.namedParameters);
   }
 
+  factory InvocationParameters.addParameters({
+    required InvocationParameters original,
+    bool addToEnd = true,
+    List fixedParameters = const [],
+    Map<String, dynamic> namedParameters = const {},
+  }) {
+    if (addToEnd) {
+      return InvocationParameters(
+        fixedParameters: [...original.fixedParameters, ...fixedParameters],
+        namedParameters: {...original.namedParameters, ...namedParameters},
+      );
+    } else {
+      return InvocationParameters(
+        fixedParameters: [...fixedParameters, ...original.fixedParameters],
+        namedParameters: {...namedParameters, ...original.namedParameters},
+      );
+    }
+  }
+
   static const InvocationParameters emptry = InvocationParameters();
 
   factory InvocationParameters.only(item) => InvocationParameters(fixedParameters: [item]);
@@ -78,6 +97,8 @@ class InvocationParameters with ICustomSerialization {
   T last<T>() => fixed<T>(fixedParameters.length - 1);
   T penultimate<T>() => fixed<T>(fixedParameters.length - 2);
   T antepenultimate<T>() => fixed<T>(fixedParameters.length - 3);
+
+  T reverseIndex<T>(int i) => fixed<T>(fixedParameters.length - (i + 1));
 
   T searchByType<T>() {
     for (final item in fixedParameters) {

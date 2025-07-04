@@ -20,6 +20,12 @@ mixin PaternalFunctionality on IDisposable {
     resurrectObject();
   }
 
+  MaxiTimer createTimer({required Duration duration, required void Function() callback, bool activate = true}) {
+    final newTimer = MaxiTimer(duration: duration, callback: callback, activate: activate);
+
+    return joinObject<MaxiTimer>(item: newTimer);
+  }
+
   R invokeFunctionIfDiscarded<R extends Object>({required R item, required FutureOr Function(R) function}) {
     _invokeObjects.add((item as Object, function as FutureOr Function(Object)));
     return item;

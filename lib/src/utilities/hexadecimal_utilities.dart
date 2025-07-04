@@ -270,10 +270,29 @@ mixin HexadecimalUtilities {
     }
   }
 
+  static String convertLiteralListHexToString(Iterable<int> data) {
+    final buffer = StringBuffer();
+    for (final item in data) {
+      final raw = item.toRadixString(16);
+      if (raw.length == 1) {
+        buffer.write('0$raw');
+      } else {
+        buffer.write(raw);
+      }
+    }
+
+    return buffer.toString();
+  }
+
   static int convertLiteralListHexToNumber(Iterable<int> data) {
     final buffer = StringBuffer();
     for (final item in data) {
-      buffer.write(item.toString());
+      final raw = item.toRadixString(16);
+      if (raw.length == 1) {
+        buffer.write('0$raw');
+      } else {
+        buffer.write(raw);
+      }
     }
 
     return ConverterUtilities.toInt(value: buffer.toString(), propertyName: const Oration(message: ''));

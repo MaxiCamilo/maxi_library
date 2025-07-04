@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:maxi_library/maxi_library.dart';
 import 'package:maxi_library/src/framework/interactive_functionality/connect_interactive_functionality_on_channel.dart';
+import 'package:maxi_library/src/framework/interactive_functionality/connect_service_functionality.dart';
 import 'package:maxi_library/src/framework/interactive_functionality/run_interactive_functionality_on_another_thread.dart';
 import 'package:maxi_library/src/framework/interactive_functionality/run_interactive_functionality_on_backgroud.dart';
 import 'package:maxi_library/src/framework/interactive_functionality/run_interactive_functionality_on_main_thread.dart';
@@ -53,6 +54,12 @@ mixin InteractiveFunctionality<I, R> {
       stackTrace: stackTrace,
     );
   }
+
+  static InteractiveFunctionality<I, R> fromService<S extends Object, I, R>({
+    InvocationParameters parameters = InvocationParameters.emptry,
+    required FutureOr<InteractiveFunctionality<I, R>> Function(S serv, InvocationParameters para) functionalityGetter,
+  }) =>
+      ConnectServiceFunctionality<S, I, R>(parameters: parameters, functionalityGetter: functionalityGetter);
 
   static InteractiveFunctionality<I, R> express<I, R>(FutureOr<R> Function(InteractiveFunctionalityExecutor<I, R>) function) => _InteractiveFunctionalityExpress<I, R>(function: function);
   static InteractiveFunctionality<I, R> listenToChannel<I, R>({required IChannel channel, required bool closeChannelIfFinish, int identifier = 0}) =>

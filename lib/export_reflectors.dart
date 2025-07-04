@@ -6,4 +6,4 @@ export 'package:maxi_library/src/reflection/build/generators/generated_reflected
 export 'package:maxi_library/src/reflection/build/generators/generated_reflected_method.dart';
 export 'package:maxi_library/src/reflection/build/generators/generated_reflected_named_parameter.dart';
 export 'package:maxi_library/src/reflection/build/generators/generated_reflected_enum.dart';
-export 'package:maxi_library/src/reflection/build/generators/generated_reflector_album.dart';
+

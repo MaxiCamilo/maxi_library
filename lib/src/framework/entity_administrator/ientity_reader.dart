@@ -63,6 +63,20 @@ mixin IEntityReader<T> {
     return (await selectIDs().toList()).expand((x) => x).toList(growable: growable);
   }
 
+  Future<List<int>> selectFirstIDsAsList({
+    int? minimun,
+    int? maximum,
+    int? limit,
+    List<IConditionQuery> conditions = const [],
+    bool reverse = false,
+    bool growable = true,
+  }) async {
+    await for (final content in selectIDs(conditions: conditions, limit: limit, maximum: maximum, minimun: minimun, reverse: reverse)) {
+      return content;
+    }
+    return [];
+  }
+
   Future<Map<int, bool>> checkWhichExistsAsMap({
     required List<int> ids,
     int? limit,
