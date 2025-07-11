@@ -1,5 +1,6 @@
 import 'dart:collection';
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:maxi_library/maxi_library.dart';
 import 'package:maxi_library/src/reflection/types/type_generator_reflection.dart';
@@ -18,6 +19,8 @@ class ReflectionManager with IThreadInitializer {
   bool _openedAlbums = false;
 
   static ITypeEntityReflection? _lastRequestedEntity;
+
+  final _fieldsInCommonCache = <(Type, Type), List<(IFieldReflection, IFieldReflection)>>{};
 
   static set defineAlbums(List<IReflectorAlbum> list) {
     instance._albums.addAll(list);
@@ -322,6 +325,38 @@ class ReflectionManager with IThreadInitializer {
     final reflector = getReflectionEntity(T);
 
     return reflector.cloneObject(original);
+  }
+
+  static T mixValues<T>({required dynamic original, required T destination}) {
+    final originalReflector = getReflectionEntity(original.runtimeType);
+    final destinationReflector = getReflectionEntity(destination.runtimeType);
+
+    final fieldsInCommon = instance._fieldsInCommonCache[(original.runtimeType, destination.runtimeType)] ?? [];
+
+    if (fieldsInCommon.isEmpty) {
+      for (final oriField in originalReflector.fields) {
+        if (oriField.isStatic) {
+          continue;
+        }
+
+        final candidate = destinationReflector.fields.selectItem((x) => !x.isStatic && x.name == oriField.name && oriField.reflectedType.type == x.reflectedType.type);
+        if (candidate != null) {
+          fieldsInCommon.add((oriField, candidate));
+        }
+      }
+      if (fieldsInCommon.isEmpty) {
+        log('[mixValues] WARNING: Types ${original.runtimeType} and ${destination.runtimeType} have nothing in common');
+        return destination;
+      }
+      instance._fieldsInCommonCache[(original.runtimeType, destination.runtimeType)] = fieldsInCommon;
+    }
+
+    for (final prop in fieldsInCommon) {
+      final value = prop.$1.getValue(instance: original);
+      prop.$2.setValue(instance: destination, newValue: value);
+    }
+
+    return destination;
   }
 
   static bool areSame({required dynamic first, required dynamic second, List annotations = const []}) {

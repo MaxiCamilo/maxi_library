@@ -30,12 +30,20 @@ mixin FunctionalityWithLifeCycle on StartableFunctionality, PaternalFunctionalit
       });
     } catch (ex, st) {
       removeJoinedObjects();
+      afterDiscard();
       _onDone?.completeErrorIfIncomplete(ex, st);
       _onDone = null;
       rethrow;
     } finally {
       _initiallyPreviouslyExecuted = true;
     }
+  }
+
+  @override
+  @mustCallSuper
+  void performObjectDiscard() {
+    super.performObjectDiscard();
+    afterDiscard();
   }
 
   @protected

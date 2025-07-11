@@ -72,6 +72,7 @@ mixin StartableFunctionality implements IDisposable {
         return;
       }
       try {
+        resurrectObject();
         await initializeFunctionality();
         reactWhenInitializedFinishes();
         _semaphore = null;

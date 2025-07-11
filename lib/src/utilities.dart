@@ -14,5 +14,6 @@ export 'package:maxi_library/src/utilities/directory_utilities.dart';
 export 'package:maxi_library/src/utilities/functionality_utilities.dart';
 export 'package:maxi_library/src/utilities/list_utilities.dart';
 export 'package:maxi_library/src/utilities/stream_utilities.dart';
+export 'package:maxi_library/src/utilities/datetime_utilities.dart';
 
 export 'package:maxi_library/src/utilities/methods/method_convert_event_to_json.dart';

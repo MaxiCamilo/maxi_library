@@ -214,4 +214,6 @@ mixin TextUtilities {
     final random = Random();
     return List.generate(longitud, (index) => characters[random.nextInt(characters.length)]).join();
   }
+
+  
 }

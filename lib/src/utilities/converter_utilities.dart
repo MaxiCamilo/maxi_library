@@ -125,6 +125,11 @@ mixin ConverterUtilities {
     Oration propertyName = Oration.empty,
   }) {
     if (value is String) {
+      final isActuallyInt = int.tryParse(value);
+      if (isActuallyInt != null) {
+        return toEnum(value: isActuallyInt, optionsList: optionsList, propertyName: propertyName);
+      }
+
       final letra = value.toLowerCase();
       for (final item in optionsList) {
         if (item.name.toLowerCase() == letra) {
@@ -387,8 +392,16 @@ mixin ConverterUtilities {
     return volatile(
         detail: extra == null
             ? Oration(message: 'Expected a json list, but received a json value or individual object')
-            : Oration(message: 'Expected a json object, but received a json listing or value %1', textParts: [extra]),
+            : Oration(message: 'Expected a json list, but received a json listing or value %1', textParts: [extra]),
         function: () => interpretJson(text: text, extra: extra) as List);
+  }
+
+  static List<int> interpretToJsonIntList({required String text, Oration? extra}) {
+    return volatile(
+        detail: extra == null
+            ? Oration(message: 'A JSON list with identifiers was expected, but received a json value or individual object')
+            : Oration(message: 'A JSON list with identifiers was expected, but received a json listing or value %1', textParts: [extra]),
+        function: () => interpretJson(text: text, extra: extra) as List<int>);
   }
 
   static List<Map<String, dynamic>> interpretToObjectListJson({required String text, Oration? extra}) {
@@ -518,5 +531,45 @@ mixin ConverterUtilities {
       PrimitiesType.isBinary => ConverterUtilities.toBinary(value: value),
       PrimitiesType.isObjectMap => ConverterUtilities.serializeToJson(value),
     };
+  }
+
+  static List<String> parseCsvLine(String line) {
+    final List<String> result = [];
+    final StringBuffer buffer = StringBuffer();
+    bool insideQuotes = false;
+    String? quoteChar;
+
+    for (int i = 0; i < line.length; i++) {
+      final char = line[i];
+
+      if (insideQuotes) {
+        if (char == '\\' && i + 1 < line.length) {
+          // Manejar escapes
+          buffer.write(line[++i]);
+        } else if (char == quoteChar) {
+          insideQuotes = false;
+          quoteChar = null;
+        } else {
+          buffer.write(char);
+        }
+      } else {
+        if ((char == '"' || char == "'")) {
+          insideQuotes = true;
+          quoteChar = char;
+        } else if (char == ',') {
+          result.add(buffer.toString().trim());
+          buffer.clear();
+        } else {
+          buffer.write(char);
+        }
+      }
+    }
+
+    // Agregar el último campo
+    if (buffer.isNotEmpty || line.endsWith(',')) {
+      result.add(buffer.toString().trim());
+    }
+
+    return result;
   }
 }

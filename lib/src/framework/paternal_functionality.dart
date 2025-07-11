@@ -92,7 +92,7 @@ mixin PaternalFunctionality on IDisposable {
     return subscription;
   }
 
-  Future<T> joinFuture<T>(
+  Future<T> joinFutureAndWait<T>(
     Future<T> future, {
     void Function(T)? onDone,
     void Function(Object, StackTrace)? onError,
@@ -117,6 +117,30 @@ mixin PaternalFunctionality on IDisposable {
         whenCompleted();
       }
     }
+  }
+
+  void joinFuture<T>(
+    Future<T> future, {
+    void Function(T)? onDone,
+    void Function(Object, StackTrace)? onError,
+    void Function()? whenCompleted,
+  }) async {
+    checkBeforeJoining();
+    _futures.add(future);
+    future.then((x) {
+      if (onDone != null) {
+        onDone(x);
+      }
+    }).onError((x, y) {
+      if (onError != null) {
+        onError(x as Object, y);
+      }
+    }).whenComplete(() {
+      _futures.remove(future);
+      if (whenCompleted != null) {
+        whenCompleted();
+      }
+    });
   }
 
   MaxiCompleter<R> joinWaiter<R>([MaxiCompleter<R>? waiter]) {

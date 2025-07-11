@@ -18,6 +18,10 @@ mixin IMapValueGenerator on IValueGenerator {
   dynamic interpretFromMapValue(dynamic value);
 }
 
+mixin IListValueGenerator on IValueGenerator {
+  dynamic convertToListValue(dynamic value);
+}
+
 mixin IPrimitiveValueGenerator on IValueGenerator {
   PrimitiesType get primitiveType;
 

@@ -54,6 +54,11 @@ class TypeGeneratorReflection with IReflectionType, IValueGenerator {
     if (generator is IMapValueGenerator) {
       return (generator as IMapValueGenerator).convertToMapValue(item);
     }
+
+    if (generator is IListValueGenerator) {
+      return (generator as IListValueGenerator).convertToListValue(item);
+    }
+
     if (generator is IPrimitiveValueGenerator) {
       return (generator as IPrimitiveValueGenerator).convertToPrimitiveValue(item);
     }

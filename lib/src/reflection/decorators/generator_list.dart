@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:maxi_library/maxi_library.dart';
 
-class GeneratorList<T> with IValueGenerator, IReflectionType, IPrimitiveValueGenerator {
+class GeneratorList<T> with IValueGenerator, IReflectionType, IPrimitiveValueGenerator, IListValueGenerator {
   @override
   final List annotations;
 
@@ -190,6 +190,11 @@ class GeneratorList<T> with IValueGenerator, IReflectionType, IPrimitiveValueGen
   }
 
   @override
+  convertToListValue(value) {
+    return serializeToMap(value);
+  }
+
+  @override
   interpretPrimitiveValue(value) {
     if (T == NegativeResult || T == NegativeResultValue) {
       return _parseNegativeResult(value);
@@ -235,4 +240,8 @@ class GeneratorList<T> with IValueGenerator, IReflectionType, IPrimitiveValueGen
       );
     }
   }
+  
+  
+  
+  
 }
