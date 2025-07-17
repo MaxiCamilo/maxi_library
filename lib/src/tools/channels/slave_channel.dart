@@ -2,12 +2,9 @@ import 'dart:async';
 
 import 'package:maxi_library/maxi_library.dart';
 
-class SlaveChannel<R, S> with IChannel<R, S>, ISlaveChannel<R, S> {
+class SlaveChannel<R, S> with IDisposable, IChannel<R, S>, ISlaveChannel<R, S> {
   final IMasterChannel<S, R> _master;
-  final _waiter = MaxiCompleter();
   final _masterStreamController = StreamController<R>.broadcast();
-
-  bool _isActive = true;
 
   SlaveChannel({required IMasterChannel<S, R> master}) : _master = master {
     _master.checkActivityBefore(() {});
@@ -27,20 +24,19 @@ class SlaveChannel<R, S> with IChannel<R, S>, ISlaveChannel<R, S> {
 
   @override
   Future close() async {
-    if (!_isActive) {
-      return;
-    }
-
-    _isActive = false;
-    _masterStreamController.close();
-    _waiter.completeIfIncomplete();
+    dispose();
   }
 
   @override
-  Future get done => _waiter.future;
+  void performObjectDiscard() {
+    _masterStreamController.close();
+  }
 
   @override
-  bool get isActive => _isActive;
+  Future get done => onDispose;
+
+  @override
+  bool get isActive => !wasDiscarded;
 
   @override
   Stream<R> get receiver => _masterStreamController.stream;

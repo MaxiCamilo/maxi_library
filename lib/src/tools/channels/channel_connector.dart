@@ -2,33 +2,28 @@ import 'dart:async';
 
 import 'package:maxi_library/maxi_library.dart';
 
-class ChannelConnector<R, S> with IChannel<R, S> {
+class ChannelConnector<R, S> with IDisposable, IChannel<R, S> {
   final Stream<R> _streamReceiver;
   final StreamSink<S> _streamSender;
 
   late final StreamController<R> _streamController;
   late final StreamSubscription<R> _receiverSubscription;
 
-  bool _isActive = true;
-
   @override
-  bool get isActive => _isActive;
-
-  late final Completer _waiterDone;
+  bool get isActive => !wasDiscarded;
 
   ChannelConnector({required Stream<R> receiver, required StreamSink<S> sender})
       : _streamReceiver = receiver,
         _streamSender = sender {
-    _streamSender.done.whenComplete(_reactClosedPoint);
+    _streamSender.done.whenComplete(dispose);
 
     _receiverSubscription = _streamReceiver.listen(
       (x) => _streamController.addIfActive(x),
       onError: (x, y) => _streamController.addErrorIfActive(x, y),
-      onDone: _reactClosedPoint,
+      onDone: dispose,
     );
 
     _streamController = StreamController<R>.broadcast();
-    _waiterDone = MaxiCompleter();
   }
 
   factory ChannelConnector.fromOtherChannel(IChannel<R, S> channel) => ChannelConnector(receiver: channel.receiver, sender: channel);
@@ -50,32 +45,16 @@ class ChannelConnector<R, S> with IChannel<R, S> {
 
   @override
   Future close() async {
-    if (!_isActive) {
-      return;
-    }
-
-    _reactClosedPoint();
+    dispose();
   }
 
   @override
-  Future get done async {
-    if (!_isActive) {
-      return;
-    }
-
-    return await _waiterDone.future;
-  }
-
-  void _reactClosedPoint() {
-    if (!_isActive) {
-      return;
-    }
-
-    _isActive = false;
-
+  void performObjectDiscard() {
     _receiverSubscription.cancel();
     _streamSender.close();
     _streamController.close();
-    _waiterDone.completeIfIncomplete();
   }
+
+  @override
+  Future get done => onDispose;
 }

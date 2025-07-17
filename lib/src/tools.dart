@@ -13,10 +13,10 @@ export 'package:maxi_library/src/tools/entity_file/entity_list_file.dart';
 export 'package:maxi_library/src/tools/pointer_defines_after.dart';
 export 'package:maxi_library/src/tools/converted_stream_sink.dart';
 export 'package:maxi_library/src/tools/response_http_request.dart';
-export 'package:maxi_library/src/tools/paternal_object.dart';
 export 'package:maxi_library/src/tools/maxi_completer.dart';
 export 'package:maxi_library/src/tools/custom_stream_sink.dart';
 export 'package:maxi_library/src/tools/maxi_timer.dart';
+export 'package:maxi_library/src/tools/maxi_socket.dart';
 
 export 'package:maxi_library/src/tools/console_command_processor.dart';
 export 'package:maxi_library/src/tools/internal/console_command_interpret_result.dart';
@@ -26,6 +26,8 @@ export 'package:maxi_library/src/tools/semaphore/isolated_semaphore.dart';
 export 'package:maxi_library/src/tools/channels/channel_connector.dart';
 export 'package:maxi_library/src/tools/channels/master_channel.dart';
 export 'package:maxi_library/src/tools/channels/slave_channel.dart';
+
+export 'package:maxi_library/src/tools/discardable_object_list.dart';
 
 export 'package:maxi_library/src/tools/semaphore/isemaphore.dart';
 export 'package:maxi_library/src/tools/maxi_future.dart';

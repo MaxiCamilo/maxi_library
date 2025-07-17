@@ -4,7 +4,7 @@ import 'dart:isolate';
 
 import 'package:maxi_library/maxi_library.dart';
 
-class ChannelIsolates with IChannel {
+class ChannelIsolates with IDisposable, IChannel {
   final bool isDetination;
   final ReceivePort _receiver;
 
@@ -13,15 +13,13 @@ class ChannelIsolates with IChannel {
 
   SendPort? _serder;
 
-  bool _isFinalized = false;
-
   final _dataReceivedNotifier = StreamController.broadcast();
 
   @override
   Stream get receiver => _dataReceivedNotifier.stream;
 
   @override
-  bool get isActive => !_isFinalized;
+  bool get isActive => !wasDiscarded;
 
   SendPort get serder => _receiver.sendPort;
 
@@ -32,7 +30,7 @@ class ChannelIsolates with IChannel {
 
     _receiver.listen(
       _processDataReceived,
-      onDone: () => close(),
+      onDone: dispose,
     );
   }
 
@@ -44,7 +42,7 @@ class ChannelIsolates with IChannel {
       );
     }
 
-    if (_isFinalized) {
+    if (wasDiscarded) {
       throw NegativeResult(
         identifier: NegativeResultCodes.statusFunctionalityInvalid,
         message: Oration(message: 'Its not possible to pass the object to the thread, because the transmission channel closed'),
@@ -171,11 +169,11 @@ class ChannelIsolates with IChannel {
 
   @override
   Future close() async {
-    if (_isFinalized) {
-      return;
-    }
+    dispose();
+  }
 
-    _isFinalized = true;
+  @override
+  void performObjectDiscard() {
     _receiver.close();
     _completerDone.completeIfIncomplete(this);
   }

@@ -31,6 +31,7 @@ class Oration with ICustomSerialization {
       throw NegativeResult(identifier: NegativeResultCodes.wrongType, message: Oration(message: 'The format of the translatable text is not correct'));
     }
   }
+
   factory Oration.interpret({required Map<String, dynamic> map}) {
     final textParts = [];
 
@@ -89,6 +90,8 @@ class Oration with ICustomSerialization {
       return Oration(message: 'INVALID TEXT TYPE (Format: %1)', textParts: [mapType]);
     }
   }
+
+  
 
   @override
   String toString() {

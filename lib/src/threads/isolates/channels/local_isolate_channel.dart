@@ -4,19 +4,16 @@ import 'dart:developer';
 import 'package:maxi_library/maxi_library.dart';
 import 'package:maxi_library/src/threads/interfaces/iisolate_thread_channel_manager.dart';
 
-class LocalIsolateChannel<R, S> with IChannel<R, S>, ISlaveChannel<R, S> {
+class LocalIsolateChannel<R, S> with IDisposable, IChannel<R, S>, ISlaveChannel<R, S> {
   final int identifier;
   final IIsolateThreadChannelManager channelManager;
 
-  bool _isActive = true;
-
   final _streamController = StreamController<R>.broadcast();
-  final _waiter = MaxiCompleter();
 
   LocalIsolateChannel({required this.identifier, required this.channelManager});
 
   @override
-  bool get isActive => _isActive;
+  bool get isActive => !wasDiscarded;
 
   @override
   Stream<R> get receiver => checkActivityBefore(() => _streamController.stream);
@@ -55,25 +52,16 @@ class LocalIsolateChannel<R, S> with IChannel<R, S>, ISlaveChannel<R, S> {
   }
 
   @override
-  Future get done => _waiter.future;
+  Future get done => onDispose;
 
   @override
   Future close() async {
-    if (!_isActive) {
-      return;
-    }
-
-    reactCloseFromOperator();
-    await channelManager.closeExternalChannel(identifier: identifier);
+    dispose();
   }
 
-  void reactCloseFromOperator() {
-    if (!_isActive) {
-      return;
-    }
-
-    _isActive = false;
-    _waiter.completeIfIncomplete();
+  @override
+  void performObjectDiscard() {
     _streamController.close();
+    channelManager.closeExternalChannel(identifier: identifier);
   }
 }

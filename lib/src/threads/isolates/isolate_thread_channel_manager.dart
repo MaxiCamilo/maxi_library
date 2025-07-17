@@ -168,13 +168,13 @@ class IsolateThreadChannelManager with IIsolateThreadChannelManager {
   @override
   Future<void> reactCloseLocalChannel({required int identifier}) async {
     final channel = _localChannelList.selectItem((x) => x.identifier == identifier);
-    channel?.reactCloseFromOperator();
+    channel?.dispose();
   }
 
   @override
   Future<void> reactcloseExternalChannel({required int identifier}) async {
     final channel = _externalChannelList.selectItem((x) => x.identifier == identifier);
-    channel?.reactCloseFromOperator();
+    channel?.dispose();
   }
 
   @override
@@ -217,8 +217,8 @@ class IsolateThreadChannelManager with IIsolateThreadChannelManager {
 
   @override
   void closeAll() {
-    _localChannelList.iterar((x) => x.reactCloseFromOperator());
-    _externalChannelList.iterar((x) => x.reactCloseFromOperator());
+    _localChannelList.iterar((x) => x.dispose());
+    _externalChannelList.iterar((x) => x.dispose());
 
     _localChannelList.clear();
     _externalChannelList.clear();

@@ -288,6 +288,24 @@ extension ListrExtension<T> on List<T> {
     return lista;
   }
 
+  List<T> extractUntilValueIsFound(int from, T item) {
+    if (isEmpty || from >= length) {
+      return [];
+    }
+    final lista = <T>[];
+    int va = 0;
+
+    for (int i = from; i < length; i++) {
+      if (this[i] == item) {
+        break;
+      }
+
+      lista.add(this[i]);
+      va = va + 1;
+    }
+    return lista;
+  }
+
   bool startWith({required Iterable<T> compare, int from = 0}) {
     if (isEmpty) {
       return false;

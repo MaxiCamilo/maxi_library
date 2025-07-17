@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:maxi_library/maxi_library.dart';
 
-mixin IChannel<R, S> implements StreamSink<S> {
+mixin IChannel<R, S> on IDisposable implements StreamSink<S> {
   bool get isActive;
 
   Stream<R> get receiver;
@@ -76,6 +76,8 @@ mixin IChannel<R, S> implements StreamSink<S> {
   Future<R> waitObject({Duration? timeout}) {
     return receiver.waitItem(timeout: timeout);
   }
+
+  
 }
 
 mixin IMasterChannel<R, S> on IChannel<R, S> {

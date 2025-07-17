@@ -15,7 +15,7 @@ class MaxiTimer with IDisposable implements Timer {
   @override
   int get tick => _original?.tick ?? 0;
 
-  MaxiTimer({required this.duration, required this.callback, required bool activate}) {
+  MaxiTimer({required bool activate, required this.duration, required this.callback}) {
     if (activate) {
       reset();
     }

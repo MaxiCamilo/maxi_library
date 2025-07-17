@@ -186,6 +186,14 @@ class TaskInstance<R> with TextableFunctionality<bool>, ITaskFunctionality, IMix
     return _waiter!.future;
   }
 
+  Future<R> waitResultDirectly({void Function(Oration item)? onItem}) async {
+    if (!await waitResult(onItem: onItem)) {
+      throw lastError;
+    }
+
+    return lastResult;
+  }
+
   @override
   void onCancel({required InteractiveFunctionalityExecutor<Oration, bool> manager}) {
     super.onCancel(manager: manager);

@@ -3,20 +3,16 @@ import 'dart:developer';
 
 import 'package:maxi_library/maxi_library.dart';
 
-class MasterChannel<R, S> with IChannel<R, S>, IMasterChannel<R, S> {
+class MasterChannel<R, S> with IDisposable, IChannel<R, S>, IMasterChannel<R, S> {
   final bool closeIfEveryoneClosed;
-
-  final _waiter = MaxiCompleter();
 
   final _receiverController = StreamController<R>.broadcast();
   final _childrenChannels = <ISlaveChannel<S, R>>[];
 
   Completer? _waiterNewConnection;
 
-  bool _isActive = true;
-
   @override
-  bool get isActive => _isActive;
+  bool get isActive => !wasDiscarded;
 
   @override
   Stream<R> get receiver => _receiverController.stream;
@@ -25,6 +21,7 @@ class MasterChannel<R, S> with IChannel<R, S>, IMasterChannel<R, S> {
 
   @override
   ISlaveChannel<S, R> createSlave() {
+    checkIfDispose();
     final slave = SlaveChannel<S, R>(master: this);
 
     _childrenChannels.add(slave);
@@ -38,6 +35,7 @@ class MasterChannel<R, S> with IChannel<R, S>, IMasterChannel<R, S> {
 
   @override
   ISlaveChannel<S, R> createSlaveFromBuilder(ISlaveChannel<S, R> Function(IMasterChannel<R, S>) function) {
+    checkIfDispose();
     final slave = function(this);
     _childrenChannels.add(slave);
     slave.done.whenComplete(() => _reactChannelClose(slave));
@@ -68,17 +66,14 @@ class MasterChannel<R, S> with IChannel<R, S>, IMasterChannel<R, S> {
 
   @override
   Future close() async {
-    if (!_isActive) {
-      return;
-    }
+    dispose();
+  }
 
-    _isActive = false;
-
+  @override
+  void performObjectDiscard() {
     _receiverController.close();
     _childrenChannels.iterar((x) => x.close());
     _childrenChannels.clear();
-
-    _waiter.completeIfIncomplete();
 
     _waiterNewConnection?.completeErrorIfIncomplete(NegativeResult(
       identifier: NegativeResultCodes.functionalityCancelled,
@@ -88,7 +83,7 @@ class MasterChannel<R, S> with IChannel<R, S>, IMasterChannel<R, S> {
   }
 
   @override
-  Future get done => _waiter.future;
+  Future get done => onDispose;
 
   void _reactChannelClose(ISlaveChannel<S, R> channel) {
     _childrenChannels.remove(channel);

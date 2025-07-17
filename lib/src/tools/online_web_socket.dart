@@ -3,20 +3,15 @@ import 'dart:async';
 import 'package:maxi_library/maxi_library.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
-class OnlineWebSocket with IChannel {
+class OnlineWebSocket with IDisposable, IChannel {
   final Uri url;
   final WebSocketChannel channel;
   final bool disableIfNoOneListens;
-
-  bool _isActive = true;
-
   int _numberOfClients = 0;
-
   final _streamController = StreamController.broadcast();
-  final _waiter = MaxiCompleter();
 
   @override
-  bool get isActive => _isActive;
+  bool get isActive => !wasDiscarded;
 
   static Future<OnlineWebSocket> connect({
     required Uri url,
@@ -77,19 +72,11 @@ class OnlineWebSocket with IChannel {
 
   @override
   Future close() async {
-    if (!_isActive) {
-      return;
-    }
-
-    _isActive = false;
-
-    _streamController.close();
-    _waiter.completeIfIncomplete();
-    await channel.sink.close();
+    dispose();
   }
 
   @override
-  Future get done => _waiter.future;
+  Future get done => onDispose;
 
   void _reactDataReceive(event) {
     _streamController.add(event);
@@ -120,5 +107,11 @@ class OnlineWebSocket with IChannel {
     if (_numberOfClients <= 0) {
       close();
     }
+  }
+
+  @override
+  void performObjectDiscard() {
+    _streamController.close();
+    containErrorLogAsync(detail: const Oration(message: 'Dispose Channel sink'), function: () => channel.sink.close());
   }
 }
