@@ -133,6 +133,8 @@ extension IteratorExtension<T> on Iterable<T> {
     return clon;
   }
 
+  List<T> orderByDirectly() => orderByFunction((x) => x);
+
   T directObtaining(
     bool Function(T x) filtro, {
     Oration? ifNotExists,
@@ -198,6 +200,21 @@ extension IteratorExtension<T> on Iterable<T> {
     if (temporal.isNotEmpty) {
       yield temporal;
     }
+  }
+
+  List<T> limited({required int amount, bool Function(T x)? where}) {
+    final list = <T>[];
+    for (final item in this) {
+      if (where != null && !where(item)) {
+        continue;
+      }
+      list.add(item);
+      if (list.length >= amount) {
+        break;
+      }
+    }
+
+    return list;
   }
 
   Iterable<R> convert<R>(R Function({required T originalValue, required int position}) function) sync* {

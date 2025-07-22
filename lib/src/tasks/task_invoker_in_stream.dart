@@ -38,6 +38,8 @@ class TaskInvokerInStream with IDisposable, PaternalFunctionality {
     _resultController = createEventController<(int, String, dynamic)>(isBroadcast: true);
   }
 
+  static bool isInvokerEvent(String type) => const ['text', 'newTask', 'result', 'error'].contains(type);
+
   TextableFunctionality<T> makeTask<T>({
     required Object content,
     Duration? confirmationDeadline,

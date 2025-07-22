@@ -31,6 +31,15 @@ class ReflectionManager with IThreadInitializer {
     instance._predefinedTypes.addAll(listGenerators);
   }
 
+  void addAlbum(GeneratedReflectorAlbum album) {
+    if (instance._albums.contains(album)) {
+      return;
+    }
+
+    instance._albums.add(album);
+    instance._openedAlbums = false;
+  }
+
   static void defineAsTheMainReflector() {
     ThreadManager.addThreadInitializer(initializer: instance);
   }
@@ -169,6 +178,7 @@ class ReflectionManager with IThreadInitializer {
       return;
     }
 
+    instance._entities.clear();
     final entities = instance._albums.expand((x) => x.getReflectedEntities()).toList();
     //final enums = instance.albums.expand((x) => x.getReflectedEnums()).toList();
 
