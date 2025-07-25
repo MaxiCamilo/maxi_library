@@ -42,7 +42,7 @@ class OnlineWebSocket with IDisposable, IChannel {
     } else if (event is List) {
       channel.sink.add(ReflectionManager.serializeListToJson(value: event, setTypeValue: true));
     } else {
-      channel.sink.add(ReflectionManager.getReflectionEntity(event.runtimeType).serializeToJson(value: event));
+      channel.sink.add(ReflectionManager.getReflectionEntity(event.runtimeType).serializeToJson(value: event, setTypeValue: true));
     }
   }
 

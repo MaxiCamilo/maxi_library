@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:maxi_library/maxi_library.dart';
 import 'package:maxi_library/src/threads/falsifiers/fake_thread_server.dart';
 
-class FakeThreadClient with IThreadInvoker, IThreadManager, IThreadManagerClient, IThreadInvokeInstance {
+class FakeThreadClient with IThreadInvoker, IThreadManager, IThreadManagerClient, IThreadInvokeInstance, IFakeThread {
   @override
   final int threadID;
 

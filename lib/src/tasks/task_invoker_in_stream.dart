@@ -62,7 +62,10 @@ class TaskInvokerInStream with IDisposable, PaternalFunctionality {
     }
   }
 
-  void _processPackageMap(Map<String, dynamic> package) {
+  Future<void> _processPackageMap(Map<String, dynamic> package) async {
+    await continueOtherFutures();
+    await continueOtherFutures();
+
     final type = package.getRequiredValueWithSpecificType<String>('\$type');
     final id = package.getRequiredValueWithSpecificType<int>('id');
 

@@ -216,6 +216,9 @@ class ThreadIsolatorClient with IThreadInvoker, IThreadManager, IThreadManagerCl
 
   @override
   Future<IThreadInvokeInstance?> getIDInstance({required int id}) async {
+    if (id == 0) {
+      return serverConnection;
+    }
     final actualConnection = _connectionstList.selectItem((x) => x.threadID == id);
     if (actualConnection != null) {
       return actualConnection;

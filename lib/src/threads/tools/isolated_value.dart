@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:maxi_library/maxi_library.dart';
 import 'package:maxi_library/src/tools/internal/shared_values_service.dart';
 
-class IsolatedValue<T extends Object> with StartableFunctionality, PaternalFunctionality ,FunctionalityWithLifeCycle, IChannel<T, T> {
+class IsolatedValue<T extends Object> with StartableFunctionality, PaternalFunctionality, FunctionalityWithLifeCycle, IChannel<T, T>, IPerceptiveVariable<T> {
   final String name;
   final T? defaultValue;
 
@@ -130,11 +130,12 @@ class IsolatedValue<T extends Object> with StartableFunctionality, PaternalFunct
   }
 
   @override
-  void dispose() {
+  void afterDiscard() {
+    super.afterDiscard();
+
     _actualItem = null;
     _waiterDone?.completeIfIncomplete();
     _waiterDone = null;
-    super.dispose();
   }
 
   static FutureOr<void> _createChannel<T>(SharedValuesService entity, InvocationContext context, IChannel<T, T> channel) async {
@@ -144,4 +145,10 @@ class IsolatedValue<T extends Object> with StartableFunctionality, PaternalFunct
   static FutureOr<T?> _getValueStatic<T>(SharedValuesService entity, InvocationParameters context) {
     return entity.getValue(context.firts());
   }
+
+  @override
+  Stream<T> get notifyChange => receiver;
+
+  @override
+  T get value => syncValue;
 }

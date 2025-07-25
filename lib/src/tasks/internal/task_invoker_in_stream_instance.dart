@@ -60,7 +60,7 @@ class TaskInvokerInStreamInstance<T> with TextableFunctionality<T> {
 
     mainOperator.joinDisponsabeObject(item: manager);
 
-    manager.sendItemAsync(const Oration(message: 'Server sent confirmation of the task, waiting for a result'));
+    manager.sendItem(const Oration(message: 'Server sent confirmation of the task, waiting for a result'));
 
     final rawContent = await waiterResult.future;
     timer?.cancel();

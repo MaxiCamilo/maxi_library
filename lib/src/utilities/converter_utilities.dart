@@ -318,6 +318,11 @@ mixin ConverterUtilities {
 
   static T castJson<T>({required String text}) => castDynamicJson(text: text, type: T) as T;
 
+  static dynamic castDynamicJsonViaTypeText({required String text, required String rawType}) => castDynamicJson(
+        text: text,
+        type: ReflectionManager.getReflectionEntityByName(rawType).type,
+      );
+
   static dynamic castDynamicJson({required String text, required Type type}) {
     if (type.toString() == 'void') {
       return null;
@@ -352,8 +357,10 @@ mixin ConverterUtilities {
       return InvocationParameters.interpretFromJson(text);
     }
 
-    return ReflectionManager.interpretJson(rawText: text, tryToCorrectNames: false);
+    return ReflectionManager.getReflectionEntity(type).interpretationFromJson(rawJson: text, tryToCorrectNames: false);
   }
+
+  
 
   static dynamic tryCastDynamicJson({required String text}) {
     final mapJson = interpretJson(text: text);
@@ -361,18 +368,22 @@ mixin ConverterUtilities {
       return null;
     }
 
-    final type = mapJson.getRequiredValueWithSpecificType<String>('\$type');
+    return castDynamicMap(map: mapJson);
+  }
+
+  static dynamic castDynamicMap({required Map<String, dynamic> map}) {
+    final type = map.getRequiredValueWithSpecificType<String>('\$type');
 
     if (type == 'Oration') {
-      return Oration.interpret(map: mapJson);
+      return Oration.interpret(map: map);
     } else if (type.startsWith('error')) {
-      return NegativeResultValue.interpret(values: mapJson, checkTypeFlag: true);
+      return NegativeResultValue.interpret(values: map, checkTypeFlag: true);
     } else if (type == 'Parameters') {
-      return InvocationParameters.interpret(mapJson);
+      return InvocationParameters.interpret(map);
     }
 
     final reflector = ReflectionManager.getReflectionEntityByName(type);
-    return reflector.interpret(value: mapJson, tryToCorrectNames: true);
+    return reflector.interpret(value: map, tryToCorrectNames: true);
   }
 
   static dynamic interpretJson({required String text, Oration? extra}) {

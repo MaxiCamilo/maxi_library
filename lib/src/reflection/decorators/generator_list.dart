@@ -37,6 +37,8 @@ class GeneratorList<T> with IValueGenerator, IReflectionType, IPrimitiveValueGen
       for (final part in originalItem) {
         if (part is T) {
           newList.add(part);
+        } else if (part is Map<String, dynamic>) {
+          newList.add(ReflectionManager.interpret<T>(value: part, tryToCorrectNames: true));
         } else {
           throw NegativeResult(
             identifier: NegativeResultCodes.wrongType,
@@ -240,8 +242,4 @@ class GeneratorList<T> with IValueGenerator, IReflectionType, IPrimitiveValueGen
       );
     }
   }
-  
-  
-  
-  
 }

@@ -108,4 +108,15 @@ class DartApplicationManager with StartableFunctionality, IThreadInitializer, IA
     Process.run(Platform.resolvedExecutable, arguments);
     finishApplication();
   }
+
+  @override
+  void addReflectors(Iterable<GeneratedReflectorAlbum> albums) {
+    for (final alb in albums) {
+      if (!reflectors.contains(alb)) {
+        reflectors.add(alb);
+      }
+    }
+
+    ReflectionManager.instance.addSeveralsAlbum(albums);
+  }
 }

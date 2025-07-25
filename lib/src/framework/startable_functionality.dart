@@ -120,4 +120,10 @@ mixin StartableFunctionality implements IDisposable {
   void checkIfDispose() {
     checkInitialize();
   }
+
+  @override
+  T checkFirstIfDispose<T>(T Function() funcion) {
+    checkIfDispose();
+    return funcion();
+  }
 }

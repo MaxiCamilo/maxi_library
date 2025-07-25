@@ -44,3 +44,5 @@ export 'package:maxi_library/src/reflection/build/reflector_generator.dart';
 export 'package:maxi_library/src/reflection/decorators/ignore_file_for_reflection.dart';
 
 export 'package:maxi_library/src/reflection/build/generators/generated_reflector_album.dart';
+
+export 'package:maxi_library/src/reflection/tools/reflected_packet_processor.dart';

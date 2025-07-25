@@ -6,6 +6,8 @@ export 'package:maxi_library/src/threads/interfaces/ithread_magares_factory.dart
 export 'package:maxi_library/src/threads/interfaces/ithread_manager.dart';
 export 'package:maxi_library/src/threads/interfaces/ithread_manager_server.dart';
 export 'package:maxi_library/src/threads/interfaces/ithread_manager_client.dart';
+export 'package:maxi_library/src/threads/interfaces/ifake_thread.dart';
+export 'package:maxi_library/src/threads/tools/shared_point.dart';
 
 export 'package:maxi_library/src/threads/interfaces/ithread_invoke_instance.dart';
 
@@ -17,3 +19,6 @@ export 'package:maxi_library/src/threads/tools/isolated_event.dart';
 export 'package:maxi_library/src/threads/tools/isolated_value.dart';
 export 'package:maxi_library/src/threads/tools/isolated_function.dart';
 export 'package:maxi_library/src/threads/tools/isolated_module_pointer.dart';
+export 'package:maxi_library/src/threads/tools/unique_shared_point.dart';
+
+export 'package:maxi_library/src/threads/interfaces/ishared_pointer.dart';

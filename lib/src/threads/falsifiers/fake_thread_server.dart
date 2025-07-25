@@ -4,7 +4,7 @@ import 'dart:developer';
 import 'package:maxi_library/maxi_library.dart';
 import 'package:maxi_library/src/threads/falsifiers/fake_thread_client.dart';
 
-class FakeThreadServer with IThreadInvoker, IThreadManager, IThreadManagerServer, IThreadInvokeInstance {
+class FakeThreadServer with IThreadInvoker, IThreadManager, IThreadManagerServer, IThreadInvokeInstance, IFakeThread {
   final _clients = <FakeThreadClient>[];
 
   int _lastID = 1;

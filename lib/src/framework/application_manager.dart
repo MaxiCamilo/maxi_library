@@ -29,6 +29,7 @@ mixin IApplicationManager on StartableFunctionality, IThreadInitializer {
   void resetApplication({List<String> arguments = const []});
   void finishApplication();
   void changeLocalAddress(String address);
+  void addReflectors(Iterable<GeneratedReflectorAlbum> albums);
 
   @override
   Future<void> performInitializationInThread(IThreadManager channel) async {

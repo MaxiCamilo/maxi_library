@@ -5,6 +5,7 @@ import 'dart:developer';
 import 'package:maxi_library/maxi_library.dart';
 import 'package:maxi_library/src/reflection/types/type_generator_reflection.dart';
 import 'package:maxi_library/src/reflection/types/type_void_reflection.dart';
+import 'package:meta/meta.dart';
 
 class ReflectionManager with IThreadInitializer {
   static ReflectionManager? _instance;
@@ -31,6 +32,7 @@ class ReflectionManager with IThreadInitializer {
     instance._predefinedTypes.addAll(listGenerators);
   }
 
+  @internal
   void addAlbum(GeneratedReflectorAlbum album) {
     if (instance._albums.contains(album)) {
       return;
@@ -38,6 +40,26 @@ class ReflectionManager with IThreadInitializer {
 
     instance._albums.add(album);
     instance._openedAlbums = false;
+    _openAlbums();
+  }
+
+  @internal
+  void addSeveralsAlbum(Iterable<GeneratedReflectorAlbum> albums) {
+    bool thereAreNew = false;
+
+    for (final alb in albums) {
+      if (!instance._albums.contains(alb)) {
+        instance._albums.add(alb);
+        thereAreNew = true;
+      }
+    }
+
+    if (!thereAreNew) {
+      return;
+    }
+
+    instance._openedAlbums = false;
+    _openAlbums();
   }
 
   static void defineAsTheMainReflector() {
@@ -201,7 +223,7 @@ class ReflectionManager with IThreadInitializer {
 
     final item = getEntities().selectItem((x) => x.type == type);
     if (item == null) {
-      print('mal!');
+      print('FALTA $type');
       throw NegativeResult(
         identifier: NegativeResultCodes.nonExistent,
         message: Oration(message: 'There is no entity reflector for type %1', textParts: [type]),

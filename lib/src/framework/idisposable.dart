@@ -52,4 +52,9 @@ mixin IDisposable {
       );
     }
   }
+
+  T checkFirstIfDispose<T>(T Function() funcion) {
+    checkIfDispose();
+    return funcion();
+  }
 }
