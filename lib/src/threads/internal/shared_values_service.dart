@@ -3,6 +3,7 @@ import 'dart:collection';
 import 'dart:developer';
 
 import 'package:maxi_library/maxi_library.dart';
+import 'package:maxi_library/src/threads/internal/isolated_shared_functionality_instance.dart';
 import 'package:maxi_library/src/tools/internal/isolated_task_queue_controller.dart';
 
 class SharedValuesService with StartableFunctionality, IThreadService {
@@ -13,6 +14,8 @@ class SharedValuesService with StartableFunctionality, IThreadService {
   late final Map<String, List<IChannel>> _valueChannels;
   //late final StreamController<(String, dynamic)> _streamEvents;
   late final Map<String, StreamController> _streamControllers;
+
+  late final List<IsolatedSharedFunctionalityInstance> _functionalities;
 
   final taskQueueList = <IsolatedTaskQueueController>[];
 
@@ -32,6 +35,7 @@ class SharedValuesService with StartableFunctionality, IThreadService {
     _mapValues = SplayTreeMap<String, dynamic>();
     _streamControllers = <String, StreamController>{};
     _valueChannels = <String, List<IChannel>>{};
+    _functionalities = [];
   }
 
   T? getOptionalValue<T>({required String name}) => _mapValues[name];
@@ -164,6 +168,60 @@ class SharedValuesService with StartableFunctionality, IThreadService {
       return newController;
     } else {
       return exists;
+    }
+  }
+
+  bool existsFunctionality({required String name}) => _functionalities.selectItem((x) => x.name == name) != null;
+
+  IsolatedSharedFunctionalityInstance<I, R> getFunctionality<I, R>({required String name}) {
+    final func = _functionalities.selectRequiredItem(
+        (x) => x.name == name,
+        Oration(
+          message: 'The shared functionality %1 has not been defined yet',
+          textParts: [name],
+        ));
+    if (func is IsolatedSharedFunctionalityInstance<I, R>) {
+      return func;
+    } else {
+      throw NegativeResult(
+        identifier: NegativeResultCodes.wrongType,
+        message: Oration(
+          message: 'The shared functionality %1 is of type (%2,%3), but you were trying to change it to a functionality of type (%4,%5), which is not compatible',
+          textParts: [name, func.functionality.itemType, func.functionality.resultType, I, R],
+        ),
+      );
+    }
+  }
+
+  Future<void> defineOrChangeSharedFunctionality<I, R>({
+    required String name,
+    required InteractiveFunctionality<I, R> functionality,
+    bool omitIfItsExists = true,
+  }) async {
+    final func = _functionalities.selectItem((x) => x.name == name);
+
+    if (func == null) {
+      _functionalities.add(IsolatedSharedFunctionalityInstance<I, R>(name: name, functionality: functionality));
+    } else {
+      if (omitIfItsExists) {
+        return;
+      }
+
+      if (func.functionality == functionality) {
+        return;
+      }
+
+      if (func is! IsolatedSharedFunctionalityInstance<I, R>) {
+        throw NegativeResult(
+          identifier: NegativeResultCodes.wrongType,
+          message: Oration(
+            message: 'The shared functionality %1 is of type (%2,%3), but you were trying to change it to a functionality of type (%4,%5), which is not compatible',
+            textParts: [name, func.functionality.itemType, func.functionality.resultType, functionality.itemType, functionality.resultType],
+          ),
+        );
+      }
+
+      await func.changeFunctionality(newFunctionality: functionality);
     }
   }
 }

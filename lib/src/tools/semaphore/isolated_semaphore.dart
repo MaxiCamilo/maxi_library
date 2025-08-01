@@ -1,9 +1,9 @@
 import 'dart:async';
 
 import 'package:maxi_library/maxi_library.dart';
-import 'package:maxi_library/src/tools/internal/shared_values_service.dart';
+import 'package:maxi_library/src/threads/internal/shared_values_service.dart';
 
-class IsolatedSemaphore with StartableFunctionality, PaternalFunctionality ,FunctionalityWithLifeCycle, ISemaphore {
+class IsolatedSemaphore with StartableFunctionality, PaternalFunctionality, FunctionalityWithLifeCycle, ISemaphore {
   final String name;
   final Duration defaultDuration;
 

@@ -17,7 +17,7 @@ class EntityFileBackendAdapter<T> with IBackendEntityIndividual<T> {
   @override
   TextableFunctionality<T> getter() {
     return InteractiveFunctionality.express<Oration, T>((_) {
-      return entityOperator.item;
+      return entityOperator.value;
     });
   }
 

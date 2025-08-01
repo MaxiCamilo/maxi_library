@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:maxi_library/maxi_library.dart';
-import 'package:maxi_library/src/tools/internal/shared_values_service.dart';
+import 'package:maxi_library/src/threads/internal/shared_values_service.dart';
 
 class IsolatedValue<T extends Object> with StartableFunctionality, PaternalFunctionality, FunctionalityWithLifeCycle, IChannel<T, T>, IPerceptiveVariable<T> {
   final String name;
@@ -151,4 +151,6 @@ class IsolatedValue<T extends Object> with StartableFunctionality, PaternalFunct
 
   @override
   T get value => syncValue;
+
+  
 }

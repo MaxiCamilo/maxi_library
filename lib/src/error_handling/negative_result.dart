@@ -61,7 +61,7 @@ class NegativeResult implements Exception, CustomSerialization, ICustomSerializa
           message: Oration(message: 'A connection error occurred, Socket error %1: %2', textParts: [item.osError?.errorCode, item.message]),
           stackTrace: stackTrace?.toString() ?? '');
     } else {
-      return NegativeResult(identifier: codeDescription, message: Oration(message: 'The functionality %1 failed: %2', textParts: [actionDescription, item.toString()]), stackTrace: stackTrace?.toString() ?? '');
+      return NegativeResult(identifier: codeDescription, message: Oration(message: '%1 failed: %2', textParts: [actionDescription, item.toString()]), stackTrace: stackTrace?.toString() ?? '');
     }
   }
 

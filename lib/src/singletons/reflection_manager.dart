@@ -322,7 +322,7 @@ class ReflectionManager with IThreadInitializer {
     return getReflectionEntity(item.runtimeType).getPrimaryKey(instance: item);
   }
 
-  static List<int> toIdentifierList<T>(Iterable<T> list, {Type? entityType, bool growable = true}) {
+  static List<int> getIdentifierList<T>(Iterable<T> list, {Type? entityType, bool growable = true}) {
     final reflector = getReflectionEntity(entityType ?? T);
     return list.map((x) => reflector.getPrimaryKey(instance: x)).toList(growable: growable);
   }

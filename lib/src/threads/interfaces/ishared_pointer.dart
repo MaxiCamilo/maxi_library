@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:maxi_library/maxi_library.dart';
 
+
 mixin ISharedPointer<T> {
   Future<T> getItem();
 
@@ -19,6 +20,8 @@ mixin ISharedPointer<T> {
     required InteractiveFunctionality<I, R> Function(T item, InvocationParameters para) function,
     InvocationParameters parameters = InvocationParameters.emptry,
   });
+
+  
 }
 
 

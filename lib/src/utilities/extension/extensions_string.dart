@@ -15,6 +15,22 @@ extension ExtensionsString on String {
     }
   }
 
+  Iterable<String> splitIntoLength(int size) sync* {
+    final buffer = StringBuffer();
+
+    for (int i = 0; i < length; i++) {
+      buffer.write(this[i]);
+      if (buffer.length == size) {
+        yield buffer.toString();
+        buffer.clear();
+      }
+    }
+
+    if (buffer.isNotEmpty) {
+      yield buffer.toString();
+    }
+  }
+
   String extractFrom({int since = 0, int? amount}) {
     final buffer = StringBuffer();
     if (amount == null || amount >= length) {

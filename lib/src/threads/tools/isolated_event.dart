@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:developer';
 
 import 'package:maxi_library/maxi_library.dart';
-import 'package:maxi_library/src/tools/internal/shared_values_service.dart';
+import 'package:maxi_library/src/threads/internal/shared_values_service.dart';
 
 class IsolatedEvent<T> with StartableFunctionality, IChannel<T, T> {
   final String name;

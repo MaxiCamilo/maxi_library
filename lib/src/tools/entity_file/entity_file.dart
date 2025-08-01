@@ -3,7 +3,7 @@ import 'dart:convert';
 
 import 'package:maxi_library/maxi_library.dart';
 
-class EntityFile<T> with StartableFunctionality {
+class EntityFile<T> with StartableFunctionality, IPerceptiveVariable<T> {
   final IFileOperator _address;
   final _saveSyncronous = Semaphore();
 
@@ -14,7 +14,8 @@ class EntityFile<T> with StartableFunctionality {
 
   final _changeEvent = StreamController<T>.broadcast();
 
-  Stream<T> get changeItem => _changeEvent.stream;
+  @override
+  Stream<T> get notifyChange => _changeEvent.stream;
 
   EntityFile({
     required IFileOperator address,
@@ -25,7 +26,8 @@ class EntityFile<T> with StartableFunctionality {
     _reflected = ReflectionManager.getReflectionEntity(T);
   }
 
-  T get item {
+  @override
+  T get value {
     if (_item == null) {
       throw NegativeResult(
         identifier: NegativeResultCodes.uninitializedFunctionality,
@@ -53,7 +55,7 @@ class EntityFile<T> with StartableFunctionality {
 
   Future<void> saveFile() {
     return _saveSyncronous.execute(function: () {
-      final contentJson = json.encode(_reflected.serializeToMap(item));
+      final contentJson = json.encode(_reflected.serializeToMap(value));
       return _address.writeText(content: contentJson);
     });
   }
