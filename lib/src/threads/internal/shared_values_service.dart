@@ -171,7 +171,23 @@ class SharedValuesService with StartableFunctionality, IThreadService {
     }
   }
 
-  bool existsFunctionality({required String name}) => _functionalities.selectItem((x) => x.name == name) != null;
+  bool existsFunctionality<I, R>({required String name, bool failIfItsAnotherType = true}) {
+    final func = _functionalities.selectItem((x) => x.name == name);
+    if (func == null) {
+      return false;
+    } else if (func is InteractiveFunctionality<I, R>) {
+      return true;
+    } else if (failIfItsAnotherType) {
+      throw NegativeResult(
+          identifier: NegativeResultCodes.wrongType,
+          message: Oration(
+            message: 'Functionality begins with another type of return (%1 y %2)',
+            textParts: [I, R],
+          ));
+    } else {
+      return false;
+    }
+  }
 
   IsolatedSharedFunctionalityInstance<I, R> getFunctionality<I, R>({required String name}) {
     final func = _functionalities.selectRequiredItem(

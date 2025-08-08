@@ -6,8 +6,6 @@ class IsolatedSharedFunctionalityInstance<I, R> with IDisposable, PaternalFuncti
   final String name;
   InteractiveFunctionality<I, R> functionality;
 
-
-
   late StreamController<I> _itemStreamController;
   late StreamController<bool> _statusStreamController;
   late StreamController<R> _newResultStreamController;
@@ -16,6 +14,7 @@ class IsolatedSharedFunctionalityInstance<I, R> with IDisposable, PaternalFuncti
   bool _reExecutionPending = false;
   bool _resultWasPositive = false;
   Completer? _reexecutionWaiter;
+  Completer<R>? _resultWaiter;
 
   late R _lastResult;
   NegativeResult _lastError = NegativeResult(identifier: NegativeResultCodes.implementationFailure, message: const Oration(message: 'The functionality has not been implemented yet'));
@@ -54,8 +53,17 @@ class IsolatedSharedFunctionalityInstance<I, R> with IDisposable, PaternalFuncti
     functionality = newFunctionality;
   }
 
-  Future<void> execute({bool omitIfItsActive = true}) async {
-    if (omitIfItsActive && isActive) {
+  Future<R> waitResult() async {
+    if (!isActive) {
+      await execute(reRunIfActive: true);
+    }
+
+    _resultWaiter ??= joinWaiter();
+    return await _resultWaiter!.future;
+  }
+
+  Future<void> execute({required bool reRunIfActive}) async {
+    if (!reRunIfActive && isActive) {
       return;
     }
 
@@ -82,6 +90,7 @@ class IsolatedSharedFunctionalityInstance<I, R> with IDisposable, PaternalFuncti
         _lastResult = x;
         _resultWasPositive = true;
         _newResultStreamController.addIfActive(x);
+        _resultWaiter?.completeIfIncomplete(x);
       },
     ).onError(
       (x, st) {
@@ -89,11 +98,13 @@ class IsolatedSharedFunctionalityInstance<I, R> with IDisposable, PaternalFuncti
         _lastError = nr;
         _resultWasPositive = false;
         _newErrorStreamController.addIfActive(nr);
+        _resultWaiter?.completeErrorIfIncomplete(nr);
       },
     ).whenComplete(
       () {
         _actualExecutor = null;
         _statusStreamController.addIfActive(false);
+        _resultWaiter = null;
       },
     );
 

@@ -20,5 +20,8 @@ export 'package:maxi_library/src/threads/tools/isolated_value.dart';
 export 'package:maxi_library/src/threads/tools/isolated_function.dart';
 export 'package:maxi_library/src/threads/tools/isolated_module_pointer.dart';
 export 'package:maxi_library/src/threads/tools/unique_shared_point.dart';
+export 'package:maxi_library/src/threads/tools/isolated_shared_functionality.dart';
 
 export 'package:maxi_library/src/threads/interfaces/ishared_pointer.dart';
+
+

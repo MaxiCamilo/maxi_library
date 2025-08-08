@@ -37,6 +37,9 @@ class FieldEntity<T, R> with IDeclarationReflector, IGetterReflector, ISetterRef
   late final bool isEssentialKey;
 
   @override
+  late final bool isUnique;
+
+  @override
   late final String nameInLowerCase;
 
   late final CustomInterpretation? customInterpretation;
@@ -63,6 +66,7 @@ class FieldEntity<T, R> with IDeclarationReflector, IGetterReflector, ISetterRef
 
     isPrimaryKey = annotations.selectByType<PrimaryKey>() != null;
     isEssentialKey = annotations.selectByType<EssentialKey>() != null;
+    isUnique = annotations.selectByType<UniqueProperty>() != null;
     nameInLowerCase = name.toLowerCase();
   }
 
@@ -110,7 +114,7 @@ class FieldEntity<T, R> with IDeclarationReflector, IGetterReflector, ISetterRef
     } else {
       throw NegativeResult(
         identifier: NegativeResultCodes.invalidFunctionality,
-        message: Oration(message: 'Field %1 is not modifiable',textParts: [name]),
+        message: Oration(message: 'Field %1 is not modifiable', textParts: [name]),
       );
     }
   }

@@ -11,6 +11,8 @@ mixin IFieldReflection on IDeclarationReflector, IGetterReflector, ISetterReflec
 
   bool get isEssentialKey;
 
+  bool get isUnique;
+
   String get nameInLowerCase;
 
   bool areSame({required dynamic first, required dynamic second});

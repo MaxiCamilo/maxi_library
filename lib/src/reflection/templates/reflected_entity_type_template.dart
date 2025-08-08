@@ -517,8 +517,8 @@ abstract class ReflectedEntityTypeTemplate with IReflectionType, IDeclarationRef
             enableCustomInterpretation: enableCustomInterpretation,
             verify: verify,
             acceptZeroIdentifier: acceptZeroIdentifier,
-            primaryKeyMustBePresent: acceptZeroIdentifier,
-            essentialKeysMustBePresent: acceptZeroIdentifier,
+            primaryKeyMustBePresent: primaryKeyMustBePresent,
+            essentialKeysMustBePresent: essentialKeysMustBePresent,
           ),
         );
         i += 1;
@@ -531,6 +531,9 @@ abstract class ReflectedEntityTypeTemplate with IReflectionType, IDeclarationRef
         tryToCorrectNames: tryToCorrectNames,
         enableCustomInterpretation: enableCustomInterpretation,
         verify: verify,
+        acceptZeroIdentifier: acceptZeroIdentifier,
+        primaryKeyMustBePresent: primaryKeyMustBePresent,
+        essentialKeysMustBePresent: essentialKeysMustBePresent,
       ));
     }
 
