@@ -12,7 +12,7 @@ class PerceptiveVariableReference<T> with StartableFunctionality, PaternalFuncti
   final Stream<T> received;
 
   late final StreamController<T> _receivedController;
-  late final T _value;
+  late T _value;
 
   PerceptiveVariableReference({required this.valueGetter, required this.received});
 

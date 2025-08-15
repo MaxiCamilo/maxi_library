@@ -126,4 +126,7 @@ class FieldEntity<T, R> with IDeclarationReflector, IGetterReflector, ISetterRef
 
     return ReflectionManager.areSame(first: firstValue, second: secondValue);
   }
+
+  @override
+  String toString() => 'Field: $name (${field.typeReturn})';
 }

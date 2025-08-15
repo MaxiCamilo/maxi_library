@@ -26,6 +26,33 @@ mixin PaternalFunctionality on IDisposable {
     return joinObject<MaxiTimer>(item: newTimer);
   }
 
+  MaxiFuture<void> waitTime({required Duration duration, void Function()? onCancel}) {
+    final waiter = MaxiCompleter<void>();
+
+    joinDisponsabeObject(
+        item: MaxiTimer(
+      activate: true,
+      duration: duration,
+      callback: () {
+        waiter.completeIfIncomplete();
+      },
+      onCancel: () {
+        waiter.completeErrorIfIncomplete(
+          NegativeResult(
+            identifier: NegativeResultCodes.functionalityCancelled,
+            message: const Oration(message: 'The task was canceled'),
+          ),
+        );
+
+        if (onCancel != null) {
+          onCancel();
+        }
+      },
+    ));
+
+    return waiter.future;
+  }
+
   R invokeFunctionIfDiscarded<R extends Object>({required R item, required FutureOr Function(R) function}) {
     _invokeObjects.add((item as Object, function as FutureOr Function(Object)));
     return item;

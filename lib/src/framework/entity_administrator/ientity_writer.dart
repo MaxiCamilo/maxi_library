@@ -34,6 +34,8 @@ mixin IEntityWriter<T> {
     return add(list: list).executeAndWait();
   }
 
+  Future<int> addOneAsFuture(T item) async => (await addAsFuture(list: [item])).first;
+
   Future<void> modifyAsFuture({required List<T> list}) {
     return modify(list: list).executeAndWait();
   }
@@ -41,6 +43,4 @@ mixin IEntityWriter<T> {
   Future<void> assignAsFuture({required List<T> list}) {
     return assign(list: list).executeAndWait();
   }
-
-  
 }

@@ -187,13 +187,15 @@ abstract class ReflectedEntityTypeTemplate with IReflectionType, IDeclarationRef
     }
 
     final originalItemReflector = ReflectionManager.getReflectionEntity(type);
-    final compatiblePropertys = originalItemReflector.fields.where((x) => modificableFields.any((y) => y.name == x.name && y.reflectedType.isTypeCompatible(x.reflectedType.type))).toList();
+    final compatiblePropertys = originalItemReflector.fields.where((x) => modificableFields.any((y) => y.name == x.name)).toList();
 
     final newItem = generateEmptryObject();
     for (final field in compatiblePropertys) {
       final value = field.getValue(instance: originalItem);
       changeFieldValue(instance: newItem, newValue: value, name: field.name);
     }
+
+    return newItem;
   }
 
   @override

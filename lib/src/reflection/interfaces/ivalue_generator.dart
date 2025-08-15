@@ -10,6 +10,8 @@ mixin IValueGenerator {
   bool isCompatible(dynamic item);
 
   bool isTypeCompatible(Type type);
+
+  
 }
 
 mixin IMapValueGenerator on IValueGenerator {

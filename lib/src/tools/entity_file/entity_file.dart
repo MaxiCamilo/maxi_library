@@ -60,9 +60,10 @@ class EntityFile<T> with StartableFunctionality, IPerceptiveVariable<T> {
     });
   }
 
-  Future<void> changeFile({required T newValue}) {
+  Future<void> changeFile({required T newValue}) async {
     _item = newValue;
-    return saveFile();
+    await saveFile();
+    _changeEvent.add(newValue);
   }
 
   @override

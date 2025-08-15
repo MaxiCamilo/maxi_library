@@ -14,6 +14,7 @@ class Semaphore with ISemaphore {
   bool _isActive = false;
 
   int get pendingLength => _waitingList.length + _waitingStreamList.length;
+  bool get nextIsBusy => pendingLength - 1 > 0;
 
   @override
   Future<T> execute<T>({required FutureOr<T> Function() function}) {
