@@ -73,11 +73,14 @@ mixin PaternalFunctionality on IDisposable {
     return item;
   }
 
-  R joinDisponsabeObject<R extends IDisposable>({required R item}) {
+  R joinDisponsabeObject<R extends IDisposable>({required R item, void Function()? whenDispose}) {
     checkBeforeJoining();
 
     item.onDispose.whenComplete(() {
       _otherActiveList.remove(item);
+      if (whenDispose != null) {
+        whenDispose();
+      }
     });
 
     _otherActiveList.add(item);

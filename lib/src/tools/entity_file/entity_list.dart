@@ -328,8 +328,6 @@ class EntityList<T> with IEntityWriter<T>, IEntityReader<T>, IEntityTable<T> {
     return list.map((x) => reflector.getPrimaryKey(instance: x)).toList();
   }
 
-  
-
   @override
   TextableFunctionalityVoid assign({required List<T> list}) {
     return TextableFunctionality.express((x) => _blocker.block(function: () => _assign(manager: x, list: list)));
@@ -455,5 +453,12 @@ class EntityList<T> with IEntityWriter<T>, IEntityReader<T>, IEntityTable<T> {
     }
 
     return newMaps;
+  }
+
+  @override
+  Future<void> deleteWhere({required List<IConditionQuery> conditions}) async {
+    final ids = await selectIDsAsList(conditions: conditions);
+
+    await deleteAsFuture(listIDs: ids);
   }
 }

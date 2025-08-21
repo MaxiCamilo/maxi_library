@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 
 import 'package:maxi_library/export_reflectors.dart';
 
@@ -8,8 +9,6 @@ mixin ReflectedPacketProcessor {
   final _methods = <IMethodReflection>[];
 
   bool get enableSerialization => true;
-
-  
 
   bool isPackageProcessable(dynamic item) {
     if (item == null) {
@@ -119,5 +118,47 @@ mixin ReflectedPacketProcessor {
 
     _methodsMap[runtimeType] = candidates;
     _methods.addAll(candidates);
+  }
+
+  StreamSubscription connectToChannel({required IChannel channel, StreamSink? invokerPackageSink, void Function()? onDone}) {
+    if (this is PaternalFunctionality) {
+      return (this as PaternalFunctionality).joinEvent(
+        event: channel.receiver,
+        onData: (x) => _processEvent(event: x, invokerPackageSink: invokerPackageSink),
+        onDone: onDone,
+      );
+    } else {
+      return channel.receiver.listen(
+        (x) => _processEvent(event: x, invokerPackageSink: invokerPackageSink),
+        onDone: onDone,
+      );
+    }
+  }
+
+  void _processEvent({required dynamic event, StreamSink? invokerPackageSink}) {
+    if (event is String) {
+      _processEvent(event: ConverterUtilities.interpretToObjectJson(text: event), invokerPackageSink: invokerPackageSink);
+      return;
+    }
+
+    if (event is! Map<String, dynamic>) {
+      processPackage(event);
+
+      return;
+    }
+
+    final type = event.getRequiredValueWithSpecificType<String>('\$type');
+
+    if (invokerPackageSink != null && TaskInvokerInStream.isInvokerEvent(type)) {
+      invokerPackageSink.add(event);
+      return;
+    }
+
+    if (!isStringTypeProcessable(type)) {
+      log('[$runtimeType] Unknown entity received (${event.runtimeType})');
+      return;
+    }
+
+    _processEvent(event: ConverterUtilities.castDynamicMap(map: event), invokerPackageSink: invokerPackageSink);
   }
 }

@@ -5,7 +5,7 @@ import 'package:maxi_library/maxi_library.dart';
 
 enum HttpMethodType { postMethod, getMethod, deleteMethod, putMethod, anyMethod, webSocket }
 
-mixin IHttpRequester {
+mixin IHttpRequester on IDisposable {
   bool get isActive;
 
   Future<ResponseHttpRequest<T>> executeRequest<T>({
@@ -21,13 +21,16 @@ mixin IHttpRequester {
 
   Future<IChannel> executeWebSocket({
     required String url,
+    Map<String,String> queryParameters,
     bool disableIfNoOneListens = true,
-    Map<String, String>? headers,
     Encoding? encoding,
     Duration? timeout,
   });
 
   void close();
+
+  @override
+  void performObjectDiscard() => close();
 
   Future<T> executeRequestWithReflectResult<T>({
     required HttpMethodType type,
@@ -139,7 +142,6 @@ mixin IHttpRequester {
   Stream executeWebSocketAsStream({
     required String url,
     bool disableIfNoOneListens = true,
-    Map<String, String>? headers,
     Encoding? encoding,
     Duration? timeout,
   }) {
@@ -154,7 +156,6 @@ mixin IHttpRequester {
           url: url,
           disableIfNoOneListens: disableIfNoOneListens,
           encoding: encoding,
-          headers: headers,
           timeout: timeout,
         );
         channel!.receiver.listen(

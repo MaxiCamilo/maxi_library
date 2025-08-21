@@ -31,4 +31,5 @@ enum NegativeResultCodes {
 
   applicationGaping,
   accessDenied,
+  sessionExpired,
 }

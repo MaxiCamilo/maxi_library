@@ -43,4 +43,6 @@ mixin IEntityWriter<T> {
   Future<void> assignAsFuture({required List<T> list}) {
     return assign(list: list).executeAndWait();
   }
+
+  Future<void> deleteWhere({required List<IConditionQuery> conditions});
 }
