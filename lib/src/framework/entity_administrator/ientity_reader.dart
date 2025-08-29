@@ -60,7 +60,15 @@ mixin IEntityReader<T> {
     bool reverse = false,
     bool growable = true,
   }) async {
-    return (await selectIDs().toList()).expand((x) => x).toList(growable: growable);
+    return (await selectIDs(
+      conditions: conditions,
+      limit: limit,
+      maximum: maximum,
+      minimun: minimun,
+      reverse: reverse,
+    ).toList())
+        .expand((x) => x)
+        .toList(growable: growable);
   }
 
   Future<List<int>> selectFirstIDsAsList({

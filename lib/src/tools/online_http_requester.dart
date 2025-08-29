@@ -29,6 +29,8 @@ class OnlineHttpRequester with IDisposable, PaternalFunctionality, IHttpRequeste
 
   OnlineHttpRequester({required this.defaultTimeout, this.initialUrl = '', Map<String, String>? headers}) : initialHeaders = headers ?? {};
 
+  OnlineHttpRequester clone() => OnlineHttpRequester(defaultTimeout: defaultTimeout, initialUrl: initialUrl, headers: Map.of(initialHeaders));
+
   void defineBearerAuthorization({required String bearerContent}) {
     initialHeaders['Authorization'] = 'Bearer $bearerContent';
   }
