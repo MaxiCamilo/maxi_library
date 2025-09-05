@@ -2480,6 +2480,39 @@ class _RemoteFunctionalityStreamrunFunctionalityMethod extends GeneratedReflecte
       );
 }
 
+class _RemoteFunctionalityStreamonCancelMethod extends GeneratedReflectedMethod<RemoteFunctionalityStream, dynamic> {
+  const _RemoteFunctionalityStreamonCancelMethod();
+  @override
+  String get name => 'onCancel';
+
+  @override
+  bool get isStatic => false;
+
+  @override
+  MethodDetectedType get methodType => MethodDetectedType.commonMethod;
+
+  @override
+  List get annotations => const [override];
+
+  static const _nammanager = GeneratedReflectedNamedParameter<InteractiveFunctionalityExecutor<Oration, String>>(
+    annotations: const [],
+    defaultValue: null,
+    hasDefaultValue: false,
+    acceptNulls: false,
+    name: 'manager',
+  );
+  @override
+  List<GeneratedReflectedFixedParameter> get fixedParameters => const [];
+
+  @override
+  List<GeneratedReflectedNamedParameter> get namedParameters => const [_nammanager];
+
+  @override
+  dynamic callReservedMethod({required RemoteFunctionalityStream? entity, required List fixedValues, required Map<String, dynamic> namedValues}) => entity!.onCancel(
+        manager: _nammanager.getValueFromMap(namedValues),
+      );
+}
+
 class _RemoteFunctionalityStreamBuilder extends GeneratedReflectedMethod<RemoteFunctionalityStream, RemoteFunctionalityStream> {
   const _RemoteFunctionalityStreamBuilder();
   @override
@@ -2552,7 +2585,7 @@ class _RemoteFunctionalityStream extends GeneratedReflectedClass<RemoteFunctiona
   String get name => 'RemoteFunctionalityStream';
 
   @override
-  List<GeneratedReflectedMethod> get methods => const [_RemoteFunctionalityStreamrunFunctionalityMethod(), _RemoteFunctionalityStreamBuilder()];
+  List<GeneratedReflectedMethod> get methods => const [_RemoteFunctionalityStreamrunFunctionalityMethod(), _RemoteFunctionalityStreamonCancelMethod(), _RemoteFunctionalityStreamBuilder()];
 
   @override
   List<GeneratedReflectedField> get fields => const [_RemoteFunctionalityStreamname(), _RemoteFunctionalityStreamtimeout(), _RemoteFunctionalityStreamlaunchException()];

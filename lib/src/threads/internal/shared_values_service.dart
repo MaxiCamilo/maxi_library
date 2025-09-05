@@ -175,7 +175,7 @@ class SharedValuesService with StartableFunctionality, IThreadService {
     final func = _functionalities.selectItem((x) => x.name == name);
     if (func == null) {
       return false;
-    } else if (func is InteractiveFunctionality<I, R>) {
+    } else if (func is IsolatedSharedFunctionalityInstance<I, R>) {
       return true;
     } else if (failIfItsAnotherType) {
       throw NegativeResult(

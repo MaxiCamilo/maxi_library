@@ -11,7 +11,7 @@ dependencies:
   rxdart: ^0.28.0
   meta: ^1.15.0
   http: ^1.2.2
-  analyzer: ^6.7.0
+  analyzer: ^8.1.1
   collection: ^1.18.0
   web_socket_channel: ^3.0.1
   deepseek: ^1.2.0

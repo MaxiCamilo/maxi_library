@@ -64,7 +64,8 @@ class MethodParameterDetected {
     if (declaration is DefaultFormalParameter) {
       return _getTypeValue(declaration.parameter);
     }
-    return declaration.declaredElement?.type.toString() ?? 'dynamic';
+    return 'dynamic';
+    //return declaration.declaredElement?.type.toString() ?? 'dynamic';
   }
 
   static String _getDefaultValue({required String typeParameter, required FormalParameter declaration}) {
@@ -74,7 +75,8 @@ class MethodParameterDetected {
     if (declaration is DefaultFormalParameter) {
       return declaration.defaultValue?.toString() ?? '';
     } else {
-      return declaration.declaredElement?.defaultValueCode ?? '';
+      return 'dynamic';
+      //return declaration.declaredElement?.defaultValueCode ?? '';
     }
   }
 }

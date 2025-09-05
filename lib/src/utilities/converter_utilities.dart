@@ -360,8 +360,6 @@ mixin ConverterUtilities {
     return ReflectionManager.getReflectionEntity(type).interpretationFromJson(rawJson: text, tryToCorrectNames: false);
   }
 
-  
-
   static dynamic tryCastDynamicJson({required String text}) {
     final mapJson = interpretJson(text: text);
     if (mapJson is! Map<String, dynamic>) {
@@ -408,11 +406,16 @@ mixin ConverterUtilities {
   }
 
   static List<int> interpretToJsonIntList({required String text, Oration? extra}) {
-    return volatile(
-        detail: extra == null
-            ? Oration(message: 'A JSON list with identifiers was expected, but received a json value or individual object')
-            : Oration(message: 'A JSON list with identifiers was expected, but received a json listing or value %1', textParts: [extra]),
-        function: () => interpretJson(text: text, extra: extra) as List<int>);
+    text = text.trim();
+    if (text.isEmpty) {
+      return [];
+    }
+
+    if (text.first != '[' || text.last != ']') {
+      return [ConverterUtilities.toInt(value: text)];
+    }
+
+    return text.extractFrom(since: 1, amount: text.length - 2).split(',').map((x) => ConverterUtilities.toInt(value: x)).toList();
   }
 
   static List<Map<String, dynamic>> interpretToObjectListJson({required String text, Oration? extra}) {
