@@ -133,6 +133,30 @@ mixin TextUtilities {
     return camelCase;
   }
 
+  static Iterable<String> filtreText({required String text, required String filtre, required bool includeFiltre}) sync* {
+    final buffer = StringBuffer();
+
+    for (int i = 0; i < text.length; i++) {
+      if (text.startsWith(filtre, i)) {
+        if (buffer.isNotEmpty) {
+          yield buffer.toString();
+          buffer.clear();
+        }
+        if (includeFiltre) {
+          yield filtre;
+        }
+
+        i += filtre.length - 1;
+      } else {
+        buffer.write(text[i]);
+      }
+    }
+
+    if (buffer.isNotEmpty) {
+      yield buffer.toString();
+    }
+  }
+
   static String formatDate(
     DateTime date, {
     bool putWeekNames = true,
@@ -215,5 +239,13 @@ mixin TextUtilities {
     return List.generate(longitud, (index) => characters[random.nextInt(characters.length)]).join();
   }
 
-  
+  static String clearLatin1(String input) {
+    final buffer = StringBuffer();
+    for (var rune in input.runes) {
+      if (rune <= 0xFF) {
+        buffer.writeCharCode(rune);
+      }
+    }
+    return buffer.toString();
+  }
 }
