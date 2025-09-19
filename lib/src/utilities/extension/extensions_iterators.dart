@@ -87,7 +87,6 @@ extension IteratorExtension<T> on Iterable<T> {
     return true;
   }
 
-
   int maximumOfIdentifier(int Function(T x) funcion) {
     if (isEmpty) {
       return 0;
@@ -286,6 +285,17 @@ extension MapEntryListExtension<T, R> on Iterable<MapEntry<T, R>> {
 }
 
 extension ListrExtension<T> on List<T> {
+  T selectOrCreated({required bool Function(T x) funcion, required T Function() creator}) {
+    final exists = selectItem(funcion);
+    if (exists == null) {
+      final item = creator();
+      add(item);
+      return item;
+    } else {
+      return exists;
+    }
+  }
+
   List<T> extractFrom(int from, [int? amount]) {
     if (isEmpty || from >= length) {
       return [];
