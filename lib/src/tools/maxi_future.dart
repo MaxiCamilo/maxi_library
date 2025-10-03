@@ -16,7 +16,7 @@ class MaxiFuture<T> implements Future<T> {
     late final MaxiFuture<T> newFuture;
     newFuture = MaxiFuture<T>(this, onIgnore: (_) {
       newFuture.ignore();
-      this.ignore();
+      ignore();
       //onIgnore(newFuture);
     });
 

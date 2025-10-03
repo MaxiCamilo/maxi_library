@@ -3,17 +3,17 @@ import 'dart:collection';
 
 import 'package:maxi_library/maxi_library.dart';
 
-class EntityList<T> with IEntityWriter<T>, IEntityReader<T>, IEntityTable<T> {
+class EntityList<T> with IEntityWriter<T>, IEntityReader<T>, IEntityTable<T>, IDisposable, PaternalFunctionality {
   final int splits;
 
   late final List<IFieldReflection> _uniqueProperties;
 
   SplayTreeMap<int, T> _mapList = SplayTreeMap<int, T>();
 
-  final _notifyListChanged = StreamController.broadcast();
-  final _notifyAssignedItems = StreamController<List<int>>.broadcast();
-  final _notifyDeletedItems = StreamController<List<int>>.broadcast();
-  final _notifyTotalEliminations = StreamController<void>.broadcast();
+  late final StreamController _notifyListChanged;
+  late final StreamController<List<int>> _notifyAssignedItems;
+  late final StreamController<List<int>> _notifyDeletedItems;
+  late final StreamController<void> _notifyTotalEliminations;
 
   final _blocker = FutureBlocker();
 
@@ -52,6 +52,11 @@ class EntityList<T> with IEntityWriter<T>, IEntityReader<T>, IEntityTable<T> {
     }
 
     _updateLastPrimaryKey();
+
+    _notifyListChanged = createEventController(isBroadcast: true);
+    _notifyAssignedItems = createEventController<List<int>>(isBroadcast: true);
+    _notifyDeletedItems = createEventController<List<int>>(isBroadcast: true);
+    _notifyTotalEliminations = createEventController<void>(isBroadcast: true);
   }
 
   void _updateLastPrimaryKey() {
@@ -122,6 +127,10 @@ class EntityList<T> with IEntityWriter<T>, IEntityReader<T>, IEntityTable<T> {
       entityList = _mapList.entries.toList().reversed;
     } else {
       entityList = _mapList.entries;
+    }
+
+    if (reverse && maximum == 0 && entityList.isNotEmpty) {
+      maximum = entityList.first.key;
     }
 
     for (final candidate in entityList) {
@@ -460,5 +469,25 @@ class EntityList<T> with IEntityWriter<T>, IEntityReader<T>, IEntityTable<T> {
     final ids = await selectIDsAsList(conditions: conditions);
 
     await deleteAsFuture(listIDs: ids);
+  }
+
+  Future<List<int>> deleteFunctionalWhere(FutureOr<bool> Function(T) function) async {
+    final result = <int>[];
+
+    for (final item in list.toList(growable: true)) {
+      if (await function(item)) {
+        final id = reflector.getPrimaryKey(instance: item);
+
+        _mapList.remove(id);
+        result.add(id);
+      }
+    }
+
+    if (result.isNotEmpty) {
+      _notifyDeletedItems.addIfActive(result);
+      _notifyListChanged.addIfActive(null);
+    }
+
+    return result;
   }
 }
